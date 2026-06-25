@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24412" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24405"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="MLInputBoxView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="77a-Sv-JkB">
+                    <rect key="frame" x="302" y="10" width="60" height="30"/>
+                    <color key="backgroundColor" red="0.96862745098039216" green="0.83137254901960778" blue="0.35686274509803922" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="60" id="Df7-9h-d6M"/>
+                        <constraint firstAttribute="height" constant="30" id="j4Z-6a-1XA"/>
+                    </constraints>
+                    <state key="normal" title="发送">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="7"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="sendClick:" destination="iN0-l3-epB" eventType="touchUpInside" id="sE3-Yi-sgI"/>
+                    </connections>
+                </button>
+                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QsL-gV-yWD">
+                    <rect key="frame" x="10" y="10" width="282" height="30"/>
+                    <color key="backgroundColor" red="0.93333333333333335" green="0.93333333333333335" blue="0.93333333333333335" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="15"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                </textView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="说点什么吧(最多输入50字)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="87A-SQ-XLv">
+                    <rect key="frame" x="25" y="17.5" width="148" height="15"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="87A-SQ-XLv" firstAttribute="centerY" secondItem="QsL-gV-yWD" secondAttribute="centerY" id="2PU-Rq-D9t"/>
+                <constraint firstAttribute="bottom" secondItem="QsL-gV-yWD" secondAttribute="bottom" constant="10" id="Lhz-Gu-b1l"/>
+                <constraint firstItem="QsL-gV-yWD" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="MYG-7l-cxW"/>
+                <constraint firstAttribute="trailing" secondItem="77a-Sv-JkB" secondAttribute="trailing" constant="13" id="N6O-4s-3AZ"/>
+                <constraint firstItem="77a-Sv-JkB" firstAttribute="leading" secondItem="QsL-gV-yWD" secondAttribute="trailing" constant="10" id="OWm-AF-2Ar"/>
+                <constraint firstItem="QsL-gV-yWD" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="10" id="cPT-Fk-oRU"/>
+                <constraint firstAttribute="bottom" secondItem="77a-Sv-JkB" secondAttribute="bottom" constant="10" id="oSs-nF-809"/>
+                <constraint firstItem="87A-SQ-XLv" firstAttribute="leading" secondItem="QsL-gV-yWD" secondAttribute="leading" constant="15" id="qd3-k7-URs"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="beiJingLB" destination="87A-SQ-XLv" id="qnO-RV-RGx"/>
+                <outlet property="inputTextView" destination="QsL-gV-yWD" id="iwT-Nn-wlt"/>
+                <outlet property="sendBtn" destination="77a-Sv-JkB" id="PP2-UH-uKx"/>
+            </connections>
+            <point key="canvasLocation" x="-45.5" y="68"/>
+        </view>
+    </objects>
+</document>

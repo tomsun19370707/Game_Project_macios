@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24412" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24405"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="69o-KQ-U2h" customClass="EMO_RoomHostUserView">
+            <rect key="frame" x="0.0" y="0.0" width="72" height="92"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="shangMaiImg1" translatesAutoresizingMaskIntoConstraints="NO" id="52S-uf-nIT">
+                    <rect key="frame" x="10" y="10" width="50" height="50"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="你好" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xKi-5u-Pss">
+                    <rect key="frame" x="2" y="77" width="68" height="15"/>
+                    <constraints>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="77" id="hQG-mj-Exw"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="closeMaiImg" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-Vf-nR4">
+                    <rect key="frame" x="46" y="46" width="13" height="13"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </imageView>
+                <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="room_xuhao_boy" translatesAutoresizingMaskIntoConstraints="NO" id="5ss-D1-6rv">
+                    <rect key="frame" x="25" y="53" width="20" height="14"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </imageView>
+                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mdb-Vq-PCD">
+                    <rect key="frame" x="25" y="53" width="20" height="14.5"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="xKi-5u-Pss" firstAttribute="leading" secondItem="69o-KQ-U2h" secondAttribute="leading" constant="2" id="HQC-k4-peh"/>
+                <constraint firstAttribute="bottom" secondItem="xKi-5u-Pss" secondAttribute="bottom" id="LwD-O5-t6u"/>
+                <constraint firstAttribute="trailing" secondItem="xKi-5u-Pss" secondAttribute="trailing" constant="2" id="MDj-Pz-jEY"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="closeIcon" destination="AYs-Vf-nR4" id="eov-yN-8Wn"/>
+                <outlet property="genderIcon" destination="5ss-D1-6rv" id="djq-BA-dxD"/>
+                <outlet property="hostIcon" destination="52S-uf-nIT" id="6ib-M0-AAq"/>
+                <outlet property="hostName" destination="xKi-5u-Pss" id="IXs-Rk-XJo"/>
+                <outlet property="mALB" destination="mdb-Vq-PCD" id="fTy-uL-XIf"/>
+            </connections>
+            <point key="canvasLocation" x="582.60869565217399" y="132.58928571428572"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="closeMaiImg" width="46" height="46"/>
+        <image name="room_xuhao_boy" width="20" height="14"/>
+        <image name="shangMaiImg1" width="50" height="50"/>
+    </resources>
+</document>

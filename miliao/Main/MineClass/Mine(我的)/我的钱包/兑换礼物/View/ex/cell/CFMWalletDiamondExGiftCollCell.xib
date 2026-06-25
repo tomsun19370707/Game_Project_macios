@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24412" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24405"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="gTV-IL-0wX" customClass="CFMWalletDiamondExGiftCollCell">
+            <rect key="frame" x="0.0" y="0.0" width="76" height="93"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="76" height="93"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JT9-FY-hbf">
+                        <rect key="frame" x="17.666666666666671" y="67" width="41" height="16"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="coinSmallImg" translatesAutoresizingMaskIntoConstraints="NO" id="i77-hd-Flh">
+                                <rect key="frame" x="1" y="-1" width="17" height="17"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="17" id="Xzc-CH-qtq"/>
+                                    <constraint firstAttribute="width" constant="17" id="zgs-DY-KB7"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="150" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SEJ-za-QWv">
+                                <rect key="frame" x="16.999999999999996" y="1" width="19.000000000000004" height="15"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="15" id="ck5-72-457"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="PingFangSC-Regular" family="PingFang SC" pointSize="11"/>
+                                <color key="textColor" red="0.99215686274509807" green="0.56470588235294117" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.8901960784313725" green="0.8901960784313725" blue="0.8901960784313725" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="41" id="9dv-KM-ci6"/>
+                            <constraint firstItem="SEJ-za-QWv" firstAttribute="top" secondItem="JT9-FY-hbf" secondAttribute="top" constant="1" id="ELe-94-aBI"/>
+                            <constraint firstAttribute="trailing" secondItem="SEJ-za-QWv" secondAttribute="trailing" constant="5" id="Nbi-NF-tgM"/>
+                            <constraint firstItem="i77-hd-Flh" firstAttribute="top" secondItem="JT9-FY-hbf" secondAttribute="top" constant="-1" id="f9e-A4-jdf"/>
+                            <constraint firstItem="SEJ-za-QWv" firstAttribute="leading" secondItem="JT9-FY-hbf" secondAttribute="leading" constant="17" id="i7j-ou-CRu"/>
+                            <constraint firstAttribute="height" constant="16" id="iIw-vE-vG1"/>
+                            <constraint firstItem="i77-hd-Flh" firstAttribute="leading" secondItem="JT9-FY-hbf" secondAttribute="leading" constant="1" id="vuk-cp-c9U"/>
+                        </constraints>
+                    </view>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mine_func_bag" translatesAutoresizingMaskIntoConstraints="NO" id="pPq-Py-Nbl">
+                        <rect key="frame" x="20.666666666666671" y="7" width="35" height="35"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="35" id="KFn-95-v2f"/>
+                            <constraint firstAttribute="width" constant="35" id="kyu-Yq-Q6G"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="棒棒糖" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wQk-Uw-6P2">
+                        <rect key="frame" x="5" y="45" width="66" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="17" id="Lxw-Sr-2cK"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" name="PingFangSC-Regular" family="PingFang SC" pointSize="13"/>
+                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+            </view>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="JT9-FY-hbf" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="AgZ-SG-YpH"/>
+                <constraint firstItem="pPq-Py-Nbl" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="Ew3-xU-4UY"/>
+                <constraint firstItem="wQk-Uw-6P2" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="5" id="NkI-KS-2Ez"/>
+                <constraint firstItem="wQk-Uw-6P2" firstAttribute="top" secondItem="pPq-Py-Nbl" secondAttribute="bottom" constant="3" id="Xey-eO-3Gy"/>
+                <constraint firstAttribute="trailing" secondItem="wQk-Uw-6P2" secondAttribute="trailing" constant="5" id="f8I-kQ-uXE"/>
+                <constraint firstItem="pPq-Py-Nbl" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="7" id="h5n-X6-OWD"/>
+                <constraint firstItem="JT9-FY-hbf" firstAttribute="top" secondItem="wQk-Uw-6P2" secondAttribute="bottom" constant="5" id="rXc-s2-gYK"/>
+            </constraints>
+            <size key="customSize" width="76" height="93"/>
+            <connections>
+                <outlet property="bg" destination="JT9-FY-hbf" id="8zz-Os-boV"/>
+                <outlet property="bgWid" destination="9dv-KM-ci6" id="SGZ-5q-xhE"/>
+                <outlet property="icon" destination="pPq-Py-Nbl" id="Gf0-77-rf2"/>
+                <outlet property="name" destination="wQk-Uw-6P2" id="skg-3H-gTZ"/>
+                <outlet property="num" destination="SEJ-za-QWv" id="Vrj-hi-DXj"/>
+            </connections>
+            <point key="canvasLocation" x="160.30534351145039" y="168.66197183098592"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="coinSmallImg" width="15" height="15.666666984558105"/>
+        <image name="mine_func_bag" width="132" height="132"/>
+    </resources>
+</document>

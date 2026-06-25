@@ -1,0 +1,6 @@
+framework module CSVisitorSDK {
+  umbrella header "CSVisitorSDK.h"
+
+  export *
+  module * { export * }
+}

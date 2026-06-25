@@ -1,0 +1,130 @@
+//
+//  PrefixHeader.pch
+//  miliao
+//
+//  Created by aa on 2019/7/6.
+//  Copyright © 2019 miliao. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+//iphonex 底部安全距离
+#define KSAFEAREA_BOTTOM_HEIHGHT  (IS_IPHONE_NEWX ? 34 : 0)
+
+#define kSafeArea_Top (IS_IPHONE_NEWX? 44.0 : 20.0)
+///判断是否是刘海屏
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define IS_IOS_11  ([[[UIDevice currentDevice] systemVersion] floatValue] >= 11.f)
+#define IS_IPHONE_NEWX (IS_IOS_11 && IS_IPHONE && (MIN([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) >= 375 && MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) >= 812))
+#import "Global.h"
+
+#import "SMDataTool.h"
+//通知登录融云
+#define kLoginSucessNotification    @"kLoginSucessNotification"
+#define KRemoveConversation         @"KRemoveConversation"
+#define kRealNameAuthentication     @"kRealNameAuthentication"
+
+//cell 间距
+#define MLTrendCellMargin 10
+//文字内容的Y值
+#define MLTrendCellTextMaxY 130
+
+//底部工具条的高度
+#define MLTrendCellBottomBarH 45
+//声音控件的高度
+#define MLTrendCellVoiceH 40
+// 图片控件最大高度
+#define MLTrendCellPictureMaxH 1000
+
+#define shareURL @"http://yuyin.jiangkukeji.com/ja9t"
+
+#define SAFE_AREA_INSERTS_BOTTOM [HGDeviceHelper safeAreaInsetsBottom]
+#define SAFE_AREA_INSERTS_TOP [HGDeviceHelper safeAreaInsetsTop]
+#define TOP_BAR_HEIGHT (SAFE_AREA_INSERTS_TOP + NAVIGATION_BAR_HEIGHT)
+
+#define STATUS_BAR_HEIGHT [UIApplication sharedApplication].statusBarFrame.size.height
+static CGFloat const NAVIGATION_BAR_HEIGHT = 44;
+/** notificationName */
+#define IsEnablePersonalCenterVCMainTableViewScroll @"IsEnablePersonalCenterVCMainTableViewScroll"
+#define CurrentSelectedChildViewControllerIndex @"CurrentSelectedChildViewControllerIndex"
+#define PersonalCenterVCBackingStatus @"PersonalCenterVCBackingStatus"
+//图片宽度
+#define MLTrendCellOnePicWidth [UIScreen mainScreen].bounds.size.width / 2
+#define MLTrendCellTagsH  20
+#define MoreThanOnePicWidth ([UIScreen mainScreen].bounds.size.width - 40)/3
+
+#import "FSScrollContentView.h"//页面分段处理器
+/**# 屏幕宽*/
+#define MainScreenWidth [UIScreen mainScreen].bounds.size.width
+/**# 屏幕高*/
+#define MainScreenHeight [UIScreen mainScreen].bounds.size.height
+
+#define mRGB(r,g,b,a) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:a]
+#define mHexRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+#define mHexRGBAlpha(rgbValue,a) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:(a)]
+#define fontHightColor mHexRGB(0x3c3c3c) //字体深色
+#define fontNomalColor mHexRGB(0xa0a0a0) //字体浅色
+#define TableViewBackGroundColor [UIColor colorWithRed:238/255.0 green:238/255.0 blue:238/255.0 alpha:1];
+#define bjColor mHexRGB(0xe4e4e4)  //背景灰色
+//设置View圆角
+#define setViewCorner(view,radius)   {view.layer.cornerRadius = radius; view.layer.masksToBounds = YES;}
+//设置View边框
+#define setViewBorderAndColor(view, width,colorV) {view.layer.borderWidth = width; view.layer.borderColor = colorV;}
+
+//通知
+#define AddNoticeObserver(NoticeKey)             [NSNotificationCenter defaultCenter] addObserverForName:NoticeKey object:nil queue:nil usingBlock:^(NSNotification *note)
+#define PostNoticeObserver(NoticeKey,Object)     [[NSNotificationCenter defaultCenter] postNotificationName:NoticeKey object:Object]
+#define PostNoticeObserverWithInfo(NoticeKey,Object,UserInfo)     [[NSNotificationCenter defaultCenter] postNotificationName:NoticeKey object:Object userInfo:UserInfo]
+#define RemoveNoticeObserver(NoticeKey,Delegate) [[NSNotificationCenter defaultCenter] removeObserver:Delegate name:NoticeKey object:nil]
+//数据存储
+#define UserDefaultsGet(Key)           [[NSUserDefaults standardUserDefaults] objectForKey:Key]
+#define UserDefaultsGetBool(Key)       [[NSUserDefaults standardUserDefaults] boolForKey:Key]
+#define UserDefaultsSavaBool(Value,Key)      {[[NSUserDefaults standardUserDefaults] setBool:Value forKey:Key]; [[NSUserDefaults standardUserDefaults] synchronize];}
+#define UserDefaultsSave(Value,Key)    {[[NSUserDefaults standardUserDefaults] setObject:Value forKey:Key]; [[NSUserDefaults standardUserDefaults] synchronize];}
+#define UserDefaultsRemove(Key)        [[NSUserDefaults standardUserDefaults] removeObjectForKey:Key]
+#define kOpenSessionID @"kOpenSessionID"
+
+//从nib中加载
+#define LoadFromNib(nibName)  [[[NSBundle mainBundle] loadNibNamed:nibName owner:self options:nil] lastObject]
+#define NewUserToken @"newToken"
+
+#define borderCol mHexRGB(0xe4e4e4)    //border颜色
+typedef NS_ENUM(NSInteger, KeyBoardStatus) {
+    statusKeyboard,
+    statusVoice,
+    statusInit
+    
+};
+#import "Common.h"
+#import "SDHelper.h"
+#import "Global.h"
+#import "UIViewController+CurViewController.h"
+#define KAppSheng @"KAppSheng"
+#define WeakSelf        __weak __typeof(self) wself = self;
+//从相机选择图片
+#define ImagePicker_Camera(editable) \
+{BOOL isSourceTypePhotoLibrary = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]; \
+if (isSourceTypePhotoLibrary) { \
+UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init]; \
+imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera; \
+imagePickerController.delegate = wself; \
+imagePickerController.allowsEditing = editable; \
+[wself presentViewController:imagePickerController animated:YES completion:nil]; \
+}}
+
+//从相册选择图片
+#define ImagePicker_Album(editable) \
+{BOOL isSourceTypePhotoLibrary = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]; \
+if (isSourceTypePhotoLibrary) { \
+UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init]; \
+imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary; \
+imagePickerController.delegate = wself; \
+imagePickerController.allowsEditing = editable; \
+[wself presentViewController:imagePickerController animated:YES completion:nil]; \
+}}
+#define MAXRECORDTIME 60
+#define MINRECORDTIME 1
+#endif /* PrefixHeader_pch */

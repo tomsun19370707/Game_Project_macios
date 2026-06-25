@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="EMO_RoomClickUserView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dH3-E5-nCB">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </view>
+                <view alpha="0.90000000000000002" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FEs-g5-h3x">
+                    <rect key="frame" x="137.5" y="258.5" width="100" height="150"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fr4-C8-fi5">
+                            <rect key="frame" x="10" y="99" width="80" height="1"/>
+                            <color key="backgroundColor" red="0.89019607840000003" green="0.89019607840000003" blue="0.89019607840000003" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="lTG-rd-r9O"/>
+                            </constraints>
+                        </view>
+                        <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AL7-sg-84o">
+                            <rect key="frame" x="0.0" y="60" width="100" height="29"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal" title="抱人上麦">
+                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <connections>
+                                <action selector="clickUserViewClick:" destination="iN0-l3-epB" eventType="touchUpInside" id="OCq-vx-k9Y"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dy4-d6-LmE">
+                            <rect key="frame" x="0.0" y="110" width="100" height="29"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal" title="锁麦">
+                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <connections>
+                                <action selector="clickUserViewClick:" destination="iN0-l3-epB" eventType="touchUpInside" id="SC7-Ax-iwg"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PI2-dW-x3k">
+                            <rect key="frame" x="0.0" y="10" width="100" height="29"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal" title="上麦">
+                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <connections>
+                                <action selector="clickUserViewClick:" destination="iN0-l3-epB" eventType="touchUpInside" id="JEt-Gr-2F0"/>
+                            </connections>
+                        </button>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NFf-Ph-xga">
+                            <rect key="frame" x="10" y="49" width="80" height="1"/>
+                            <color key="backgroundColor" red="0.8901960784313725" green="0.8901960784313725" blue="0.8901960784313725" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="GiE-wm-ohW"/>
+                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="1" id="fYR-Aq-5Vo"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="fr4-C8-fi5" firstAttribute="top" secondItem="AL7-sg-84o" secondAttribute="bottom" constant="10" id="014-SI-cu8"/>
+                        <constraint firstItem="NFf-Ph-xga" firstAttribute="top" secondItem="PI2-dW-x3k" secondAttribute="bottom" constant="10" id="6Ue-fy-t1i"/>
+                        <constraint firstAttribute="trailing" secondItem="fr4-C8-fi5" secondAttribute="trailing" constant="10" id="6o2-aP-jMO"/>
+                        <constraint firstItem="Dy4-d6-LmE" firstAttribute="top" secondItem="fr4-C8-fi5" secondAttribute="bottom" constant="10" id="86h-QC-dTV"/>
+                        <constraint firstItem="PI2-dW-x3k" firstAttribute="centerX" secondItem="FEs-g5-h3x" secondAttribute="centerX" id="9iT-d3-PAr"/>
+                        <constraint firstItem="PI2-dW-x3k" firstAttribute="width" secondItem="FEs-g5-h3x" secondAttribute="width" id="OET-3G-p4z"/>
+                        <constraint firstAttribute="height" constant="150" id="Ocb-SP-c0m"/>
+                        <constraint firstItem="fr4-C8-fi5" firstAttribute="leading" secondItem="FEs-g5-h3x" secondAttribute="leading" constant="10" id="Osn-zU-9Mh"/>
+                        <constraint firstItem="AL7-sg-84o" firstAttribute="width" secondItem="FEs-g5-h3x" secondAttribute="width" id="QZe-vc-HB9"/>
+                        <constraint firstItem="AL7-sg-84o" firstAttribute="centerX" secondItem="FEs-g5-h3x" secondAttribute="centerX" id="f6h-iP-wfa"/>
+                        <constraint firstItem="AL7-sg-84o" firstAttribute="top" secondItem="FEs-g5-h3x" secondAttribute="top" constant="60" id="hNK-IO-Ibu"/>
+                        <constraint firstItem="PI2-dW-x3k" firstAttribute="top" secondItem="FEs-g5-h3x" secondAttribute="top" constant="10" id="kNL-G9-cUn"/>
+                        <constraint firstItem="fr4-C8-fi5" firstAttribute="top" secondItem="AL7-sg-84o" secondAttribute="bottom" constant="10" id="l2u-uL-d2B"/>
+                        <constraint firstItem="NFf-Ph-xga" firstAttribute="leading" secondItem="FEs-g5-h3x" secondAttribute="leading" constant="10" id="lkX-QS-V1l"/>
+                        <constraint firstItem="Dy4-d6-LmE" firstAttribute="centerX" secondItem="FEs-g5-h3x" secondAttribute="centerX" id="ovb-Oj-hw8"/>
+                        <constraint firstAttribute="trailing" secondItem="NFf-Ph-xga" secondAttribute="trailing" constant="10" id="u3P-aW-CLh"/>
+                        <constraint firstAttribute="width" constant="100" id="yd2-6s-0Z8"/>
+                        <constraint firstItem="Dy4-d6-LmE" firstAttribute="width" secondItem="FEs-g5-h3x" secondAttribute="width" id="zfv-rI-Ejg"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="7"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                </view>
+            </subviews>
+            <constraints>
+                <constraint firstItem="dH3-E5-nCB" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="DY5-7e-EFh"/>
+                <constraint firstItem="FEs-g5-h3x" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="V4H-cH-OAv"/>
+                <constraint firstAttribute="bottom" secondItem="dH3-E5-nCB" secondAttribute="bottom" id="grm-0L-H2d"/>
+                <constraint firstAttribute="trailing" secondItem="dH3-E5-nCB" secondAttribute="trailing" id="lm9-3k-vuD"/>
+                <constraint firstItem="FEs-g5-h3x" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="oPR-bM-bqh"/>
+                <constraint firstItem="dH3-E5-nCB" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="pwc-7Z-yF7"/>
+            </constraints>
+            <connections>
+                <outlet property="holdingMButton" destination="AL7-sg-84o" id="59r-yq-4y1"/>
+                <outlet property="holdingMButtonY" destination="hNK-IO-Ibu" id="3lq-lN-44D"/>
+                <outlet property="shangmaiButton" destination="PI2-dW-x3k" id="7Vt-A3-gxi"/>
+                <outlet property="shnagmaiView" destination="NFf-Ph-xga" id="J2z-aU-vJR"/>
+                <outlet property="suoMButtton" destination="Dy4-d6-LmE" id="3WC-ZV-lRH"/>
+                <outlet property="userViewH" destination="Ocb-SP-c0m" id="j0w-eF-LNi"/>
+            </connections>
+            <point key="canvasLocation" x="24.5" y="51.5"/>
+        </view>
+    </objects>
+</document>

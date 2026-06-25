@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_5" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="SCAdDemoCollectionViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="50" height="47"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="50" height="47"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wp3-CH-NTb">
+                        <rect key="frame" x="5" y="5" width="40" height="37"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="0F8-7a-Rdh">
+                        <rect key="frame" x="5" y="5" width="40" height="37"/>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="福袋" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Enz-fg-3yb">
+                        <rect key="frame" x="5" y="22" width="40" height="10"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="10" id="Z7K-je-IHY"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="highlightedColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </label>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="Wp3-CH-NTb" secondAttribute="trailing" constant="5" id="1lz-XP-TfA"/>
+                <constraint firstItem="Wp3-CH-NTb" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="5" id="2nb-3N-1nz"/>
+                <constraint firstItem="0F8-7a-Rdh" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="5" id="7ij-oX-Pat"/>
+                <constraint firstAttribute="trailing" secondItem="0F8-7a-Rdh" secondAttribute="trailing" constant="5" id="8Ml-wh-m4d"/>
+                <constraint firstItem="Wp3-CH-NTb" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="5" id="Uyi-qH-KpZ"/>
+                <constraint firstItem="0F8-7a-Rdh" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="5" id="bZV-6P-W3U"/>
+                <constraint firstAttribute="bottom" secondItem="Wp3-CH-NTb" secondAttribute="bottom" constant="5" id="e5V-3W-V4A"/>
+                <constraint firstItem="Enz-fg-3yb" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="5" id="h8b-Cj-1Iy"/>
+                <constraint firstAttribute="trailing" secondItem="Enz-fg-3yb" secondAttribute="trailing" constant="5" id="mJj-Pj-rd9"/>
+                <constraint firstItem="Wp3-CH-NTb" firstAttribute="bottom" secondItem="Enz-fg-3yb" secondAttribute="bottom" constant="10" id="qSq-hb-thr"/>
+                <constraint firstAttribute="bottom" secondItem="0F8-7a-Rdh" secondAttribute="bottom" constant="5" id="yxf-5C-CYR"/>
+            </constraints>
+            <size key="customSize" width="50" height="47"/>
+            <connections>
+                <outlet property="bgView" destination="Wp3-CH-NTb" id="s5b-BG-Sjx"/>
+                <outlet property="nameLabel" destination="Enz-fg-3yb" id="QSc-fr-Pgx"/>
+                <outlet property="showImage" destination="0F8-7a-Rdh" id="0li-RF-Lu0"/>
+            </connections>
+            <point key="canvasLocation" x="33.333333333333336" y="51.897321428571423"/>
+        </collectionViewCell>
+    </objects>
+</document>

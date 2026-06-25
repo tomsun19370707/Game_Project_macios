@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="LCG-hC-X2R" customClass="RoomFloatingWindow">
+            <rect key="frame" x="0.0" y="0.0" width="108" height="50"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UFa-KS-sK5">
+                    <rect key="frame" x="0.0" y="0.0" width="108" height="50"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="25"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                </view>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="未加载头像" translatesAutoresizingMaskIntoConstraints="NO" id="avu-PY-nFH">
+                    <rect key="frame" x="5" y="5" width="40" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="40" id="nVI-Xu-ZgT"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="20"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                </imageView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BYk-5I-Xa8">
+                    <rect key="frame" x="53" y="0.0" width="55" height="50"/>
+                    <state key="normal" image="home_fuchuang_close"/>
+                    <connections>
+                        <action selector="shutDownButton:" destination="LCG-hC-X2R" eventType="touchUpInside" id="mBY-yU-qLG"/>
+                    </connections>
+                </button>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="UFa-KS-sK5" secondAttribute="bottom" id="5Dz-eq-Qu6"/>
+                <constraint firstItem="BYk-5I-Xa8" firstAttribute="leading" secondItem="avu-PY-nFH" secondAttribute="trailing" constant="8" id="Abv-CR-Ayr"/>
+                <constraint firstItem="UFa-KS-sK5" firstAttribute="top" secondItem="LCG-hC-X2R" secondAttribute="top" id="FAk-to-Blp"/>
+                <constraint firstItem="BYk-5I-Xa8" firstAttribute="bottom" secondItem="UFa-KS-sK5" secondAttribute="bottom" id="LZv-3j-J4i"/>
+                <constraint firstAttribute="bottom" secondItem="avu-PY-nFH" secondAttribute="bottom" constant="5" id="Mzy-Hs-vfB"/>
+                <constraint firstItem="BYk-5I-Xa8" firstAttribute="top" secondItem="UFa-KS-sK5" secondAttribute="top" id="baf-BY-THB"/>
+                <constraint firstAttribute="trailing" secondItem="UFa-KS-sK5" secondAttribute="trailing" id="smr-bd-SVs"/>
+                <constraint firstItem="avu-PY-nFH" firstAttribute="top" secondItem="LCG-hC-X2R" secondAttribute="top" constant="5" id="uMy-ia-tkG"/>
+                <constraint firstItem="BYk-5I-Xa8" firstAttribute="trailing" secondItem="UFa-KS-sK5" secondAttribute="trailing" id="vAK-he-DvU"/>
+                <constraint firstItem="UFa-KS-sK5" firstAttribute="leading" secondItem="LCG-hC-X2R" secondAttribute="leading" id="vh2-Zu-uCh"/>
+                <constraint firstItem="avu-PY-nFH" firstAttribute="leading" secondItem="LCG-hC-X2R" secondAttribute="leading" constant="5" id="zeX-CE-sWz"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="bgView" destination="UFa-KS-sK5" id="hWb-IH-veo"/>
+                <outlet property="icon" destination="avu-PY-nFH" id="iab-Us-3bK"/>
+            </connections>
+            <point key="canvasLocation" x="-584" y="-658.4707646176912"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="home_fuchuang_close" width="13.5" height="15"/>
+        <image name="未加载头像" width="200" height="200"/>
+    </resources>
+</document>
