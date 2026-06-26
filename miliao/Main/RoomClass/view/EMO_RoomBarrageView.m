@@ -25,7 +25,7 @@
 @property (nonatomic, assign) BOOL is_Sound;
 
 Strong SDCycleScrollView *CarouselView;
-Strong UIButton *chouJiangBtn,*saipaoBtn;
+Strong UIButton *chouJiangBtn,*saipaoBtn,*nativeGameBtn;
 Strong NSMutableArray *cycleArr;
 
 @end
@@ -258,6 +258,7 @@ static SVGAParser *parser;
 //    [self shangmaiNumBtn];
     [self chouJiangBtn];
     [self saipaoBtn];
+    [self nativeGameBtn];
     [self keyBoardBgView];
     [self EmojiBtn];
     [self lineView];
@@ -624,6 +625,23 @@ static SVGAParser *parser;
     }
     return _saipaoBtn;
 }
+-(UIButton *)nativeGameBtn{
+    if(!_nativeGameBtn){
+        _nativeGameBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_nativeGameBtn setBackgroundImage:KGetImage(@"UY_ZhuanPan") forState:0];
+        [_nativeGameBtn setTitle:@"抽卡" forState:UIControlStateNormal];
+        [_nativeGameBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:10]];
+        [_nativeGameBtn addTarget:self action:@selector(nativeGameBtnClick) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:_nativeGameBtn];
+        [_nativeGameBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.top.mas_equalTo(self.saipaoBtn.mas_bottom).offset(10);
+                make.size.mas_equalTo(CGSizeMake(KAdaptedHeight(80), KAdaptedHeight(80)));
+                make.trailing.mas_equalTo(KAdaptedWidth(-15));
+        }];
+    }
+    return _nativeGameBtn;
+}
+
 -(SDCycleScrollView *)CarouselView{
     if (!_CarouselView) {
         _CarouselView = [SDCycleScrollView cycleScrollViewWithFrame:CGRectZero delegate:self placeholderImage:nil];
@@ -671,6 +689,13 @@ static SVGAParser *parser;
 //        self.scycleClickBlock(300, 0,self.cycleArr[0]);//    数组为空会报错
         NSDictionary *dicData=[NSDictionary dictionary];
         self.scycleClickBlock(400, 0,dicData);
+    }
+}
+#pragma mark 原生抽卡游戏入口
+-(void)nativeGameBtnClick{
+    if(self.scycleClickBlock){
+        NSDictionary *dicData=[NSDictionary dictionary];
+        self.scycleClickBlock(500, 0,dicData);
     }
 }
 

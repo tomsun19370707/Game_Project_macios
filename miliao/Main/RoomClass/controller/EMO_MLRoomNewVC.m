@@ -74,6 +74,7 @@
 #import "MLSessionViewController.h"
 #import "EMO_RoomGameAlertView.h"
 #import "RunGamaViewController.h"
+#import "MLChatRoomNativeGameView.h"
 @interface EMO_MLRoomNewVC ()<UITableViewDelegate, UITableViewDataSource, AgoraRtcEngineDelegate, AgoraRtmDelegate, AgoraRtmChannelDelegate, UITextViewDelegate, SVGAPlayerDelegate,SRWebSocketDelegate,BarrageDataSource>
 
 
@@ -3027,6 +3028,9 @@ static SVGAParser *parser;
             ZXNavigationController *nav=[[ZXNavigationController alloc] initWithRootViewController:vc];
             nav.modalPresentationStyle =UIModalPresentationOverCurrentContext;
             [window.rootViewController presentViewController:nav animated:NO completion:nil];
+        }else  if (tag==500) {//原生抽卡游戏
+            UIWindow *window = [UIApplication sharedApplication].keyWindow;
+            [MLChatRoomNativeGameView showInView:window];
         }
         
         /** 抽奖盘*/
