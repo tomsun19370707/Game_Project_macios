@@ -8782,8 +8782,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0076BCBB2294DED900CB58DE /* Build configuration list for PBXNativeTarget "miliao" */;
 			buildPhases = (
-				45848756AEEB43589F42DAD8 /* Build Target Libraries */,
 				5173270F78F0468BD6C1F2AB /* [CP] Check Pods Manifest.lock */,
+				45848756AEEB43589F42DAD8 /* Build Target Libraries */,
 				0076BC8B2294DED700CB58DE /* Sources */,
 				0076BC8C2294DED700CB58DE /* Frameworks */,
 				0076BC8D2294DED700CB58DE /* Resources */,
@@ -9052,13 +9052,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-miliao/Pods-miliao-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-miliao/Pods-miliao-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -9111,13 +9107,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-miliao/Pods-miliao-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-miliao/Pods-miliao-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

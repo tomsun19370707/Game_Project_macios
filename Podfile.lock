@@ -130,7 +130,7 @@ DEPENDENCIES:
   - YYKit
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
     - AFNetworking
     - AgoraAudio_iOS
     - AMap2DMap-NO-IDFA
@@ -196,6 +196,6 @@ SPEC CHECKSUMS:
   WMZPageController: 44c93d437e569f210dc9fe8494205a41634a7b3a
   YYKit: 7cda43304a8dc3696c449041e2cb3107b4e236e7
 
-PODFILE CHECKSUM: 30f267269e74538bd04e48673117bb7cd147c1eb
+PODFILE CHECKSUM: 42fa0309993c6c78d7b97d11620398cbeff5f5cb
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.16.2
