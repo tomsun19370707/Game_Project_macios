@@ -628,13 +628,11 @@ static SVGAParser *parser;
 -(UIButton *)nativeGameBtn{
     if(!_nativeGameBtn){
         _nativeGameBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_nativeGameBtn setBackgroundImage:KGetImage(@"UY_ZhuanPan") forState:0];
-        [_nativeGameBtn setTitle:@"抽卡" forState:UIControlStateNormal];
-        [_nativeGameBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:10]];
+        [_nativeGameBtn setBackgroundImage:KGetImage(@"native_game_entry_icon") forState:0];
         [_nativeGameBtn addTarget:self action:@selector(nativeGameBtnClick) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:_nativeGameBtn];
         [_nativeGameBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(self.saipaoBtn.mas_bottom).offset(10);
+                make.bottom.mas_equalTo(self.chouJiangBtn.mas_top).offset(-10);
                 make.size.mas_equalTo(CGSizeMake(KAdaptedHeight(80), KAdaptedHeight(80)));
                 make.trailing.mas_equalTo(KAdaptedWidth(-15));
         }];
