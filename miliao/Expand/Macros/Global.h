@@ -511,6 +511,7 @@ blue:((float)(rgbValue & 0xFF)) / 255.0 alpha:a]
 
 /**全局字体*/
 #define KFontA(__VA_ARGS__) ([UIFont systemFontOfSize:SFont(__VA_ARGS__)])
+#define KFontBoldA(__VA_ARGS__) ([UIFont boldSystemFontOfSize:SFont(__VA_ARGS__)])
 #define KCFont(__VA_ARGS__) [UIFont fontWithName:@"Helvetica-Bold" size:__VA_ARGS__]
 /**字体比例*/
 #define SFont(__VA_ARGS__)  ([UIScreen mainScreen].bounds.size.width/375)*(__VA_ARGS__)
