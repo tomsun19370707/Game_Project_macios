@@ -11,4 +11,6 @@
         totalValue:(NSInteger)value 
         retryBlock:(void(^)(void))retry;
 
+- (void)updateGifts:(NSArray<MLGameDrawResultModel *> *)gifts totalValue:(NSInteger)value;
+
 @end

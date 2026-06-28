@@ -8,6 +8,8 @@
 #import "MLChatRoomThemeGameOnePurchaseView.h"
 #import "MLChatRoomThemeGameOneExchangeView.h"
 #import "Global.h"
+#import "UIViewController+CurViewController.h"
+#import "CFMWalletDiamondRechargeVc.h"
 
 #if __has_include(<SVGAPlayer/SVGAPlayer.h>)
 #import <SVGAPlayer/SVGAPlayer.h>
@@ -22,15 +24,24 @@
 @property (nonatomic, assign) NSInteger typeId;
 @property (nonatomic, strong) UIView *maskView;
 @property (nonatomic, strong) UIImageView *bgImageView;
+@property (nonatomic, strong) UIButton *backButton;
 @property (nonatomic, strong) UIButton *ruleButton;
 @property (nonatomic, strong) UIButton *recordButton;
 @property (nonatomic, strong) UIButton *refreshButton;
 @property (nonatomic, strong) UIButton *exchangeButton;
 @property (nonatomic, strong) NSTimer *rotationTimer;
 
+@property (nonatomic, strong) UIImageView *refreshBgImageView;
+@property (nonatomic, strong) UIImageView *refreshIconView;
+@property (nonatomic, strong) UILabel *refreshTextLabel;
+
 @property (nonatomic, strong) UILabel *keyBalanceLabel;
+@property (nonatomic, strong) UIButton *keyPlusButton;
 @property (nonatomic, strong) UILabel *luckyTextLabel;
 @property (nonatomic, strong) UIProgressView *luckyProgressBar;
+
+@property (nonatomic, strong) UILabel *diamondBalanceLabel;
+@property (nonatomic, strong) UIButton *diamondPlusButton;
 
 @property (nonatomic, strong) UIButton *drawOneButton;
 @property (nonatomic, strong) UIButton *drawTenButton;
@@ -40,6 +51,8 @@
 @property (nonatomic, strong) NSMutableArray<UIView *> *giftCardViews;
 // 18个格子上的奖品图
 @property (nonatomic, strong) NSMutableArray<UIImageView *> *giftImageViews;
+// 18个格子上的奖品名称 Label
+@property (nonatomic, strong) NSMutableArray<UILabel *> *giftNameLabels;
 
 @property (nonatomic, strong) MLGameLotteryInfoModel *infoModel;
 @property (nonatomic, strong) NSArray<MLGameDrawResultModel *> *prizesInPool;
@@ -78,6 +91,7 @@
         self.currentStartIndex = 0;
         self.giftCardViews = [NSMutableArray array];
         self.giftImageViews = [NSMutableArray array];
+        self.giftNameLabels = [NSMutableArray array];
         
         [self setupUI];
         [self loadData];
@@ -119,20 +133,20 @@
         make.height.mas_equalTo(self);
     }];
     
-    // 规则按钮
-    _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_ruleButton setImage:[UIImage imageNamed:@"theme_game_one_rule_back"] forState:UIControlStateNormal];
-    [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_ruleButton];
-    [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    // 左上角返回/关闭按钮 (theme_game_one_rule_back, 36 * 36)
+    _backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_backButton setImage:[UIImage imageNamed:@"theme_game_one_rule_back"] forState:UIControlStateNormal];
+    [_backButton addTarget:self action:@selector(backClick) forControlEvents:UIControlEventTouchUpInside];
+    [_bgImageView addSubview:_backButton];
+    [_backButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KAdaptedHeight(16));
         make.leading.mas_equalTo(KAdaptedWidth(16));
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
     
-    // 记录按钮
+    // 记录按钮 (距右边缘 16 pt, top 16)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_recordButton setImage:[UIImage imageNamed:@"theme_game_one_record_back"] forState:UIControlStateNormal];
+    [_recordButton setImage:[UIImage imageNamed:@"theme_game_one_record_btn_brighter"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -141,35 +155,67 @@
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
     
-    // 刷新奖池按钮
+    // 规则按钮 (位于记录按钮左侧 10 pt)
+    _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_ruleButton setImage:[UIImage imageNamed:@"theme_game_one_rule_btn_brighter"] forState:UIControlStateNormal];
+    [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
+    [_bgImageView addSubview:_ruleButton];
+    [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(KAdaptedHeight(16));
+        make.trailing.mas_equalTo(_recordButton.mas_leading).offset(-KAdaptedWidth(10));
+        make.size.mas_equalTo(CGSizeMake(36, 36));
+    }];
+    
+    // 今日运势悬浮条 (宽 74, 高 23. 水平悬浮在规则/记录按钮组左侧 10 pt. 40% 半透明黑底, 圆角 11.5 pt)
+    UIView *fortuneBar = [[UIView alloc] init];
+    fortuneBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    setViewCorner(fortuneBar, 11.5);
+    [_bgImageView addSubview:fortuneBar];
+    [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(_recordButton);
+        make.trailing.mas_equalTo(_ruleButton.mas_leading).offset(-KAdaptedWidth(10));
+        make.size.mas_equalTo(CGSizeMake(74, 23));
+    }];
+    
+    UILabel *fortuneLabel = [[UILabel alloc] init];
+    fortuneLabel.text = @"今日运势";
+    fortuneLabel.textColor = mHexRGB(0xE1F5FE);
+    fortuneLabel.font = [UIFont systemFontOfSize:10];
+    fortuneLabel.textAlignment = NSTextAlignmentCenter;
+    [fortuneBar addSubview:fortuneLabel];
+    [fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(fortuneBar);
+    }];
+    
+    // 刷新奖池按钮 (宽 90, 高 32. 距底 120 pt, 距左 24 pt)
     _refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_refreshButton setImage:[UIImage imageNamed:@"theme_game_one_refresh_btn"] forState:UIControlStateNormal];
     [_refreshButton addTarget:self action:@selector(refreshPoolClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_refreshButton];
     [_refreshButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_ruleButton.mas_bottom).offset(KAdaptedHeight(10));
-        make.leading.mas_equalTo(KAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(36, 36));
+        make.bottom.mas_equalTo(-KAdaptedHeight(120));
+        make.leading.mas_equalTo(KAdaptedWidth(24));
+        make.size.mas_equalTo(CGSizeMake(90, 32));
     }];
     
-    // 兑换按钮
+    // 藏宝图兑换按钮 (宽 90, 高 32. 距底 120 pt, 距右 24 pt)
     _exchangeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_exchangeButton setImage:[UIImage imageNamed:@"theme_game_one_exchange_btn"] forState:UIControlStateNormal];
     [_exchangeButton addTarget:self action:@selector(exchangeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_exchangeButton];
     [_exchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_refreshButton.mas_bottom).offset(KAdaptedHeight(10));
-        make.leading.mas_equalTo(KAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(36, 36));
+        make.bottom.mas_equalTo(-KAdaptedHeight(120));
+        make.trailing.mas_equalTo(-KAdaptedWidth(24));
+        make.size.mas_equalTo(CGSizeMake(90, 32));
     }];
     
-    // 18 宫格礼物卡片环形布局容器
+    // 18 宫格礼物卡片环形布局容器 (宽 316, 高 324 pt, 距顶固定 140 pt)
     UIView *cardsContainer = [[UIView alloc] init];
     [_bgImageView addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.top.mas_equalTo(KAdaptedHeight(180));
-        make.size.mas_equalTo(CGSizeMake(316, 260)); // 包含 6*4 环状的总边界
+        make.top.mas_equalTo(KAdaptedHeight(140));
+        make.size.mas_equalTo(CGSizeMake(316, 324));
     }];
     
     [self layout18GiftCardsInContainer:cardsContainer];
@@ -197,15 +243,86 @@
         make.leading.mas_equalTo(_luckyProgressBar.mas_trailing).offset(6);
     }];
     
-    // 钥匙余额显示
+    // 钻石余额条 (高 22 pt, 宽 90 pt. 距顶 50 pt, 距左 24 pt)
+    UIView *diamondBar = [[UIView alloc] init];
+    diamondBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    setViewCorner(diamondBar, 11); // 11 pt 圆角
+    [_bgImageView addSubview:diamondBar];
+    [diamondBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(50);
+        make.leading.mas_equalTo(24);
+        make.size.mas_equalTo(CGSizeMake(90, 22));
+    }];
+    
+    // 钻石图标 (30 * 30 pt，悬浮出底板顶部)
+    UIImageView *diaIcon = [[UIImageView alloc] init];
+    diaIcon.image = [UIImage imageNamed:@"theme_game_one_cover_diamond"];
+    [_bgImageView addSubview:diaIcon]; // 直接加在_bgImageView上防止被切除
+    [diaIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(diamondBar.mas_leading).offset(-4);
+        make.centerY.mas_equalTo(diamondBar);
+        make.size.mas_equalTo(CGSizeMake(30, 30));
+    }];
+    
+    _diamondBalanceLabel = [[UILabel alloc] init];
+    _diamondBalanceLabel.textColor = kWhiteColor;
+    _diamondBalanceLabel.font = [UIFont systemFontOfSize:11];
+    _diamondBalanceLabel.text = @"0";
+    [diamondBar addSubview:_diamondBalanceLabel];
+    [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(24); // 避开 30x30 图标
+        make.centerY.mas_equalTo(diamondBar);
+    }];
+    
+    _diamondPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_diamondPlusButton setImage:[UIImage imageNamed:@"theme_game_one_plus_icon"] forState:UIControlStateNormal];
+    [_diamondPlusButton addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
+    [diamondBar addSubview:_diamondPlusButton];
+    [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.mas_equalTo(-4);
+        make.centerY.mas_equalTo(diamondBar);
+        make.size.mas_equalTo(CGSizeMake(22, 22));
+    }];
+    
+    // 钥匙余额条 (高 22 pt, 宽 90 pt. 距顶 50 pt, 距右 24 pt)
+    UIView *keyBar = [[UIView alloc] init];
+    keyBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    setViewCorner(keyBar, 11); // 11 pt 圆角
+    [_bgImageView addSubview:keyBar];
+    [keyBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(50);
+        make.trailing.mas_equalTo(-24);
+        make.size.mas_equalTo(CGSizeMake(90, 22));
+    }];
+    
+    // 钥匙图标 (30 * 30 pt，悬浮出底板顶部)
+    UIImageView *keyIcon = [[UIImageView alloc] init];
+    keyIcon.image = [UIImage imageNamed:@"theme_game_one_cover_key"];
+    [_bgImageView addSubview:keyIcon];
+    [keyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(keyBar.mas_leading).offset(-4);
+        make.centerY.mas_equalTo(keyBar);
+        make.size.mas_equalTo(CGSizeMake(30, 30));
+    }];
+    
     _keyBalanceLabel = [[UILabel alloc] init];
     _keyBalanceLabel.textColor = kWhiteColor;
-    _keyBalanceLabel.font = KFontA(14);
-    _keyBalanceLabel.text = @"钥匙: --";
-    [_bgImageView addSubview:_keyBalanceLabel];
+    _keyBalanceLabel.font = [UIFont systemFontOfSize:11];
+    _keyBalanceLabel.text = @"0";
+    [keyBar addSubview:_keyBalanceLabel];
     [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(_bgImageView);
-        make.bottom.mas_equalTo(_luckyProgressBar.mas_top).offset(-KAdaptedHeight(15));
+        make.leading.mas_equalTo(24); // 避开 30x30 图标
+        make.centerY.mas_equalTo(keyBar);
+    }];
+    
+    _keyPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_keyPlusButton setImage:[UIImage imageNamed:@"theme_game_one_plus_icon"] forState:UIControlStateNormal];
+    [_keyPlusButton addTarget:self action:@selector(openPurchaseDialog) forControlEvents:UIControlEventTouchUpInside];
+    [keyBar addSubview:_keyPlusButton];
+    [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.mas_equalTo(-4);
+        make.centerY.mas_equalTo(keyBar);
+        make.size.mas_equalTo(CGSizeMake(22, 22));
     }];
     
     // 底部“品”字形抽奖按钮组
@@ -240,13 +357,10 @@
     }];
 }
 
-#pragma mark - 18宫格扁平环状排布逻辑 (高还原度)
+#pragma mark - 18宫格对称环状排布逻辑 (6x5 完美对齐)
 - (void)layout18GiftCardsInContainer:(UIView *)container {
     // 宽 46，高 60。水平间距 8，垂直间距 6
-    // 顶部横排 6 个 (索引 0~5)
-    // 右侧竖排 2 个 (索引 6~7)
-    // 底部横排 6 个 (索引 8~13)
-    // 左侧竖排 2 个 (索引 14~17)
+    // 整个容器应该设为 316 * 324 pt (对应 6x5 环状的总边界)
     CGFloat cardW = 46.0f;
     CGFloat cardH = 60.0f;
     CGFloat hGap = 8.0f;
@@ -254,49 +368,75 @@
     
     for (int i = 0; i < 18; i++) {
         UIView *card = [[UIView alloc] init];
-        card.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1]; // 默认底色
-        setViewCorner(card, 4);
+        card.backgroundColor = [UIColor clearColor];
         [container addSubview:card];
         [self.giftCardViews addObject:card];
+        
+        // 交替作为格子底层背景
+        UIImageView *cardBg = [[UIImageView alloc] init];
+        NSString *bgName = [NSString stringWithFormat:@"theme_game_one_gift_board_%d", (i % 4) + 1];
+        cardBg.image = [UIImage imageNamed:bgName];
+        cardBg.contentMode = UIViewContentModeScaleToFill;
+        [card addSubview:cardBg];
+        [cardBg mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.mas_equalTo(card);
+        }];
         
         UIImageView *giftImg = [[UIImageView alloc] init];
         giftImg.contentMode = UIViewContentModeScaleAspectFit;
         [card addSubview:giftImg];
         [giftImg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(card).insets(UIEdgeInsetsMake(4, 4, 4, 4));
+            make.edges.mas_equalTo(card).insets(UIEdgeInsetsMake(4, 4, 16, 4)); // 为底部名字留空
         }];
         [self.giftImageViews addObject:giftImg];
         
-        // 分段设置约束
+        UILabel *nameLabel = [[UILabel alloc] init];
+        nameLabel.font = [UIFont boldSystemFontOfSize:9.5];
+        nameLabel.textColor = kWhiteColor;
+        nameLabel.textAlignment = NSTextAlignmentCenter;
+        nameLabel.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+        setViewCorner(nameLabel, 2);
+        [card addSubview:nameLabel];
+        [nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.bottom.leading.trailing.mas_equalTo(card);
+            make.height.mas_equalTo(14);
+        }];
+        [self.giftNameLabels addObject:nameLabel];
+        
+        // 6x5 环状排布，顺时针成环：
+        // 0..5: 顶部横排 (col = 0..5, row = 0)
+        // 6..8: 右侧竖排 (col = 5, row = 1..3)
+        // 9..14: 底部横排 (col = 5..0, row = 4)
+        // 15..17: 左侧竖排 (col = 0, row = 3..1)
         if (i < 6) {
-            // 顶部横排 (0 ~ 5)
+            // 顶部横排
             [card mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.top.mas_equalTo(0);
                 make.leading.mas_equalTo(i * (cardW + hGap));
                 make.size.mas_equalTo(CGSizeMake(cardW, cardH));
             }];
-        } else if (i < 8) {
-            // 右侧竖排 (6 ~ 7)
-            int step = i - 5; // 1, 2
+        } else if (i < 9) {
+            // 右侧竖排
+            int row = i - 5; // 1, 2, 3
             [card mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(step * (cardH + vGap));
-                make.trailing.mas_equalTo(0); // 对齐右边缘
+                make.top.mas_equalTo(row * (cardH + vGap));
+                make.trailing.mas_equalTo(0);
                 make.size.mas_equalTo(CGSizeMake(cardW, cardH));
             }];
-        } else if (i < 14) {
-            // 底部横排 (8 ~ 13)
-            int step = 13 - i; // 5 ~ 0 逆序，使顺时针成环
+        } else if (i < 15) {
+            // 底部横排
+            int col = 14 - i; // 5, 4, 3, 2, 1, 0
             [card mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(0);
-                make.leading.mas_equalTo(step * (cardW + hGap));
+                make.top.mas_equalTo(4 * (cardH + vGap));
+                make.leading.mas_equalTo(col * (cardW + hGap));
                 make.size.mas_equalTo(CGSizeMake(cardW, cardH));
             }];
         } else {
-            // 左侧竖排 (14 ~ 17)
-            int step = 17 - i; // 3 ~ 0 逆序，顺时针闭合
+            // 左侧竖排
+            int row = 18 - i; // 3, 2, 1
             [card mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo((step + 1) * (cardH + vGap));
-                make.leading.mas_equalTo(0); // 对齐左边缘
+                make.top.mas_equalTo(row * (cardH + vGap));
+                make.leading.mas_equalTo(0);
                 make.size.mas_equalTo(CGSizeMake(cardW, cardH));
             }];
         }
@@ -305,19 +445,29 @@
 
 #pragma mark - 数据请求
 - (void)loadData {
-    // 1. 详情、消耗档位和钥匙余额
-    [MLGameLotteryService getRoomDetailWithTypeId:self.typeId success:^(MLGameLotteryInfoModel *model) {
-        self.infoModel = model;
-        self.localKeyBalance = model.lottery_coin;
-        [self updateBalanceUI];
+    WeakSelf
+    // 1. 获取个人资产
+    [MLGameLotteryService getUserMoneyWithSuccess:^(MLGameUserMoneyModel *moneyModel) {
+        wself.diamondBalanceLabel.text = moneyModel.diamond;
+        wself.localKeyBalance = moneyModel.lottery_coin;
+        [wself updateBalanceUI];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
     
-    // 2. 18 格奖池礼物列表
+    // 2. 详情、消耗档位
+    [MLGameLotteryService getRoomDetailWithTypeId:self.typeId success:^(MLGameLotteryInfoModel *model) {
+        wself.infoModel = model;
+        wself.luckyProgressBar.progress = (double)model.lucky / 200.0;
+        wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/200", (long)model.lucky];
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+    }];
+    
+    // 3. 18 格奖池礼物列表
     [MLGameLotteryService getPrizesWithTypeId:self.typeId success:^(NSArray<MLGameDrawResultModel *> *list) {
-        self.prizesInPool = list;
-        [self renderGiftBoard];
+        wself.prizesInPool = list;
+        [wself renderGiftBoard];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
@@ -328,6 +478,7 @@
     
     for (int i = 0; i < self.giftImageViews.count; i++) {
         UIImageView *img = self.giftImageViews[i];
+        UILabel *nameLabel = self.giftNameLabels[i];
         if (i < self.prizesInPool.count) {
             MLGameDrawResultModel *prize = self.prizesInPool[i];
             NSURL *url = [NSURL URLWithString:[prize imageUrl]];
@@ -337,14 +488,19 @@
                 [img performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@""]];
             }
             img.hidden = NO;
+            nameLabel.text = prize.name;
+            nameLabel.hidden = NO;
+            nameLabel.superview.hidden = NO;
         } else {
             img.hidden = YES;
+            nameLabel.hidden = YES;
+            nameLabel.superview.hidden = YES;
         }
     }
 }
 
 - (void)updateBalanceUI {
-    self.keyBalanceLabel.text = [NSString stringWithFormat:@"钥匙: %ld", (long)self.localKeyBalance];
+    self.keyBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)self.localKeyBalance];
 }
 
 #pragma mark - 抽奖与跑马灯动画算法 (带减速步进)
@@ -368,27 +524,44 @@
     [self startInfiniteRotation];
     
     // 3. 执行网络发包
+    WeakSelf
     [MLGameLotteryService drawWithTypeId:self.typeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
-        // 请求成功：定位最高价礼物的终点落点
-        NSInteger targetIndex = [self findTargetStopIndexWithGifts:list];
-        self.targetStopIndex = targetIndex;
+        MLChatRoomThemeGameOneResultView *activeResultView = nil;
+        for (UIView *sub in wself.superview.subviews) {
+            if ([sub isKindOfClass:[MLChatRoomThemeGameOneResultView class]]) {
+                activeResultView = (MLChatRoomThemeGameOneResultView *)sub;
+                break;
+            }
+        }
         
-        // 4. 接续进入插值减速旋转
-        [self stopInfiniteRotation];
-        [self transitionToDeceleratingRotationWithTargetIndex:targetIndex success:^{
-            [self showResultWithGifts:list totalValue:totalValue logId:logId];
-        }];
+        if (activeResultView) {
+            [wself stopInfiniteRotation];
+            [activeResultView updateGifts:list totalValue:totalValue];
+            [wself lockButtons:NO];
+            wself.isDrawing = NO;
+            [wself loadData]; // 静默更新资产
+        } else {
+            // 请求成功：定位最高价礼物的终点落点
+            NSInteger targetIndex = [wself findTargetStopIndexWithGifts:list];
+            wself.targetStopIndex = targetIndex;
+            
+            // 4. 接续进入插值减速旋转
+            [wself stopInfiniteRotation];
+            [wself transitionToDeceleratingRotationWithTargetIndex:targetIndex success:^{
+                [wself showResultWithGifts:list totalValue:totalValue logId:logId];
+            }];
+        }
     } failure:^(NSError *error) {
-        [self stopInfiniteRotation];
-        [self lockButtons:NO];
-        self.isDrawing = NO;
+        [wself stopInfiniteRotation];
+        [wself lockButtons:NO];
+        wself.isDrawing = NO;
         
         // 5. 计费回滚防御
         if (error.code == NSURLErrorTimedOut) {
             [SVProgressHUD showInfoWithStatus:@"服务器繁忙，结果可能稍后到账，请去记录或背包查看"];
         } else {
-            self.localKeyBalance += cost;
-            [self updateBalanceUI];
+            wself.localKeyBalance += cost;
+            [wself updateBalanceUI];
             [SVProgressHUD showErrorWithStatus:error.localizedDescription];
         }
     }];
@@ -444,28 +617,29 @@
 }
 
 - (void)transitionToDeceleratingRotationWithTargetIndex:(NSInteger)targetIndex success:(void(^)(void))completion {
-    // 根据当前所在索引，计算出剩余总步数（再跑 2 圈 + 偏移目标）
     NSInteger currentIdx = self.currentStartIndex;
     NSInteger remainingSteps = (targetIndex - currentIdx + 18) % 18 + 36; // 跑 2 圈
     
     [self startDeceleratingStepWithStepIndex:0 
-                               totalSteps:remainingSteps 
-                             minDelayTime:0.08 
-                             maxDelayTime:0.5 
-                               completion:completion];
+                                  baseIndex:currentIdx
+                                 totalSteps:remainingSteps 
+                               minDelayTime:0.08 
+                               maxDelayTime:0.5 
+                                 completion:completion];
 }
 
 - (void)startDeceleratingStepWithStepIndex:(NSInteger)step 
-                               totalSteps:(NSInteger)totalSteps 
-                             minDelayTime:(NSTimeInterval)minDelay 
-                             maxDelayTime:(NSTimeInterval)maxDelay 
-                               completion:(void(^)(void))completion {
+                                 baseIndex:(NSInteger)baseIdx
+                                totalSteps:(NSInteger)totalSteps 
+                              minDelayTime:(NSTimeInterval)minDelay 
+                              maxDelayTime:(NSTimeInterval)maxDelay 
+                                completion:(void(^)(void))completion {
     if (step >= totalSteps) {
         if (completion) completion();
         return;
     }
     
-    NSInteger highlightIndex = (self.currentStartIndex + step) % 18;
+    NSInteger highlightIndex = (baseIdx + step) % 18;
     [self highlightGiftViewAtIndex:highlightIndex];
     
     NSTimeInterval nextDelay = minDelay;
@@ -477,22 +651,24 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(nextDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self startDeceleratingStepWithStepIndex:step + 1 
-                                     totalSteps:totalSteps 
-                                   minDelayTime:minDelay 
-                                   maxDelayTime:maxDelay 
-                                     completion:completion];
+                                     baseIndex:baseIdx
+                                    totalSteps:totalSteps 
+                                  minDelayTime:minDelay 
+                                  maxDelayTime:maxDelay 
+                                    completion:completion];
     });
 }
 
 - (void)highlightGiftViewAtIndex:(NSInteger)index {
-    // 还原之前的卡片状态，并高亮当前的卡片 (发光、改变背景色或缩放)
+    // 还原之前的卡片状态，并高亮当前的卡片 (添加高亮框或改变缩放)
     for (int i = 0; i < self.giftCardViews.count; i++) {
         UIView *card = self.giftCardViews[i];
         if (i == index) {
-            card.backgroundColor = mHexRGB(0x00A2FF); // 高亮蓝色
+            card.layer.borderWidth = 2.0;
+            card.layer.borderColor = mHexRGB(0x00A2FF).CGColor; // 高亮蓝色边框
             card.transform = CGAffineTransformMakeScale(1.08, 1.08);
         } else {
-            card.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
+            card.layer.borderWidth = 0.0;
             card.transform = CGAffineTransformIdentity;
         }
     }
@@ -593,6 +769,22 @@
         wself.localKeyBalance = newKeyBalance;
         [wself updateBalanceUI];
     }];
+}
+
+- (void)plusClick {
+    UIViewController *curVC = [UIViewController currentViewController];
+    if (curVC) {
+        CFMWalletDiamondRechargeVc *re = [[CFMWalletDiamondRechargeVc alloc] init];
+        re.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        [curVC presentViewController:re animated:NO completion:nil];
+    }
+}
+
+- (void)backClick {
+    if (self.isDrawing) {
+        return; // 抽奖期间屏蔽返回按钮
+    }
+    [self dismiss];
 }
 
 - (void)handleMaskTap:(UITapGestureRecognizer *)sender {

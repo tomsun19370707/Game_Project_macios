@@ -2,14 +2,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MLChatRoomNativeGameCell : UITableViewCell
+@interface MLChatRoomNativeGameCell : UICollectionViewCell
 
 + (NSString *)cellIdentifier;
 
 - (void)configureWithTitle:(NSString *)title 
-                  subtitle:(NSString *)subtitle 
-                 bgImgName:(NSString *)bgImgName 
-                 logoImgName:(NSString *)logoImgName;
+                 logoName:(NSString *)logoName 
+                textColor:(UIColor *)textColor;
 
 @end
 

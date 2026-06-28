@@ -9,9 +9,11 @@
 @property (nonatomic, strong) UIButton *retryButton;
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) UILabel *totalValueLabel;
+@property (nonatomic, strong) UIImageView *timesTagImageView;
 
 @property (nonatomic, strong) NSArray<MLGameDrawResultModel *> *mergedGifts;
 @property (nonatomic, assign) NSInteger totalValue;
+@property (nonatomic, assign) NSInteger times;
 @property (nonatomic, copy) void(^retryBlock)(void);
 
 @end
@@ -21,10 +23,12 @@
 + (void)showInView:(UIView *)parentView 
              gifts:(NSArray<MLGameDrawResultModel *> *)gifts 
         totalValue:(NSInteger)value 
+             times:(NSInteger)times
         retryBlock:(void(^)(void))retry {
     MLChatRoomThemeGameTwoResultView *resultView = [[MLChatRoomThemeGameTwoResultView alloc] initWithFrame:parentView.bounds 
                                                                                                     gifts:gifts 
                                                                                                totalValue:value 
+                                                                                                    times:times
                                                                                                retryBlock:retry];
     [parentView addSubview:resultView];
     [resultView animateShow];
@@ -33,12 +37,13 @@
 - (instancetype)initWithFrame:(CGRect)frame 
                         gifts:(NSArray<MLGameDrawResultModel *> *)gifts 
                    totalValue:(NSInteger)value 
+                        times:(NSInteger)times
                    retryBlock:(void(^)(void))retry {
     if (self = [super initWithFrame:frame]) {
         self.retryBlock = retry;
         self.totalValue = value;
+        self.times = times;
         
-        // 核心算法：进行有序中奖结果去重合并，保障展示顺序和数量累加
         self.mergedGifts = [MLGameDrawResultModel mergeAndSortDrawGifts:gifts];
         
         [self setupUI];
@@ -49,7 +54,6 @@
 - (void)setupUI {
     self.backgroundColor = [UIColor clearColor];
     
-    // 背景蒙层
     _maskView = [[UIView alloc] init];
     _maskView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     [self addSubview:_maskView];
@@ -57,7 +61,6 @@
         make.edges.mas_equalTo(self);
     }];
     
-    // 弹窗外框背景
     _bgImageView = [[UIImageView alloc] init];
     _bgImageView.image = [UIImage imageNamed:@"theme_game_two_result_bg"];
     _bgImageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -68,7 +71,6 @@
         make.size.mas_equalTo(CGSizeMake(315, 470));
     }];
     
-    // 关闭按钮
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_closeButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_back"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
@@ -79,9 +81,8 @@
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
     
-    // 总计价值 Label
     _totalValueLabel = [[UILabel alloc] init];
-    _totalValueLabel.textColor = mHexRGB(0xFFE400); // 黄色文字突出价值
+    _totalValueLabel.textColor = mHexRGB(0xFFE400);
     _totalValueLabel.font = [UIFont boldSystemFontOfSize:16];
     _totalValueLabel.text = [NSString stringWithFormat:@"获得总价值: %ld 钻石", (long)self.totalValue];
     [_bgImageView addSubview:_totalValueLabel];
@@ -90,7 +91,6 @@
         make.centerX.mas_equalTo(_bgImageView);
     }];
     
-    // 滚动奖品展示区域
     _scrollView = [[UIScrollView alloc] init];
     _scrollView.showsVerticalScrollIndicator = YES;
     [_bgImageView addSubview:_scrollView];
@@ -103,9 +103,8 @@
     
     [self layoutGiftsInScrollView];
     
-    // “再抽一次”按钮
     _retryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_retryButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_confirm"] forState:UIControlStateNormal]; // 复用底图或标题
+    [_retryButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_confirm"] forState:UIControlStateNormal];
     [_retryButton setTitle:@"再抽一次" forState:UIControlStateNormal];
     [_retryButton setTitleColor:kWhiteColor forState:UIControlStateNormal];
     _retryButton.titleLabel.font = [UIFont boldSystemFontOfSize:14];
@@ -116,14 +115,24 @@
         make.bottom.mas_equalTo(-KAdaptedHeight(25));
         make.size.mas_equalTo(CGSizeMake(160, 32));
     }];
+    
+    _timesTagImageView = [[UIImageView alloc] init];
+    _timesTagImageView.contentMode = UIViewContentModeScaleAspectFit;
+    [_bgImageView addSubview:_timesTagImageView];
+    [_timesTagImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_equalTo(_retryButton.mas_top).offset(6);
+        make.leading.mas_equalTo(_retryButton.mas_leading).offset(-10);
+        make.size.mas_equalTo(CGSizeMake(34, 18));
+    }];
+    
+    [self updateTimesTag:self.times];
 }
 
-#pragma mark - 奖品格自适应排布
 - (void)layoutGiftsInScrollView {
     CGFloat itemW = 64.0f;
     CGFloat itemH = 80.0f;
     CGFloat gap = 12.0f;
-    NSInteger colCount = 3; // 3列
+    NSInteger colCount = 3;
     
     for (int i = 0; i < self.mergedGifts.count; i++) {
         MLGameDrawResultModel *gift = self.mergedGifts[i];
@@ -141,7 +150,6 @@
             make.size.mas_equalTo(CGSizeMake(itemW, itemH));
         }];
         
-        // 礼物图
         UIImageView *giftImg = [[UIImageView alloc] init];
         giftImg.contentMode = UIViewContentModeScaleAspectFit;
         [itemBg addSubview:giftImg];
@@ -158,7 +166,6 @@
             [giftImg performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@""]];
         }
         
-        // 数量角标 (右上角红色高保真)
         UILabel *numLabel = [[UILabel alloc] init];
         numLabel.textColor = kWhiteColor;
         numLabel.backgroundColor = [UIColor redColor];
@@ -174,7 +181,6 @@
             make.width.mas_greaterThanOrEqualTo(16);
         }];
         
-        // 名字
         UILabel *nameLabel = [[UILabel alloc] init];
         nameLabel.textColor = kWhiteColor;
         nameLabel.font = KFontA(10);
@@ -187,19 +193,40 @@
         }];
     }
     
-    // 设置 ScrollView 滚动区域
     NSInteger totalRows = (self.mergedGifts.count + colCount - 1) / colCount;
     CGFloat contentH = totalRows * (itemH + gap) + gap;
     _scrollView.contentSize = CGSizeMake(315 - 40, contentH);
 }
 
+- (void)updateTimesTag:(NSInteger)times {
+    self.times = times;
+    if (times == 100) {
+        _timesTagImageView.image = [UIImage imageNamed:@"theme_game_two_result_tag_hundred"];
+    } else if (times == 10) {
+        _timesTagImageView.image = [UIImage imageNamed:@"theme_game_two_result_tag_ten"];
+    } else {
+        _timesTagImageView.image = [UIImage imageNamed:@"theme_game_two_result_tag_one"];
+    }
+}
+
+- (void)updateGifts:(NSArray<MLGameDrawResultModel *> *)gifts totalValue:(NSInteger)value times:(NSInteger)times {
+    self.totalValue = value;
+    self.mergedGifts = [MLGameDrawResultModel mergeAndSortDrawGifts:gifts];
+    
+    for (UIView *sub in self.scrollView.subviews) {
+        [sub removeFromSuperview];
+    }
+    
+    _totalValueLabel.text = [NSString stringWithFormat:@"获得总价值: %ld 钻石", (long)self.totalValue];
+    [self layoutGiftsInScrollView];
+    [self updateTimesTag:times];
+}
+
 #pragma mark - 交互
 - (void)retryClick {
-    // 快速连抽：跳过主页面 loadData 更新，直接本地发起连抽以保障体验
     if (self.retryBlock) {
         self.retryBlock();
     }
-    [self dismiss];
 }
 
 - (void)closeClick {
@@ -217,6 +244,11 @@
     [UIView animateWithDuration:0.2 animations:^{
         self.alpha = 0.0;
     } completion:^(BOOL finished) {
+        for (UIView *sub in self.superview.subviews) {
+            if ([sub respondsToSelector:NSSelectorFromString(@"loadData")]) {
+                [sub performSelector:NSSelectorFromString(@"loadData")];
+            }
+        }
         [self removeFromSuperview];
     }];
 }

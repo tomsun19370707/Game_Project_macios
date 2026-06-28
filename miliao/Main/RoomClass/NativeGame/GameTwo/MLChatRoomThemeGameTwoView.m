@@ -1,5 +1,4 @@
 #import "MLChatRoomThemeGameTwoView.h"
-#import "UIImageView+AspectFitGeometry.h"
 #import "MLGameLotteryService.h"
 #import "RoomFloatingWindow.h"
 #import "AppDelegate.h"
@@ -8,6 +7,8 @@
 #import "MLChatRoomThemeGameTwoRecordView.h"
 #import "MLChatRoomThemeGameTwoPurchaseView.h"
 #import "Global.h"
+#import "UIViewController+CurViewController.h"
+#import "CFMWalletDiamondRechargeVc.h"
 
 #if __has_include(<SVGAPlayer/SVGAPlayer.h>)
 #import <SVGAPlayer/SVGAPlayer.h>
@@ -17,36 +18,17 @@
 #import "SVGAParser.h"
 #endif
 
-// 9个灵果的设计绝对位置常量矩阵 (基于 750 * 1311 设计稿)
-static const CGPoint PEACH_COORDS[] = {
-    {385.0f, 330.0f}, // 灵果 1
-    {205.0f, 450.0f}, // 灵果 2
-    {585.0f, 460.0f}, // 灵果 3
-    {425.0f, 560.0f}, // 灵果 4
-    {100.0f, 610.0f}, // 灵果 5
-    {635.0f, 695.0f}, // 灵果 6
-    {270.0f, 680.0f}, // 灵果 7
-    {130.0f, 760.0f}, // 灵果 8
-    {470.0f, 830.0f}  // 灵果 9
-};
-
-// 原始设计大小 (宽度 = 高度)
-static const CGFloat PEACH_SIZES[] = {
-    105.0f, 75.0f, 75.0f, 60.0f, 65.0f, 70.0f, 60.0f, 65.0f, 80.0f
-};
-
-// 渲染物理缩放系数
-static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
-
 @interface MLChatRoomThemeGameTwoView ()
 
 @property (nonatomic, assign) NSInteger typeId;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIButton *backButton;
 @property (nonatomic, strong) UIButton *ruleButton;
 @property (nonatomic, strong) UIButton *recordButton;
 
 @property (nonatomic, strong) UILabel *keyBalanceLabel;
+@property (nonatomic, strong) UIButton *keyPlusButton;
 @property (nonatomic, strong) UILabel *diamondBalanceLabel;
 @property (nonatomic, strong) UIButton *diamondPlusButton;
 
@@ -54,7 +36,11 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
 @property (nonatomic, strong) UIButton *drawTenButton;
 @property (nonatomic, strong) UIButton *drawHundredButton;
 
+@property (nonatomic, strong) NSMutableArray<UIView *> *peachCardViews;
+@property (nonatomic, strong) NSMutableArray<UIImageView *> *peachFrameImageViews;
+@property (nonatomic, strong) NSMutableArray<UIImageView *> *peachGlowImageViews;
 @property (nonatomic, strong) NSMutableArray<UIImageView *> *peachImageViews;
+
 @property (nonatomic, strong) MLGameLotteryInfoModel *infoModel;
 @property (nonatomic, strong) NSArray<MLGameDrawResultModel *> *prizeList;
 
@@ -85,6 +71,9 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
     if (self = [super initWithFrame:frame]) {
         self.typeId = typeId;
         self.isDrawing = NO;
+        self.peachCardViews = [NSMutableArray array];
+        self.peachFrameImageViews = [NSMutableArray array];
+        self.peachGlowImageViews = [NSMutableArray array];
         self.peachImageViews = [NSMutableArray array];
         [self setupUI];
         [self loadData];
@@ -126,18 +115,18 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
         make.height.mas_equalTo(self);
     }];
     
-    // 规则按钮
-    _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_ruleButton setImage:[UIImage imageNamed:@"theme_game_two_rule_btn"] forState:UIControlStateNormal];
-    [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_ruleButton];
-    [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    // 左上角返回/关闭按钮
+    _backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_backButton setImage:[UIImage imageNamed:@"theme_game_two_rule_back"] forState:UIControlStateNormal];
+    [_backButton addTarget:self action:@selector(backClick) forControlEvents:UIControlEventTouchUpInside];
+    [_bgImageView addSubview:_backButton];
+    [_backButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KAdaptedHeight(16));
         make.leading.mas_equalTo(KAdaptedWidth(16));
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
     
-    // 记录按钮
+    // 记录按钮 (距右边缘 16 pt, top 16)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_recordButton setImage:[UIImage imageNamed:@"theme_game_two_record_btn"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
@@ -148,95 +137,233 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
     
-    // 初始化 9 个灵果的挂机 UIImageView
+    // 规则按钮 (位于记录按钮左侧 10 pt)
+    _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_ruleButton setImage:[UIImage imageNamed:@"theme_game_two_rule_btn"] forState:UIControlStateNormal];
+    [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
+    [_bgImageView addSubview:_ruleButton];
+    [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(KAdaptedHeight(16));
+        make.trailing.mas_equalTo(_recordButton.mas_leading).offset(-KAdaptedWidth(10));
+        make.size.mas_equalTo(CGSizeMake(36, 36));
+    }];
+    
+    // 今日运势悬浮条 (宽 74, 高 23. 水平悬浮在规则/记录按钮组左侧 10 pt. 40% 半透明黑底, 圆角 11.5 pt)
+    UIView *fortuneBar = [[UIView alloc] init];
+    fortuneBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    setViewCorner(fortuneBar, 11.5);
+    [_bgImageView addSubview:fortuneBar];
+    [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(_recordButton);
+        make.trailing.mas_equalTo(_ruleButton.mas_leading).offset(-KAdaptedWidth(10));
+        make.size.mas_equalTo(CGSizeMake(74, 23));
+    }];
+    
+    UILabel *fortuneLabel = [[UILabel alloc] init];
+    fortuneLabel.text = @"今日运势";
+    fortuneLabel.textColor = mHexRGB(0xE1F5FE);
+    fortuneLabel.font = [UIFont systemFontOfSize:10];
+    fortuneLabel.textAlignment = NSTextAlignmentCenter;
+    [fortuneBar addSubview:fortuneLabel];
+    [fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(fortuneBar);
+    }];
+    
+    // 9个灵果的设计绝对位置
+    static const CGPoint PEACH_CENTERS[] = {
+        {150.0f, 185.0f}, // 灵果 1
+        {105.0f, 235.0f}, // 灵果 2
+        {195.0f, 235.0f}, // 灵果 3
+        {70.0f, 290.0f},  // 灵果 4
+        {148.0f, 280.0f}, // 灵果 5
+        {230.0f, 290.0f}, // 灵果 6
+        {100.0f, 350.0f}, // 灵果 7
+        {200.0f, 350.0f}, // 灵果 8
+        {148.0f, 395.0f}  // 灵果 9
+    };
+    
     for (int i = 0; i < 9; i++) {
-        UIImageView *peachImg = [[UIImageView alloc] init];
-        peachImg.contentMode = UIViewContentModeScaleAspectFit;
-        [_bgImageView addSubview:peachImg];
-        [self.peachImageViews addObject:peachImg];
+        UIView *card = [[UIView alloc] init];
+        [_bgImageView addSubview:card];
+        [self.peachCardViews addObject:card];
+        
+        CGPoint center = PEACH_CENTERS[i];
+        [card mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(_bgImageView.mas_leading).offset(KAdaptedWidth(center.x));
+            make.centerY.mas_equalTo(_bgImageView.mas_top).offset(KAdaptedHeight(center.y));
+            make.size.mas_equalTo(CGSizeMake(42, 42));
+        }];
+        
+        // 最底层发光光圈
+        UIImageView *glowView = [[UIImageView alloc] init];
+        glowView.image = [UIImage imageNamed:@"theme_game_two_center_fruit"];
+        glowView.contentMode = UIViewContentModeScaleToFill;
+        [card addSubview:glowView];
+        [glowView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.mas_equalTo(card);
+        }];
+        [self.peachGlowImageViews addObject:glowView];
+        
+        // 中层底盘
+        UIImageView *frameView = [[UIImageView alloc] init];
+        frameView.image = [UIImage imageNamed:@"theme_game_two_center_frame"];
+        frameView.contentMode = UIViewContentModeScaleToFill;
+        [card addSubview:frameView];
+        [frameView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.mas_equalTo(card);
+        }];
+        [self.peachFrameImageViews addObject:frameView];
+        
+        // 最顶层礼物图 (带 5 pt 内缩边距)
+        UIImageView *giftImg = [[UIImageView alloc] init];
+        giftImg.contentMode = UIViewContentModeScaleAspectFit;
+        [card addSubview:giftImg];
+        [giftImg mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.mas_equalTo(card).insets(UIEdgeInsetsMake(5, 5, 5, 5));
+        }];
+        [self.peachImageViews addObject:giftImg];
     }
     
-    // 底部祝灵按钮组 (品字形分布)
-    _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawTenButton setImage:[UIImage imageNamed:@"theme_game_two_draw10_btn"] forState:UIControlStateNormal];
-    [_drawTenButton addTarget:self action:@selector(drawTenClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_drawTenButton];
-    [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    // 启动错峰浮游缓动
+    [self startPeachFloatingAnimations];
+    
+    // 三档抽奖按钮组 (一连/十连/百连)：水平一排平铺底端。单个宽 104 pt，高 60 pt。间距 10 pt，避让 Safe Area 14 pt，整组水平居中。
+    UIView *btnGroupContainer = [[UIView alloc] init];
+    [_bgImageView addSubview:btnGroupContainer];
+    [btnGroupContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.bottom.mas_equalTo(-KAdaptedHeight(60));
-        make.size.mas_equalTo(CGSizeMake(112, 56));
+        make.bottom.mas_equalTo(-KAdaptedHeight(14)); // 避让 Safe Area
+        make.size.mas_equalTo(CGSizeMake(332, 60)); // 104*3 + 10*2 = 332
     }];
     
     _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_drawOneButton setImage:[UIImage imageNamed:@"theme_game_two_draw1_btn"] forState:UIControlStateNormal];
     [_drawOneButton addTarget:self action:@selector(drawOneClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_drawOneButton];
+    [btnGroupContainer addSubview:_drawOneButton];
     [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(_drawTenButton.mas_leading).offset(-KAdaptedWidth(12));
-        make.centerY.mas_equalTo(_drawTenButton);
-        make.size.mas_equalTo(CGSizeMake(112, 56));
+        make.leading.mas_equalTo(0);
+        make.top.mas_equalTo(0);
+        make.size.mas_equalTo(CGSizeMake(104, 60));
+    }];
+    
+    _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_drawTenButton setImage:[UIImage imageNamed:@"theme_game_two_draw10_btn"] forState:UIControlStateNormal];
+    [_drawTenButton addTarget:self action:@selector(drawTenClick) forControlEvents:UIControlEventTouchUpInside];
+    [btnGroupContainer addSubview:_drawTenButton];
+    [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(_drawOneButton.mas_trailing).offset(10);
+        make.top.mas_equalTo(0);
+        make.size.mas_equalTo(CGSizeMake(104, 60));
     }];
     
     _drawHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_drawHundredButton setImage:[UIImage imageNamed:@"theme_game_two_draw100_btn"] forState:UIControlStateNormal];
     [_drawHundredButton addTarget:self action:@selector(drawHundredClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_drawHundredButton];
+    [btnGroupContainer addSubview:_drawHundredButton];
     [_drawHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_drawTenButton.mas_trailing).offset(KAdaptedWidth(12));
-        make.centerY.mas_equalTo(_drawTenButton);
-        make.size.mas_equalTo(CGSizeMake(112, 56));
+        make.leading.mas_equalTo(_drawTenButton.mas_trailing).offset(10);
+        make.top.mas_equalTo(0);
+        make.size.mas_equalTo(CGSizeMake(104, 60));
     }];
     
-    // 钥匙余额显示
+    // 资产显示栏 (钻石与祝灵珠)：高度 32 pt，距顶部 50 pt，左右边缘 18 pt。干净透明的线性布局。
+    UIView *assetContainer = [[UIView alloc] init];
+    [_bgImageView addSubview:assetContainer];
+    [assetContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(50);
+        make.leading.mas_equalTo(18);
+        make.trailing.mas_equalTo(-18);
+        make.height.mas_equalTo(32);
+    }];
+    
+    // 钻石栏 (挂左)
+    UIImageView *diaIcon = [[UIImageView alloc] init];
+    diaIcon.image = [UIImage imageNamed:@"theme_game_two_diamond_icon"];
+    [assetContainer addSubview:diaIcon];
+    [diaIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(0);
+        make.centerY.mas_equalTo(assetContainer);
+        make.size.mas_equalTo(CGSizeMake(32, 32));
+    }];
+    
+    _diamondBalanceLabel = [[UILabel alloc] init];
+    _diamondBalanceLabel.textColor = kWhiteColor;
+    _diamondBalanceLabel.font = [UIFont systemFontOfSize:11];
+    _diamondBalanceLabel.text = @"0";
+    [assetContainer addSubview:_diamondBalanceLabel];
+    [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(diaIcon.mas_trailing).offset(4);
+        make.centerY.mas_equalTo(assetContainer);
+    }];
+    
+    _diamondPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_diamondPlusButton setImage:[UIImage imageNamed:@"theme_game_two_plus_icon"] forState:UIControlStateNormal];
+    [_diamondPlusButton addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
+    [assetContainer addSubview:_diamondPlusButton];
+    [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(_diamondBalanceLabel.mas_trailing).offset(4);
+        make.centerY.mas_equalTo(assetContainer);
+        make.size.mas_equalTo(CGSizeMake(28, 28));
+    }];
+    
+    // 祝灵珠栏 (挂右)
+    _keyPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_keyPlusButton setImage:[UIImage imageNamed:@"theme_game_two_plus_icon"] forState:UIControlStateNormal];
+    [_keyPlusButton addTarget:self action:@selector(openPurchaseDialog) forControlEvents:UIControlEventTouchUpInside];
+    [assetContainer addSubview:_keyPlusButton];
+    [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.mas_equalTo(0);
+        make.centerY.mas_equalTo(assetContainer);
+        make.size.mas_equalTo(CGSizeMake(28, 28));
+    }];
+    
     _keyBalanceLabel = [[UILabel alloc] init];
     _keyBalanceLabel.textColor = kWhiteColor;
-    _keyBalanceLabel.font = KFontA(14);
-    _keyBalanceLabel.text = @"钥匙: --";
-    [_bgImageView addSubview:_keyBalanceLabel];
+    _keyBalanceLabel.font = [UIFont systemFontOfSize:11];
+    _keyBalanceLabel.text = @"0";
+    [assetContainer addSubview:_keyBalanceLabel];
     [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(_bgImageView);
-        make.bottom.mas_equalTo(_drawTenButton.mas_top).offset(-KAdaptedHeight(15));
+        make.trailing.mas_equalTo(_keyPlusButton.mas_leading).offset(-4);
+        make.centerY.mas_equalTo(assetContainer);
+    }];
+    
+    UIImageView *keyIcon = [[UIImageView alloc] init];
+    keyIcon.image = [UIImage imageNamed:@"theme_game_one_purchase_key_icon"]; // 跨玩法复用钥匙图
+    [assetContainer addSubview:keyIcon];
+    [keyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.mas_equalTo(_keyBalanceLabel.mas_leading).offset(-4);
+        make.centerY.mas_equalTo(assetContainer);
+        make.size.mas_equalTo(CGSizeMake(30, 30));
     }];
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    
-    // 当布局计算完毕后，重新换算并定位大树上的 9 个灵果物理中心点
-    for (int i = 0; i < 9; i++) {
-        CGPoint designPoint = PEACH_COORDS[i];
-        CGFloat rawSize = PEACH_SIZES[i];
-        
-        CGSize viewSize = self.bgImageView.bounds.size;
-        CGFloat scale = MIN(viewSize.width / 750.0f, viewSize.height / 1311.0f);
-        CGFloat targetSize = rawSize * scale * PEACH_RENDER_SCALE_FACTOR;
-        
-        CGPoint physicalCenter = [self.bgImageView ml_calculatePhysicalCenterWithDesignX:designPoint.x 
-                                                                                designY:designPoint.y 
-                                                                            designWidth:750.0f 
-                                                                           designHeight:1311.0f];
-        
-        UIImageView *peachImg = self.peachImageViews[i];
-        peachImg.bounds = CGRectMake(0, 0, targetSize, targetSize);
-        peachImg.center = physicalCenter;
-    }
 }
 
 #pragma mark - 数据拉取与图片绑定
 - (void)loadData {
-    // 1. 获取详情和价格/钥匙余额
-    [MLGameLotteryService getRoomDetailWithTypeId:self.typeId success:^(MLGameLotteryInfoModel *model) {
-        self.infoModel = model;
-        self.localKeyBalance = model.lottery_coin;
-        [self updateBalanceUI];
+    WeakSelf
+    // 1. 获取个人资产
+    [MLGameLotteryService getUserMoneyWithSuccess:^(MLGameUserMoneyModel *moneyModel) {
+        wself.diamondBalanceLabel.text = moneyModel.diamond;
+        wself.localKeyBalance = moneyModel.lottery_coin;
+        [wself updateBalanceUI];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
     
-    // 2. 获取 9 个灵果大奖的奖池配图
+    // 2. 获取详情和价格
+    [MLGameLotteryService getRoomDetailWithTypeId:self.typeId success:^(MLGameLotteryInfoModel *model) {
+        wself.infoModel = model;
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+    }];
+    
+    // 3. 获取 9 个灵果大奖的奖池配图
     [MLGameLotteryService getPrizesWithTypeId:self.typeId success:^(NSArray<MLGameDrawResultModel *> *list) {
-        self.prizeList = list;
-        [self renderPrizePeaches];
+        wself.prizeList = list;
+        [wself renderPrizePeaches];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
@@ -263,7 +390,7 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
 }
 
 - (void)updateBalanceUI {
-    self.keyBalanceLabel.text = [NSString stringWithFormat:@"钥匙: %ld", (long)self.localKeyBalance];
+    self.keyBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)self.localKeyBalance];
 }
 
 #pragma mark - 抽奖业务 (带乐观扣减和超时防刷回滚)
@@ -284,22 +411,40 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
     self.lastDrawTimes = times;
     self.lastDrawCost = cost;
     
-    // 3. 启动假跑马灯/Loading 等待状态旋转 (玩法1特有，玩法2直接全屏遮挡或播放静止等待动画)
+    // 3. 伴随 9 个果实交替 Alpha 闪烁
+    [self startFruitFlashingAnimation];
     
     // 4. 调用接口发包
+    WeakSelf
     [MLGameLotteryService drawWithTypeId:self.typeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
-        // 请求成功：不回滚，起播全屏 SVGA 动画
-        [self playDrawAnimationWithGifts:list totalValue:totalValue logId:logId];
+        MLChatRoomThemeGameTwoResultView *activeResultView = nil;
+        for (UIView *sub in wself.superview.subviews) {
+            if ([sub isKindOfClass:[MLChatRoomThemeGameTwoResultView class]]) {
+                activeResultView = (MLChatRoomThemeGameTwoResultView *)sub;
+                break;
+            }
+        }
+        
+        if (activeResultView) {
+            [wself stopFruitFlashingAnimation];
+            [activeResultView updateGifts:list totalValue:totalValue times:times];
+            [wself lockButtons:NO];
+            wself.isDrawing = NO;
+            [wself loadData]; // 静默更新资产
+        } else {
+            [wself playDrawAnimationWithGifts:list totalValue:totalValue logId:logId];
+        }
     } failure:^(NSError *error) {
-        [self lockButtons:NO];
-        self.isDrawing = NO;
+        [wself lockButtons:NO];
+        wself.isDrawing = NO;
+        [wself stopFruitFlashingAnimation];
         
         // 5. 计费安全防御：若超时(NSURLErrorTimedOut)绝不回滚钥匙；若断网/报错，立刻把钥匙加回并重置UI
         if (error.code == NSURLErrorTimedOut) {
             [SVProgressHUD showInfoWithStatus:@"服务器繁忙，结果可能稍后到账，请去记录或背包查看"];
         } else {
-            self.localKeyBalance += cost;
-            [self updateBalanceUI];
+            wself.localKeyBalance += cost;
+            [wself updateBalanceUI];
             [SVProgressHUD showErrorWithStatus:error.localizedDescription];
         }
     }];
@@ -309,10 +454,12 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
     self.drawOneButton.enabled = !lock;
     self.drawTenButton.enabled = !lock;
     self.drawHundredButton.enabled = !lock;
+    self.backButton.enabled = !lock;
+    self.ruleButton.enabled = !lock;
+    self.recordButton.enabled = !lock;
 }
 
 - (void)playDrawAnimationWithGifts:(NSArray<MLGameDrawResultModel *> *)gifts totalValue:(NSInteger)totalValue logId:(NSInteger)logId {
-    // 此时起播 theme_game_two_draw.svga 特效，动效播放完后展示结果
     self.pendingGifts = gifts;
     self.pendingTotalValue = totalValue;
     
@@ -325,7 +472,11 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
     self.svgaPlayer.hidden = NO;
     
     SVGAParser *parser = [[SVGAParser alloc] init];
-    NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_draw" withExtension:@"svga"];
+    NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_harvest" withExtension:@"svga"];
+    if (!svgaURL) {
+        svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_draw" withExtension:@"svga"];
+    }
+    
     if (svgaURL) {
         WeakSelf
         [parser parseWithURL:svgaURL completionBlock:^(SVGAVideoEntity * _Nonnull videoItem) {
@@ -334,11 +485,13 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
         } failureBlock:^(NSError * _Nonnull error) {
             // 解析失败时，兜底直接展示结果
             wself.svgaPlayer.hidden = YES;
+            [wself stopFruitFlashingAnimation];
             [wself showResultWithGifts:gifts totalValue:totalValue];
         }];
     } else {
         // 如果没有找到文件，兜底直接展示结果
         self.svgaPlayer.hidden = YES;
+        [self stopFruitFlashingAnimation];
         [self showResultWithGifts:gifts totalValue:totalValue];
     }
 }
@@ -346,6 +499,7 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
 #pragma mark - SVGAPlayerDelegate
 - (void)svgaPlayerDidFinishedAnimation:(SVGAPlayer *)player {
     player.hidden = YES;
+    [self stopFruitFlashingAnimation];
     [self showResultWithGifts:self.pendingGifts totalValue:self.pendingTotalValue];
 }
 
@@ -358,6 +512,7 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
     [MLChatRoomThemeGameTwoResultView showInView:self.superview 
                                            gifts:gifts 
                                       totalValue:totalValue 
+                                           times:self.lastDrawTimes
                                       retryBlock:^{
         [wself drawWithTimes:wself.lastDrawTimes cost:wself.lastDrawCost];
     }];
@@ -394,9 +549,70 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
     }];
 }
 
+#pragma mark - Float & Flash Animations
+- (void)startPeachFloatingAnimations {
+    for (int i = 0; i < self.peachCardViews.count; i++) {
+        UIView *card = self.peachCardViews[i];
+        [card.layer removeAllAnimations];
+        
+        NSTimeInterval delay = i * 0.15;
+        NSTimeInterval duration = 1.8 + (i % 5) * 0.1;
+        
+        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.translation.y"];
+        animation.fromValue = @(0.0);
+        animation.toValue = @(-2.5);
+        animation.duration = duration;
+        animation.repeatCount = HUGE_VALF;
+        animation.autoreverses = YES;
+        animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        animation.beginTime = CACurrentMediaTime() + delay;
+        [card.layer addAnimation:animation forKey:@"peach_float"];
+    }
+}
+
+- (void)startFruitFlashingAnimation {
+    for (int i = 0; i < self.peachCardViews.count; i++) {
+        UIView *card = self.peachCardViews[i];
+        [card.layer removeAnimationForKey:@"peach_float"];
+        
+        CABasicAnimation *flash = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        flash.fromValue = @(1.0);
+        flash.toValue = @(0.3);
+        flash.duration = 0.2 + (i % 3) * 0.1;
+        flash.repeatCount = HUGE_VALF;
+        flash.autoreverses = YES;
+        [card.layer addAnimation:flash forKey:@"peach_flash"];
+    }
+}
+
+- (void)stopFruitFlashingAnimation {
+    for (int i = 0; i < self.peachCardViews.count; i++) {
+        UIView *card = self.peachCardViews[i];
+        [card.layer removeAnimationForKey:@"peach_flash"];
+        card.layer.opacity = 1.0;
+    }
+    [self startPeachFloatingAnimations];
+}
+
+- (void)plusClick {
+    UIViewController *curVC = [UIViewController currentViewController];
+    if (curVC) {
+        CFMWalletDiamondRechargeVc *re = [[CFMWalletDiamondRechargeVc alloc] init];
+        re.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        [curVC presentViewController:re animated:NO completion:nil];
+    }
+}
+
+- (void)backClick {
+    if (self.isDrawing) {
+        return;
+    }
+    [self dismiss];
+}
+
 - (void)handleMaskTap:(UITapGestureRecognizer *)sender {
     if (self.isDrawing) {
-        return; // 拦截背景 Tap，不允许在动画/抽奖期间关闭
+        return;
     }
     [self dismiss];
 }
@@ -419,8 +635,6 @@ static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
 - (void)removeFromSuperview {
     [super removeFromSuperview];
     
-    // 恢复全局悬浮窗显示
-    // 恢复全局最小化悬浮球
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     if (appDelegate.roomViewController && appDelegate.roomViewController.floatingWindow) {
         appDelegate.roomViewController.floatingWindow.hidden = NO;

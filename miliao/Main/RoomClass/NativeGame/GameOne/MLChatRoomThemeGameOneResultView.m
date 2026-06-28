@@ -179,11 +179,22 @@
     _scrollView.contentSize = CGSizeMake(315 - 40, contentH);
 }
 
+- (void)updateGifts:(NSArray<MLGameDrawResultModel *> *)gifts totalValue:(NSInteger)value {
+    self.totalValue = value;
+    self.mergedGifts = [MLGameDrawResultModel mergeAndSortDrawGifts:gifts];
+    
+    for (UIView *sub in self.scrollView.subviews) {
+        [sub removeFromSuperview];
+    }
+    
+    self.totalValueLabel.text = [NSString stringWithFormat:@"中奖总价值: %ld 钻石", (long)self.totalValue];
+    [self layoutGiftsInScrollView];
+}
+
 - (void)retryClick {
     if (self.retryBlock) {
         self.retryBlock();
     }
-    [self dismiss];
 }
 
 - (void)closeClick {
@@ -201,6 +212,11 @@
     [UIView animateWithDuration:0.2 animations:^{
         self.alpha = 0.0;
     } completion:^(BOOL finished) {
+        for (UIView *sub in self.superview.subviews) {
+            if ([sub respondsToSelector:NSSelectorFromString(@"loadData")]) {
+                [sub performSelector:NSSelectorFromString(@"loadData")];
+            }
+        }
         [self removeFromSuperview];
     }];
 }

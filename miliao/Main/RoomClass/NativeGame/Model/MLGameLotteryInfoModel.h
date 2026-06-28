@@ -14,6 +14,7 @@
 @property (nonatomic, copy) NSString *pic;
 @property (nonatomic, strong) NSArray<MLGameLotteryOptModel *> *coin_cost_opt;
 @property (nonatomic, assign) NSInteger lottery_coin; // 当前玩法的钥匙余额
+@property (nonatomic, assign) NSInteger lucky; // 玩法保底寻梦值
 - (NSString *)imageUrl;
 @end
 

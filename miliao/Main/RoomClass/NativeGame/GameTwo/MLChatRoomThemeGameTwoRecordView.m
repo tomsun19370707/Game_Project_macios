@@ -97,7 +97,13 @@
             _avatarImageView.image = [UIImage imageNamed:@"theme_game_two_record_head"];
         }
         
-        _nicknameLabel.text = data[@"nickname"] ?: @"";
+        NSString *rawName = data[@"nickname"] ?: @"";
+        if (rawName.length > 2) {
+            NSString *prefix = [rawName substringToIndex:2];
+            _nicknameLabel.text = [NSString stringWithFormat:@"%@***", prefix];
+        } else {
+            _nicknameLabel.text = rawName;
+        }
         
         [_avatarImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(12);
@@ -337,17 +343,44 @@
 
 - (void)loadData {
     NSString *userType = self.showingMyRecord ? @"my" : @"all";
+    WeakSelf
     [MLGameLotteryService getDrawLogWithTypeId:self.typeId 
                                       userType:userType 
                                           page:self.currentPage 
                                       pageSize:30 
                                        success:^(NSArray *list, NSInteger total) {
-        if (self.currentPage == 1) {
-            [self.recordList removeAllObjects];
-            [self.expandedRowIds removeAllObjects];
+        NSMutableArray *filteredList = [NSMutableArray array];
+        for (id logItem in list) {
+            if ([logItem isKindOfClass:[NSDictionary class]]) {
+                NSArray *items = logItem[@"items"];
+                NSMutableArray *filteredLogItems = [NSMutableArray array];
+                for (NSDictionary *gift in items) {
+                    NSInteger gId = [gift[@"gift_id"] integerValue];
+                    if (gId == 0) {
+                        gId = [gift[@"id"] integerValue];
+                    }
+                    NSString *name = gift[@"gift_name"] ?: @"";
+                    if (name.length == 0) {
+                        name = gift[@"name"] ?: @"";
+                    }
+                    if (gId != 0 && name.length > 0) {
+                        [filteredLogItems addObject:gift];
+                    }
+                }
+                if (filteredLogItems.count > 0) {
+                    NSMutableDictionary *mutLogItem = [logItem mutableCopy];
+                    mutLogItem[@"items"] = [filteredLogItems copy];
+                    [filteredList addObject:mutLogItem];
+                }
+            }
         }
-        [self.recordList addObjectsFromArray:list];
-        [self.tableView reloadData];
+        
+        if (wself.currentPage == 1) {
+            [wself.recordList removeAllObjects];
+            [wself.expandedRowIds removeAllObjects];
+        }
+        [wself.recordList addObjectsFromArray:filteredList];
+        [wself.tableView reloadData];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];

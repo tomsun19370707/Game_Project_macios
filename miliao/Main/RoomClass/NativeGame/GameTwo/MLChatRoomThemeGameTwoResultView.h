@@ -9,6 +9,9 @@
 + (void)showInView:(UIView *)parentView 
              gifts:(NSArray<MLGameDrawResultModel *> *)gifts 
         totalValue:(NSInteger)value 
+             times:(NSInteger)times
         retryBlock:(void(^)(void))retry;
+
+- (void)updateGifts:(NSArray<MLGameDrawResultModel *> *)gifts totalValue:(NSInteger)value times:(NSInteger)times;
 
 @end

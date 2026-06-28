@@ -4,21 +4,43 @@
 #import "MLChatRoomThemeGameTwoView.h"
 #import "Global.h"
 
-@interface MLChatRoomNativeGameView () <UITableViewDelegate, UITableViewDataSource>
+@interface MLChatRoomNativeGameView () <UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (nonatomic, strong) UIView *maskView;
-@property (nonatomic, strong) UIView *containerView;
+@property (nonatomic, strong) UIImageView *bgImageView; // 背景底板
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UIButton *closeButton;
-@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UICollectionView *collectionView;
 
 @end
 
 @implementation MLChatRoomNativeGameView
 
 + (void)showInView:(UIView *)parentView {
-    MLChatRoomNativeGameView *view = [[MLChatRoomNativeGameView alloc] initWithFrame:parentView.bounds];
-    [parentView addSubview:view];
+    UIView *targetView = parentView;
+    if (!targetView) {
+        targetView = [UIApplication sharedApplication].keyWindow;
+    }
+    if (!targetView) {
+        for (UIWindow *w in [UIApplication sharedApplication].windows) {
+            if (w.isKeyWindow) {
+                targetView = w;
+                break;
+            }
+        }
+    }
+    if (!targetView) {
+        targetView = [UIApplication sharedApplication].windows.firstObject;
+    }
+    if (!targetView) {
+        targetView = ((AppDelegate *)[UIApplication sharedApplication].delegate).window;
+    }
+    if (!targetView) {
+        return;
+    }
+    
+    MLChatRoomNativeGameView *view = [[MLChatRoomNativeGameView alloc] initWithFrame:targetView.bounds];
+    [targetView addSubview:view];
     [view animateShow];
 }
 
@@ -33,108 +55,122 @@
     self.backgroundColor = [UIColor clearColor];
     
     _maskView = [[UIView alloc] init];
-    _maskView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6];
+    _maskView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     _maskView.userInteractionEnabled = YES;
     [self addSubview:_maskView];
-    
     [_maskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(self);
     }];
     
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMaskTap:)];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeClick)];
     [_maskView addGestureRecognizer:tap];
     
-    // 弹窗容器 (居中, 315 * 280)
-    _containerView = [[UIView alloc] init];
-    _containerView.backgroundColor = mHexRGB(0x1B1923); // 深紫灰色调背景
-    setViewCorner(_containerView, 16);
-    [self addSubview:_containerView];
+    // 背景底板 (youxi_dialog_bg, 297 * 393 pt)
+    _bgImageView = [[UIImageView alloc] init];
+    _bgImageView.image = [UIImage imageNamed:@"youxi_dialog_bg"];
+    _bgImageView.contentMode = UIViewContentModeScaleToFill;
+    _bgImageView.userInteractionEnabled = YES;
+    [self addSubview:_bgImageView];
     
-    [_containerView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(self);
-        make.size.mas_equalTo(CGSizeMake(315, 280));
+        make.size.mas_equalTo(CGSizeMake(297, 393));
     }];
     
+    // 标题 (15 pt bold, top 16 pt, color #FFFFFF)
     _titleLabel = [[UILabel alloc] init];
-    _titleLabel.text = @"游戏大厅";
+    _titleLabel.text = @"抽奖盘";
     _titleLabel.textColor = kWhiteColor;
-    _titleLabel.font = KFontBoldA(18);
-    [_containerView addSubview:_titleLabel];
+    _titleLabel.font = KFontBoldA(15);
+    _titleLabel.textAlignment = NSTextAlignmentCenter;
+    [_bgImageView addSubview:_titleLabel];
     
     [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(18);
-        make.centerX.mas_equalTo(_containerView);
+        make.top.mas_equalTo(16);
+        make.centerX.mas_equalTo(_bgImageView);
     }];
     
+    // 右上角关闭按钮 (img_cancal, 24 * 24 pt, top 14 pt, right 14 pt)
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    // 如果有通用的关闭按钮，或者用 theme_game_one_result_close，或者用文字 X
-    UIImage *closeImg = [UIImage imageNamed:@"theme_game_one_result_close"];
+    UIImage *closeImg = [UIImage imageNamed:@"img_cancal"];
     if (closeImg) {
         [_closeButton setImage:closeImg forState:UIControlStateNormal];
     } else {
         [_closeButton setTitle:@"✕" forState:UIControlStateNormal];
         [_closeButton setTitleColor:kWhiteColor forState:UIControlStateNormal];
-        _closeButton.titleLabel.font = KFontA(20);
+        _closeButton.titleLabel.font = [UIFont systemFontOfSize:16];
     }
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
-    [_containerView addSubview:_closeButton];
+    [_bgImageView addSubview:_closeButton];
     
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(12);
-        make.trailing.mas_equalTo(-12);
-        make.size.mas_equalTo(CGSizeMake(32, 32));
+        make.top.mas_equalTo(14);
+        make.trailing.mas_equalTo(-14);
+        make.size.mas_equalTo(CGSizeMake(24, 24));
     }];
     
-    _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-    _tableView.backgroundColor = [UIColor clearColor];
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.rowHeight = 90;
-    _tableView.scrollEnabled = NO;
-    [_tableView registerClass:[MLChatRoomNativeGameCell class] forCellReuseIdentifier:[MLChatRoomNativeGameCell cellIdentifier]];
-    [_containerView addSubview:_tableView];
+    // UICollectionView (Cell 80 * 110 pt, minimumLineSpacing = 12, minimumInteritemSpacing = 8)
+    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
+    layout.itemSize = CGSizeMake(80, 110);
+    layout.minimumLineSpacing = 12;
+    layout.minimumInteritemSpacing = 8;
     
-    [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_titleLabel.mas_bottom).offset(15);
-        make.leading.trailing.bottom.mas_equalTo(_containerView);
+    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+    _collectionView.backgroundColor = [UIColor clearColor];
+    _collectionView.delegate = self;
+    _collectionView.dataSource = self;
+    _collectionView.scrollEnabled = NO;
+    [_collectionView registerClass:[MLChatRoomNativeGameCell class] forCellWithReuseIdentifier:[MLChatRoomNativeGameCell cellIdentifier]];
+    [_bgImageView addSubview:_collectionView];
+    
+    // 距弹窗顶部 64 pt，距左右边缘各 24 pt，距底部 20 pt
+    [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(64);
+        make.leading.mas_equalTo(24);
+        make.trailing.mas_equalTo(-24);
+        make.bottom.mas_equalTo(-20);
     }];
 }
 
-#pragma mark - UITableViewDataSource & Delegate
+#pragma mark - UICollectionViewDataSource & Delegate
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 2;
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return 7; // 7个格子
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    MLChatRoomNativeGameCell *cell = [tableView dequeueReusableCellWithIdentifier:[MLChatRoomNativeGameCell cellIdentifier] forIndexPath:indexPath];
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    MLChatRoomNativeGameCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[MLChatRoomNativeGameCell cellIdentifier] forIndexPath:indexPath];
     
-    if (indexPath.row == 0) {
+    if (indexPath.item == 0) {
         [cell configureWithTitle:@"寻梦之旅"
-                       subtitle:@"开启您的寻梦转盘之旅"
-                      bgImgName:@"native_game_one_bg"
-                    logoImgName:@"theme_game_one_cover_box"];
-    } else {
+                       logoName:@"native_game_one_preview"
+                      textColor:mHexRGB(0xE1F5FE)];
+    } else if (indexPath.item == 1) {
         [cell configureWithTitle:@"神木栖灵"
-                       subtitle:@"凝聚灵力 供奉神木"
-                      bgImgName:@"native_game_two_bg"
-                    logoImgName:@"theme_game_two_center_fruit"];
+                       logoName:@"theme_game_two_entry_icon"
+                      textColor:mHexRGB(0xE1F5FE)];
+    } else {
+        [cell configureWithTitle:@"敬请期待"
+                       logoName:@"chat_room_plate_draw"
+                      textColor:mHexRGB(0x9E9E9E)];
     }
     
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.item >= 2) {
+        // “敬请期待”格子 -> 拦截点击事件，直接忽略
+        return;
+    }
     
     UIView *parentView = self.superview;
     [self dismissWithCompletion:^{
-        if (indexPath.row == 0) {
-            // 打开玩法1
+        if (indexPath.item == 0) {
+            // 打开玩法1 (寻梦之旅, lottery_id = 7, typeId = 3)
             [MLChatRoomThemeGameOneView showInView:parentView typeId:3];
-        } else {
-            // 打开玩法2
+        } else if (indexPath.item == 1) {
+            // 打开玩法2 (神木栖灵, lottery_id = 2, typeId = 4)
             [MLChatRoomThemeGameTwoView showInView:parentView typeId:4];
         }
     }];
@@ -144,10 +180,10 @@
 
 - (void)animateShow {
     self.alpha = 0.0;
-    _containerView.transform = CGAffineTransformMakeScale(0.8, 0.8);
+    _bgImageView.transform = CGAffineTransformMakeScale(0.8, 0.8);
     [UIView animateWithDuration:0.25 delay:0 usingSpringWithDamping:0.8 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.alpha = 1.0;
-        self.containerView.transform = CGAffineTransformIdentity;
+        self.bgImageView.transform = CGAffineTransformIdentity;
     } completion:nil];
 }
 
@@ -155,14 +191,10 @@
     [self dismissWithCompletion:nil];
 }
 
-- (void)handleMaskTap:(UITapGestureRecognizer *)sender {
-    [self dismissWithCompletion:nil];
-}
-
-- (void)dismissWithCompletion:(void(^ _Nullable)(void))completion {
+- (void)dismissWithCompletion:(void (^ _Nullable)(void))completion {
     [UIView animateWithDuration:0.2 animations:^{
         self.alpha = 0.0;
-        self.containerView.transform = CGAffineTransformMakeScale(0.8, 0.8);
+        self.bgImageView.transform = CGAffineTransformMakeScale(0.8, 0.8);
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
         if (completion) {

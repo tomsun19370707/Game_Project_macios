@@ -1,5 +1,6 @@
 #import "MLChatRoomThemeGameOneExchangeView.h"
 #import "MLGameLotteryService.h"
+#import "FFHomeHandel.h"
 #import "Global.h"
 
 @interface MLChatRoomThemeGameOneExchangeView ()
@@ -9,28 +10,34 @@
 @property (nonatomic, assign) NSInteger activeConfigIndex; // 当前选中的页签索引
 
 @property (nonatomic, strong) UIView *maskView;
-@property (nonatomic, strong) UIImageView *bgImageView;
-@property (nonatomic, strong) UIButton *closeButton;
-@property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) UIImageView *bgImageView; // 344 * 528 pt
 
-// 页签切换视图
-@property (nonatomic, strong) UIScrollView *tabScrollView;
+@property (nonatomic, strong) UIImageView *timeIconView; // 倒计时图标
 @property (nonatomic, strong) NSMutableArray<UIButton *> *tabButtons;
 
-// 兑换项展示
-@property (nonatomic, strong) UIImageView *targetGiftImageView;
+// 终极奖品礼物大外框 (theme_game_one_exchange_gift_large.png, 106 * 104 pt)
+@property (nonatomic, strong) UIImageView *giftLargeFrameView;
+@property (nonatomic, strong) UIImageView *targetGiftImageView; // 56 * 56 pt
 @property (nonatomic, strong) UILabel *targetGiftNameLabel;
-@property (nonatomic, strong) UILabel *costChipsLabel; // 需要消耗碎片
-@property (nonatomic, strong) UILabel *successRateLabel; // 兑换成功率
 
-// 藏宝图调节区域
-@property (nonatomic, strong) UIButton *cardSelectButton; // 代替输入框的循环单点击标签按钮
-@property (nonatomic, strong) UILabel *ownedCardsLabel; // 拥有的藏宝图
+// 高级底座 (theme_game_one_exchange_board.png, 284 * 133 pt)
+@property (nonatomic, strong) UIImageView *exchangeBoardView;
 
-@property (nonatomic, strong) UIButton *confirmExchangeButton;
+// 左右消耗小框 (theme_game_one_exchange_gift_small.png, 64 * 65 pt)
+@property (nonatomic, strong) UIImageView *leftSmallBoxView;
+@property (nonatomic, strong) UIImageView *rightSmallBoxView;
+
+@property (nonatomic, strong) UIImageView *leftIconView; // 钻石碎片
+@property (nonatomic, strong) UIImageView *rightIconView; // 藏宝图
+@property (nonatomic, strong) UILabel *leftCostLabel; // gem_cost/owned
+@property (nonatomic, strong) UILabel *rightCostLabel; // card_invested/owned
+
+@property (nonatomic, strong) UIButton *cardSelectButton; // 透明的覆盖在右小框上的循环点击按钮
+@property (nonatomic, strong) UILabel *successRateLabel;
+@property (nonatomic, strong) UIButton *confirmExchangeButton; // 244 * 49 pt
 
 @property (nonatomic, assign) NSInteger selectedCardCount; // 投入的藏宝图数量
-@property (nonatomic, assign) NSInteger maxOwnedCards; // 用户拥有的最大藏宝图数 (从背包或后台拉取，默认兜底5张)
+@property (nonatomic, assign) NSInteger maxOwnedCards; // 用户拥有的最大藏宝图数
 @property (nonatomic, assign) NSInteger ownedGemCount; // 拥有的宝石碎片数
 
 @end
@@ -48,7 +55,7 @@
         self.typeId = typeId;
         self.activeConfigIndex = 0;
         self.selectedCardCount = 0;
-        self.maxOwnedCards = 5; // 默认拥有5张藏宝图以备无包裹数据时测试
+        self.maxOwnedCards = 5; // 默认兜底 5 张
         self.ownedGemCount = 0;
         self.tabButtons = [NSMutableArray array];
         
@@ -71,189 +78,280 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeClick)];
     [_maskView addGestureRecognizer:tap];
     
-    // 背景弹窗 (315 * 380)
+    // 背景弹窗 (344 * 528 pt, AspectFit 填充，禁止拉伸)
     _bgImageView = [[UIImageView alloc] init];
     _bgImageView.image = [UIImage imageNamed:@"theme_game_one_exchange_popup_board"];
-    _bgImageView.contentMode = UIViewContentModeScaleToFill;
+    _bgImageView.contentMode = UIViewContentModeScaleAspectFit;
     _bgImageView.userInteractionEnabled = YES;
-    setViewCorner(_bgImageView, 12);
     [self addSubview:_bgImageView];
     
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(self);
-        make.size.mas_equalTo(CGSizeMake(315, 380));
+        make.size.mas_equalTo(CGSizeMake(344, 528));
     }];
     
-    _titleLabel = [[UILabel alloc] init];
-    _titleLabel.text = @"高级兑换";
-    _titleLabel.textColor = mHexRGB(0xFFE400);
-    _titleLabel.font = KFontBoldA(18);
-    [_bgImageView addSubview:_titleLabel];
-    [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(20);
+    // 倒计时图标 (theme_game_one_exchange_time.png, 28 * 34 pt, 距顶 21 pt, 距右 30 pt)
+    _timeIconView = [[UIImageView alloc] init];
+    _timeIconView.image = [UIImage imageNamed:@"theme_game_one_exchange_time"];
+    _timeIconView.contentMode = UIViewContentModeScaleAspectFit;
+    [_bgImageView addSubview:_timeIconView];
+    [_timeIconView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(21);
+        make.trailing.mas_equalTo(-30);
+        make.size.mas_equalTo(CGSizeMake(28, 34));
+    }];
+    
+    // 5页签选择栏 (星辰/皓月/银河/荣耀/传奇)
+    // 宽度 54, 高度 23. 距顶 74. 页签左起点为 18/82/146/210/274
+    NSArray *tabSelectedNames = @[
+        @"theme_game_one_exchange_tab_star_selected",
+        @"theme_game_one_exchange_tab_moon_selected",
+        @"theme_game_one_exchange_tab_galaxy_selected",
+        @"theme_game_one_exchange_tab_glory_selected",
+        @"theme_game_one_exchange_tab_legend_selected"
+    ];
+    NSArray *tabNormalNames = @[
+        @"theme_game_one_exchange_tab_star_normal",
+        @"theme_game_one_exchange_tab_moon_normal",
+        @"theme_game_one_exchange_tab_galaxy_normal",
+        @"theme_game_one_exchange_tab_glory_normal",
+        @"theme_game_one_exchange_tab_legend_normal"
+    ];
+    
+    NSArray *tabLeftOffsets = @[@18, @82, @146, @210, @274];
+    for (int i = 0; i < 5; i++) {
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [btn setImage:[UIImage imageNamed:tabNormalNames[i]] forState:UIControlStateNormal];
+        [btn setImage:[UIImage imageNamed:tabSelectedNames[i]] forState:UIControlStateSelected];
+        btn.tag = i;
+        [btn addTarget:self action:@selector(tabClick:) forControlEvents:UIControlEventTouchUpInside];
+        [_bgImageView addSubview:btn];
+        
+        [btn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(74);
+            make.leading.mas_equalTo([tabLeftOffsets[i] floatValue]);
+            make.size.mas_equalTo(CGSizeMake(54, 23));
+        }];
+        [self.tabButtons addObject:btn];
+    }
+    
+    // 终极奖品礼物大外框 (theme_game_one_exchange_gift_large.png, 106 * 104 pt, 距顶 126 pt, 居中)
+    _giftLargeFrameView = [[UIImageView alloc] init];
+    _giftLargeFrameView.image = [UIImage imageNamed:@"theme_game_one_exchange_gift_large"];
+    _giftLargeFrameView.contentMode = UIViewContentModeScaleToFill;
+    [_bgImageView addSubview:_giftLargeFrameView];
+    [_giftLargeFrameView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(126);
         make.centerX.mas_equalTo(_bgImageView);
+        make.size.mas_equalTo(CGSizeMake(106, 104));
     }];
     
-    _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_closeButton setImage:[UIImage imageNamed:@"theme_game_one_result_close"] forState:UIControlStateNormal];
-    [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_closeButton];
-    [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(12);
-        make.trailing.mas_equalTo(-12);
-        make.size.mas_equalTo(CGSizeMake(32, 32));
-    }];
-    
-    // 页签滚动条
-    _tabScrollView = [[UIScrollView alloc] init];
-    _tabScrollView.showsHorizontalScrollIndicator = NO;
-    [_bgImageView addSubview:_tabScrollView];
-    [_tabScrollView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_titleLabel.mas_bottom).offset(12);
-        make.leading.mas_equalTo(16);
-        make.trailing.mas_equalTo(-16);
-        make.height.mas_equalTo(35);
-    }];
-    
-    // 中间的大型终极礼物展示卡片
-    UIView *giftCardView = [[UIView alloc] init];
-    giftCardView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.04];
-    setViewCorner(giftCardView, 8);
-    [_bgImageView addSubview:giftCardView];
-    [giftCardView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_tabScrollView.mas_bottom).offset(12);
-        make.centerX.mas_equalTo(_bgImageView);
-        make.size.mas_equalTo(CGSizeMake(280, 110));
-    }];
-    
+    // 内藏礼物图片 (宽 56, 高 56 pt, 距大框顶 14 pt, 居中)
     _targetGiftImageView = [[UIImageView alloc] init];
     _targetGiftImageView.contentMode = UIViewContentModeScaleAspectFit;
-    [giftCardView addSubview:_targetGiftImageView];
+    [_giftLargeFrameView addSubview:_targetGiftImageView];
     [_targetGiftImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(16);
-        make.centerY.mas_equalTo(giftCardView);
-        make.size.mas_equalTo(CGSizeMake(72, 72));
+        make.top.mas_equalTo(14);
+        make.centerX.mas_equalTo(_giftLargeFrameView);
+        make.size.mas_equalTo(CGSizeMake(56, 56));
     }];
     
     _targetGiftNameLabel = [[UILabel alloc] init];
     _targetGiftNameLabel.textColor = kWhiteColor;
-    _targetGiftNameLabel.font = KFontBoldA(15);
-    _targetGiftNameLabel.text = @"加载中...";
-    [giftCardView addSubview:_targetGiftNameLabel];
+    _targetGiftNameLabel.font = [UIFont boldSystemFontOfSize:11];
+    _targetGiftNameLabel.textAlignment = NSTextAlignmentCenter;
+    [_giftLargeFrameView addSubview:_targetGiftNameLabel];
     [_targetGiftNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_targetGiftImageView.mas_trailing).offset(16);
-        make.top.mas_equalTo(22);
+        make.bottom.mas_equalTo(-10);
+        make.leading.trailing.mas_equalTo(_giftLargeFrameView);
     }];
     
-    _costChipsLabel = [[UILabel alloc] init];
-    _costChipsLabel.textColor = [UIColor colorWithWhite:1 alpha:0.7];
-    _costChipsLabel.font = KFontA(12);
-    _costChipsLabel.text = @"消耗碎片: --";
-    [giftCardView addSubview:_costChipsLabel];
-    [_costChipsLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_targetGiftNameLabel);
-        make.top.mas_equalTo(_targetGiftNameLabel.mas_bottom).offset(8);
+    // 高级底座 (theme_game_one_exchange_board.png, 284 * 133 pt, 距顶 238 pt, 居中)
+    _exchangeBoardView = [[UIImageView alloc] init];
+    _exchangeBoardView.image = [UIImage imageNamed:@"theme_game_one_exchange_board"];
+    _exchangeBoardView.contentMode = UIViewContentModeScaleToFill;
+    _exchangeBoardView.userInteractionEnabled = YES;
+    [_bgImageView addSubview:_exchangeBoardView];
+    [_exchangeBoardView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(238);
+        make.centerX.mas_equalTo(_bgImageView);
+        make.size.mas_equalTo(CGSizeMake(284, 133));
     }];
     
-    _ownedCardsLabel = [[UILabel alloc] init];
-    _ownedCardsLabel.textColor = [UIColor colorWithWhite:1 alpha:0.5];
-    _ownedCardsLabel.font = KFontA(11);
-    _ownedCardsLabel.text = @"持有藏宝图: --";
-    [_bgImageView addSubview:_ownedCardsLabel];
-    [_ownedCardsLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(giftCardView.mas_bottom).offset(15);
-        make.leading.mas_equalTo(20);
+    // 左侧消耗小框 (theme_game_one_exchange_gift_small.png, 64 * 65 pt, 距顶 270 pt, 距左 68 pt)
+    _leftSmallBoxView = [[UIImageView alloc] init];
+    _leftSmallBoxView.image = [UIImage imageNamed:@"theme_game_one_exchange_gift_small"];
+    _leftSmallBoxView.contentMode = UIViewContentModeScaleToFill;
+    [_bgImageView addSubview:_leftSmallBoxView];
+    [_leftSmallBoxView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(270);
+        make.leading.mas_equalTo(_bgImageView.mas_leading).offset(68);
+        make.size.mas_equalTo(CGSizeMake(64, 65));
     }];
     
-    // 藏宝图循环点击标签按钮
+    // 钻石碎片图标 (30 * 30 pt, 距小框顶 8 pt, 居中)
+    _leftIconView = [[UIImageView alloc] init];
+    _leftIconView.image = [UIImage imageNamed:@"theme_game_one_cover_diamond"];
+    _leftIconView.contentMode = UIViewContentModeScaleAspectFit;
+    [_leftSmallBoxView addSubview:_leftIconView];
+    [_leftIconView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(8);
+        make.centerX.mas_equalTo(_leftSmallBoxView);
+        make.size.mas_equalTo(CGSizeMake(30, 30));
+    }];
+    
+    _leftCostLabel = [[UILabel alloc] init];
+    _leftCostLabel.textColor = mHexRGB(0xFFE400);
+    _leftCostLabel.font = [UIFont boldSystemFontOfSize:10];
+    _leftCostLabel.textAlignment = NSTextAlignmentCenter;
+    [_leftSmallBoxView addSubview:_leftCostLabel];
+    [_leftCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_equalTo(-6);
+        make.leading.trailing.mas_equalTo(_leftSmallBoxView);
+    }];
+    
+    // 右侧消耗小框 (theme_game_one_exchange_gift_small.png, 64 * 65 pt, 距顶 270 pt, 距右 68 pt)
+    _rightSmallBoxView = [[UIImageView alloc] init];
+    _rightSmallBoxView.image = [UIImage imageNamed:@"theme_game_one_exchange_gift_small"];
+    _rightSmallBoxView.contentMode = UIViewContentModeScaleToFill;
+    _rightSmallBoxView.userInteractionEnabled = YES;
+    [_bgImageView addSubview:_rightSmallBoxView];
+    [_rightSmallBoxView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(270);
+        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-68);
+        make.size.mas_equalTo(CGSizeMake(64, 65));
+    }];
+    
+    // 藏宝图图标 (30 * 30 pt, 距小框顶 8 pt, 居中)
+    _rightIconView = [[UIImageView alloc] init];
+    _rightIconView.image = [UIImage imageNamed:@"theme_game_one_cover_box"];
+    _rightIconView.contentMode = UIViewContentModeScaleAspectFit;
+    [_rightSmallBoxView addSubview:_rightIconView];
+    [_rightIconView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(8);
+        make.centerX.mas_equalTo(_rightSmallBoxView);
+        make.size.mas_equalTo(CGSizeMake(30, 30));
+    }];
+    
+    _rightCostLabel = [[UILabel alloc] init];
+    _rightCostLabel.textColor = mHexRGB(0xFFE400);
+    _rightCostLabel.font = [UIFont boldSystemFontOfSize:10];
+    _rightCostLabel.textAlignment = NSTextAlignmentCenter;
+    [_rightSmallBoxView addSubview:_rightCostLabel];
+    [_rightCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_equalTo(-6);
+        make.leading.trailing.mas_equalTo(_rightSmallBoxView);
+    }];
+    
+    // 中间加号 (theme_game_one_exchange_plus.png, 19 * 19 pt, 距顶 292 pt, 居中)
+    UIImageView *plusIcon = [[UIImageView alloc] init];
+    plusIcon.image = [UIImage imageNamed:@"theme_game_one_exchange_plus"];
+    plusIcon.contentMode = UIViewContentModeScaleAspectFit;
+    [_bgImageView addSubview:plusIcon];
+    [plusIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(292);
+        make.centerX.mas_equalTo(_bgImageView);
+        make.size.mas_equalTo(CGSizeMake(19, 19));
+    }];
+    
+    // 右小框上的透明覆盖点击按钮
     _cardSelectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _cardSelectButton.backgroundColor = mHexRGB(0x00A2FF);
-    setViewCorner(_cardSelectButton, 4);
-    [_cardSelectButton setTitle:@"投入: 0 张" forState:UIControlStateNormal];
-    [_cardSelectButton setTitleColor:kWhiteColor forState:UIControlStateNormal];
-    _cardSelectButton.titleLabel.font = KFontBoldA(13);
+    _cardSelectButton.backgroundColor = [UIColor clearColor];
     [_cardSelectButton addTarget:self action:@selector(cardSelectClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_cardSelectButton];
+    [_rightSmallBoxView addSubview:_cardSelectButton];
     [_cardSelectButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(_ownedCardsLabel);
-        make.trailing.mas_equalTo(-20);
-        make.size.mas_equalTo(CGSizeMake(100, 26));
+        make.edges.mas_equalTo(_rightSmallBoxView);
     }];
     
-    // 成功率显示
+    // 成功率显示 Label (放置在底座下方，高 20, 距顶 390, 居中)
     _successRateLabel = [[UILabel alloc] init];
     _successRateLabel.textColor = mHexRGB(0xFFE400);
-    _successRateLabel.font = KFontBoldA(14);
+    _successRateLabel.font = KFontBoldA(12);
+    _successRateLabel.textAlignment = NSTextAlignmentCenter;
     _successRateLabel.text = @"兑换成功率: 0%";
     [_bgImageView addSubview:_successRateLabel];
     [_successRateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_ownedCardsLabel.mas_bottom).offset(20);
+        make.top.mas_equalTo(390);
         make.centerX.mas_equalTo(_bgImageView);
     }];
     
-    // 确认兑换按钮
+    // 确认兑换大按钮 (theme_game_one_exchange_confirm.png, 244 * 49 pt, 距顶 444 pt, 居中)
     _confirmExchangeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_confirmExchangeButton setImage:[UIImage imageNamed:@"theme_game_one_exchange_confirm"] forState:UIControlStateNormal];
     [_confirmExchangeButton addTarget:self action:@selector(confirmExchangeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_confirmExchangeButton];
     [_confirmExchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(444);
         make.centerX.mas_equalTo(_bgImageView);
-        make.bottom.mas_equalTo(-15);
-        make.size.mas_equalTo(CGSizeMake(260, 86));
+        make.size.mas_equalTo(CGSizeMake(244, 49));
     }];
 }
 
 #pragma mark - 数据请求
+
 - (void)loadExchangeData {
-    // 1. 获取用户资产（获取藏宝图和碎片余额，可以通过通用余额或背包接口；在这里我们从 getMoney 里的钻石/钥匙，我们也可以从 response 里读取卡片信息。如果没有，我们先默认拥有的藏宝图为 maxOwnedCards=5）
-    [MLGameLotteryService getUserMoneyWithSuccess:^(MLGameUserMoneyModel *model) {
-        // 卡片余额一般由具体的道具接口返回。我们在 exchange_gift 响应中能够返回最新的卡片和碎片余额。
-    } failure:nil];
-    
-    // 2. 拉取兑换配置
+    // 1. 获取个人钻石碎片/藏宝图资产
+    // 静默加载，拉取最新配置后再读取对应 gift_id 匹配
+    WeakSelf
     [MLGameLotteryService exchangeConfigWithTypeId:self.typeId success:^(id responseObject) {
-        self.exchangeConfigs = responseObject;
-        [self renderTabs];
-        [self selectActiveTab];
+        wself.exchangeConfigs = responseObject;
+        [wself renderTabs];
+        [wself selectActiveTab];
+        
+        if (wself.exchangeConfigs.count > 0) {
+            NSDictionary *config = wself.exchangeConfigs.firstObject;
+            NSInteger gemId = [config[@"gem_gift_id"] integerValue];
+            NSInteger cardId = [config[@"card_gift_id"] integerValue];
+            
+            NSMutableDictionary *params = [NSMutableDictionary dictionary];
+            params[@"page"] = @"1";
+            params[@"size"] = @"100";
+            params[@"is_send"] = @"1";
+            [FFHomeHandel fetchPackageGiftList:params success:^(NSMutableArray *dataArr, NSString *pageNo, BOOL hasNextPage) {
+                NSInteger foundGem = 0;
+                NSInteger foundCard = 0;
+                for (id item in dataArr) {
+                    NSInteger gId = 0;
+                    NSInteger num = 0;
+                    if ([item isKindOfClass:[NSDictionary class]]) {
+                        gId = [item[@"gift_id"] integerValue];
+                        num = [item[@"nums"] integerValue];
+                    } else {
+                        if ([item respondsToSelector:NSSelectorFromString(@"gift_id")]) {
+                            gId = [[item valueForKey:@"gift_id"] integerValue];
+                        }
+                        if ([item respondsToSelector:NSSelectorFromString(@"nums")]) {
+                            num = [[item valueForKey:@"nums"] integerValue];
+                        } else if ([item respondsToSelector:NSSelectorFromString(@"num")]) {
+                            num = [[item valueForKey:@"num"] integerValue];
+                        }
+                    }
+                    if (gId == gemId) {
+                        foundGem = num;
+                    }
+                    if (gId == cardId) {
+                        foundCard = num;
+                    }
+                }
+                wself.ownedGemCount = foundGem;
+                wself.maxOwnedCards = foundCard;
+                [wself selectActiveTab];
+            } failure:nil];
+        }
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
 }
 
 - (void)renderTabs {
-    for (UIButton *btn in self.tabButtons) {
-        [btn removeFromSuperview];
-    }
-    [self.tabButtons removeAllObjects];
-    
-    CGFloat nextX = 0;
-    for (int i = 0; i < self.exchangeConfigs.count; i++) {
-        NSDictionary *config = self.exchangeConfigs[i];
-        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [btn setTitle:config[@"tab_name"] ?: @"兑换项" forState:UIControlStateNormal];
-        [btn setTitleColor:[UIColor colorWithWhite:1 alpha:0.6] forState:UIControlStateNormal];
-        [btn setTitleColor:mHexRGB(0xFFE400) forState:UIControlStateSelected];
-        btn.titleLabel.font = KFontBoldA(13);
-        btn.tag = i;
-        [btn addTarget:self action:@selector(tabClick:) forControlEvents:UIControlEventTouchUpInside];
-        
-        CGSize size = [btn.currentTitle boundingRectWithSize:CGSizeMake(200, 35) 
-                                                     options:NSStringDrawingUsesLineFragmentOrigin 
-                                                  attributes:@{NSFontAttributeName: btn.titleLabel.font} 
-                                                     context:nil].size;
-        
-        btn.frame = CGRectMake(nextX, 0, size.width + 24, 35);
-        nextX += size.width + 32;
-        
-        [self.tabScrollView addSubview:btn];
-        [self.tabButtons addObject:btn];
-    }
-    self.tabScrollView.contentSize = CGSizeMake(nextX, 35);
+    // 激活状态
+    [self selectActiveTab];
 }
 
 - (void)selectActiveTab {
     if (self.exchangeConfigs.count == 0) return;
     
+    // 页签高亮
     for (int i = 0; i < self.tabButtons.count; i++) {
         self.tabButtons[i].selected = (i == self.activeConfigIndex);
     }
@@ -262,16 +360,19 @@
     NSDictionary *gift = activeConfig[@"gift"];
     
     _targetGiftNameLabel.text = gift[@"name"] ?: @"高级礼物";
-    _costChipsLabel.text = [NSString stringWithFormat:@"需要宝石碎片: %@", activeConfig[@"gem_cost"]];
     
     NSURL *url = [NSURL URLWithString:gift[@"pic"] ?: @""];
     if ([_targetGiftImageView respondsToSelector:@selector(setImageWithURL:placeholder:)]) {
-        [_targetGiftImageView performSelector:@selector(setImageWithURL:placeholder:) withObject:url withObject:[UIImage imageNamed:@"theme_game_one_exchange_gift_large"]];
+        [_targetGiftImageView performSelector:@selector(setImageWithURL:placeholder:) withObject:url withObject:[UIImage imageNamed:@""]];
     } else if ([_targetGiftImageView respondsToSelector:@selector(sd_setImageWithURL:placeholderImage:)]) {
-        [_targetGiftImageView performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@"theme_game_one_exchange_gift_large"]];
+        [_targetGiftImageView performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@""]];
     }
     
-    // 重置选择卡片数
+    // 钻石碎片消耗 (gem_cost / gem_owned)
+    NSInteger gemCost = [activeConfig[@"gem_cost"] integerValue];
+    _leftCostLabel.text = [NSString stringWithFormat:@"%ld/%ld", (long)gemCost, (long)self.ownedGemCount];
+    
+    // 投入的藏宝图置零
     self.selectedCardCount = 0;
     [self updateSuccessRateUI];
 }
@@ -281,7 +382,8 @@
     [self selectActiveTab];
 }
 
-#pragma mark - 循环单点击调节藏宝图数 (0 -> 1 -> 2 -> ... -> max -> 0)
+#pragma mark - 循环点击藏宝图 (0 -> 1 -> 2 -> ... -> max -> 0)
+
 - (void)cardSelectClick {
     if (self.exchangeConfigs.count == 0) return;
     
@@ -294,45 +396,53 @@
 }
 
 - (void)updateSuccessRateUI {
-    [_cardSelectButton setTitle:[NSString stringWithFormat:@"投入: %ld 张", (long)self.selectedCardCount] forState:UIControlStateNormal];
+    // 藏宝图投入 (card_invested / card_owned)
+    _rightCostLabel.text = [NSString stringWithFormat:@"%ld/%ld", (long)self.selectedCardCount, (long)self.maxOwnedCards];
     
-    if (self.exchangeConfigs.count == 0) return;
+    if (self.exchangeConfigs.count == 0) {
+        _successRateLabel.text = @"兑换成功率: 0%";
+        return;
+    }
     NSDictionary *activeConfig = self.exchangeConfigs[self.activeConfigIndex];
     NSInteger baseRate = [activeConfig[@"success_rate"] integerValue];
     
     NSInteger finalRate = 0;
-    // 零藏宝图必败原则 (直接设定成功率为 0%)
     if (self.selectedCardCount == 0) {
         finalRate = 0;
     } else {
         finalRate = MIN(100, baseRate * self.selectedCardCount);
     }
-    
     _successRateLabel.text = [NSString stringWithFormat:@"兑换成功率: %ld%%", (long)finalRate];
 }
 
-#pragma mark - 执行兑换 (零图必败校验)
+#pragma mark - 执行兑换 (零图拦截)
+
 - (void)confirmExchangeClick {
     if (self.exchangeConfigs.count == 0) return;
+    
+    // 投入藏宝图数量为 0 时拦截
+    if (self.selectedCardCount == 0) {
+        [SVProgressHUD showInfoWithStatus:@"请先投入藏宝图再进行兑换"];
+        return;
+    }
+    
     NSDictionary *activeConfig = self.exchangeConfigs[self.activeConfigIndex];
     NSInteger configId = [activeConfig[@"exchange_id"] integerValue];
     
     _confirmExchangeButton.enabled = NO;
-    // 调用交换服务
+    WeakSelf
     [MLGameLotteryService exchangeGiftWithExchangeId:configId 
                                            cardCount:self.selectedCardCount 
                                              success:^(BOOL isSuccess, MLGameDrawResultModel *gift, NSInteger remainCard, NSInteger remainGem, NSString *msg) {
-        self.confirmExchangeButton.enabled = YES;
+        wself.confirmExchangeButton.enabled = YES;
         
-        // 更新本地拥有的数量，实现连点无缝体验
-        self.maxOwnedCards = remainCard;
-        self.ownedGemCount = remainGem;
-        self.ownedCardsLabel.text = [NSString stringWithFormat:@"持有藏宝图: %ld", (long)remainCard];
+        wself.maxOwnedCards = remainCard;
+        wself.ownedGemCount = remainGem;
         
-        if (self.selectedCardCount > remainCard) {
-            self.selectedCardCount = remainCard;
+        if (wself.selectedCardCount > remainCard) {
+            wself.selectedCardCount = remainCard;
         }
-        [self updateSuccessRateUI];
+        [wself selectActiveTab]; // 重新加载数据渲染
         
         if (isSuccess) {
             [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"兑换成功！已获得: %@", gift.name]];
@@ -340,12 +450,13 @@
             [SVProgressHUD showInfoWithStatus:msg.length > 0 ? msg : @"兑换失败了，再试一次吧"];
         }
     } failure:^(NSError *error) {
-        self.confirmExchangeButton.enabled = YES;
+        wself.confirmExchangeButton.enabled = YES;
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
 }
 
 #pragma mark - Animation & Close
+
 - (void)animateShow {
     self.alpha = 0.0;
     _bgImageView.transform = CGAffineTransformMakeScale(0.8, 0.8);
