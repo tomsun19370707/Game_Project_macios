@@ -9,6 +9,7 @@ xcuserdata/
 
 # Custom project ignores
 temp_resources/
+Pods/
 
 # Xcode & OS general ignores
 *.hmap
