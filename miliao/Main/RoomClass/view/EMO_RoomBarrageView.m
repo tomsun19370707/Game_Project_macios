@@ -628,7 +628,7 @@ static SVGAParser *parser;
 -(UIButton *)nativeGameBtn{
     if(!_nativeGameBtn){
         _nativeGameBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_nativeGameBtn setBackgroundImage:KGetImage(@"native_game_entry_icon") forState:0];
+        [_nativeGameBtn setBackgroundImage:KGetImage(@"chat_room_voice_draw_circle_icon") forState:0];
         [_nativeGameBtn addTarget:self action:@selector(nativeGameBtnClick) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:_nativeGameBtn];
         [_nativeGameBtn mas_makeConstraints:^(MASConstraintMaker *make) {

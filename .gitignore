@@ -6,3 +6,14 @@ DerivedData/
 xcuserdata/
 *.moved-aside
 *.xcscmblueprint
+
+# Custom project ignores
+temp_resources/
+
+# Xcode & OS general ignores
+*.hmap
+*.ipa
+*.app
+*.dSYM
+*.dSYM.zip
+.idea/
