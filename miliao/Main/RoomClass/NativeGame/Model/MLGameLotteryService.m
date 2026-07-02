@@ -229,4 +229,56 @@
     }];
 }
 
++ (void)getFortuneLotteryListWithSuccess:(void(^)(NSArray<MLGameLotteryInfoModel *> *list))success 
+                                 failure:(void(^)(NSError *error))failure {
+    NSString *url = [NSString stringWithFormat:@"%@api/fortune/getLotteryList", VERSION_HTTPS_SERVER];
+    [MLNetWorkHelper GET:url parameters:@{} success:^(id responseObject) {
+        if ([responseObject[@"code"] integerValue] == 1) {
+            NSArray *list = [MLGameLotteryInfoModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            if (success) success(list);
+        } else {
+            if (failure) {
+                NSError *error = [NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" 
+                                                     code:[responseObject[@"code"] integerValue] 
+                                                 userInfo:@{NSLocalizedDescriptionKey: responseObject[@"msg"] ?: @"请求失败"}];
+                failure(error);
+            }
+        }
+    } failure:^(NSError *error) {
+        if (failure) failure(error);
+    }];
+}
+
++ (void)getLotteryWinLogWithTypeId:(NSInteger)typeId 
+                              page:(NSInteger)page 
+                          pageSize:(NSInteger)pageSize 
+                           success:(void(^)(NSArray *list, NSInteger total))success 
+                           failure:(void(^)(NSError *error))failure {
+    NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/win_log", VERSION_HTTPS_SERVER];
+    NSDictionary *params = @{
+        @"type_id": @(typeId),
+        @"type": @"real",
+        @"user_type": @"all",
+        @"page": @(page),
+        @"page_size": @(pageSize)
+    };
+    [MLNetWorkHelper POST:url parameters:params success:^(id responseObject) {
+        if ([responseObject[@"code"] integerValue] == 1) {
+            NSDictionary *data = responseObject[@"data"];
+            NSArray *list = data[@"data"];
+            NSInteger total = [data[@"total"] integerValue];
+            if (success) success(list, total);
+        } else {
+            if (failure) {
+                NSError *error = [NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" 
+                                                     code:[responseObject[@"code"] integerValue] 
+                                                 userInfo:@{NSLocalizedDescriptionKey: responseObject[@"msg"] ?: @"请求失败"}];
+                failure(error);
+            }
+        }
+    } failure:^(NSError *error) {
+        if (failure) failure(error);
+    }];
+}
+
 @end

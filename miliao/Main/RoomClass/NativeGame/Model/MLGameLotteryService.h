@@ -71,4 +71,19 @@
                      success:(void(^)(NSArray *list, NSInteger total))success 
                      failure:(void(^)(NSError *error))failure;
 
+/**
+ 10. 今日运势接口
+ */
++ (void)getFortuneLotteryListWithSuccess:(void(^)(NSArray<MLGameLotteryInfoModel *> *list))success 
+                                 failure:(void(^)(NSError *error))failure;
+
+/**
+ 11. 全服大奖公告接口
+ */
++ (void)getLotteryWinLogWithTypeId:(NSInteger)typeId 
+                              page:(NSInteger)page 
+                          pageSize:(NSInteger)pageSize 
+                           success:(void(^)(NSArray *list, NSInteger total))success 
+                           failure:(void(^)(NSError *error))failure;
+
 @end

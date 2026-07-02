@@ -315,6 +315,7 @@
 #define kScreenWidthRatio  (kWidth / 375.0)
 #define kScreenHeightRatio (kHeight / 667.0)
 #define KAdaptedWidth(x)  ceilf((x) * kScreenWidthRatio)
+#define hh(x)             KAdaptedWidth(x)
 
 #define IS_IPHONE_X \
 ({BOOL isPhoneX = NO;\
@@ -576,5 +577,9 @@ blue:((float)(rgbValue & 0xFF)) / 255.0 alpha:a]
 #define  WebLoadPrefixJS  @"<head><meta name='viewport' content='width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'/><meta http-equiv='content-type' content='text/html; charset=UTF-8'><meta charset='utf-8'><meta name='apple-mobile-web-app-capable' content='yes'><meta name='apple-touch-fullscreen' content='yes'><meta name='apple-mobile-web-app-status-bar-style' content='black'><meta name='format-detection' content='telephone=no'><meta name='format-detection' content='address=no'><style type='text/css'>body{margin: 0px 0;padding: 0px 0;} img{display: block;margin: 0px 0;data-height:435;padding: 0px 0; width: 100%; height:auto;} p{display: block;margin: 0px 0;data-height:435;padding: 0px 0; width: 100%;}</style></head>"
 
 
+
+@interface RCConversationCell (OnlineViewCategory)
+@property (nonatomic, strong, readonly) UIView *onlineView;
+@end
 
 #endif /* Global_h */

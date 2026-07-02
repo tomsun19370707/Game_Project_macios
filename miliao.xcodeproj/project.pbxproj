@@ -359,6 +359,7 @@
 		00C6FFFF22D97E7A003BA50D /* HXPhoto3DTouchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00C6FF9E22D97E79003BA50D /* HXPhoto3DTouchViewController.m */; };
 		00C904A022E6DFB70045C5C2 /* detailTrendTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 00C9049E22E6DFB70045C5C2 /* detailTrendTableViewCell.m */; };
 		00C904A122E6DFB70045C5C2 /* detailTrendTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00C9049F22E6DFB70045C5C2 /* detailTrendTableViewCell.xib */; };
+		00E0FACF562E41C48D249CD9 /* MLChatRoomThemeGameThreeResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33146C9237E7408D8C4A805C /* MLChatRoomThemeGameThreeResultView.m */; };
 		00E2DAED22F3C0E9004DA965 /* MLSessionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E2DAEC22F3C0E9004DA965 /* MLSessionViewController.m */; };
 		03EE9084C879815EA3D20E48 /* CFMExDiamondAndBagPackageCollCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43CE96DFD35619F17D8AA608 /* CFMExDiamondAndBagPackageCollCell.m */; };
 		05FCCB18FDA25BFE2CEB541E /* CFMRewardHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AEC52E7FB68FBAE3F30B2468 /* CFMRewardHistoryCell.m */; };
@@ -418,11 +419,13 @@
 		4871A1FF71D4DB6551EC9B10 /* CFMMyGiftCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B8DD434873D8C2A0070A1C5D /* CFMMyGiftCell.xib */; };
 		4C4D272EF1F76EA51B6EAE1E /* CFMExDiamondAndBagPackage.m in Sources */ = {isa = PBXBuildFile; fileRef = E99C87C9331E15758C71F959 /* CFMExDiamondAndBagPackage.m */; };
 		57FFC1C51F1A7DA447437A33 /* Pods_miliao.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6817A53A96D76D1EB49D1CDA /* Pods_miliao.framework */; };
+		588AF04B8F714F82A7F56175 /* MLChatRoomThemeGameThreeRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 911A928BAE024EE7BEE8D741 /* MLChatRoomThemeGameThreeRuleView.m */; };
 		5BBC5438FE7C3D47A3A9B144 /* CFMExRewardCoinAlert.xib in Resources */ = {isa = PBXBuildFile; fileRef = BE0072708242645FA8847CB1 /* CFMExRewardCoinAlert.xib */; };
 		5C019EC07B4A129560596D8F /* SRWKWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F70A05B733AB59C92A4912B /* SRWKWebViewController.m */; };
 		5C78229F9C544A40DD6708E2 /* CFMRewardHistoryAlert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8194F4AC49A2CF33B3D29DBA /* CFMRewardHistoryAlert.xib */; };
 		612BC2B312F192C3EC5223D1 /* CFMExRewardRuleAlert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2AA776A89F629F6189D7DBC3 /* CFMExRewardRuleAlert.xib */; };
 		6420A79D51B489DA79161CE6 /* CFMExRewardCoinAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 679662FC33EC11DE51963EE2 /* CFMExRewardCoinAlert.m */; };
+		6C7A71E5C0584E55BC8523B8 /* MLChatRoomThemeGameThreePurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A756065E2E400CBEED7E04 /* MLChatRoomThemeGameThreePurchaseView.m */; };
 		6F428FD02419F6C70075CCC9 /* UIButton+BAKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F428FCD2419F6C70075CCC9 /* UIButton+BAKit.m */; };
 		6F45CC84241B19E700924327 /* NSObject+EverGesturePath.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F45CC7D241B19E700924327 /* NSObject+EverGesturePath.m */; };
 		6F45CC85241B19E700924327 /* UIViewController+EverPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F45CC7E241B19E700924327 /* UIViewController+EverPath.m */; };
@@ -846,8 +849,10 @@
 		AA71105723C4D0F8007E990F /* UIViewController+CurViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA71105623C4D0F8007E990F /* UIViewController+CurViewController.m */; };
 		AA9C6F328FCF5FE92360B502 /* CFMRewardPriseAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = B88B247C932325DDCB1E4116 /* CFMRewardPriseAlert.m */; };
 		B7C74BCD027BAB6A4B592591 /* CFMExRewardRuleAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 1191A51F6DF383E2DA7DADDA /* CFMExRewardRuleAlert.m */; };
+		C11E5170878340C99C8DD788 /* MLChatRoomThemeGameThreeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B0ECBE3CCA4F14A21F20A9 /* MLChatRoomThemeGameThreeView.m */; };
 		C342162B06D1FA28C1561D13 /* CFMHomeSignAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = AA8514C3E54D8DD295AD028F /* CFMHomeSignAlert.m */; };
 		C49C18865891EEB035E56FF4 /* CFMRewardPriseAlert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89835480FEB1813D317D42F4 /* CFMRewardPriseAlert.xib */; };
+		C53AADE1432047C4B18C121B /* MLChatRoomThemeGameThreeRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = B574AB3D973B4747BF4906C2 /* MLChatRoomThemeGameThreeRecordView.m */; };
 		C8E898515A11BB97C661D474 /* CFMHomeSignAlert.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFFD90DD199A72D8F667EBC6 /* CFMHomeSignAlert.xib */; };
 		CB0DCDC12F1B1C9400EDA38D /* IXAttributeTapLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = CB0DCDBF2F1B1C9400EDA38D /* IXAttributeTapLabel.m */; };
 		CB46A32C2EE27255007F40BC /* NSString+StringNull.m in Sources */ = {isa = PBXBuildFile; fileRef = CB46A31B2EE27255007F40BC /* NSString+StringNull.m */; };
@@ -1023,6 +1028,7 @@
 		CBFC3B652F10DBCF00E6EB7B /* AlipaySDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBFC3B622F10DBCF00E6EB7B /* AlipaySDK.xcframework */; };
 		CBFC3B662F10DBCF00E6EB7B /* AlipaySDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CBFC3B612F10DBCF00E6EB7B /* AlipaySDK.bundle */; };
 		CBFC3B6A2F1109D000E6EB7B /* OpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = CBFC3B692F1109D000E6EB7B /* OpenUDID.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		CC617A9359FD441AAEC8DEBA /* MLChatRoomMarqueeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 558874A3A72F4C249E1B5654 /* MLChatRoomMarqueeLabel.m */; };
 		CCFE04F6526956FE5A1E37A4 /* CFMExDiamondAndBagAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 498363D208619391C8F8B92A /* CFMExDiamondAndBagAlert.m */; };
 		CF37E064C848FD144F54CFCC /* CFMRewardHistoryRate.m in Sources */ = {isa = PBXBuildFile; fileRef = 72E91616E18AF0A600567B9B /* CFMRewardHistoryRate.m */; };
 		D15D051C4471C771E7FD8055 /* CFMRewardHistoryAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = C6B63F7569CBD2100A730E47 /* CFMRewardHistoryAlert.m */; };
@@ -1128,6 +1134,7 @@
 		FA9E08B5242930FF000A52CF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9E08B4242930FF000A52CF /* Foundation.framework */; };
 		FA9E08B724293105000A52CF /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9E08B624293105000A52CF /* CFNetwork.framework */; };
 		FA9E08B92429310E000A52CF /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9E08B82429310E000A52CF /* CoreMotion.framework */; };
+		FFE315EAE2D34FCC975B6A47 /* MLChatRoomThemeGameFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = D99D569BD56B4F348EDC0441 /* MLChatRoomThemeGameFortuneView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1874,9 +1881,11 @@
 		00C9049F22E6DFB70045C5C2 /* detailTrendTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = detailTrendTableViewCell.xib; sourceTree = "<group>"; };
 		00E2DAEB22F3C0E9004DA965 /* MLSessionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLSessionViewController.h; sourceTree = "<group>"; };
 		00E2DAEC22F3C0E9004DA965 /* MLSessionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLSessionViewController.m; sourceTree = "<group>"; };
+		02B0ECBE3CCA4F14A21F20A9 /* MLChatRoomThemeGameThreeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeView.m; sourceTree = "<group>"; };
 		0B3F4F1ABB3D53E8CFD95297 /* CFMultiplierGamesVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMultiplierGamesVC.m; sourceTree = "<group>"; };
 		0C74A3E140EB91B454FB8627 /* CFMExDiamondAndBagPackage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMExDiamondAndBagPackage.xib; sourceTree = "<group>"; };
 		1191A51F6DF383E2DA7DADDA /* CFMExRewardRuleAlert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMExRewardRuleAlert.m; sourceTree = "<group>"; };
+		1378D55F624F4F5AA2E5B62A /* MLChatRoomThemeGameThreeRuleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeRuleView.h; sourceTree = "<group>"; };
 		18151190244A93F3007EC0E9 /* UIButton+Gradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Gradient.h"; sourceTree = "<group>"; };
 		18151191244A93F3007EC0E9 /* UIImage+Gradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Gradient.h"; sourceTree = "<group>"; };
 		18151192244A93F3007EC0E9 /* UIButton+Gradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Gradient.m"; sourceTree = "<group>"; };
@@ -1942,6 +1951,7 @@
 		28EB9F5823A0E9AD00C5B714 /* BJGiftViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BJGiftViewCell.m; sourceTree = "<group>"; };
 		2AA776A89F629F6189D7DBC3 /* CFMExRewardRuleAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMExRewardRuleAlert.xib; sourceTree = "<group>"; };
 		2D77DBABFD79248BD7EBCE70 /* CFMutiplierGamesResultView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMutiplierGamesResultView.h; sourceTree = "<group>"; };
+		33146C9237E7408D8C4A805C /* MLChatRoomThemeGameThreeResultView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeResultView.m; sourceTree = "<group>"; };
 		38F989B517474841EB97D705 /* CFMCFMRewardHistoryJoinRate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMCFMRewardHistoryJoinRate.h; sourceTree = "<group>"; };
 		391FA2B62F91FAAB0074A737 /* CurrentRunGamaViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrentRunGamaViewController.h; sourceTree = "<group>"; };
 		391FA2B72F91FAAB0074A737 /* CurrentRunGamaViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurrentRunGamaViewController.m; sourceTree = "<group>"; };
@@ -1972,6 +1982,8 @@
 		498363D208619391C8F8B92A /* CFMExDiamondAndBagAlert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMExDiamondAndBagAlert.m; sourceTree = "<group>"; };
 		4D68DAD1467289BDD79955A9 /* CFMRewardPriseTitle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMRewardPriseTitle.h; sourceTree = "<group>"; };
 		521DA86BC2493E5BB040DE03 /* CFMRewardHistoryRate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMRewardHistoryRate.h; sourceTree = "<group>"; };
+		558874A3A72F4C249E1B5654 /* MLChatRoomMarqueeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomMarqueeLabel.m; sourceTree = "<group>"; };
+		5794455D125F45D1950DF7FB /* MLChatRoomThemeGameThreeRecordView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeRecordView.h; sourceTree = "<group>"; };
 		57D5770ED250E561E3B9F1F1 /* CFMRewardPriseTitle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMRewardPriseTitle.m; sourceTree = "<group>"; };
 		5833CD184C37D8A9B99A5F5A /* CFMExRewardCoinAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExRewardCoinAlert.h; sourceTree = "<group>"; };
 		5A4ECE3D879A44DAC5CE08C9 /* CFMExDiamondAndBagPackage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExDiamondAndBagPackage.h; sourceTree = "<group>"; };
@@ -2761,6 +2773,7 @@
 		85ED6AC8283F97A00092C3FA /* DSTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DSTableCell.h; sourceTree = "<group>"; };
 		85ED6AC9283F97A00092C3FA /* DSAlertChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DSAlertChange.m; sourceTree = "<group>"; };
 		85ED6ACA283F97A00092C3FA /* DSAlertChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DSAlertChange.h; sourceTree = "<group>"; };
+		88681BC985BA490FBDEEC872 /* MLChatRoomThemeGameThreeResultView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeResultView.h; sourceTree = "<group>"; };
 		89835480FEB1813D317D42F4 /* CFMRewardPriseAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMRewardPriseAlert.xib; sourceTree = "<group>"; };
 		8EC2129577581C12F3B37069 /* CFMRewardHistoryAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMRewardHistoryAlert.h; sourceTree = "<group>"; };
 		8F260294248A25F4008114B5 /* EMO_RoomSetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMO_RoomSetViewController.m; sourceTree = "<group>"; };
@@ -2777,7 +2790,9 @@
 		8F2602A0248A263D008114B5 /* RoomSetRoomIconCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoomSetRoomIconCell.m; sourceTree = "<group>"; };
 		8F2602A1248A263D008114B5 /* RoomSetRoomIconCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoomSetRoomIconCell.h; sourceTree = "<group>"; };
 		8F2602A2248A263E008114B5 /* RoomSetRoomTypeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoomSetRoomTypeCell.m; sourceTree = "<group>"; };
+		911A928BAE024EE7BEE8D741 /* MLChatRoomThemeGameThreeRuleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeRuleView.m; sourceTree = "<group>"; };
 		98A068E699D6F45759B6F2D9 /* CFMHomeSignAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMHomeSignAlert.h; sourceTree = "<group>"; };
+		991D6CAEB48F4037BF6841D6 /* MLChatRoomMarqueeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomMarqueeLabel.h; sourceTree = "<group>"; };
 		A02673313454DC5C1DFCF058 /* CFMRewardHistoryJoin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMRewardHistoryJoin.m; sourceTree = "<group>"; };
 		AA71102323C4CB0D007E990F /* SVGAContentLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVGAContentLayer.m; sourceTree = "<group>"; };
 		AA71102423C4CB0D007E990F /* SVGAVideoSpriteFrameEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGAVideoSpriteFrameEntity.h; sourceTree = "<group>"; };
@@ -2813,6 +2828,7 @@
 		AA71105623C4D0F8007E990F /* UIViewController+CurViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+CurViewController.m"; sourceTree = "<group>"; };
 		AA8514C3E54D8DD295AD028F /* CFMHomeSignAlert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMHomeSignAlert.m; sourceTree = "<group>"; };
 		AEC52E7FB68FBAE3F30B2468 /* CFMRewardHistoryCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMRewardHistoryCell.m; sourceTree = "<group>"; };
+		B574AB3D973B4747BF4906C2 /* MLChatRoomThemeGameThreeRecordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeRecordView.m; sourceTree = "<group>"; };
 		B88B247C932325DDCB1E4116 /* CFMRewardPriseAlert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMRewardPriseAlert.m; sourceTree = "<group>"; };
 		B8DD434873D8C2A0070A1C5D /* CFMMyGiftCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMMyGiftCell.xib; sourceTree = "<group>"; };
 		BC0494C8C58DCD5AE3D81638 /* Pods-miliao.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-miliao.release.xcconfig"; path = "Target Support Files/Pods-miliao/Pods-miliao.release.xcconfig"; sourceTree = "<group>"; };
@@ -3123,15 +3139,18 @@
 		CBFC3B622F10DBCF00E6EB7B /* AlipaySDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = AlipaySDK.xcframework; sourceTree = "<group>"; };
 		CBFC3B682F1109D000E6EB7B /* OpenUDID.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenUDID.h; sourceTree = "<group>"; };
 		CBFC3B692F1109D000E6EB7B /* OpenUDID.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OpenUDID.m; sourceTree = "<group>"; };
+		CE9C4B4082AE44DCA6D3E47A /* MLChatRoomThemeGameThreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeView.h; sourceTree = "<group>"; };
 		CED60AA4DD29F37216134036 /* CFMultiplierGamesVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMultiplierGamesVC.h; sourceTree = "<group>"; };
 		D339C8F8ECD71D85DCA7AEF6 /* STAccountPhoneSms.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STAccountPhoneSms.h; sourceTree = "<group>"; };
 		D5E81FDCECABA0FF622507F4 /* SRCookieManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SRCookieManager.h; sourceTree = "<group>"; };
 		D962E395242CDB5A982C0A9D /* SRWKWebViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SRWKWebViewController.h; sourceTree = "<group>"; };
+		D99D569BD56B4F348EDC0441 /* MLChatRoomThemeGameFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFortuneView.m; sourceTree = "<group>"; };
 		DBDD501D2476A45400FE708B /* FSSegmentTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSSegmentTitleView.m; sourceTree = "<group>"; };
 		DBDD501E2476A45400FE708B /* FSPageContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSPageContentView.h; sourceTree = "<group>"; };
 		DBDD501F2476A45400FE708B /* FSScrollContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSScrollContentView.h; sourceTree = "<group>"; };
 		DBDD50202476A45400FE708B /* FSPageContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSPageContentView.m; sourceTree = "<group>"; };
 		DBDD50212476A45400FE708B /* FSSegmentTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSSegmentTitleView.h; sourceTree = "<group>"; };
+		DE9C9B331C8D4315839465CF /* MLChatRoomThemeGameThreePurchaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreePurchaseView.h; sourceTree = "<group>"; };
 		E11282AD2F3DB4FD00F59013 /* miliaoDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = miliaoDebug.entitlements; sourceTree = "<group>"; };
 		E1A0AE562F39DDC500C6DA72 /* EMO_RoomGameAlertView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMO_RoomGameAlertView.h; sourceTree = "<group>"; };
 		E1A0AE572F39DDC500C6DA72 /* EMO_RoomGameAlertView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMO_RoomGameAlertView.m; sourceTree = "<group>"; };
@@ -3257,7 +3276,9 @@
 		E4FBA9BC2B27EF9000370438 /* RouletteView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouletteView.m; sourceTree = "<group>"; };
 		E99C87C9331E15758C71F959 /* CFMExDiamondAndBagPackage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMExDiamondAndBagPackage.m; sourceTree = "<group>"; };
 		EB193879263D4C6590402BDD /* CFMExDiamondAndBagAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMExDiamondAndBagAlert.xib; sourceTree = "<group>"; };
+		F0A756065E2E400CBEED7E04 /* MLChatRoomThemeGameThreePurchaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreePurchaseView.m; sourceTree = "<group>"; };
 		F3800511817131FE9FCE90B2 /* STAccountPhoneSms.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = STAccountPhoneSms.xib; sourceTree = "<group>"; };
+		F414E9175D5E46A483D78496 /* MLChatRoomThemeGameFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFortuneView.h; sourceTree = "<group>"; };
 		F435758C9D2CAD929D4F3C03 /* CFMExDiamondAndBagPackageCollCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMExDiamondAndBagPackageCollCell.xib; sourceTree = "<group>"; };
 		F8301AC0B4E3F11AF1421EB1 /* CFMRewardHistoryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMRewardHistoryCell.xib; sourceTree = "<group>"; };
 		F9395FEDC75B98ACEF4F8899 /* Pods-miliao.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-miliao.debug.xcconfig"; path = "Target Support Files/Pods-miliao/Pods-miliao.debug.xcconfig"; sourceTree = "<group>"; };
@@ -5527,6 +5548,10 @@
 		7C70E9452FED864D00A11B29 /* NativeGame */ = {
 			isa = PBXGroup;
 			children = (
+				EA7F9B3E17404C57A44B9917 /* GameThree */,
+				FA76D0B8AB834D29BF718252 /* Common */,
+				F414E9175D5E46A483D78496 /* MLChatRoomThemeGameFortuneView.h */,
+				D99D569BD56B4F348EDC0441 /* MLChatRoomThemeGameFortuneView.m */,
 				7C70E9462FED864D00A11B29 /* Entry */,
 				7C70E94B2FED864D00A11B29 /* GameTwo */,
 				7C70E9562FED864D00A11B29 /* Model */,
@@ -8739,6 +8764,32 @@
 			path = "倍率盘";
 			sourceTree = "<group>";
 		};
+		EA7F9B3E17404C57A44B9917 /* GameThree */ = {
+			isa = PBXGroup;
+			children = (
+				CE9C4B4082AE44DCA6D3E47A /* MLChatRoomThemeGameThreeView.h */,
+				02B0ECBE3CCA4F14A21F20A9 /* MLChatRoomThemeGameThreeView.m */,
+				88681BC985BA490FBDEEC872 /* MLChatRoomThemeGameThreeResultView.h */,
+				33146C9237E7408D8C4A805C /* MLChatRoomThemeGameThreeResultView.m */,
+				DE9C9B331C8D4315839465CF /* MLChatRoomThemeGameThreePurchaseView.h */,
+				F0A756065E2E400CBEED7E04 /* MLChatRoomThemeGameThreePurchaseView.m */,
+				5794455D125F45D1950DF7FB /* MLChatRoomThemeGameThreeRecordView.h */,
+				B574AB3D973B4747BF4906C2 /* MLChatRoomThemeGameThreeRecordView.m */,
+				1378D55F624F4F5AA2E5B62A /* MLChatRoomThemeGameThreeRuleView.h */,
+				911A928BAE024EE7BEE8D741 /* MLChatRoomThemeGameThreeRuleView.m */,
+			);
+			path = GameThree;
+			sourceTree = "<group>";
+		};
+		FA76D0B8AB834D29BF718252 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				991D6CAEB48F4037BF6841D6 /* MLChatRoomMarqueeLabel.h */,
+				558874A3A72F4C249E1B5654 /* MLChatRoomMarqueeLabel.m */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		FA9E088C2429259E000A52CF /* 【控件扩展】Category */ = {
 			isa = PBXGroup;
 			children = (
@@ -9883,6 +9934,13 @@
 				00C6002822D97E7A003BA50D /* HXDatePhotoToolManager.m in Sources */,
 				00C602C422D9EB4C003BA50D /* NSData+Base64.m in Sources */,
 				7C70E97A2FED864E00A11B29 /* MLChatRoomThemeGameOneView.m in Sources */,
+				C11E5170878340C99C8DD788 /* MLChatRoomThemeGameThreeView.m in Sources */,
+				00E0FACF562E41C48D249CD9 /* MLChatRoomThemeGameThreeResultView.m in Sources */,
+				6C7A71E5C0584E55BC8523B8 /* MLChatRoomThemeGameThreePurchaseView.m in Sources */,
+				C53AADE1432047C4B18C121B /* MLChatRoomThemeGameThreeRecordView.m in Sources */,
+				588AF04B8F714F82A7F56175 /* MLChatRoomThemeGameThreeRuleView.m in Sources */,
+				CC617A9359FD441AAEC8DEBA /* MLChatRoomMarqueeLabel.m in Sources */,
+				FFE315EAE2D34FCC975B6A47 /* MLChatRoomThemeGameFortuneView.m in Sources */,
 				0052FDE822F59AD800F3F54E /* MLSessionSetViewController.m in Sources */,
 				CB66CF8F2EE8275C006B5FD1 /* CFMHomeRoom.m in Sources */,
 				0090A9D322EA9E4800EFCADD /* MLAudioRecorder.m in Sources */,

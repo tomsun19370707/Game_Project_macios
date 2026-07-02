@@ -6,6 +6,8 @@
 #import "MLChatRoomThemeGameTwoRuleView.h"
 #import "MLChatRoomThemeGameTwoRecordView.h"
 #import "MLChatRoomThemeGameTwoPurchaseView.h"
+#import "MLChatRoomThemeGameFortuneView.h"
+#import "MLChatRoomMarqueeLabel.h"
 #import "Global.h"
 #import "UIViewController+CurViewController.h"
 #import "CFMWalletDiamondRechargeVc.h"
@@ -53,6 +55,10 @@
 @property (nonatomic, strong) SVGAPlayer *svgaPlayer;
 @property (nonatomic, strong) NSArray<MLGameDrawResultModel *> *pendingGifts;
 @property (nonatomic, assign) NSInteger pendingTotalValue;
+@property (nonatomic, assign) NSInteger consumeValue;
+@property (nonatomic, assign) NSInteger produceValue;
+@property (nonatomic, strong) MLChatRoomMarqueeLabel *marqueeLabel;
+@property (nonatomic, strong) MASConstraint *marqueeHeightConstraint;
 
 @end
 
@@ -152,12 +158,16 @@
     UIView *fortuneBar = [[UIView alloc] init];
     fortuneBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     setViewCorner(fortuneBar, 11.5);
+    fortuneBar.userInteractionEnabled = YES;
     [_bgImageView addSubview:fortuneBar];
     [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_recordButton);
         make.trailing.mas_equalTo(_ruleButton.mas_leading).offset(-KAdaptedWidth(10));
         make.size.mas_equalTo(CGSizeMake(74, 23));
     }];
+    
+    UITapGestureRecognizer *fortuneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(fortuneClick)];
+    [fortuneBar addGestureRecognizer:fortuneTap];
     
     UILabel *fortuneLabel = [[UILabel alloc] init];
     fortuneLabel.text = @"今日运势";
@@ -335,6 +345,31 @@
         make.centerY.mas_equalTo(assetContainer);
         make.size.mas_equalTo(CGSizeMake(30, 30));
     }];
+    
+    // 全服中奖轮播跑马灯 (水平居中, 距顶部返回按钮底部 10 pt. 高度默认为 0 隐蔽)
+    _marqueeLabel = [[MLChatRoomMarqueeLabel alloc] init];
+    _marqueeLabel.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    setViewCorner(_marqueeLabel, 11);
+    [_bgImageView addSubview:_marqueeLabel];
+    
+    WeakSelf
+    [_marqueeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(wself.backButton.mas_bottom).offset(10);
+        make.leading.mas_equalTo(24);
+        make.trailing.mas_equalTo(-24);
+        wself.marqueeHeightConstraint = make.height.mas_equalTo(0);
+    }];
+}
+
+- (void)updateMarqueeHeight:(CGFloat)height {
+    [self.marqueeHeightConstraint uninstall];
+    WeakSelf
+    [self.marqueeLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+        wself.marqueeHeightConstraint = make.height.mas_equalTo(height);
+    }];
+    [UIView animateWithDuration:0.25 animations:^{
+        [wself layoutIfNeeded];
+    }];
 }
 
 - (void)layoutSubviews {
@@ -366,6 +401,62 @@
         [wself renderPrizePeaches];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+    }];
+    
+    // 4. 获取今日运势数据 (对接 typeId == 4 / lottery_id == 2)
+    [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
+        for (MLGameLotteryInfoModel *model in list) {
+            if (model.typeId == 2 || model.typeId == 4 || [model.name containsString:@"神木"]) {
+                wself.consumeValue = model.consume_diamonds;
+                wself.produceValue = model.produce_diamonds;
+                break;
+            }
+        }
+    } failure:^(NSError *error) {
+        // 静默失败
+    }];
+    
+    // 5. 获取全服中奖广播跑马灯
+    [MLGameLotteryService getLotteryWinLogWithTypeId:self.typeId page:1 pageSize:20 success:^(NSArray *list, NSInteger total) {
+        if (list.count > 0) {
+            NSMutableArray<NSAttributedString *> *items = [NSMutableArray array];
+            for (NSDictionary *dict in list) {
+                NSString *nickname = dict[@"nickname"] ?: @"";
+                if (nickname.length > 0) {
+                    if (nickname.length == 1) {
+                        nickname = @"*";
+                    } else if (nickname.length == 2) {
+                        nickname = [NSString stringWithFormat:@"%@*", [nickname substringToIndex:1]];
+                    } else {
+                        nickname = [NSString stringWithFormat:@"%@***%@", [nickname substringToIndex:1], [nickname substringFromIndex:nickname.length - 1]];
+                    }
+                }
+                NSString *giftName = dict[@"name"] ?: @"";
+                NSString *fullText = [NSString stringWithFormat:@"恭喜 %@ 在神木栖灵获得 %@", nickname, giftName];
+                NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:fullText];
+                [attrStr addAttribute:NSForegroundColorAttributeName value:mHexRGB(0xE1F5FE) range:NSMakeRange(0, fullText.length)];
+                [attrStr addAttribute:NSFontAttributeName value:KFontBoldA(11) range:NSMakeRange(0, fullText.length)];
+                
+                NSRange nickRange = [fullText rangeOfString:nickname];
+                if (nickRange.location != NSNotFound) {
+                    [attrStr addAttribute:NSForegroundColorAttributeName value:mHexRGB(0xFFE66F) range:nickRange];
+                }
+                NSRange giftRange = [fullText rangeOfString:giftName options:NSBackwardsSearch];
+                if (giftRange.location != NSNotFound) {
+                    [attrStr addAttribute:NSForegroundColorAttributeName value:mHexRGB(0xFFE66F) range:giftRange];
+                }
+                [items addObject:attrStr];
+            }
+            [wself.marqueeLabel setMarqueeItems:items];
+            [wself.marqueeLabel startScroll];
+            [wself updateMarqueeHeight:24];
+        } else {
+            [wself.marqueeLabel stopScroll];
+            [wself updateMarqueeHeight:0];
+        }
+    } failure:^(NSError *error) {
+        [wself.marqueeLabel stopScroll];
+        [wself updateMarqueeHeight:0];
     }];
 }
 
@@ -541,6 +632,10 @@
     [MLChatRoomThemeGameTwoRecordView showInView:self.superview typeId:self.typeId];
 }
 
+- (void)fortuneClick {
+    [MLChatRoomThemeGameFortuneView showInView:self.superview consume:self.consumeValue produce:self.produceValue];
+}
+
 - (void)openPurchaseDialog {
     WeakSelf
     [MLChatRoomThemeGameTwoPurchaseView showInView:self.superview infoModel:self.infoModel purchaseSuccess:^(NSInteger newKeyBalance) {
@@ -599,6 +694,10 @@
     if (curVC) {
         CFMWalletDiamondRechargeVc *re = [[CFMWalletDiamondRechargeVc alloc] init];
         re.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        WeakSelf
+        re.dismissBlock = ^{
+            [wself loadData];
+        };
         [curVC presentViewController:re animated:NO completion:nil];
     }
 }

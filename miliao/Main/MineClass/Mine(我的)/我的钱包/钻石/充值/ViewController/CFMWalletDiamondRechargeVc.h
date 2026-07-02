@@ -10,4 +10,6 @@
 
 @interface CFMWalletDiamondRechargeVc : BaseVC 
 
+@property (nonatomic, copy) void (^dismissBlock)(void);
+
 @end

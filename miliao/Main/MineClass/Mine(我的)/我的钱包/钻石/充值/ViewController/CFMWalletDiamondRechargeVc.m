@@ -53,6 +53,13 @@
     [self fetchBalance];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    if (self.dismissBlock) {
+        self.dismissBlock();
+    }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // NavBar

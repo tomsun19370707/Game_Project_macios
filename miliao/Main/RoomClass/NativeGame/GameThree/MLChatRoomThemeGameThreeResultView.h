@@ -1,0 +1,17 @@
+#import <UIKit/UIKit.h>
+#import "MLGameDrawResultModel.h"
+
+@interface MLChatRoomThemeGameThreeResultView : UIView
+
+/**
+ 弹出并展示神木栖灵中奖结果弹窗
+ */
++ (void)showInView:(UIView *)parentView 
+             gifts:(NSArray<MLGameDrawResultModel *> *)gifts 
+        totalValue:(NSInteger)value 
+             times:(NSInteger)times
+        retryBlock:(void(^)(void))retry;
+
+- (void)updateGifts:(NSArray<MLGameDrawResultModel *> *)gifts totalValue:(NSInteger)value times:(NSInteger)times;
+
+@end

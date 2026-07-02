@@ -2,6 +2,7 @@
 #import "MLChatRoomNativeGameCell.h"
 #import "MLChatRoomThemeGameOneView.h"
 #import "MLChatRoomThemeGameTwoView.h"
+#import "MLChatRoomThemeGameThreeView.h"
 #import "Global.h"
 
 @interface MLChatRoomNativeGameView () <UICollectionViewDelegate, UICollectionViewDataSource>
@@ -149,6 +150,10 @@
         [cell configureWithTitle:@"神木栖灵"
                        logoName:@"theme_game_two_entry_icon"
                       textColor:mHexRGB(0xE1F5FE)];
+    } else if (indexPath.item == 2) {
+        [cell configureWithTitle:@"星辰序章"
+                       logoName:@"native_game_entry_icon"
+                      textColor:mHexRGB(0xE1F5FE)];
     } else {
         [cell configureWithTitle:@"敬请期待"
                        logoName:@"chat_room_plate_draw"
@@ -159,7 +164,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.item >= 2) {
+    if (indexPath.item >= 3) {
         // “敬请期待”格子 -> 拦截点击事件，直接忽略
         return;
     }
@@ -172,6 +177,9 @@
         } else if (indexPath.item == 1) {
             // 打开玩法2 (神木栖灵, lottery_id = 2, typeId = 4)
             [MLChatRoomThemeGameTwoView showInView:parentView typeId:4];
+        } else if (indexPath.item == 2) {
+            // 打开玩法3 (星辰序章, lottery_id = 3, typeId = 5)
+            [MLChatRoomThemeGameThreeView showInView:parentView typeId:5];
         }
     }];
 }

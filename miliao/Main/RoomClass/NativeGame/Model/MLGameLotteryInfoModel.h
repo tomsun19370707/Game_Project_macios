@@ -15,6 +15,10 @@
 @property (nonatomic, strong) NSArray<MLGameLotteryOptModel *> *coin_cost_opt;
 @property (nonatomic, assign) NSInteger lottery_coin; // 当前玩法的钥匙余额
 @property (nonatomic, assign) NSInteger lucky; // 玩法保底寻梦值
+@property (nonatomic, assign) NSInteger profit_rate; // 运势收益率，例如 1000 表示 1000%
+@property (nonatomic, assign) NSInteger consume_diamonds; // 今日消耗钻石数
+@property (nonatomic, assign) NSInteger produce_diamonds; // 今日产出钻石数
+@property (nonatomic, assign) NSInteger coin_cost; // 对应钥匙消耗数
 - (NSString *)imageUrl;
 @end
 
