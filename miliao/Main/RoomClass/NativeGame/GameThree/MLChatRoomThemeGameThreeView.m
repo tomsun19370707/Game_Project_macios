@@ -92,19 +92,20 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMaskTap:)];
     [_maskView addGestureRecognizer:tap];
     
-    // 背景大图 (占位使用玩法二背景)
+    // 背景大图 (锁定 750:1311 比例，在宽屏设备上限宽 390 pt 居中，防拉伸变形与漂移)
     _bgImageView = [[UIImageView alloc] init];
     _bgImageView.image = [UIImage imageNamed:@"theme_game_two_clean_bg"];
     if (_bgImageView.image == nil) {
         _bgImageView.backgroundColor = mHexRGB(0x0E1920); // 玩法三深沉太空背景兜底
     }
-    _bgImageView.contentMode = UIViewContentModeScaleAspectFit;
+    _bgImageView.contentMode = UIViewContentModeScaleToFill;
     _bgImageView.userInteractionEnabled = YES;
     [self addSubview:_bgImageView];
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(self);
-        make.width.mas_equalTo(self);
-        make.height.mas_equalTo(self);
+        make.width.mas_equalTo(self).priorityMedium();
+        make.width.mas_lessThanOrEqualTo(390).priorityHigh();
+        make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1311.0 / 750.0);
     }];
     
     // 左上角返回/关闭按钮 (跨玩法复用切图)
@@ -117,7 +118,7 @@
     [_backButton addTarget:self action:@selector(backClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_backButton];
     [_backButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedHeight(16));
+        make.top.mas_equalTo(KAdaptedWidth(16));
         make.leading.mas_equalTo(KAdaptedWidth(16));
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
@@ -128,7 +129,7 @@
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedHeight(16));
+        make.top.mas_equalTo(KAdaptedWidth(16));
         make.trailing.mas_equalTo(-KAdaptedWidth(16));
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
@@ -139,7 +140,7 @@
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedHeight(16));
+        make.top.mas_equalTo(KAdaptedWidth(16));
         make.trailing.mas_equalTo(_recordButton.mas_leading).offset(-KAdaptedWidth(10));
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
@@ -151,8 +152,8 @@
     fortuneBar.userInteractionEnabled = YES;
     [_bgImageView addSubview:fortuneBar];
     [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(_recordButton);
-        make.trailing.mas_equalTo(_ruleButton.mas_leading).offset(-KAdaptedWidth(10));
+        make.bottom.mas_equalTo(_bgImageView.mas_top).offset(-4);
+        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-8);
         make.size.mas_equalTo(CGSizeMake(74, 23));
     }];
     
@@ -175,7 +176,7 @@
     [_bgImageView addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.centerY.mas_equalTo(_bgImageView).offset(-KAdaptedHeight(30));
+        make.centerY.mas_equalTo(_bgImageView).offset(-KAdaptedWidth(30));
         make.size.mas_equalTo(CGSizeMake(316, 324));
     }];
     
@@ -187,7 +188,7 @@
     [_bgImageView addSubview:assetContainer];
     [assetContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.top.mas_equalTo(cardsContainer.mas_bottom).offset(KAdaptedHeight(15));
+        make.top.mas_equalTo(cardsContainer.mas_bottom).offset(KAdaptedWidth(15));
         make.width.mas_equalTo(240);
         make.height.mas_equalTo(30);
     }];
@@ -259,7 +260,7 @@
     [_bgImageView addSubview:_drawTenButton];
     [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.bottom.mas_equalTo(-KAdaptedHeight(40));
+        make.bottom.mas_equalTo(-KAdaptedWidth(40));
         make.size.mas_equalTo(CGSizeMake(112, 56));
     }];
     

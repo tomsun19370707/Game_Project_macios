@@ -77,9 +77,9 @@
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_closeButton];
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(12);
-        make.trailing.mas_equalTo(-12);
-        make.size.mas_equalTo(CGSizeMake(32, 32));
+        make.top.mas_equalTo(28);
+        make.leading.mas_equalTo(32);
+        make.size.mas_equalTo(CGSizeMake(34, 34));
     }];
     
     _textView = [[UITextView alloc] init];

@@ -300,27 +300,35 @@
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_closeButton];
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(12);
-        make.trailing.mas_equalTo(-12);
-        make.size.mas_equalTo(CGSizeMake(32, 32));
+        make.top.mas_equalTo(28);
+        make.leading.mas_equalTo(32);
+        make.size.mas_equalTo(CGSizeMake(34, 34));
+    }];
+    
+    // 页签容器 (水平居中, 定位于高度 16.5% 处, 即约 77 pt)
+    UIView *tabsContainer = [[UIView alloc] init];
+    [_bgImageView addSubview:tabsContainer];
+    [tabsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(77);
+        make.centerX.mas_equalTo(_bgImageView);
+        make.size.mas_equalTo(CGSizeMake(168, 32));
     }];
     
     _allRecordTab = [UIButton buttonWithType:UIButtonTypeCustom];
     [_allRecordTab setImage:[UIImage imageNamed:@"theme_game_two_record_tab_all_selected"] forState:UIControlStateNormal];
     [_allRecordTab addTarget:self action:@selector(allTabClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_allRecordTab];
+    [tabsContainer addSubview:_allRecordTab];
     [_allRecordTab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(18);
-        make.leading.mas_equalTo(20);
+        make.leading.top.mas_equalTo(0);
         make.size.mas_equalTo(CGSizeMake(80, 32));
     }];
     
     _myRecordTab = [UIButton buttonWithType:UIButtonTypeCustom];
     [_myRecordTab setImage:[UIImage imageNamed:@"theme_game_two_record_tab_mine"] forState:UIControlStateNormal];
     [_myRecordTab addTarget:self action:@selector(myTabClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_myRecordTab];
+    [tabsContainer addSubview:_myRecordTab];
     [_myRecordTab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_allRecordTab);
+        make.top.mas_equalTo(0);
         make.leading.mas_equalTo(_allRecordTab.mas_trailing).offset(8);
         make.size.mas_equalTo(CGSizeMake(80, 32));
     }];
@@ -336,8 +344,10 @@
     [_bgImageView addSubview:_tableView];
     
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_allRecordTab.mas_bottom).offset(15);
-        make.leading.trailing.bottom.mas_equalTo(_bgImageView);
+        make.top.mas_equalTo(tabsContainer.mas_bottom).offset(12);
+        make.leading.mas_equalTo(18);
+        make.trailing.mas_equalTo(-18);
+        make.bottom.mas_equalTo(-60); // 60pt bottom safety margin
     }];
 }
 
