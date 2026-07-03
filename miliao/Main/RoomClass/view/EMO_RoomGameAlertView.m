@@ -6,7 +6,7 @@
 #import "CFMultiplierGamesVC.h"
 #import "SRWKWebViewController.h"
 
-#define ALERT_SCALE 2.0
+#define ALERT_SCALE 1.0
 
 @interface EMO_RoomGameAlertView ()
 @property (nonatomic, strong) UIImageView *baseView;
@@ -46,11 +46,11 @@
     [self addSubview:self.baseView];
     self.baseView.center = self.center;
 
-    /// ✅ scrollView 高度 ×2，位置按比例上移一点
+    /// ✅ scrollView 放置于安全居中位置，高保真还原设计高度 320 pt
     self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(hh(30),
-                                                                     hh(130 * ALERT_SCALE * 0.8),
+                                                                     hh(130),
                                                                      hh(630),
-                                                                     hh(320 * ALERT_SCALE))];
+                                                                     hh(320))];
     [self.baseView addSubview:self.scrollView];
 
     [self fetchRewardPanList];
@@ -124,14 +124,17 @@
 
     self.scrollView.contentSize = CGSizeMake(0, contentH);
 
-    /// ✅ baseView 动态高度也保持2倍逻辑
+    /// ✅ baseView 动态高度与屏幕安全限高 (maxH 设为 550 pt 以防 iPhone X 超屏)
     CGFloat minH = hh(476 * ALERT_SCALE);
-    CGFloat maxH = hh(900); /// 防止超屏
+    CGFloat maxH = hh(550); /// 防止超屏
 
-    CGFloat needH = contentH + hh(160 * ALERT_SCALE);
+    CGFloat needH = contentH + hh(150);
 
     self.baseView.mj_h = MAX(minH, MIN(needH, maxH));
     self.baseView.center = self.center;
+
+    // 动态调整 scrollView 的 frame 高度，以防内容超出 maxH 被截断（启用内部滚动）
+    self.scrollView.frame = CGRectMake(hh(30), hh(130), hh(630), self.baseView.mj_h - hh(160));
 
     /// cell尺寸 ×2（只放大高度相关）
     CGFloat w = hh(150);              /// 宽度不变
