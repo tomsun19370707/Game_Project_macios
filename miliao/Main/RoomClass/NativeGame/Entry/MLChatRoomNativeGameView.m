@@ -145,15 +145,15 @@
     if (indexPath.item == 0) {
         [cell configureWithTitle:@"寻梦之旅"
                        logoName:@"native_game_one_preview"
-                      textColor:mHexRGB(0xE1F5FE)];
+                      textColor:[UIColor blackColor]];
     } else if (indexPath.item == 1) {
         [cell configureWithTitle:@"神木栖灵"
                        logoName:@"theme_game_two_entry_icon"
-                      textColor:mHexRGB(0xE1F5FE)];
+                      textColor:[UIColor blackColor]];
     } else if (indexPath.item == 2) {
         [cell configureWithTitle:@"星辰序章"
                        logoName:@"native_game_entry_icon"
-                      textColor:mHexRGB(0xE1F5FE)];
+                      textColor:[UIColor blackColor]];
     } else {
         [cell configureWithTitle:@"敬请期待"
                        logoName:@"chat_room_plate_draw"

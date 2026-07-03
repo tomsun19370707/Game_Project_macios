@@ -77,12 +77,17 @@
             make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(72), KAdaptedWidth(85)));
         }];
     } else {
-        // 活跃游戏：显示边框底板，logoImageView 缩放嵌套在中心 (58 * 58 pt)
+        // 活跃游戏：显示边框底板，logoImageView 缩放嵌套在偏上位置 (1代大小为50，2和3代大小为58)
         self.cellBgView.hidden = NO;
         setViewCorner(self.logoImageView, KAdaptedWidth(4));
         [self.logoImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.center.mas_equalTo(self.cellBgView);
-            make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(58), KAdaptedWidth(58)));
+            make.centerX.mas_equalTo(self.cellBgView);
+            make.centerY.mas_equalTo(self.cellBgView).offset(-KAdaptedWidth(4));
+            if ([logoName isEqualToString:@"native_game_one_preview"]) {
+                make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(50), KAdaptedWidth(50)));
+            } else {
+                make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(58), KAdaptedWidth(58)));
+            }
         }];
     }
 }
