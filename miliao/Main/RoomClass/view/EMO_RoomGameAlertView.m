@@ -33,8 +33,8 @@
 
     self.backgroundColor = UIColor.clearColor;
 
-    /// ✅ 宽度不变，高度 ×2
-    self.baseView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, hh(690), hh(476 * ALERT_SCALE))];
+    /// ✅ 宽度自适应安全居中 (设计 690px 在 1x 下为 345 pt)
+    self.baseView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, hh(345), hh(238 * ALERT_SCALE))];
     self.baseView.image = [UIImage imageNamed:@"mgame_alertviewbg"];
 //    UIImage *image = [UIImage imageNamed:@"mgame_alertviewbg"];
 //
@@ -46,11 +46,11 @@
     [self addSubview:self.baseView];
     self.baseView.center = self.center;
 
-    /// ✅ scrollView 放置于安全居中位置，高保真还原设计高度 320 pt
-    self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(hh(30),
-                                                                     hh(130),
-                                                                     hh(630),
-                                                                     hh(320))];
+    /// ✅ scrollView 放置于安全居中位置，高保真还原设计高度 160 pt
+    self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(hh(15),
+                                                                     hh(65),
+                                                                     hh(315),
+                                                                     hh(160))];
     [self.baseView addSubview:self.scrollView];
 
     [self fetchRewardPanList];
@@ -118,33 +118,33 @@
 
     NSInteger line = self.dataArr.count / 3 + (self.dataArr.count % 3 > 0 ? 1 : 0);
 
-    /// ✅ 每行高度 ×2
-    CGFloat rowH = hh(200 * 1);
+    /// ✅ 每行高度 100 pt
+    CGFloat rowH = hh(100);
     CGFloat contentH = line * rowH;
 
     self.scrollView.contentSize = CGSizeMake(0, contentH);
 
-    /// ✅ baseView 动态高度与屏幕安全限高 (maxH 设为 550 pt 以防 iPhone X 超屏)
-    CGFloat minH = hh(476 * ALERT_SCALE);
-    CGFloat maxH = hh(550); /// 防止超屏
+    /// ✅ baseView 动态高度与屏幕安全限高 (maxH 设为 450 pt 以防 iPhone X 超屏)
+    CGFloat minH = hh(238 * ALERT_SCALE);
+    CGFloat maxH = hh(450); /// 防止超屏
 
-    CGFloat needH = contentH + hh(150);
+    CGFloat needH = contentH + hh(80);
 
     self.baseView.mj_h = MAX(minH, MIN(needH, maxH));
     self.baseView.center = self.center;
 
     // 动态调整 scrollView 的 frame 高度，以防内容超出 maxH 被截断（启用内部滚动）
-    self.scrollView.frame = CGRectMake(hh(30), hh(130), hh(630), self.baseView.mj_h - hh(160));
+    self.scrollView.frame = CGRectMake(hh(15), hh(65), hh(315), self.baseView.mj_h - hh(80));
 
-    /// cell尺寸 ×2（只放大高度相关）
-    CGFloat w = hh(150);              /// 宽度不变
-    CGFloat h = hh(174 * 1);
+    /// cell尺寸 1x 适配
+    CGFloat w = hh(75);              /// 宽度适配为 75 pt
+    CGFloat h = hh(87);
 
     for (int i = 0; i < self.dataArr.count; i++) {
 
         NSDictionary *dic = self.dataArr[i];
 
-        int x = (i % 3) * hh(210) + hh(30);
+        int x = (i % 3) * hh(105) + hh(15);
         int y = (i / 3) * rowH;
 
         UIImageView *view = [[UIImageView alloc] initWithFrame:CGRectMake(x, y, w, h)];
@@ -152,18 +152,18 @@
         view.image = [UIImage imageNamed:@"mgame_alertview_cellbg"];
         [self.scrollView addSubview:view];
 
-        /// 图片也适当放大
-        UIImageView *pic = [[UIImageView alloc] initWithFrame:CGRectMake(hh(15),
-                                                                         hh(15),
-                                                                         hh(120),
-                                                                         hh(120 * 1))];
+        /// 图片尺寸适配
+        UIImageView *pic = [[UIImageView alloc] initWithFrame:CGRectMake(hh(7.5),
+                                                                         hh(7.5),
+                                                                         hh(60),
+                                                                         hh(60))];
         [pic sd_setImageWithURL:[NSURL URLWithString:dic[@"image"]]];
         [view addSubview:pic];
 
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0,
-                                                                   h - hh(40),
+                                                                   h - hh(20),
                                                                    view.width,
-                                                                   hh(30))];
+                                                                   hh(15))];
         label.textAlignment = NSTextAlignmentCenter;
         label.text = dic[@"name"];
         label.font = [UIFont systemFontOfSize:12];
