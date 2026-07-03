@@ -75,7 +75,7 @@
     
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(self);
-        make.size.mas_equalTo(CGSizeMake(297, 393));
+        make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(297), KAdaptedWidth(393)));
     }];
     
     // 标题 (15 pt bold, top 16 pt, color #FFFFFF)
@@ -112,9 +112,9 @@
     
     // UICollectionView (Cell 72 * 100 pt, 3列布局, minimumLineSpacing = 12, minimumInteritemSpacing = 16)
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-    layout.itemSize = CGSizeMake(72, 100);
-    layout.minimumLineSpacing = 12;
-    layout.minimumInteritemSpacing = 16;
+    layout.itemSize = CGSizeMake(KAdaptedWidth(72), KAdaptedWidth(100));
+    layout.minimumLineSpacing = KAdaptedWidth(12);
+    layout.minimumInteritemSpacing = KAdaptedWidth(16);
     
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
     _collectionView.backgroundColor = [UIColor clearColor];
@@ -126,10 +126,10 @@
     
     // 距弹窗顶部 64 pt，距左右边缘各 20 pt，距底部 20 pt
     [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(64);
-        make.leading.mas_equalTo(20);
-        make.trailing.mas_equalTo(-20);
-        make.bottom.mas_equalTo(-20);
+        make.top.mas_equalTo(KAdaptedWidth(64));
+        make.leading.mas_equalTo(KAdaptedWidth(20));
+        make.trailing.mas_equalTo(-KAdaptedWidth(20));
+        make.bottom.mas_equalTo(-KAdaptedWidth(20));
     }];
 }
 
