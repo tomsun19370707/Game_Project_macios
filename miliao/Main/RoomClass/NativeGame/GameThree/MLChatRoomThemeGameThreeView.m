@@ -92,11 +92,11 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMaskTap:)];
     [_maskView addGestureRecognizer:tap];
     
-    // 背景大图 (锁定 750:1311 比例，在宽屏设备上限宽 390 pt 居中，防拉伸变形与漂移)
+    // 背景大图 (锁定 750:1267 比例，在宽屏设备上限宽 390 pt 居中，防拉伸与漂移)
     _bgImageView = [[UIImageView alloc] init];
-    _bgImageView.image = [UIImage imageNamed:@"theme_game_two_clean_bg"];
+    _bgImageView.image = [UIImage imageNamed:@"theme_game_three_clean_bg"];
     if (_bgImageView.image == nil) {
-        _bgImageView.backgroundColor = mHexRGB(0x0E1920); // 玩法三深沉太空背景兜底
+        _bgImageView.backgroundColor = mHexRGB(0x0E1920); // 玩法三太空背景色兜底
     }
     _bgImageView.contentMode = UIViewContentModeScaleToFill;
     _bgImageView.userInteractionEnabled = YES;
@@ -105,12 +105,12 @@
         make.center.mas_equalTo(self);
         make.width.mas_equalTo(self).priorityMedium();
         make.width.mas_lessThanOrEqualTo(390).priorityHigh();
-        make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1311.0 / 750.0);
+        make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1267.0 / 750.0);
     }];
     
-    // 左上角返回/关闭按钮 (跨玩法复用切图)
+    // 左上角返回/关闭按钮
     _backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_backButton setImage:[UIImage imageNamed:@"theme_game_two_rule_back"] forState:UIControlStateNormal];
+    [_backButton setImage:[UIImage imageNamed:@"theme_game_three_rule_back"] forState:UIControlStateNormal];
     if ([_backButton imageForState:UIControlStateNormal] == nil) {
         [_backButton setTitle:@"✕" forState:UIControlStateNormal];
         [_backButton setTitleColor:kWhiteColor forState:UIControlStateNormal];
@@ -125,7 +125,7 @@
     
     // 记录按钮 (距右边缘 16 pt, top 16)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_recordButton setImage:[UIImage imageNamed:@"theme_game_two_record_btn"] forState:UIControlStateNormal];
+    [_recordButton setImage:[UIImage imageNamed:@"theme_game_three_record_btn"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -136,7 +136,7 @@
     
     // 规则按钮 (位于记录按钮左侧 10 pt)
     _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_ruleButton setImage:[UIImage imageNamed:@"theme_game_two_rule_btn"] forState:UIControlStateNormal];
+    [_ruleButton setImage:[UIImage imageNamed:@"theme_game_three_rule_btn"] forState:UIControlStateNormal];
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -145,15 +145,15 @@
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
     
-    // 今日运势悬浮条 (挂载规则左侧 10 pt)
+    // 今日运势悬浮条 (挂载在规则按钮左侧 10 pt)
     UIView *fortuneBar = [[UIView alloc] init];
     fortuneBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     setViewCorner(fortuneBar, 11.5);
     fortuneBar.userInteractionEnabled = YES;
     [_bgImageView addSubview:fortuneBar];
     [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_bgImageView.mas_top).offset(-4);
-        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-8);
+        make.centerY.mas_equalTo(_ruleButton);
+        make.trailing.mas_equalTo(_ruleButton.mas_leading).offset(-KAdaptedWidth(10));
         make.size.mas_equalTo(CGSizeMake(74, 23));
     }];
     
@@ -170,32 +170,41 @@
         make.edges.mas_equalTo(fortuneBar);
     }];
     
-    // 18宫格转盘底框容器 (品字环形对称布局，宽 316, 高 324)
+    // 吉祥物角色 (位于圆盘中央)
+    UIImageView *characterView = [[UIImageView alloc] init];
+    characterView.image = [UIImage imageNamed:@"theme_game_three_character"];
+    characterView.contentMode = UIViewContentModeScaleAspectFit;
+    [_bgImageView addSubview:characterView];
+    [characterView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(KAdaptedWidth(77.25));
+        make.top.mas_equalTo(KAdaptedWidth(168.25));
+        make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(220.5), KAdaptedWidth(259.5)));
+    }];
+    
+    // 8宫格转盘底框容器 (全屏等比对齐背景图)
     UIView *cardsContainer = [[UIView alloc] init];
     cardsContainer.backgroundColor = [UIColor clearColor];
     [_bgImageView addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(_bgImageView);
-        make.centerY.mas_equalTo(_bgImageView).offset(-KAdaptedWidth(30));
-        make.size.mas_equalTo(CGSizeMake(316, 324));
+        make.edges.mas_equalTo(_bgImageView);
     }];
     
-    [self layout18GiftCardsInContainer:cardsContainer];
+    [self layout8GiftCardsInContainer:cardsContainer];
     
-    // 资产状态栏容器 (放在转盘与底部按钮之间)
+    // 资产状态栏容器
     UIView *assetContainer = [[UIView alloc] init];
     assetContainer.backgroundColor = [UIColor clearColor];
     [_bgImageView addSubview:assetContainer];
     [assetContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.top.mas_equalTo(cardsContainer.mas_bottom).offset(KAdaptedWidth(15));
+        make.top.mas_equalTo(_bgImageView.mas_top).offset(KAdaptedWidth(490));
         make.width.mas_equalTo(240);
         make.height.mas_equalTo(30);
     }];
     
     // 钻石栏 (挂左)
     UIImageView *diaIcon = [[UIImageView alloc] init];
-    diaIcon.image = [UIImage imageNamed:@"theme_game_one_cover_diamond"];
+    diaIcon.image = [UIImage imageNamed:@"theme_game_three_diamond_icon"];
     [assetContainer addSubview:diaIcon];
     [diaIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
@@ -214,7 +223,7 @@
     }];
     
     _diamondPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_diamondPlusButton setImage:[UIImage imageNamed:@"theme_game_two_plus_icon"] forState:UIControlStateNormal];
+    [_diamondPlusButton setImage:[UIImage imageNamed:@"theme_game_three_plus_icon"] forState:UIControlStateNormal];
     [_diamondPlusButton addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
     [assetContainer addSubview:_diamondPlusButton];
     [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -225,7 +234,7 @@
     
     // 钥匙余额栏 (挂右)
     _keyPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_keyPlusButton setImage:[UIImage imageNamed:@"theme_game_two_plus_icon"] forState:UIControlStateNormal];
+    [_keyPlusButton setImage:[UIImage imageNamed:@"theme_game_three_plus_icon"] forState:UIControlStateNormal];
     [_keyPlusButton addTarget:self action:@selector(openPurchaseDialog) forControlEvents:UIControlEventTouchUpInside];
     [assetContainer addSubview:_keyPlusButton];
     [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -245,7 +254,7 @@
     }];
     
     UIImageView *keyIcon = [[UIImageView alloc] init];
-    keyIcon.image = [UIImage imageNamed:@"theme_game_one_purchase_key_icon"];
+    keyIcon.image = [UIImage imageNamed:@"theme_game_three_purchase_key_icon"];
     [assetContainer addSubview:keyIcon];
     [keyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(_keyBalanceLabel.mas_leading).offset(-4);
@@ -253,35 +262,44 @@
         make.size.mas_equalTo(CGSizeMake(30, 30));
     }];
     
-    // 底部“品”字形启航按钮组 (跨玩法复用按钮资源)
-    _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawTenButton setImage:[UIImage imageNamed:@"theme_game_one_draw_ten"] forState:UIControlStateNormal];
-    [_drawTenButton addTarget:self action:@selector(drawTenClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_drawTenButton];
-    [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    // 底部“品”字形启航按钮容器
+    UIView *drawButtonsContainer = [[UIView alloc] init];
+    [_bgImageView addSubview:drawButtonsContainer];
+    [drawButtonsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.bottom.mas_equalTo(-KAdaptedWidth(40));
-        make.size.mas_equalTo(CGSizeMake(112, 56));
+        make.bottom.mas_equalTo(-KAdaptedWidth(14));
+        make.size.mas_equalTo(CGSizeMake(256, 112));
     }];
     
-    _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawOneButton setImage:[UIImage imageNamed:@"theme_game_one_draw_one"] forState:UIControlStateNormal];
-    [_drawOneButton addTarget:self action:@selector(drawOneClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_drawOneButton];
-    [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(_drawTenButton.mas_leading).offset(-KAdaptedWidth(12));
-        make.centerY.mas_equalTo(_drawTenButton);
-        make.size.mas_equalTo(CGSizeMake(112, 56));
-    }];
-    
+    // 百祥落盘 (100次 - 中间靠上)
     _drawHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawHundredButton setImage:[UIImage imageNamed:@"theme_game_one_draw_hundred"] forState:UIControlStateNormal];
+    [_drawHundredButton setImage:[UIImage imageNamed:@"theme_game_three_draw100_btn"] forState:UIControlStateNormal];
     [_drawHundredButton addTarget:self action:@selector(drawHundredClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_drawHundredButton];
+    [drawButtonsContainer addSubview:_drawHundredButton];
     [_drawHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_drawTenButton.mas_trailing).offset(KAdaptedWidth(12));
-        make.centerY.mas_equalTo(_drawTenButton);
-        make.size.mas_equalTo(CGSizeMake(112, 56));
+        make.top.mas_equalTo(0);
+        make.centerX.mas_equalTo(drawButtonsContainer);
+        make.size.mas_equalTo(CGSizeMake(104, 60));
+    }];
+    
+    // 一星纳福 (1次 - 底部靠左)
+    _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_drawOneButton setImage:[UIImage imageNamed:@"theme_game_three_draw1_btn"] forState:UIControlStateNormal];
+    [_drawOneButton addTarget:self action:@selector(drawOneClick) forControlEvents:UIControlEventTouchUpInside];
+    [drawButtonsContainer addSubview:_drawOneButton];
+    [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.bottom.mas_equalTo(0);
+        make.size.mas_equalTo(CGSizeMake(104, 60));
+    }];
+    
+    // 十运齐聚 (10次 - 底部靠右)
+    _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_drawTenButton setImage:[UIImage imageNamed:@"theme_game_three_draw10_btn"] forState:UIControlStateNormal];
+    [_drawTenButton addTarget:self action:@selector(drawTenClick) forControlEvents:UIControlEventTouchUpInside];
+    [drawButtonsContainer addSubview:_drawTenButton];
+    [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.bottom.mas_equalTo(0);
+        make.size.mas_equalTo(CGSizeMake(104, 60));
     }];
     
     // 全服中奖轮播跑马灯 (水平居中, 距顶部返回按钮底部 10 pt. 高度默认为 0 隐蔽)
@@ -310,23 +328,28 @@
     }];
 }
 
-#pragma mark - 18宫格对称环状排布逻辑 (6x5 对齐)
-- (void)layout18GiftCardsInContainer:(UIView *)container {
-    CGFloat cardW = 46.0f;
-    CGFloat cardH = 60.0f;
-    CGFloat hGap = 8.0f;
-    CGFloat vGap = 6.0f;
+#pragma mark - 8宫格转盘底框容器 (圆形排布布局)
+- (void)layout8GiftCardsInContainer:(UIView *)container {
+    static const CGPoint SLOT_CENTERS[] = {
+        {187.5f, 164.0f},   // 1 (0度)
+        {268.45f, 203.25f}, // 2 (45度)
+        {302.0f, 298.0f},   // 3 (90度)
+        {268.45f, 392.75f}, // 4 (135度)
+        {187.5f, 432.0f},   // 5 (180度)
+        {106.55f, 392.75f}, // 6 (225度)
+        {73.0f, 298.0f},    // 7 (270度)
+        {106.55f, 203.25f}  // 8 (315度)
+    };
     
-    for (int i = 0; i < 18; i++) {
+    for (int i = 0; i < 8; i++) {
         UIView *card = [[UIView alloc] init];
         card.backgroundColor = [UIColor clearColor];
         [container addSubview:card];
         [self.giftCardViews addObject:card];
         
-        // 格子背景
+        // 格子底板背景
         UIImageView *cardBg = [[UIImageView alloc] init];
-        NSString *bgName = [NSString stringWithFormat:@"theme_game_one_gift_board_%d", (i % 4) + 1];
-        cardBg.image = [UIImage imageNamed:bgName];
+        cardBg.image = [UIImage imageNamed:@"theme_game_three_gift_board"];
         cardBg.contentMode = UIViewContentModeScaleToFill;
         [card addSubview:cardBg];
         [cardBg mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -349,52 +372,41 @@
         giftImg.contentMode = UIViewContentModeScaleAspectFit;
         [card addSubview:giftImg];
         [giftImg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(card).insets(UIEdgeInsetsMake(4, 4, 16, 4));
+            make.edges.mas_equalTo(card).insets(UIEdgeInsetsMake(2, 4, 20, 4)); // 避让底部名字和价格空间
         }];
         [self.giftImageViews addObject:giftImg];
         
         UILabel *nameLabel = [[UILabel alloc] init];
-        nameLabel.font = [UIFont boldSystemFontOfSize:9.5];
-        nameLabel.textColor = kWhiteColor;
+        nameLabel.font = [UIFont boldSystemFontOfSize:7.5];
+        nameLabel.textColor = mHexRGB(0xE6EAFE);
         nameLabel.textAlignment = NSTextAlignmentCenter;
-        nameLabel.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-        setViewCorner(nameLabel, 2);
         [card addSubview:nameLabel];
         [nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.bottom.leading.trailing.mas_equalTo(card);
-            make.height.mas_equalTo(14);
+            make.bottom.mas_equalTo(-10);
+            make.leading.trailing.mas_equalTo(0);
+            make.height.mas_equalTo(10);
         }];
         [self.giftNameLabels addObject:nameLabel];
         
-        // 6x5 环状排布：
-        if (i < 6) {
-            [card mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(0);
-                make.leading.mas_equalTo(i * (cardW + hGap));
-                make.size.mas_equalTo(CGSizeMake(cardW, cardH));
-            }];
-        } else if (i < 9) {
-            int row = i - 5;
-            [card mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(row * (cardH + vGap));
-                make.trailing.mas_equalTo(0);
-                make.size.mas_equalTo(CGSizeMake(cardW, cardH));
-            }];
-        } else if (i < 15) {
-            int col = 14 - i;
-            [card mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(4 * (cardH + vGap));
-                make.leading.mas_equalTo(col * (cardW + hGap));
-                make.size.mas_equalTo(CGSizeMake(cardW, cardH));
-            }];
-        } else {
-            int row = 18 - i;
-            [card mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(row * (cardH + vGap));
-                make.leading.mas_equalTo(0);
-                make.size.mas_equalTo(CGSizeMake(cardW, cardH));
-            }];
-        }
+        // 价格标签 (星辰序章圆盘显示价格，例如 "1000紫金")
+        UILabel *priceLabel = [[UILabel alloc] init];
+        priceLabel.font = [UIFont systemFontOfSize:6.5];
+        priceLabel.textColor = mHexRGB(0xFFE66F);
+        priceLabel.textAlignment = NSTextAlignmentCenter;
+        priceLabel.tag = 888; // tag for dynamic pricing binding
+        [card addSubview:priceLabel];
+        [priceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.bottom.mas_equalTo(-1);
+            make.leading.trailing.mas_equalTo(0);
+            make.height.mas_equalTo(9);
+        }];
+        
+        CGPoint center = SLOT_CENTERS[i];
+        [card mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(container.mas_leading).offset(KAdaptedWidth(center.x));
+            make.centerY.mas_equalTo(container.mas_top).offset(KAdaptedWidth(center.y));
+            make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(60), KAdaptedWidth(72)));
+        }];
     }
 }
 
@@ -591,14 +603,14 @@
 
 - (void)runDeceleratingAnimationStep:(NSInteger)currentStep target:(NSInteger)targetIndex completion:(void(^)(void))completion {
     NSInteger minRounds = 2;
-    NSInteger totalSteps = minRounds * 18 + targetIndex;
+    NSInteger totalSteps = minRounds * 8 + targetIndex;
     
     // 清理光圈
     for (UIView *card in self.giftCardViews) {
         [card viewWithTag:999].hidden = YES;
     }
     
-    NSInteger currentIndex = currentStep % 18;
+    NSInteger currentIndex = currentStep % 8;
     if (currentIndex < self.giftCardViews.count) {
         UIView *currentCard = self.giftCardViews[currentIndex];
         [currentCard viewWithTag:999].hidden = NO;

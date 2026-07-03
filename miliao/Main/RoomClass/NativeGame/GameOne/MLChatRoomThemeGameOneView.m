@@ -127,16 +127,17 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMaskTap:)];
     [_maskView addGestureRecognizer:tap];
     
-    // 背景大图
+    // 背景大图 (锁定 740:1136 比例，在宽屏设备上限宽 390 pt 居中，防拉伸与漂移)
     _bgImageView = [[UIImageView alloc] init];
     _bgImageView.image = [UIImage imageNamed:@"theme_game_one_clean_bg"];
-    _bgImageView.contentMode = UIViewContentModeScaleAspectFit;
+    _bgImageView.contentMode = UIViewContentModeScaleToFill;
     _bgImageView.userInteractionEnabled = YES;
     [self addSubview:_bgImageView];
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(self);
-        make.width.mas_equalTo(self);
-        make.height.mas_equalTo(self);
+        make.width.mas_equalTo(self).priorityMedium();
+        make.width.mas_lessThanOrEqualTo(390).priorityHigh();
+        make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1136.0 / 740.0);
     }];
     
     // 左上角返回/关闭按钮 (theme_game_one_rule_back, 36 * 36)
@@ -145,7 +146,7 @@
     [_backButton addTarget:self action:@selector(backClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_backButton];
     [_backButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedHeight(16));
+        make.top.mas_equalTo(KAdaptedWidth(16));
         make.leading.mas_equalTo(KAdaptedWidth(16));
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
@@ -156,7 +157,7 @@
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedHeight(16));
+        make.top.mas_equalTo(KAdaptedWidth(16));
         make.trailing.mas_equalTo(-KAdaptedWidth(16));
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
@@ -167,7 +168,7 @@
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedHeight(16));
+        make.top.mas_equalTo(KAdaptedWidth(16));
         make.trailing.mas_equalTo(_recordButton.mas_leading).offset(-KAdaptedWidth(10));
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
@@ -203,7 +204,7 @@
     [_refreshButton addTarget:self action:@selector(refreshPoolClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_refreshButton];
     [_refreshButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(-KAdaptedHeight(120));
+        make.bottom.mas_equalTo(-KAdaptedWidth(120));
         make.leading.mas_equalTo(KAdaptedWidth(24));
         make.size.mas_equalTo(CGSizeMake(90, 32));
     }];
@@ -214,7 +215,7 @@
     [_exchangeButton addTarget:self action:@selector(exchangeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_exchangeButton];
     [_exchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(-KAdaptedHeight(120));
+        make.bottom.mas_equalTo(-KAdaptedWidth(120));
         make.trailing.mas_equalTo(-KAdaptedWidth(24));
         make.size.mas_equalTo(CGSizeMake(90, 32));
     }];
@@ -224,7 +225,7 @@
     [_bgImageView addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.top.mas_equalTo(KAdaptedHeight(140));
+        make.top.mas_equalTo(KAdaptedWidth(140));
         make.size.mas_equalTo(CGSizeMake(316, 324));
     }];
     
@@ -238,7 +239,7 @@
     [_bgImageView addSubview:_luckyProgressBar];
     [_luckyProgressBar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.bottom.mas_equalTo(-KAdaptedHeight(140));
+        make.bottom.mas_equalTo(-KAdaptedWidth(140));
         make.width.mas_equalTo(KAdaptedWidth(220));
         make.height.mas_equalTo(8);
     }];
@@ -342,7 +343,7 @@
     [_bgImageView addSubview:_drawTenButton];
     [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.bottom.mas_equalTo(-KAdaptedHeight(40));
+        make.bottom.mas_equalTo(-KAdaptedWidth(40));
         make.size.mas_equalTo(CGSizeMake(112, 56));
     }];
     

@@ -172,14 +172,14 @@
     UIView *parentView = self.superview;
     [self dismissWithCompletion:^{
         if (indexPath.item == 0) {
-            // 打开玩法1 (寻梦之旅, lottery_id = 7, typeId = 3)
-            [MLChatRoomThemeGameOneView showInView:parentView typeId:3];
+            // 打开玩法1 (寻梦之旅, lottery_id = 7, typeId = 7)
+            [MLChatRoomThemeGameOneView showInView:parentView typeId:7];
         } else if (indexPath.item == 1) {
-            // 打开玩法2 (神木栖灵, lottery_id = 2, typeId = 4)
-            [MLChatRoomThemeGameTwoView showInView:parentView typeId:4];
+            // 打开玩法2 (神木栖灵, lottery_id = 2, typeId = 6)
+            [MLChatRoomThemeGameTwoView showInView:parentView typeId:6];
         } else if (indexPath.item == 2) {
-            // 打开玩法3 (星辰序章, lottery_id = 3, typeId = 5)
-            [MLChatRoomThemeGameThreeView showInView:parentView typeId:5];
+            // 打开玩法3 (星辰序章, lottery_id = 3, typeId = 3)
+            [MLChatRoomThemeGameThreeView showInView:parentView typeId:3];
         }
     }];
 }

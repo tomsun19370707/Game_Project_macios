@@ -193,16 +193,30 @@
         {148.0f, 395.0f}  // 灵果 9
     };
     
+    // 9个灵果从大到小的错落自适应尺寸 (高保真还原)
+    static const CGSize PEACH_SIZES[] = {
+        {52.5f, 52.5f}, // 灵果 1 (主桃)
+        {37.5f, 37.5f}, // 灵果 2
+        {37.5f, 37.5f}, // 灵果 3
+        {30.0f, 30.0f}, // 灵果 4 (小挂件)
+        {32.5f, 32.5f}, // 灵果 5
+        {35.0f, 35.0f}, // 灵果 6
+        {30.0f, 30.0f}, // 灵果 7 (小挂件)
+        {32.5f, 32.5f}, // 灵果 8
+        {40.0f, 40.0f}  // 灵果 9
+    };
+    
     for (int i = 0; i < 9; i++) {
         UIView *card = [[UIView alloc] init];
         [_bgImageView addSubview:card];
         [self.peachCardViews addObject:card];
         
         CGPoint center = PEACH_CENTERS[i];
+        CGSize size = PEACH_SIZES[i];
         [card mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(_bgImageView.mas_leading).offset(KAdaptedWidth(center.x));
             make.centerY.mas_equalTo(_bgImageView.mas_top).offset(KAdaptedWidth(center.y));
-            make.size.mas_equalTo(CGSizeMake(42, 42));
+            make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(size.width), KAdaptedWidth(size.height)));
         }];
         
         // 最底层发光光圈
