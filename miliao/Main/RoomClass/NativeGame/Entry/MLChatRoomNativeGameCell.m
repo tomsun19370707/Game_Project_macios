@@ -33,7 +33,7 @@
     [_cellBgView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(0);
         make.centerX.mas_equalTo(self.contentView);
-        make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(72), KAdaptedWidth(83.5)));
+        make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(72), KAdaptedWidth(85)));
     }];
     
     _logoImageView = [[UIImageView alloc] init];
@@ -45,7 +45,7 @@
     [_logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(0);
         make.centerX.mas_equalTo(self.contentView);
-        make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(72), KAdaptedWidth(83.5)));
+        make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(72), KAdaptedWidth(85)));
     }];
     
     _nameLabel = [[UILabel alloc] init];
@@ -68,13 +68,13 @@
     self.logoImageView.image = [UIImage imageNamed:logoName];
     
     if ([logoName isEqualToString:@"chat_room_plate_draw"]) {
-        // 占位图：隐藏边框底板，logoImageView 撑满 (72 * 83.5 pt)
+        // 占位图：隐藏边框底板，logoImageView 撑满 (72 * 85 pt)
         self.cellBgView.hidden = YES;
         setViewCorner(self.logoImageView, 0);
         [self.logoImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(0);
             make.centerX.mas_equalTo(self.contentView);
-            make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(72), KAdaptedWidth(83.5)));
+            make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(72), KAdaptedWidth(85)));
         }];
     } else {
         // 活跃游戏：显示边框底板，logoImageView 缩放嵌套在中心 (58 * 58 pt)

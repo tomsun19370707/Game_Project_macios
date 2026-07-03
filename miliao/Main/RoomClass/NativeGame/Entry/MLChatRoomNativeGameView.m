@@ -110,10 +110,10 @@
         make.size.mas_equalTo(CGSizeMake(24, 24));
     }];
     
-    // UICollectionView (Cell 72 * 90 pt, 3列布局, minimumLineSpacing = 8, minimumInteritemSpacing = 16)
+    // UICollectionView (Cell 72 * 90 pt, 3列布局, minimumLineSpacing = 6, minimumInteritemSpacing = 16)
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
     layout.itemSize = CGSizeMake(KAdaptedWidth(72), KAdaptedWidth(90));
-    layout.minimumLineSpacing = KAdaptedWidth(8);
+    layout.minimumLineSpacing = KAdaptedWidth(6);
     layout.minimumInteritemSpacing = KAdaptedWidth(16);
     
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
@@ -124,12 +124,12 @@
     [_collectionView registerClass:[MLChatRoomNativeGameCell class] forCellWithReuseIdentifier:[MLChatRoomNativeGameCell cellIdentifier]];
     [_bgImageView addSubview:_collectionView];
     
-    // 距弹窗顶部 85 pt，距左右边缘各 20 pt，距底部 15 pt
+    // 距弹窗顶部 87 pt，距左右边缘各 20 pt，距底部 11 pt
     [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedWidth(85));
+        make.top.mas_equalTo(KAdaptedWidth(87));
         make.leading.mas_equalTo(KAdaptedWidth(20));
         make.trailing.mas_equalTo(-KAdaptedWidth(20));
-        make.bottom.mas_equalTo(-KAdaptedWidth(15));
+        make.bottom.mas_equalTo(-KAdaptedWidth(11));
     }];
 }
 
