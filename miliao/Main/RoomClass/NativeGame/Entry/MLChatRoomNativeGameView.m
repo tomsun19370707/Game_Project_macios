@@ -124,9 +124,9 @@
     [_collectionView registerClass:[MLChatRoomNativeGameCell class] forCellWithReuseIdentifier:[MLChatRoomNativeGameCell cellIdentifier]];
     [_bgImageView addSubview:_collectionView];
     
-    // 距弹窗顶部 64 pt，距左右边缘各 20 pt，距底部 20 pt
+    // 距弹窗顶部 76 pt，距左右边缘各 20 pt，距底部 20 pt
     [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedWidth(64));
+        make.top.mas_equalTo(KAdaptedWidth(76));
         make.leading.mas_equalTo(KAdaptedWidth(20));
         make.trailing.mas_equalTo(-KAdaptedWidth(20));
         make.bottom.mas_equalTo(-KAdaptedWidth(20));
