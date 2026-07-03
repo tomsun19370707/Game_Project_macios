@@ -110,10 +110,10 @@
         make.size.mas_equalTo(CGSizeMake(24, 24));
     }];
     
-    // UICollectionView (Cell 72 * 100 pt, 3列布局, minimumLineSpacing = 12, minimumInteritemSpacing = 16)
+    // UICollectionView (Cell 72 * 90 pt, 3列布局, minimumLineSpacing = 8, minimumInteritemSpacing = 16)
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-    layout.itemSize = CGSizeMake(KAdaptedWidth(72), KAdaptedWidth(100));
-    layout.minimumLineSpacing = KAdaptedWidth(12);
+    layout.itemSize = CGSizeMake(KAdaptedWidth(72), KAdaptedWidth(90));
+    layout.minimumLineSpacing = KAdaptedWidth(8);
     layout.minimumInteritemSpacing = KAdaptedWidth(16);
     
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
