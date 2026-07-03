@@ -3,6 +3,7 @@
 
 @interface MLChatRoomNativeGameCell ()
 
+@property (nonatomic, strong) UIImageView *cellBgView;
 @property (nonatomic, strong) UIImageView *logoImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
 
@@ -24,6 +25,17 @@
 }
 
 - (void)setupUI {
+    _cellBgView = [[UIImageView alloc] init];
+    _cellBgView.image = [UIImage imageNamed:@"mgame_alertview_cellbg"];
+    _cellBgView.contentMode = UIViewContentModeScaleToFill;
+    [self.contentView addSubview:_cellBgView];
+    
+    [_cellBgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(0);
+        make.centerX.mas_equalTo(self.contentView);
+        make.size.mas_equalTo(CGSizeMake(72, 83.5));
+    }];
+    
     _logoImageView = [[UIImageView alloc] init];
     _logoImageView.contentMode = UIViewContentModeScaleAspectFill;
     _logoImageView.clipsToBounds = YES;
@@ -33,26 +45,45 @@
     [_logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(0);
         make.centerX.mas_equalTo(self.contentView);
-        make.size.mas_equalTo(CGSizeMake(72, 72));
+        make.size.mas_equalTo(CGSizeMake(72, 83.5));
     }];
     
     _nameLabel = [[UILabel alloc] init];
-    _nameLabel.font = [UIFont systemFontOfSize:11];
+    _nameLabel.font = [UIFont systemFontOfSize:10];
     _nameLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:_nameLabel];
     
     [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_logoImageView.mas_bottom).offset(6);
+        make.top.mas_equalTo(_cellBgView.mas_bottom).offset(6);
         make.leading.trailing.mas_equalTo(self.contentView);
     }];
 }
 
 - (void)configureWithTitle:(NSString *)title 
-                 logoName:(NSString *)logoName 
-                textColor:(UIColor *)textColor {
+                  logoName:(NSString *)logoName 
+                 textColor:(UIColor *)textColor {
     self.nameLabel.text = title;
     self.nameLabel.textColor = textColor;
     self.logoImageView.image = [UIImage imageNamed:logoName];
+    
+    if ([logoName isEqualToString:@"chat_room_plate_draw"]) {
+        // 占位图：隐藏边框底板，logoImageView 撑满 (72 * 83.5 pt)
+        self.cellBgView.hidden = YES;
+        setViewCorner(self.logoImageView, 0);
+        [self.logoImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(0);
+            make.centerX.mas_equalTo(self.contentView);
+            make.size.mas_equalTo(CGSizeMake(72, 83.5));
+        }];
+    } else {
+        // 活跃游戏：显示边框底板，logoImageView 缩放嵌套在中心 (58 * 58 pt)
+        self.cellBgView.hidden = NO;
+        setViewCorner(self.logoImageView, 4);
+        [self.logoImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.center.mas_equalTo(self.cellBgView);
+            make.size.mas_equalTo(CGSizeMake(58, 58));
+        }];
+    }
 }
 
 @end

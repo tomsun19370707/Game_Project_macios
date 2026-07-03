@@ -75,7 +75,7 @@
     
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(self);
-        make.size.mas_equalTo(CGSizeMake(345, 456));
+        make.size.mas_equalTo(CGSizeMake(297, 393));
     }];
     
     // 标题 (15 pt bold, top 16 pt, color #FFFFFF)
@@ -110,11 +110,11 @@
         make.size.mas_equalTo(CGSizeMake(24, 24));
     }];
     
-    // UICollectionView (Cell 80 * 110 pt, 3列布局, minimumLineSpacing = 16, minimumInteritemSpacing = 20)
+    // UICollectionView (Cell 72 * 100 pt, 3列布局, minimumLineSpacing = 12, minimumInteritemSpacing = 16)
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-    layout.itemSize = CGSizeMake(80, 110);
-    layout.minimumLineSpacing = 16;
-    layout.minimumInteritemSpacing = 20;
+    layout.itemSize = CGSizeMake(72, 100);
+    layout.minimumLineSpacing = 12;
+    layout.minimumInteritemSpacing = 16;
     
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
     _collectionView.backgroundColor = [UIColor clearColor];
@@ -124,12 +124,12 @@
     [_collectionView registerClass:[MLChatRoomNativeGameCell class] forCellWithReuseIdentifier:[MLChatRoomNativeGameCell cellIdentifier]];
     [_bgImageView addSubview:_collectionView];
     
-    // 距弹窗顶部 70 pt，距左右边缘各 24 pt，距底部 25 pt (使3列布局合理居中且排版规整)
+    // 距弹窗顶部 64 pt，距左右边缘各 20 pt，距底部 20 pt
     [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(70);
-        make.leading.mas_equalTo(24);
-        make.trailing.mas_equalTo(-24);
-        make.bottom.mas_equalTo(-25);
+        make.top.mas_equalTo(64);
+        make.leading.mas_equalTo(20);
+        make.trailing.mas_equalTo(-20);
+        make.bottom.mas_equalTo(-20);
     }];
 }
 
