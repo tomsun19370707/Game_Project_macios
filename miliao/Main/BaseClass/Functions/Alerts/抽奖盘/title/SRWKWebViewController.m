@@ -451,6 +451,19 @@ static NSString *const titleKey = @"title";
         "script.content=\"width=device-width, initial-scale=1.0,maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\";"
         "document.getElementsByTagName('head')[0].appendChild(script);";
     [webView evaluateJavaScript:injectionJSString completionHandler:nil];
+    
+    // 注入强制宽度 100% 与防溢出 CSS（对齐 Android 端样式控制逻辑）
+    NSString *css = @"* { max-width: 100% !important; box-sizing: border-box !important; } "
+                    "img { max-width: 100% !important; height: auto !important; display: block !important; } "
+                    "body { margin: 0 !important; padding: 0 !important; overflow-x: hidden !important; } "
+                    "div, section, article { max-width: 100% !important; overflow-x: hidden !important; }";
+    NSString *cssJS = [NSString stringWithFormat:
+                       @"var style = document.createElement('style');"
+                       "style.type = 'text/css';"
+                       "style.innerHTML = '%@';"
+                       "document.head.appendChild(style);", css];
+    [webView evaluateJavaScript:cssJS completionHandler:nil];
+
     //禁掉长按元素手势
     [webView evaluateJavaScript:@"document.documentElement.style.webkitTouchCallout='none';" completionHandler:nil];
     [webView evaluateJavaScript:@"document.documentElement.style.webkitUserSelect='none';"completionHandler:nil];
