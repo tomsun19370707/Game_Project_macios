@@ -181,7 +181,7 @@
     
     // --- 顶部容器子控件布局 ---
     
-    // 记录按钮 (位于左上角, 宽 62, 高 26)
+    // 记录按钮 (位于左上角, 宽 72, 高 30)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_recordButton setImage:[UIImage imageNamed:@"theme_game_one_record_btn_brighter"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
@@ -189,10 +189,10 @@
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(16));
         make.leading.mas_equalTo(KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(26)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(72), KDialogAdaptedWidth(30)));
     }];
     
-    // 规则按钮 (位于右上角, 宽 62, 高 26)
+    // 规则按钮 (位于右上角, 宽 72, 高 30)
     _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_ruleButton setImage:[UIImage imageNamed:@"theme_game_one_rule_btn_brighter"] forState:UIControlStateNormal];
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
@@ -200,7 +200,7 @@
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(16));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(26)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(72), KDialogAdaptedWidth(30)));
     }];
     
     // 今日运势悬浮条 (宽 70, 高 30. 悬浮在右上角外侧)
@@ -260,12 +260,12 @@
     
     // --- 中部容器子控件布局 ---
     
-    // 18 宫格礼物卡片环形布局容器 (宽 314, 高 339 pt, 居中放置)
+    // 18 宫格礼物卡片环形布局容器 (宽 314, 高 339 pt, 中轴线下移 15 pt 以防头部拥挤)
     UIView *cardsContainer = [[UIView alloc] init];
     [_middleContainer addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_middleContainer);
-        make.centerY.mas_equalTo(_middleContainer).offset(-KDialogAdaptedWidth(10));
+        make.centerY.mas_equalTo(_middleContainer).offset(KDialogAdaptedWidth(5));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(314), KDialogAdaptedWidth(339)));
     }];
     
@@ -391,7 +391,7 @@
     
     // --- 底部操作及抽奖控制布局 ---
     
-    // 底部“一/十/百”连横排抽奖按钮组 (高 50 pt, 宽 100 pt)
+    // 底部“一/十/百”连横排抽奖按钮组 (高 56 pt, 宽 112 pt)
     _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_drawTenButton setImage:[UIImage imageNamed:@"theme_game_one_draw_ten"] forState:UIControlStateNormal];
     [_drawTenButton addTarget:self action:@selector(drawTenClick) forControlEvents:UIControlEventTouchUpInside];
@@ -399,7 +399,7 @@
     [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bottomContainer);
         make.bottom.mas_equalTo(-KDialogAdaptedWidth(24));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(100), KDialogAdaptedWidth(50)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(112), KDialogAdaptedWidth(56)));
     }];
     
     _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -409,7 +409,7 @@
     [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(_drawTenButton.mas_leading).offset(-KDialogAdaptedWidth(8));
         make.centerY.mas_equalTo(_drawTenButton);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(100), KDialogAdaptedWidth(50)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(112), KDialogAdaptedWidth(56)));
     }];
     
     _drawHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -419,18 +419,18 @@
     [_drawHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(_drawTenButton.mas_trailing).offset(KDialogAdaptedWidth(8));
         make.centerY.mas_equalTo(_drawTenButton);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(100), KDialogAdaptedWidth(50)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(112), KDialogAdaptedWidth(56)));
     }];
     
-    // 刷新奖池按钮 (高 20 pt, 宽 170 pt)
+    // 刷新奖池按钮 (高 22 pt, 宽 185 pt, 抬高 10 pt 以紧凑排版)
     _refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_refreshButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_refresh_free_bar_origin"] forState:UIControlStateNormal];
     [_refreshButton addTarget:self action:@selector(refreshPoolClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_refreshButton];
     [_refreshButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_drawTenButton.mas_top).offset(-KDialogAdaptedWidth(8));
+        make.bottom.mas_equalTo(_drawTenButton.mas_top).offset(-KDialogAdaptedWidth(18));
         make.leading.mas_equalTo(cardsContainer.mas_leading).offset(-KDialogAdaptedWidth(6));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(170), KDialogAdaptedWidth(20)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(185), KDialogAdaptedWidth(22)));
     }];
     
     // 刷新小图标
@@ -439,20 +439,20 @@
     refreshIcon.userInteractionEnabled = NO;
     [_refreshButton addSubview:refreshIcon];
     [refreshIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(KDialogAdaptedWidth(8));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(9));
         make.centerY.mas_equalTo(_refreshButton);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(14), KDialogAdaptedWidth(14)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(15), KDialogAdaptedWidth(15)));
     }];
     
     // “刷新奖池”文字
     UILabel *refreshTextLabel = [[UILabel alloc] init];
     refreshTextLabel.text = @"刷新奖池";
     refreshTextLabel.textColor = mHexRGB(0xF3FAFF);
-    refreshTextLabel.font = [UIFont boldSystemFontOfSize:11];
+    refreshTextLabel.font = [UIFont boldSystemFontOfSize:11.5];
     refreshTextLabel.userInteractionEnabled = NO;
     [_refreshButton addSubview:refreshTextLabel];
     [refreshTextLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(refreshIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
+        make.leading.mas_equalTo(refreshIcon.mas_trailing).offset(KDialogAdaptedWidth(5));
         make.centerY.mas_equalTo(_refreshButton);
     }];
     
@@ -460,15 +460,15 @@
     UILabel *refreshFreeLabel = [[UILabel alloc] init];
     refreshFreeLabel.text = @"本次刷新免费";
     refreshFreeLabel.textColor = mHexRGB(0xF3FAFF);
-    refreshFreeLabel.font = [UIFont boldSystemFontOfSize:11];
+    refreshFreeLabel.font = [UIFont boldSystemFontOfSize:11.5];
     refreshFreeLabel.userInteractionEnabled = NO;
     [_refreshButton addSubview:refreshFreeLabel];
     [refreshFreeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(refreshTextLabel.mas_trailing).offset(KDialogAdaptedWidth(10));
+        make.leading.mas_equalTo(refreshTextLabel.mas_trailing).offset(KDialogAdaptedWidth(11));
         make.centerY.mas_equalTo(_refreshButton);
     }];
     
-    // 藏宝图兑换按钮 (高 37 pt, 宽 148 pt)
+    // 藏宝图兑换按钮 (高 41 pt, 宽 164 pt)
     _exchangeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_exchangeButton setImage:[UIImage imageNamed:@"theme_game_one_exchange_btn"] forState:UIControlStateNormal];
     [_exchangeButton addTarget:self action:@selector(exchangeClick) forControlEvents:UIControlEventTouchUpInside];
@@ -476,7 +476,7 @@
     [_exchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_refreshButton);
         make.trailing.mas_equalTo(cardsContainer.mas_trailing);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(148), KDialogAdaptedWidth(37)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(164), KDialogAdaptedWidth(41)));
     }];
 }
 
