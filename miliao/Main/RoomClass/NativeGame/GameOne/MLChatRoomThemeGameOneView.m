@@ -912,13 +912,6 @@
     }
 }
 
-- (void)backClick {
-    if (self.isDrawing) {
-        return; // 抽奖期间屏蔽返回按钮
-    }
-    [self dismiss];
-}
-
 - (void)handleMaskTap:(UITapGestureRecognizer *)sender {
     if (self.isDrawing) {
         return; // 抽奖期间屏蔽 Dismiss 蒙层点击
