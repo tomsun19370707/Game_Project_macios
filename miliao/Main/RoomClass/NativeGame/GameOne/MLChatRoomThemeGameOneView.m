@@ -202,15 +202,15 @@
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
     
-    // 今日运势悬浮条 (宽 74, 高 23. 水平悬浮在规则/记录按钮组左侧 10 pt. 40% 半透明黑底, 圆角 11.5 pt)
+    // 今日运势悬浮条 (宽 74, 高 23. 悬浮在右上角外侧. 40% 半透明黑底, 圆角 11.5 pt)
     UIView *fortuneBar = [[UIView alloc] init];
     fortuneBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     setViewCorner(fortuneBar, 11.5);
     fortuneBar.userInteractionEnabled = YES;
-    [_topContainer addSubview:fortuneBar];
+    [self addSubview:fortuneBar];
     [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(_recordButton);
-        make.trailing.mas_equalTo(_ruleButton.mas_leading).offset(-KDialogAdaptedWidth(10));
+        make.top.mas_equalTo(_bgImageView.mas_top).offset(-KDialogAdaptedWidth(30));
+        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-KDialogAdaptedWidth(10));
         make.size.mas_equalTo(CGSizeMake(74, 23));
     }];
     
@@ -225,88 +225,6 @@
     [fortuneBar addSubview:fortuneLabel];
     [fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(fortuneBar);
-    }];
-    
-    // 钻石余额条 (高 22 pt, 宽 90 pt. 距顶 50 pt, 距左 24 pt)
-    UIView *diamondBar = [[UIView alloc] init];
-    diamondBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
-    setViewCorner(diamondBar, 11); // 11 pt 圆角
-    [_topContainer addSubview:diamondBar];
-    [diamondBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(50));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(24));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(90), KDialogAdaptedWidth(22)));
-    }];
-    
-    // 钻石图标 (30 * 30 pt，悬浮出底板顶部)
-    UIImageView *diaIcon = [[UIImageView alloc] init];
-    diaIcon.image = [UIImage imageNamed:@"theme_game_one_cover_diamond"];
-    [_topContainer addSubview:diaIcon]; // 直接加在_topContainer上防止被切除
-    [diaIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(diamondBar.mas_leading).offset(-KDialogAdaptedWidth(4));
-        make.centerY.mas_equalTo(diamondBar);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
-    }];
-    
-    _diamondBalanceLabel = [[UILabel alloc] init];
-    _diamondBalanceLabel.textColor = kWhiteColor;
-    _diamondBalanceLabel.font = [UIFont systemFontOfSize:11];
-    _diamondBalanceLabel.text = @"0";
-    [diamondBar addSubview:_diamondBalanceLabel];
-    [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(KDialogAdaptedWidth(24)); // 避开 30x30 图标
-        make.centerY.mas_equalTo(diamondBar);
-    }];
-    
-    _diamondPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_diamondPlusButton setImage:[UIImage imageNamed:@"theme_game_one_plus_icon"] forState:UIControlStateNormal];
-    [_diamondPlusButton addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
-    [diamondBar addSubview:_diamondPlusButton];
-    [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(4));
-        make.centerY.mas_equalTo(diamondBar);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
-    }];
-    
-    // 钥匙余额条 (高 22 pt, 宽 90 pt. 距顶 50 pt, 距右 24 pt)
-    UIView *keyBar = [[UIView alloc] init];
-    keyBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
-    setViewCorner(keyBar, 11); // 11 pt 圆角
-    [_topContainer addSubview:keyBar];
-    [keyBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(50));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(24));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(90), KDialogAdaptedWidth(22)));
-    }];
-    
-    // 钥匙图标 (30 * 30 pt，悬浮出底板顶部)
-    UIImageView *keyIcon = [[UIImageView alloc] init];
-    keyIcon.image = [UIImage imageNamed:@"theme_game_one_cover_key"];
-    [_topContainer addSubview:keyIcon];
-    [keyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(keyBar.mas_leading).offset(-KDialogAdaptedWidth(4));
-        make.centerY.mas_equalTo(keyBar);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
-    }];
-    
-    _keyBalanceLabel = [[UILabel alloc] init];
-    _keyBalanceLabel.textColor = kWhiteColor;
-    _keyBalanceLabel.font = [UIFont systemFontOfSize:11];
-    _keyBalanceLabel.text = @"0";
-    [keyBar addSubview:_keyBalanceLabel];
-    [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(KDialogAdaptedWidth(24)); // 避开 30x30 图标
-        make.centerY.mas_equalTo(keyBar);
-    }];
-    
-    _keyPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_keyPlusButton setImage:[UIImage imageNamed:@"theme_game_one_plus_icon"] forState:UIControlStateNormal];
-    [_keyPlusButton addTarget:self action:@selector(openPurchaseDialog) forControlEvents:UIControlEventTouchUpInside];
-    [keyBar addSubview:_keyPlusButton];
-    [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(4));
-        make.centerY.mas_equalTo(keyBar);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
     }];
     
     // 全服中奖轮播跑马灯 (水平居中, 距顶部 62 pt. 高度默认为 0 隐蔽)
@@ -336,16 +254,98 @@
     
     [self layout18GiftCardsInContainer:cardsContainer];
     
-    // 底部寻梦值进度条
+    // 钻石余额条 (高 22 pt, 宽 90 pt. 位于卡片内圈上方)
+    UIView *diamondBar = [[UIView alloc] init];
+    diamondBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    setViewCorner(diamondBar, 11); // 11 pt 圆角
+    [cardsContainer addSubview:diamondBar];
+    [diamondBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(KDialogAdaptedWidth(70));
+        make.centerX.mas_equalTo(cardsContainer.mas_centerX).offset(-KDialogAdaptedWidth(55));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(90), KDialogAdaptedWidth(22)));
+    }];
+    
+    // 钻石图标 (30 * 30 pt，悬浮出底板顶部)
+    UIImageView *diaIcon = [[UIImageView alloc] init];
+    diaIcon.image = [UIImage imageNamed:@"theme_game_one_cover_diamond"];
+    [cardsContainer addSubview:diaIcon]; // 直接加在cardsContainer上防止被切除
+    [diaIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(diamondBar.mas_leading).offset(-KDialogAdaptedWidth(4));
+        make.centerY.mas_equalTo(diamondBar);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
+    }];
+    
+    _diamondBalanceLabel = [[UILabel alloc] init];
+    _diamondBalanceLabel.textColor = kWhiteColor;
+    _diamondBalanceLabel.font = [UIFont systemFontOfSize:11];
+    _diamondBalanceLabel.text = @"0";
+    [diamondBar addSubview:_diamondBalanceLabel];
+    [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(KDialogAdaptedWidth(24)); // 避开 30x30 图标
+        make.centerY.mas_equalTo(diamondBar);
+    }];
+    
+    _diamondPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_diamondPlusButton setImage:[UIImage imageNamed:@"theme_game_one_plus_icon"] forState:UIControlStateNormal];
+    [_diamondPlusButton addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
+    [diamondBar addSubview:_diamondPlusButton];
+    [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(4));
+        make.centerY.mas_equalTo(diamondBar);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
+    }];
+    
+    // 钥匙余额条 (高 22 pt, 宽 90 pt. 位于卡片内圈上方)
+    UIView *keyBar = [[UIView alloc] init];
+    keyBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    setViewCorner(keyBar, 11); // 11 pt 圆角
+    [cardsContainer addSubview:keyBar];
+    [keyBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(KDialogAdaptedWidth(70));
+        make.centerX.mas_equalTo(cardsContainer.mas_centerX).offset(KDialogAdaptedWidth(55));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(90), KDialogAdaptedWidth(22)));
+    }];
+    
+    // 钥匙图标 (30 * 30 pt，悬浮出底板顶部)
+    UIImageView *keyIcon = [[UIImageView alloc] init];
+    keyIcon.image = [UIImage imageNamed:@"theme_game_one_cover_key"];
+    [cardsContainer addSubview:keyIcon];
+    [keyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(keyBar.mas_leading).offset(-KDialogAdaptedWidth(4));
+        make.centerY.mas_equalTo(keyBar);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
+    }];
+    
+    _keyBalanceLabel = [[UILabel alloc] init];
+    _keyBalanceLabel.textColor = kWhiteColor;
+    _keyBalanceLabel.font = [UIFont systemFontOfSize:11];
+    _keyBalanceLabel.text = @"0";
+    [keyBar addSubview:_keyBalanceLabel];
+    [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(KDialogAdaptedWidth(24)); // 避开 30x30 图标
+        make.centerY.mas_equalTo(keyBar);
+    }];
+    
+    _keyPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_keyPlusButton setImage:[UIImage imageNamed:@"theme_game_one_plus_icon"] forState:UIControlStateNormal];
+    [_keyPlusButton addTarget:self action:@selector(openPurchaseDialog) forControlEvents:UIControlEventTouchUpInside];
+    [keyBar addSubview:_keyPlusButton];
+    [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(4));
+        make.centerY.mas_equalTo(keyBar);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
+    }];
+    
+    //底部寻梦值进度条 (位于卡片内圈下方，底排卡片上方)
     _luckyProgressBar = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
     _luckyProgressBar.progressTintColor = mHexRGB(0x00A2FF); // 蓝色进度条
     _luckyProgressBar.trackTintColor = [UIColor colorWithWhite:1 alpha:0.3];
     _luckyProgressBar.progress = 0.0;
-    [_middleContainer addSubview:_luckyProgressBar];
+    [cardsContainer addSubview:_luckyProgressBar];
     [_luckyProgressBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(_middleContainer);
-        make.top.mas_equalTo(cardsContainer.mas_bottom).offset(KDialogAdaptedWidth(8));
-        make.width.mas_equalTo(KDialogAdaptedWidth(220));
+        make.centerX.mas_equalTo(cardsContainer);
+        make.bottom.mas_equalTo(cardsContainer.mas_bottom).offset(-KDialogAdaptedWidth(82));
+        make.width.mas_equalTo(KDialogAdaptedWidth(180));
         make.height.mas_equalTo(8);
     }];
     
@@ -353,10 +353,10 @@
     _luckyTextLabel.textColor = kWhiteColor;
     _luckyTextLabel.font = KFontA(12);
     _luckyTextLabel.text = @"寻梦值: 0/200";
-    [_middleContainer addSubview:_luckyTextLabel];
+    [cardsContainer addSubview:_luckyTextLabel];
     [_luckyTextLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(_luckyProgressBar);
-        make.leading.mas_equalTo(_luckyProgressBar.mas_trailing).offset(6);
+        make.centerX.mas_equalTo(_luckyProgressBar);
+        make.bottom.mas_equalTo(_luckyProgressBar.mas_top).offset(-KDialogAdaptedWidth(4));
     }];
     
     // --- 底部容器子控件布局 ---
@@ -410,6 +410,7 @@
     [_bottomContainer addSubview:_drawHundredButton];
     [_drawHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(_drawTenButton.mas_trailing).offset(KDialogAdaptedWidth(12));
+        make.centerY.mas_equalTo(_drawTenButton);
         make.size.mas_equalTo(CGSizeMake(112, 56));
     }];
 }
