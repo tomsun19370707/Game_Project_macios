@@ -21,6 +21,8 @@
 #import "SVGAParser.h"
 #endif
 
+#define KDialogAdaptedWidth(x) (isPadA ? ceilf((x) * (390.0 / 375.0)) : KAdaptedWidth(x))
+
 @interface MLChatRoomThemeGameOneView ()
 
 @property (nonatomic, assign) NSInteger typeId;
@@ -135,8 +137,11 @@
     [self addSubview:_bgImageView];
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(self);
-        make.width.mas_equalTo(self).priorityMedium();
-        make.width.mas_lessThanOrEqualTo(390).priorityHigh();
+        if (isPadA) {
+            make.width.mas_equalTo(390);
+        } else {
+            make.width.mas_equalTo(self);
+        }
         make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1136.0 / 740.0);
     }];
     
@@ -146,8 +151,8 @@
     [_backButton addTarget:self action:@selector(backClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_backButton];
     [_backButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedWidth(16));
-        make.leading.mas_equalTo(KAdaptedWidth(16));
+        make.top.mas_equalTo(KDialogAdaptedWidth(16));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(16));
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
     
@@ -157,8 +162,8 @@
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedWidth(16));
-        make.trailing.mas_equalTo(-KAdaptedWidth(16));
+        make.top.mas_equalTo(KDialogAdaptedWidth(16));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
     
@@ -168,8 +173,8 @@
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedWidth(16));
-        make.trailing.mas_equalTo(_recordButton.mas_leading).offset(-KAdaptedWidth(10));
+        make.top.mas_equalTo(KDialogAdaptedWidth(16));
+        make.trailing.mas_equalTo(_recordButton.mas_leading).offset(-KDialogAdaptedWidth(10));
         make.size.mas_equalTo(CGSizeMake(36, 36));
     }];
     
@@ -181,7 +186,7 @@
     [_bgImageView addSubview:fortuneBar];
     [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_recordButton);
-        make.trailing.mas_equalTo(_ruleButton.mas_leading).offset(-KAdaptedWidth(10));
+        make.trailing.mas_equalTo(_ruleButton.mas_leading).offset(-KDialogAdaptedWidth(10));
         make.size.mas_equalTo(CGSizeMake(74, 23));
     }];
     
@@ -204,8 +209,8 @@
     [_refreshButton addTarget:self action:@selector(refreshPoolClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_refreshButton];
     [_refreshButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(-KAdaptedWidth(120));
-        make.leading.mas_equalTo(KAdaptedWidth(24));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(120));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(24));
         make.size.mas_equalTo(CGSizeMake(90, 32));
     }];
     
@@ -215,8 +220,8 @@
     [_exchangeButton addTarget:self action:@selector(exchangeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_exchangeButton];
     [_exchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(-KAdaptedWidth(120));
-        make.trailing.mas_equalTo(-KAdaptedWidth(24));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(120));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(24));
         make.size.mas_equalTo(CGSizeMake(90, 32));
     }];
     
@@ -225,8 +230,8 @@
     [_bgImageView addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.top.mas_equalTo(KAdaptedWidth(140));
-        make.size.mas_equalTo(CGSizeMake(316, 324));
+        make.top.mas_equalTo(KDialogAdaptedWidth(140));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(316), KDialogAdaptedWidth(324)));
     }];
     
     [self layout18GiftCardsInContainer:cardsContainer];
@@ -239,8 +244,8 @@
     [_bgImageView addSubview:_luckyProgressBar];
     [_luckyProgressBar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.bottom.mas_equalTo(-KAdaptedWidth(140));
-        make.width.mas_equalTo(KAdaptedWidth(220));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(140));
+        make.width.mas_equalTo(KDialogAdaptedWidth(220));
         make.height.mas_equalTo(8);
     }];
     
@@ -343,7 +348,7 @@
     [_bgImageView addSubview:_drawTenButton];
     [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView);
-        make.bottom.mas_equalTo(-KAdaptedWidth(40));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(40));
         make.size.mas_equalTo(CGSizeMake(112, 56));
     }];
     
@@ -352,7 +357,7 @@
     [_drawOneButton addTarget:self action:@selector(drawOneClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_drawOneButton];
     [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(_drawTenButton.mas_leading).offset(-KAdaptedWidth(12));
+        make.trailing.mas_equalTo(_drawTenButton.mas_leading).offset(-KDialogAdaptedWidth(12));
         make.centerY.mas_equalTo(_drawTenButton);
         make.size.mas_equalTo(CGSizeMake(112, 56));
     }];
@@ -362,7 +367,7 @@
     [_drawHundredButton addTarget:self action:@selector(drawHundredClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_drawHundredButton];
     [_drawHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_drawTenButton.mas_trailing).offset(KAdaptedWidth(12));
+        make.leading.mas_equalTo(_drawTenButton.mas_trailing).offset(KDialogAdaptedWidth(12));
         make.size.mas_equalTo(CGSizeMake(112, 56));
     }];
     
@@ -396,10 +401,10 @@
 - (void)layout18GiftCardsInContainer:(UIView *)container {
     // 宽 46，高 60。水平间距 8，垂直间距 6
     // 整个容器应该设为 316 * 324 pt (对应 6x5 环状的总边界)
-    CGFloat cardW = 46.0f;
-    CGFloat cardH = 60.0f;
-    CGFloat hGap = 8.0f;
-    CGFloat vGap = 6.0f;
+    CGFloat cardW = KDialogAdaptedWidth(46.0f);
+    CGFloat cardH = KDialogAdaptedWidth(60.0f);
+    CGFloat hGap = KDialogAdaptedWidth(8.0f);
+    CGFloat vGap = KDialogAdaptedWidth(6.0f);
     
     for (int i = 0; i < 18; i++) {
         UIView *card = [[UIView alloc] init];
@@ -421,7 +426,7 @@
         giftImg.contentMode = UIViewContentModeScaleAspectFit;
         [card addSubview:giftImg];
         [giftImg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(card).insets(UIEdgeInsetsMake(4, 4, 16, 4)); // 为底部名字留空
+            make.edges.mas_equalTo(card).insets(UIEdgeInsetsMake(KDialogAdaptedWidth(4), KDialogAdaptedWidth(4), KDialogAdaptedWidth(16), KDialogAdaptedWidth(4))); // 为底部名字留空
         }];
         [self.giftImageViews addObject:giftImg];
         
@@ -434,7 +439,7 @@
         [card addSubview:nameLabel];
         [nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.bottom.leading.trailing.mas_equalTo(card);
-            make.height.mas_equalTo(14);
+            make.height.mas_equalTo(KDialogAdaptedWidth(14));
         }];
         [self.giftNameLabels addObject:nameLabel];
         
