@@ -60,6 +60,8 @@
 @property (nonatomic, strong) NSMutableArray<UIImageView *> *giftImageViews;
 // 18个格子上的奖品名称 Label
 @property (nonatomic, strong) NSMutableArray<UILabel *> *giftNameLabels;
+// 18个格子上的奖品价格 Label
+@property (nonatomic, strong) NSMutableArray<UILabel *> *giftPriceLabels;
 
 @property (nonatomic, strong) MLGameLotteryInfoModel *infoModel;
 @property (nonatomic, strong) NSArray<MLGameDrawResultModel *> *prizesInPool;
@@ -103,6 +105,7 @@
         self.giftCardViews = [NSMutableArray array];
         self.giftImageViews = [NSMutableArray array];
         self.giftNameLabels = [NSMutableArray array];
+        self.giftPriceLabels = [NSMutableArray array];
         
         [self setupUI];
         [self loadData];
@@ -260,13 +263,13 @@
     
     // --- 中部容器子控件布局 ---
     
-    // 18 宫格礼物卡片环形布局容器 (宽 314, 高 339 pt, 中轴线下移 15 pt 以防头部拥挤)
+    // 18 宫格礼物卡片环形布局容器 (宽 332, 高 368 pt, 中轴线下移 15 pt 以防头部拥挤)
     UIView *cardsContainer = [[UIView alloc] init];
     [_middleContainer addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_middleContainer);
         make.centerY.mas_equalTo(_middleContainer).offset(KDialogAdaptedWidth(5));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(314), KDialogAdaptedWidth(339)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(332), KDialogAdaptedWidth(368)));
     }];
     
     [self layout18GiftCardsInContainer:cardsContainer];
@@ -493,11 +496,11 @@
 
 #pragma mark - 18宫格对称环状排布逻辑 (6x5 完美对齐)
 - (void)layout18GiftCardsInContainer:(UIView *)container {
-    // 宽 50，高 65。水平步长 52.8，垂直步长 68.5 pt (高精度比例还原)
-    CGFloat cardW = KDialogAdaptedWidth(50.0f);
-    CGFloat cardH = KDialogAdaptedWidth(65.0f);
-    CGFloat stepX = KDialogAdaptedWidth(52.8f);
-    CGFloat stepY = KDialogAdaptedWidth(68.5f);
+    // 宽 52，高 70。水平步长 56.0，垂直步长 74.5 pt (高精度比例还原，间距增大)
+    CGFloat cardW = KDialogAdaptedWidth(52.0f);
+    CGFloat cardH = KDialogAdaptedWidth(70.0f);
+    CGFloat stepX = KDialogAdaptedWidth(56.0f);
+    CGFloat stepY = KDialogAdaptedWidth(74.5f);
     
     for (int i = 0; i < 18; i++) {
         UIView *card = [[UIView alloc] init];
@@ -519,22 +522,42 @@
         giftImg.contentMode = UIViewContentModeScaleAspectFit;
         [card addSubview:giftImg];
         [giftImg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(card).insets(UIEdgeInsetsMake(KDialogAdaptedWidth(2), KDialogAdaptedWidth(4), KDialogAdaptedWidth(18), KDialogAdaptedWidth(4))); // 依照 Android padding 调整
+            make.edges.mas_equalTo(card).insets(UIEdgeInsetsMake(KDialogAdaptedWidth(2), KDialogAdaptedWidth(4), KDialogAdaptedWidth(20), KDialogAdaptedWidth(4)));
         }];
         [self.giftImageViews addObject:giftImg];
         
-        UILabel *nameLabel = [[UILabel alloc] init];
-        nameLabel.font = [UIFont boldSystemFontOfSize:9.5];
-        nameLabel.textColor = kWhiteColor;
-        nameLabel.textAlignment = NSTextAlignmentCenter;
-        nameLabel.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-        setViewCorner(nameLabel, 2);
-        [card addSubview:nameLabel];
-        [nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        // 卡片底部文字区域容器 (清除原黑色背景遮罩，使文字直观叠加在卡片底板上)
+        UIView *textContainer = [[UIView alloc] init];
+        textContainer.backgroundColor = [UIColor clearColor];
+        [card addSubview:textContainer];
+        [textContainer mas_makeConstraints:^(MASConstraintMaker *make) {
             make.bottom.leading.trailing.mas_equalTo(card);
-            make.height.mas_equalTo(KDialogAdaptedWidth(14));
+            make.height.mas_equalTo(KDialogAdaptedWidth(20));
+        }];
+        
+        // 第一行：名称标签
+        UILabel *nameLabel = [[UILabel alloc] init];
+        nameLabel.font = [UIFont boldSystemFontOfSize:8.5];
+        nameLabel.textColor = mHexRGB(0xE6EAFE);
+        nameLabel.textAlignment = NSTextAlignmentCenter;
+        [textContainer addSubview:nameLabel];
+        [nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(KDialogAdaptedWidth(1));
+            make.leading.trailing.mas_equalTo(textContainer);
         }];
         [self.giftNameLabels addObject:nameLabel];
+        
+        // 第二行：价格标签
+        UILabel *priceLabel = [[UILabel alloc] init];
+        priceLabel.font = [UIFont systemFontOfSize:7.5];
+        priceLabel.textColor = mHexRGB(0xFFE66F);
+        priceLabel.textAlignment = NSTextAlignmentCenter;
+        [textContainer addSubview:priceLabel];
+        [priceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(nameLabel.mas_bottom).offset(KDialogAdaptedWidth(1));
+            make.leading.trailing.mas_equalTo(textContainer);
+        }];
+        [self.giftPriceLabels addObject:priceLabel];
         
         // 6x5 环状排布，顺时针成环 (ConstraintLayout 百分比高精度平移模型还原)：
         if (i < 6) {
@@ -556,7 +579,7 @@
             // 底部横排 (col = 5..0, row = 4)
             int col = 14 - i;
             [card mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(KDialogAdaptedWidth(274.0f)); // 4 * 68.5 pt
+                make.top.mas_equalTo(KDialogAdaptedWidth(298.0f)); // 4 * 74.5 pt
                 make.leading.mas_equalTo(col * stepX);
                 make.size.mas_equalTo(CGSizeMake(cardW, cardH));
             }];
@@ -664,6 +687,7 @@
     for (int i = 0; i < self.giftImageViews.count; i++) {
         UIImageView *img = self.giftImageViews[i];
         UILabel *nameLabel = self.giftNameLabels[i];
+        UILabel *priceLabel = self.giftPriceLabels[i];
         if (i < self.prizesInPool.count) {
             MLGameDrawResultModel *prize = self.prizesInPool[i];
             NSURL *url = [NSURL URLWithString:[prize imageUrl]];
@@ -675,10 +699,13 @@
             img.hidden = NO;
             nameLabel.text = prize.name;
             nameLabel.hidden = NO;
+            priceLabel.text = [NSString stringWithFormat:@"%ld钻石", (long)prize.price];
+            priceLabel.hidden = NO;
             nameLabel.superview.hidden = NO;
         } else {
             img.hidden = YES;
             nameLabel.hidden = YES;
+            priceLabel.hidden = YES;
             nameLabel.superview.hidden = YES;
         }
     }
