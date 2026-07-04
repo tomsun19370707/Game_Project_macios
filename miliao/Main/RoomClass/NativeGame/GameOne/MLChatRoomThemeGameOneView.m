@@ -356,17 +356,16 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(14), KDialogAdaptedWidth(14)));
     }];
     
-    // 底部寻梦值进度条 (使用 theme_game_one_dream_bar 作为背景条并保留蓝色进度)
-    _luckyProgressBar = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-    _luckyProgressBar.progressTintColor = mHexRGB(0x00A2FF); // 蓝色进度条
-    _luckyProgressBar.trackImage = [[UIImage imageNamed:@"theme_game_one_dream_bar"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 10, 0, 10) resizingMode:UIImageResizingModeStretch];
-    _luckyProgressBar.progress = 0.0;
+    // 底部寻梦值进度条 (使用 UIImageView 完美加载背景底图，高 23 pt，解决被压扁问题)
+    _luckyProgressBar = [[UIImageView alloc] init];
+    _luckyProgressBar.image = [UIImage imageNamed:@"theme_game_one_dream_bar"];
+    _luckyProgressBar.contentMode = UIViewContentModeScaleToFill;
     [cardsContainer addSubview:_luckyProgressBar];
     [_luckyProgressBar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(cardsContainer);
         make.bottom.mas_equalTo(cardsContainer.mas_bottom).offset(-KDialogAdaptedWidth(105));
         make.width.mas_equalTo(KDialogAdaptedWidth(164));
-        make.height.mas_equalTo(8);
+        make.height.mas_equalTo(KDialogAdaptedWidth(23));
     }];
     
     _luckyTextLabel = [[UILabel alloc] init];
