@@ -53,57 +53,36 @@ CFChatRoom/miliao/Main/RoomClass/NativeGame/
 
 ---
 
-## 🎨 2. UI 布局尺寸与绝对定位常量矩阵
+## 🎨 2. UI 布局自适应与比例适配方案
 
-为了规避视觉感官误差，iOS 端在使用 `Masonry` 或 `Frame` 布局时，必须直接绑定并对齐以下参数：
+为了解决不同屏幕设备（普通手机与 iPad/平板/折叠屏）上的自适应缩放问题，iOS 端统一采用“锁定高宽比底座 + 自适应缩放宏 + 设备边界限宽”的设计体系：
 
-### 2.1 玩法2（神木栖灵）9个灵果（桃子）定位坐标与显示规范
-* **背景大图比例**：以 $750 \times 1311$ 像素（等价于 iOS `@3x`）为设计基准大图。
-* **物理位置映射**：在 `layoutSubviews` 之后基于背景图的 `AspectFit` 实际 CGRect 进行转换。
-* **9个灵果坐标常量矩阵**：
-  ```objc
-  // 在 MLChatRoomThemeGameTwoView.m 中声明 of 绝对定位常量 (设计值)
-  static const CGPoint PEACH_COORDS[] = {
-      {385.0f, 330.0f}, // 灵果 1
-      {205.0f, 450.0f}, // 灵果 2
-      {585.0f, 460.0f}, // 灵果 3
-      {425.0f, 560.0f}, // 灵果 4
-      {100.0f, 610.0f}, // 灵果 5
-      {635.0f, 695.0f}, // 灵果 6
-      {270.0f, 680.0f}, // 灵果 7
-      {130.0f, 760.0f}, // 灵果 8
-      {470.0f, 830.0f}  // 灵果 9
-  };
+### 2.1 自适应比例宏 KDialogAdaptedWidth
+在游戏主页面（如 `MLChatRoomThemeGameOneView.m` 等）头部引入专用的弹窗比例缩放宏：
+```objc
+#define KDialogAdaptedWidth(x) (isPadA ? ceilf((x) * (390.0 / 375.0)) : KAdaptedWidth(x))
+```
+*   **普通手机端 (iPhone)**：缩放因子根据实际物理屏幕宽度与设计宽度 `375.0` 计算，横向 100% 铺满适配。
+*   **平板与宽屏折叠屏端 (iPad)**：将游戏面板的最大宽度强行锁定在 `390 pt`，比例因子锁定为 `390.0 / 375.0 = 1.04` 倍，游戏面板在屏幕中等比例缩放并居中，防止过度拉伸变形。
 
-  // 原始设计大小 (宽度 = 高度)
-  static const CGFloat PEACH_SIZES[] = {
-      105.0f, 75.0f, 75.0f, 60.0f, 65.0f, 70.0f, 60.0f, 65.0f, 80.0f
-  };
+### 2.2 核心底板 _bgImageView 的自适应约束
+大背景图高宽比硬性锁定为切图的 `1136.0 / 740.0`。在 `setupUI` 中进行如下约束：
+```objc
+[_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    make.center.mas_equalTo(self);
+    if (isPadA) {
+        make.width.mas_equalTo(390);
+    } else {
+        make.width.mas_equalTo(self);
+    }
+    make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1136.0 / 740.0);
+}];
+```
 
-  // 渲染时额外物理缩放系数
-  static const CGFloat PEACH_RENDER_SCALE_FACTOR = 0.6f;
-  ```
-* **灵果交互与渲染细则**：
-  * **无点击手势**：树上挂载的 9 个灵果控件**纯粹作为静态奖池展示挂件，不需要任何点击响应手势**。用户点击树上灵果不会触发单抽，抽奖动作完全由底部的祝灵按钮（1/10/100抽）发起。
-  * **动态奖品加载**：进入页面调用 `/api/emo/lottery/get_prizes` 后，使用 `YYWebImage` 或 `SDWebImage` 将返回的 9 个礼物的**真实网络图**（`pic` / `image` 字段）动态渲染到大树对应的 9 个灵果控件上展示。
-  * **移除旧版居中控件**：旧版预览壳子中的 `theme_game_two_center_fruit.png` 和 `theme_game_two_center_frame.png`（居中果实及边框）**已被客户确认砍掉**，iOS 落地时**无需**绘制这两个居中控件。
-
-### 2.2 玩法1（寻梦之旅）格子与按钮布局约束
-* **18宫格礼物卡片大小**：固定为宽 `46` pt，高 `60` pt。
-* **卡片排布间距**：水平间距 `8` pt，垂直间距 `6` pt。
-* **卡片环形排布**：
-  * **顶部横排 6 个**：索引 0 ~ 5 (对应格子 1 ~ 6)。
-  * **右侧竖排 2 个**：索引 6 ~ 7 (对应格子 7 ~ 8)。
-  * **底部横排 6 个**：索引 8 ~ 13 (对应格子 9 ~ 14)。
-  * **左侧竖排 2 个**：索引 14 ~ 17 (对应格子 15 ~ 18)。
-* **底部抽奖品字按钮组**：
-  * 按钮大小统一为：宽 `112` pt，高 `56` pt。
-  * 顶部居中：“十运齐聚”按钮（10连抽，对应 `theme_game_one_draw_ten.png`）。
-  * 左下与右下对称分布：“一星纳福”与“百祥落盘”，与顶部按钮的垂直间距为 `12` pt。
-
-### 2.3 弹窗组件规格 (Popups)
-* **购买钥匙弹窗**：背景大小宽 `315` pt，高 `360` pt。确认按钮大小 `260 * 86` pt。
-* **结果展示弹窗**：背景大小宽 `315` pt，高 `470` pt。再抽一次按钮宽 `160` pt，高 `32` pt。
+### 2.3 子控件级联自适应约束红线
+*   **高内聚定位依赖**：所有主板内部的子控件（如卡片容器、充值余额条、跑马灯等）必须**直接作为 `_bgImageView` 的子视图（addSubview）**，且其约束只能相对 `_bgImageView` 或同级兄弟控件定位，严禁直接与外层全屏容器 `self` 发生约束依赖，实现核心面板的高内聚与解耦。
+*   **等比适配覆盖**：子控件的 `top`、`bottom`、`leading`、`trailing` 间距、偏移量以及物理 `size` 统一使用 `KDialogAdaptedWidth(x)` 计算。
+*   **关键位置防挤压与遮挡**：在横纵向比例变化时，确保今日运势、规则/记录与跑马灯等顶部组件的垂直顺序。其中跑马灯 `_marqueeLabel` 统一使用 `KDialogAdaptedWidth(62)` 做绝对纵向偏移，规避横向与右上角功能按钮的重叠风险。
 
 ---
 
@@ -141,99 +120,7 @@ CFChatRoom/miliao/Main/RoomClass/NativeGame/
 2. **高级兑换配置列表**：`/api/emo/lottery/exchange_config`。
 3. **执行藏宝图高级兑换**：`/api/emo/lottery/exchange_gift`。参数为 `exchange_id`，`card_count`。
    * **零藏宝图必败原则**：客户端进行本地安全限制，若 `card_count == 0`，兑换成功率直接设为 `0%`（必定兑换失败，只扣除宝石碎片，不发放目标礼物）。
-
----
-
-## 📐 4. 核心重难点算法 OC 实现模板
-
-### 4.1 UIImageView 高精度定位换算
-在 `layoutSubviews` 刷新完毕后调用，换算 AspectFit 下的物理 `center`：
-```objc
-- (CGPoint)ml_calculatePhysicalCenterWithDesignX:(CGFloat)designX 
-                                         designY:(CGFloat)designY 
-                                     designWidth:(CGFloat)designWidth 
-                                    designHeight:(CGFloat)designHeight {
-    if (self.image == nil) {
-        CGFloat scaleX = self.bounds.size.width / designWidth;
-        CGFloat scaleY = self.bounds.size.height / designHeight;
-        return CGPointMake(designX * scaleX, designY * scaleY);
-    }
-    
-    CGSize viewSize = self.bounds.size;
-    CGFloat scale = MIN(viewSize.width / designWidth, viewSize.height / designHeight);
-    
-    CGFloat transX = (viewSize.width - designWidth * scale) / 2.0;
-    CGFloat transY = (viewSize.height - designHeight * scale) / 2.0;
-    
-    CGFloat physicalX = designX * scale + transX;
-    CGFloat physicalY = designY * scale + transY;
-    
-    return CGPointMake(physicalX, physicalY);
-}
-```
-
-### 4.2 跑马灯二次方指数减速步进
-在网络数据返回，拿到大奖的终点索引后，无缝接续减速：
-```objc
-- (void)startDeceleratingStepWithStepIndex:(NSInteger)step 
-                               totalSteps:(NSInteger)totalSteps 
-                             minDelayTime:(NSTimeInterval)minDelay 
-                             maxDelayTime:(NSTimeInterval)maxDelay {
-    if (step >= totalSteps) {
-        [self showResultDialog]; // 定格，销毁时钟，弹出结算页
-        return;
-    }
-    
-    NSInteger highlightIndex = (self.currentStartIndex + step) % 18;
-    [self highlightGiftViewAtIndex:highlightIndex];
-    
-    NSTimeInterval nextDelay = minDelay;
-    NSInteger decayStartStep = totalSteps - 10; // 倒数 10 步开始插值减速
-    if (step >= decayStartStep) {
-        NSInteger progress = step - decayStartStep;
-        nextDelay = minDelay + (maxDelay - minDelay) * pow((double)progress / 10.0, 2.0); // 二次方衰减
-    }
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(nextDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self startDeceleratingStepWithStepIndex:step + 1 
-                                     totalSteps:totalSteps 
-                                   minDelayTime:minDelay 
-                                   maxDelayTime:maxDelay];
-    });
-}
-```
-
-### 4.3 中奖礼物有序去重合并
-iOS 端使用 `NSMutableArray` (记录添加顺序) + `NSMutableDictionary` (处理去重累加) 对齐安卓的 `LinkedHashMap`，避免连抽礼物在结果页刷屏：
-```objc
-// MLGameDrawResultModel 需要实现 <NSCopying> 并在 .m 中补充 mj_replacedKeyFromPropertyName 重映射关系
-+ (NSArray<MLGameDrawResultModel *> *)mergeAndSortDrawGifts:(NSArray<MLGameDrawResultModel *> *)drawResultList {
-    if (drawResultList == nil || drawResultList.count == 0) return @[];
-    
-    NSMutableArray *orderedIds = [NSMutableArray array];
-    NSMutableDictionary<NSNumber *, MLGameDrawResultModel *> *mergedDict = [NSMutableDictionary dictionary];
-
-    for (MLGameDrawResultModel *item in drawResultList) {
-        NSNumber *itemId = @(item.giftId);
-        if (mergedDict[itemId]) {
-            mergedDict[itemId].num += item.num; // 累加数量
-        } else {
-            [orderedIds addObject:itemId];
-            mergedDict[itemId] = [item copy]; // 执行深拷贝防止篡改源数据
-        }
-    }
-
-    NSMutableArray<MLGameDrawResultModel *> *resultArray = [NSMutableArray array];
-    for (NSNumber *itemId in orderedIds) {
-        if (mergedDict[itemId]) {
-            [resultArray addObject:mergedDict[itemId]];
-        }
-    }
-    return [resultArray copy];
-}
-```
-
----
+``
 
 ## 🔄 5. 交互状态机、宿主桥接与防刷机制
 
