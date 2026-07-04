@@ -132,14 +132,15 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMaskTap:)];
     [_maskView addGestureRecognizer:tap];
     
-    // 背景大图 (锁定 740:1136 比例，在宽屏设备上限宽 390 pt 居中，防拉伸与漂移)
+    // 背景大图 (锁定 740:1136 比例，在宽屏设备上限宽 390 pt，底部贴齐屏幕底部，防拉伸与漂移)
     _bgImageView = [[UIImageView alloc] init];
     _bgImageView.image = [UIImage imageNamed:@"theme_game_one_clean_bg"];
     _bgImageView.contentMode = UIViewContentModeScaleToFill;
     _bgImageView.userInteractionEnabled = YES;
     [self addSubview:_bgImageView];
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_equalTo(self);
+        make.centerX.mas_equalTo(self);
+        make.bottom.mas_equalTo(self);
         if (isPadA) {
             make.width.mas_equalTo(390);
         } else {
@@ -180,47 +181,63 @@
     
     // --- 顶部容器子控件布局 ---
     
-    // 记录按钮 (距右边缘 16 pt, top 16)
+    // 记录按钮 (位于左上角, 宽 62, 高 26)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_recordButton setImage:[UIImage imageNamed:@"theme_game_one_record_btn_brighter"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_topContainer addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(16));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(36, 36));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(16));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(26)));
     }];
     
-    // 规则按钮 (位于记录按钮左侧 10 pt)
+    // 规则按钮 (位于右上角, 宽 62, 高 26)
     _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_ruleButton setImage:[UIImage imageNamed:@"theme_game_one_rule_btn_brighter"] forState:UIControlStateNormal];
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [_topContainer addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(16));
-        make.trailing.mas_equalTo(_recordButton.mas_leading).offset(-KDialogAdaptedWidth(10));
-        make.size.mas_equalTo(CGSizeMake(36, 36));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(26)));
     }];
     
-    // 今日运势悬浮条 (宽 74, 高 23. 悬浮在右上角外侧. 40% 半透明黑底, 圆角 11.5 pt)
+    // 今日运势悬浮条 (宽 70, 高 30. 悬浮在右上角外侧)
     UIView *fortuneBar = [[UIView alloc] init];
-    fortuneBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
-    setViewCorner(fortuneBar, 11.5);
     fortuneBar.userInteractionEnabled = YES;
     [self addSubview:fortuneBar];
+    
+    CGFloat fortuneW = KDialogAdaptedWidth(70.0f);
+    CGFloat fortuneH = KDialogAdaptedWidth(30.0f);
     [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_bgImageView.mas_top).offset(-KDialogAdaptedWidth(30));
-        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-KDialogAdaptedWidth(10));
-        make.size.mas_equalTo(CGSizeMake(74, 23));
+        make.bottom.mas_equalTo(_bgImageView.mas_top).offset(-KDialogAdaptedWidth(6));
+        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-KDialogAdaptedWidth(12));
+        make.size.mas_equalTo(CGSizeMake(fortuneW, fortuneH));
     }];
+    
+    // 原生渐变背景 (#2A6CEE -> #1044BB)
+    CAGradientLayer *fortuneGrad = [CAGradientLayer layer];
+    fortuneGrad.frame = CGRectMake(0, 0, fortuneW, fortuneH);
+    fortuneGrad.colors = @[(__bridge id)mHexRGB(0x2A6CEE).CGColor, (__bridge id)mHexRGB(0x1044BB).CGColor];
+    fortuneGrad.startPoint = CGPointMake(0.5, 0);
+    fortuneGrad.endPoint = CGPointMake(0.5, 1);
+    fortuneGrad.cornerRadius = KDialogAdaptedWidth(15.0f);
+    [fortuneBar.layer addSublayer:fortuneGrad];
+    
+    // 金色边框和圆角
+    fortuneBar.layer.borderColor = mHexRGB(0xFFE57F).CGColor;
+    fortuneBar.layer.borderWidth = 1.5;
+    fortuneBar.layer.cornerRadius = KDialogAdaptedWidth(15.0f);
+    fortuneBar.clipsToBounds = YES;
     
     UITapGestureRecognizer *fortuneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(fortuneClick)];
     [fortuneBar addGestureRecognizer:fortuneTap];
     
     UILabel *fortuneLabel = [[UILabel alloc] init];
     fortuneLabel.text = @"今日运势";
-    fortuneLabel.textColor = mHexRGB(0xE1F5FE);
-    fortuneLabel.font = [UIFont systemFontOfSize:10];
+    fortuneLabel.textColor = kWhiteColor;
+    fortuneLabel.font = [UIFont boldSystemFontOfSize:11];
     fortuneLabel.textAlignment = NSTextAlignmentCenter;
     [fortuneBar addSubview:fortuneLabel];
     [fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -407,13 +424,48 @@
     
     // 刷新奖池按钮 (高 20 pt, 宽 170 pt)
     _refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_refreshButton setImage:[UIImage imageNamed:@"theme_game_one_refresh_btn"] forState:UIControlStateNormal];
+    [_refreshButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_refresh_free_bar_origin"] forState:UIControlStateNormal];
     [_refreshButton addTarget:self action:@selector(refreshPoolClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_refreshButton];
     [_refreshButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(_drawTenButton.mas_top).offset(-KDialogAdaptedWidth(8));
         make.leading.mas_equalTo(cardsContainer.mas_leading).offset(-KDialogAdaptedWidth(6));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(170), KDialogAdaptedWidth(20)));
+    }];
+    
+    // 刷新小图标
+    UIImageView *refreshIcon = [[UIImageView alloc] init];
+    refreshIcon.image = [UIImage imageNamed:@"theme_game_one_refresh_btn"];
+    refreshIcon.userInteractionEnabled = NO;
+    [_refreshButton addSubview:refreshIcon];
+    [refreshIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(KDialogAdaptedWidth(8));
+        make.centerY.mas_equalTo(_refreshButton);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(14), KDialogAdaptedWidth(14)));
+    }];
+    
+    // “刷新奖池”文字
+    UILabel *refreshTextLabel = [[UILabel alloc] init];
+    refreshTextLabel.text = @"刷新奖池";
+    refreshTextLabel.textColor = mHexRGB(0xF3FAFF);
+    refreshTextLabel.font = [UIFont boldSystemFontOfSize:11];
+    refreshTextLabel.userInteractionEnabled = NO;
+    [_refreshButton addSubview:refreshTextLabel];
+    [refreshTextLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(refreshIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
+        make.centerY.mas_equalTo(_refreshButton);
+    }];
+    
+    // “本次刷新免费”提示文字
+    UILabel *refreshFreeLabel = [[UILabel alloc] init];
+    refreshFreeLabel.text = @"本次刷新免费";
+    refreshFreeLabel.textColor = mHexRGB(0xF3FAFF);
+    refreshFreeLabel.font = [UIFont boldSystemFontOfSize:11];
+    refreshFreeLabel.userInteractionEnabled = NO;
+    [_refreshButton addSubview:refreshFreeLabel];
+    [refreshFreeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(refreshTextLabel.mas_trailing).offset(KDialogAdaptedWidth(10));
+        make.centerY.mas_equalTo(_refreshButton);
     }];
     
     // 藏宝图兑换按钮 (高 37 pt, 宽 148 pt)
