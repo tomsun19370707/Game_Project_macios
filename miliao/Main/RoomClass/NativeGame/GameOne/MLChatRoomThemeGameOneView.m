@@ -45,7 +45,7 @@
 @property (nonatomic, strong) UILabel *keyBalanceLabel;
 @property (nonatomic, strong) UIButton *keyPlusButton;
 @property (nonatomic, strong) UILabel *luckyTextLabel;
-@property (nonatomic, strong) UIProgressView *luckyProgressBar;
+@property (nonatomic, strong) UIImageView *luckyProgressBar;
 
 @property (nonatomic, strong) UILabel *diamondBalanceLabel;
 @property (nonatomic, strong) UIButton *diamondPlusButton;
@@ -184,9 +184,9 @@
     
     // --- 顶部容器子控件布局 ---
     
-    // 记录按钮 (位于左上角, 宽 78, 高 32)
+    // 记录按钮 (位于左上角, 宽 78, 高 32，改用背景图拉伸)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_recordButton setImage:[UIImage imageNamed:@"theme_game_one_record_btn_brighter"] forState:UIControlStateNormal];
+    [_recordButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_btn_brighter"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_topContainer addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -195,9 +195,9 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(78), KDialogAdaptedWidth(32)));
     }];
     
-    // 规则按钮 (位于右上角, 宽 78, 高 32)
+    // 规则按钮 (位于右上角, 宽 78, 高 32，改用背景图拉伸)
     _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_ruleButton setImage:[UIImage imageNamed:@"theme_game_one_rule_btn_brighter"] forState:UIControlStateNormal];
+    [_ruleButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_rule_btn_brighter"] forState:UIControlStateNormal];
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [_topContainer addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -263,24 +263,24 @@
     
     // --- 中部容器子控件布局 ---
     
-    // 18 宫格礼物卡片环形布局容器 (宽 332, 高 354 pt, 中轴线下移 15 pt 以防头部拥挤，高度缩小拉近纵向间距)
+    // 18 宫格礼物卡片环形布局容器 (宽 332, 高 354 pt, 中轴线下移 18 pt 以防头部拥挤，高度缩小拉近纵向间距)
     UIView *cardsContainer = [[UIView alloc] init];
     [_middleContainer addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_middleContainer);
-        make.centerY.mas_equalTo(_middleContainer).offset(KDialogAdaptedWidth(5));
+        make.centerY.mas_equalTo(_middleContainer).offset(KDialogAdaptedWidth(18));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(332), KDialogAdaptedWidth(354)));
     }];
     
     [self layout18GiftCardsInContainer:cardsContainer];
     
-    // 钻石余额条 (高 20 pt, 宽 82 pt. 位于卡片内圈上方，下移 12 pt 至 88)
+    // 钻石余额条 (高 20 pt, 宽 82 pt. 位于卡片内圈上方，上移至 80)
     UIView *diamondBar = [[UIView alloc] init];
     diamondBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     setViewCorner(diamondBar, 10); // 10 pt 圆角 (一半高度)
     [cardsContainer addSubview:diamondBar];
     [diamondBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(88));
+        make.top.mas_equalTo(KDialogAdaptedWidth(80));
         make.centerX.mas_equalTo(cardsContainer.mas_centerX).offset(-KDialogAdaptedWidth(48));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(82), KDialogAdaptedWidth(20)));
     }];
@@ -315,13 +315,13 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(14), KDialogAdaptedWidth(14)));
     }];
     
-    // 钥匙余额条 (高 20 pt, 宽 82 pt. 位于卡片内圈上方，下移 12 pt 至 88)
+    // 钥匙余额条 (高 20 pt, 宽 82 pt. 位于卡片内圈上方，上移至 80)
     UIView *keyBar = [[UIView alloc] init];
     keyBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     setViewCorner(keyBar, 10); // 10 pt 圆角
     [cardsContainer addSubview:keyBar];
     [keyBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(88));
+        make.top.mas_equalTo(KDialogAdaptedWidth(80));
         make.centerX.mas_equalTo(cardsContainer.mas_centerX).offset(KDialogAdaptedWidth(48));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(82), KDialogAdaptedWidth(20)));
     }];
@@ -394,9 +394,9 @@
     
     // --- 底部操作及抽奖控制布局 ---
     
-    // 底部“一/十/百”连横排抽奖按钮组 (二次放大：高 60 pt, 宽 120 pt)
+    // 底部“一/十/百”连横排抽奖按钮组 (二次放大：高 60 pt, 宽 120 pt，改用背景图以实现图片真实拉伸)
     _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawTenButton setImage:[UIImage imageNamed:@"theme_game_one_draw_ten"] forState:UIControlStateNormal];
+    [_drawTenButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_draw_ten"] forState:UIControlStateNormal];
     [_drawTenButton addTarget:self action:@selector(drawTenClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_drawTenButton];
     [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -406,7 +406,7 @@
     }];
     
     _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawOneButton setImage:[UIImage imageNamed:@"theme_game_one_draw_one"] forState:UIControlStateNormal];
+    [_drawOneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_draw_one"] forState:UIControlStateNormal];
     [_drawOneButton addTarget:self action:@selector(drawOneClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_drawOneButton];
     [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -416,7 +416,7 @@
     }];
     
     _drawHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawHundredButton setImage:[UIImage imageNamed:@"theme_game_one_draw_hundred"] forState:UIControlStateNormal];
+    [_drawHundredButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_draw_hundred"] forState:UIControlStateNormal];
     [_drawHundredButton addTarget:self action:@selector(drawHundredClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_drawHundredButton];
     [_drawHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -471,9 +471,9 @@
         make.centerY.mas_equalTo(_refreshButton);
     }];
     
-    // 藏宝图兑换按钮 (二次放大：高 44 pt, 宽 176 pt)
+    // 藏宝图兑换按钮 (二次放大：高 44 pt, 宽 176 pt，改用背景图拉伸)
     _exchangeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_exchangeButton setImage:[UIImage imageNamed:@"theme_game_one_exchange_btn"] forState:UIControlStateNormal];
+    [_exchangeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_exchange_btn"] forState:UIControlStateNormal];
     [_exchangeButton addTarget:self action:@selector(exchangeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_exchangeButton];
     [_exchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -607,10 +607,9 @@
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
     
-    // 2. 详情、消耗档位
+    // 2. 详情、消耗档位 (寻梦值背景底图为静态 ImageView，仅更新文字，无 Progress 控制)
     [MLGameLotteryService getRoomDetailWithTypeId:self.typeId success:^(MLGameLotteryInfoModel *model) {
         wself.infoModel = model;
-        wself.luckyProgressBar.progress = (double)model.lucky / 200.0;
         wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/200", (long)model.lucky];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
