@@ -145,17 +145,6 @@
         make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1136.0 / 740.0);
     }];
     
-    // 左上角返回/关闭按钮 (theme_game_one_rule_back, 36 * 36)
-    _backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_backButton setImage:[UIImage imageNamed:@"theme_game_one_rule_back"] forState:UIControlStateNormal];
-    [_backButton addTarget:self action:@selector(backClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_backButton];
-    [_backButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(16));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(36, 36));
-    }];
-    
     // 记录按钮 (距右边缘 16 pt, top 16)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_recordButton setImage:[UIImage imageNamed:@"theme_game_one_record_btn_brighter"] forState:UIControlStateNormal];
@@ -379,9 +368,9 @@
     
     WeakSelf
     [_marqueeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(wself.backButton.mas_bottom).offset(10);
-        make.leading.mas_equalTo(24);
-        make.trailing.mas_equalTo(-24);
+        make.top.mas_equalTo(KDialogAdaptedWidth(62));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(24));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(24));
         wself.marqueeHeightConstraint = make.height.mas_equalTo(0);
     }];
 }
