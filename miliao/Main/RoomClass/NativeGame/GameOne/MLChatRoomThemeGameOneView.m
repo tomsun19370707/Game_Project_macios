@@ -430,7 +430,7 @@
     [_refreshButton addTarget:self action:@selector(refreshPoolClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_refreshButton];
     [_refreshButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_drawTenButton.mas_top).offset(-KDialogAdaptedWidth(18));
+        make.bottom.mas_equalTo(_drawTenButton.mas_top).offset(-KDialogAdaptedWidth(22));
         make.leading.mas_equalTo(cardsContainer.mas_leading).offset(-KDialogAdaptedWidth(6));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(185), KDialogAdaptedWidth(22)));
     }];
@@ -470,7 +470,7 @@
         make.centerY.mas_equalTo(_refreshButton);
     }];
     
-    // 藏宝图兑换按钮 (四次收缩：高 29 pt, 宽 115 pt，改用背景图拉伸)
+    // 藏宝图兑换按钮 (五次收缩：高 26 pt, 宽 104 pt，改用背景图拉伸)
     _exchangeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_exchangeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_exchange_btn"] forState:UIControlStateNormal];
     [_exchangeButton addTarget:self action:@selector(exchangeClick) forControlEvents:UIControlEventTouchUpInside];
@@ -478,7 +478,7 @@
     [_exchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_refreshButton);
         make.trailing.mas_equalTo(cardsContainer.mas_trailing);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(115), KDialogAdaptedWidth(29)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(104), KDialogAdaptedWidth(26)));
     }];
 }
 
