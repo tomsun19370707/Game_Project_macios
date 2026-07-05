@@ -184,7 +184,7 @@
     
     // --- 顶部容器子控件布局 ---
     
-    // 记录按钮 (位于左上角, 宽 70, 高 29，改用背景图拉伸)
+    // 记录按钮 (位于左上角, 宽 63, 高 26，改用背景图拉伸)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_recordButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_btn_brighter"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
@@ -192,10 +192,10 @@
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(16));
         make.leading.mas_equalTo(KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(70), KDialogAdaptedWidth(29)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(63), KDialogAdaptedWidth(26)));
     }];
     
-    // 规则按钮 (位于右上角, 宽 70, 高 29，改用背景图拉伸)
+    // 规则按钮 (位于右上角, 宽 63, 高 26，改用背景图拉伸)
     _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_ruleButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_rule_btn_brighter"] forState:UIControlStateNormal];
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
@@ -203,7 +203,7 @@
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(16));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(70), KDialogAdaptedWidth(29)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(63), KDialogAdaptedWidth(26)));
     }];
     
     // 今日运势悬浮条 (宽 70, 高 30. 悬浮在右上角外侧)
@@ -263,12 +263,12 @@
     
     // --- 中部容器子控件布局 ---
     
-    // 18 宫格礼物卡片环形布局容器 (宽 332, 高 354 pt, 中轴线下移 21 pt 以防头部拥挤，高度缩小拉近纵向间距)
+    // 18 宫格礼物卡片环形布局容器 (宽 332, 高 354 pt, 中轴线下移 18 pt 以防头部拥挤，高度缩小拉近纵向间距)
     UIView *cardsContainer = [[UIView alloc] init];
     [_middleContainer addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_middleContainer);
-        make.centerY.mas_equalTo(_middleContainer).offset(KDialogAdaptedWidth(21));
+        make.centerY.mas_equalTo(_middleContainer).offset(KDialogAdaptedWidth(18));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(332), KDialogAdaptedWidth(354)));
     }];
     
@@ -393,7 +393,7 @@
     
     // --- 底部操作及抽奖控制布局 ---
     
-    // 底部“一/十/百”连横排抽奖按钮组 (收缩10%：高 54 pt, 宽 108 pt，改用背景图以实现图片真实拉伸)
+    // 底部“一/十/百”连横排抽奖按钮组 (二次收缩：高 49 pt, 宽 97 pt，改用背景图以实现图片真实拉伸)
     _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_drawTenButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_draw_ten"] forState:UIControlStateNormal];
     [_drawTenButton addTarget:self action:@selector(drawTenClick) forControlEvents:UIControlEventTouchUpInside];
@@ -401,7 +401,7 @@
     [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bottomContainer);
         make.bottom.mas_equalTo(-KDialogAdaptedWidth(24));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(108), KDialogAdaptedWidth(54)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(97), KDialogAdaptedWidth(49)));
     }];
     
     _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -411,7 +411,7 @@
     [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(_drawTenButton.mas_leading).offset(-KDialogAdaptedWidth(8));
         make.centerY.mas_equalTo(_drawTenButton);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(108), KDialogAdaptedWidth(54)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(97), KDialogAdaptedWidth(49)));
     }];
     
     _drawHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -421,7 +421,7 @@
     [_drawHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(_drawTenButton.mas_trailing).offset(KDialogAdaptedWidth(8));
         make.centerY.mas_equalTo(_drawTenButton);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(108), KDialogAdaptedWidth(54)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(97), KDialogAdaptedWidth(49)));
     }];
     
     // 刷新奖池按钮 (高 22 pt, 宽 185 pt, 抬高 10 pt 以紧凑排版)
@@ -470,7 +470,7 @@
         make.centerY.mas_equalTo(_refreshButton);
     }];
     
-    // 藏宝图兑换按钮 (收缩10%：高 40 pt, 宽 158 pt，改用背景图拉伸)
+    // 藏宝图兑换按钮 (二次收缩：高 36 pt, 宽 142 pt，改用背景图拉伸)
     _exchangeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_exchangeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_exchange_btn"] forState:UIControlStateNormal];
     [_exchangeButton addTarget:self action:@selector(exchangeClick) forControlEvents:UIControlEventTouchUpInside];
@@ -478,7 +478,7 @@
     [_exchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_refreshButton);
         make.trailing.mas_equalTo(cardsContainer.mas_trailing);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(158), KDialogAdaptedWidth(40)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(142), KDialogAdaptedWidth(36)));
     }];
 }
 
