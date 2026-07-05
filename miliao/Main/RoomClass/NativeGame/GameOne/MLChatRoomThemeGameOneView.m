@@ -424,15 +424,15 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(87), KDialogAdaptedWidth(44)));
     }];
     
-    // 刷新奖池按钮 (高 22 pt, 宽 166 pt, 抬高 10 pt 以紧凑排版)
+    // 刷新奖池按钮 (高 22 pt, 宽 149 pt, 抬高 10 pt 以紧凑排版)
     _refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_refreshButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_refresh_free_bar_origin"] forState:UIControlStateNormal];
     [_refreshButton addTarget:self action:@selector(refreshPoolClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_refreshButton];
     [_refreshButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_drawTenButton.mas_top).offset(-KDialogAdaptedWidth(26));
+        make.bottom.mas_equalTo(_drawTenButton.mas_top).offset(-KDialogAdaptedWidth(30));
         make.leading.mas_equalTo(cardsContainer.mas_leading).offset(-KDialogAdaptedWidth(6));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(166), KDialogAdaptedWidth(22)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(149), KDialogAdaptedWidth(22)));
     }];
     
     // 刷新小图标
@@ -470,7 +470,7 @@
         make.centerY.mas_equalTo(_refreshButton);
     }];
     
-    // 藏宝图兑换按钮 (六次收缩：高 23 pt, 宽 104 pt，改用背景图拉伸)
+    // 藏宝图兑换按钮 (七次收缩：高 23 pt, 宽 114 pt，改用背景图拉伸)
     _exchangeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_exchangeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_exchange_btn"] forState:UIControlStateNormal];
     [_exchangeButton addTarget:self action:@selector(exchangeClick) forControlEvents:UIControlEventTouchUpInside];
@@ -478,7 +478,7 @@
     [_exchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_refreshButton);
         make.trailing.mas_equalTo(cardsContainer.mas_trailing);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(104), KDialogAdaptedWidth(23)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(114), KDialogAdaptedWidth(23)));
     }];
 }
 
