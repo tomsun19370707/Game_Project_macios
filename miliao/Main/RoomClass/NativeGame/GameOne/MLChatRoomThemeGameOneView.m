@@ -263,12 +263,12 @@
     
     // --- 中部容器子控件布局 ---
     
-    // 18 宫格礼物卡片环形布局容器 (宽 332, 高 354 pt, 中轴线下移 15 pt 以防头部拥挤，高度缩小拉近纵向间距)
+    // 18 宫格礼物卡片环形布局容器 (宽 332, 高 354 pt, 中轴线下移 12 pt 以防头部拥挤，高度缩小拉近纵向间距)
     UIView *cardsContainer = [[UIView alloc] init];
     [_middleContainer addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_middleContainer);
-        make.centerY.mas_equalTo(_middleContainer).offset(KDialogAdaptedWidth(15));
+        make.centerY.mas_equalTo(_middleContainer).offset(KDialogAdaptedWidth(12));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(332), KDialogAdaptedWidth(354)));
     }];
     
@@ -470,7 +470,7 @@
         make.centerY.mas_equalTo(_refreshButton);
     }];
     
-    // 藏宝图兑换按钮 (三次收缩：高 32 pt, 宽 128 pt，改用背景图拉伸)
+    // 藏宝图兑换按钮 (四次收缩：高 29 pt, 宽 115 pt，改用背景图拉伸)
     _exchangeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_exchangeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_exchange_btn"] forState:UIControlStateNormal];
     [_exchangeButton addTarget:self action:@selector(exchangeClick) forControlEvents:UIControlEventTouchUpInside];
@@ -478,7 +478,7 @@
     [_exchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_refreshButton);
         make.trailing.mas_equalTo(cardsContainer.mas_trailing);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(128), KDialogAdaptedWidth(32)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(115), KDialogAdaptedWidth(29)));
     }];
 }
 
