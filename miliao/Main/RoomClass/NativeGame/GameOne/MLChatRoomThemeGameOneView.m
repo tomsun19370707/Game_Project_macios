@@ -393,15 +393,15 @@
     
     // --- 底部操作及抽奖控制布局 ---
     
-    // 底部“一/十/百”连横排抽奖按钮组 (三次收缩：高 44 pt, 宽 87 pt，改用背景图以实现图片真实拉伸)
+    // 底部“一/十/百”连横排抽奖按钮组 (三次收缩并放大：高 48 pt, 宽 96 pt，改用背景图以实现图片真实拉伸)
     _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_drawTenButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_draw_ten"] forState:UIControlStateNormal];
     [_drawTenButton addTarget:self action:@selector(drawTenClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_drawTenButton];
     [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bottomContainer);
-        make.bottom.mas_equalTo(-KDialogAdaptedWidth(24));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(87), KDialogAdaptedWidth(44)));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(33));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(96), KDialogAdaptedWidth(48)));
     }];
     
     _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -409,9 +409,9 @@
     [_drawOneButton addTarget:self action:@selector(drawOneClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_drawOneButton];
     [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(_drawTenButton.mas_leading).offset(-KDialogAdaptedWidth(8));
+        make.trailing.mas_equalTo(_drawTenButton.mas_leading).offset(-KDialogAdaptedWidth(14));
         make.centerY.mas_equalTo(_drawTenButton);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(87), KDialogAdaptedWidth(44)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(96), KDialogAdaptedWidth(48)));
     }];
     
     _drawHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -419,9 +419,9 @@
     [_drawHundredButton addTarget:self action:@selector(drawHundredClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_drawHundredButton];
     [_drawHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_drawTenButton.mas_trailing).offset(KDialogAdaptedWidth(8));
+        make.leading.mas_equalTo(_drawTenButton.mas_trailing).offset(KDialogAdaptedWidth(14));
         make.centerY.mas_equalTo(_drawTenButton);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(87), KDialogAdaptedWidth(44)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(96), KDialogAdaptedWidth(48)));
     }];
     
     // 刷新奖池按钮 (高 22 pt, 宽 149 pt, 抬高 10 pt 以紧凑排版)
@@ -430,7 +430,7 @@
     [_refreshButton addTarget:self action:@selector(refreshPoolClick) forControlEvents:UIControlEventTouchUpInside];
     [_bottomContainer addSubview:_refreshButton];
     [_refreshButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_drawTenButton.mas_top).offset(-KDialogAdaptedWidth(38));
+        make.bottom.mas_equalTo(_drawTenButton.mas_top).offset(-KDialogAdaptedWidth(25));
         make.leading.mas_equalTo(cardsContainer.mas_leading).offset(-KDialogAdaptedWidth(6));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(149), KDialogAdaptedWidth(22)));
     }];
