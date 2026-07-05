@@ -263,24 +263,24 @@
     
     // --- 中部容器子控件布局 ---
     
-    // 18 宫格礼物卡片环形布局容器 (宽 332, 高 354 pt, 中轴线下移 18 pt 以防头部拥挤，高度缩小拉近纵向间距)
+    // 18 宫格礼物卡片环形布局容器 (宽 332, 高 354 pt, 中轴线下移 24 pt 以防头部拥挤，高度缩小拉近纵向间距)
     UIView *cardsContainer = [[UIView alloc] init];
     [_middleContainer addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_middleContainer);
-        make.centerY.mas_equalTo(_middleContainer).offset(KDialogAdaptedWidth(18));
+        make.centerY.mas_equalTo(_middleContainer).offset(KDialogAdaptedWidth(24));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(332), KDialogAdaptedWidth(354)));
     }];
     
     [self layout18GiftCardsInContainer:cardsContainer];
     
-    // 钻石余额条 (高 20 pt, 宽 82 pt. 位于卡片内圈上方，上移至 80)
+    // 钻石余额条 (高 20 pt, 宽 82 pt. 位于卡片内圈上方，上移至 72)
     UIView *diamondBar = [[UIView alloc] init];
     diamondBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     setViewCorner(diamondBar, 10); // 10 pt 圆角 (一半高度)
     [cardsContainer addSubview:diamondBar];
     [diamondBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(80));
+        make.top.mas_equalTo(KDialogAdaptedWidth(72));
         make.centerX.mas_equalTo(cardsContainer.mas_centerX).offset(-KDialogAdaptedWidth(48));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(82), KDialogAdaptedWidth(20)));
     }];
@@ -315,13 +315,13 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(14), KDialogAdaptedWidth(14)));
     }];
     
-    // 钥匙余额条 (高 20 pt, 宽 82 pt. 位于卡片内圈上方，上移至 80)
+    // 钥匙余额条 (高 20 pt, 宽 82 pt. 位于卡片内圈上方，上移至 72)
     UIView *keyBar = [[UIView alloc] init];
     keyBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     setViewCorner(keyBar, 10); // 10 pt 圆角
     [cardsContainer addSubview:keyBar];
     [keyBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(80));
+        make.top.mas_equalTo(KDialogAdaptedWidth(72));
         make.centerX.mas_equalTo(cardsContainer.mas_centerX).offset(KDialogAdaptedWidth(48));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(82), KDialogAdaptedWidth(20)));
     }];
