@@ -249,8 +249,7 @@
     
     // 全服中奖轮播跑马灯 (水平居中, 距顶部 62 pt. 高度默认为 0 隐蔽)
     _marqueeLabel = [[MLChatRoomMarqueeLabel alloc] init];
-    _marqueeLabel.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
-    setViewCorner(_marqueeLabel, 11);
+    _marqueeLabel.backgroundColor = [UIColor clearColor];
     [_topContainer addSubview:_marqueeLabel];
     
     WeakSelf
@@ -599,7 +598,8 @@
     WeakSelf
     // 1. 获取个人资产
     [MLGameLotteryService getUserMoneyWithSuccess:^(MLGameUserMoneyModel *moneyModel) {
-        wself.diamondBalanceLabel.text = moneyModel.diamond;
+        NSInteger diamondInt = (NSInteger)[moneyModel.diamond doubleValue];
+        wself.diamondBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)diamondInt];
         wself.localKeyBalance = moneyModel.lottery_coin;
         [wself updateBalanceUI];
     } failure:^(NSError *error) {
@@ -935,17 +935,34 @@
     [self realShowResult];
 }
 
+- (void)getDrawConfigAtIndex:(NSInteger)index defaultTimes:(NSInteger)defaultTimes defaultCost:(NSInteger)defaultCost times:(NSInteger *)outTimes cost:(NSInteger *)outCost {
+    if (self.infoModel && self.infoModel.coin_cost_opt.count > index) {
+        MLGameLotteryOptModel *opt = self.infoModel.coin_cost_opt[index];
+        if (outTimes) *outTimes = opt.nums;
+        if (outCost) *outCost = opt.coin_cost;
+    } else {
+        if (outTimes) *outTimes = defaultTimes;
+        if (outCost) *outCost = defaultCost;
+    }
+}
+
 #pragma mark - 点击事件
 - (void)drawOneClick {
-    [self drawWithTimes:1 cost:200];
+    NSInteger times, cost;
+    [self getDrawConfigAtIndex:0 defaultTimes:1 defaultCost:200 times:&times cost:&cost];
+    [self drawWithTimes:times cost:cost];
 }
 
 - (void)drawTenClick {
-    [self drawWithTimes:10 cost:2000];
+    NSInteger times, cost;
+    [self getDrawConfigAtIndex:1 defaultTimes:10 defaultCost:2000 times:&times cost:&cost];
+    [self drawWithTimes:times cost:cost];
 }
 
 - (void)drawHundredClick {
-    [self drawWithTimes:100 cost:20000];
+    NSInteger times, cost;
+    [self getDrawConfigAtIndex:2 defaultTimes:100 defaultCost:20000 times:&times cost:&cost];
+    [self drawWithTimes:times cost:cost];
 }
 
 - (void)refreshPoolClick {
@@ -989,12 +1006,18 @@
     UIViewController *curVC = [UIViewController currentViewController];
     if (curVC) {
         CFMWalletDiamondRechargeVc *re = [[CFMWalletDiamondRechargeVc alloc] init];
-        re.modalPresentationStyle = UIModalPresentationOverCurrentContext;
         WeakSelf
+        self.hidden = YES;
         re.dismissBlock = ^{
+            wself.hidden = NO;
             [wself loadData];
         };
-        [curVC presentViewController:re animated:NO completion:nil];
+        if (curVC.navigationController) {
+            [curVC.navigationController pushViewController:re animated:YES];
+        } else {
+            re.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+            [curVC presentViewController:re animated:NO completion:nil];
+        }
     }
 }
 

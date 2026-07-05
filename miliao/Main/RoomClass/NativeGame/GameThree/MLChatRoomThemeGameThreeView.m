@@ -304,8 +304,7 @@
     
     // 全服中奖轮播跑马灯 (水平居中, 距顶部返回按钮底部 10 pt. 高度默认为 0 隐蔽)
     _marqueeLabel = [[MLChatRoomMarqueeLabel alloc] init];
-    _marqueeLabel.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
-    setViewCorner(_marqueeLabel, 11);
+    _marqueeLabel.backgroundColor = [UIColor clearColor];
     [_bgImageView addSubview:_marqueeLabel];
     
     WeakSelf
@@ -415,7 +414,8 @@
     WeakSelf
     // 1. 获取个人资产
     [MLGameLotteryService getUserMoneyWithSuccess:^(MLGameUserMoneyModel *moneyModel) {
-        wself.diamondBalanceLabel.text = moneyModel.diamond;
+        NSInteger diamondInt = (NSInteger)[moneyModel.diamond doubleValue];
+        wself.diamondBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)diamondInt];
         wself.localKeyBalance = moneyModel.lottery_coin;
         [wself updateBalanceUI];
     } failure:^(NSError *error) {
@@ -663,12 +663,18 @@
     UIViewController *curVC = [UIViewController currentViewController];
     if (curVC) {
         CFMWalletDiamondRechargeVc *re = [[CFMWalletDiamondRechargeVc alloc] init];
-        re.modalPresentationStyle = UIModalPresentationOverCurrentContext;
         WeakSelf
+        self.hidden = YES;
         re.dismissBlock = ^{
+            wself.hidden = NO;
             [wself loadData];
         };
-        [curVC presentViewController:re animated:NO completion:nil];
+        if (curVC.navigationController) {
+            [curVC.navigationController pushViewController:re animated:YES];
+        } else {
+            re.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+            [curVC presentViewController:re animated:NO completion:nil];
+        }
     }
 }
 

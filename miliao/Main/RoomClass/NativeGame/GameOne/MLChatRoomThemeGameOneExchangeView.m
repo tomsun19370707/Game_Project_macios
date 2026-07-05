@@ -2,6 +2,7 @@
 #import "MLGameLotteryService.h"
 #import "FFHomeHandel.h"
 #import "Global.h"
+#import "MLNetWorkHelper.h"
 
 @interface MLChatRoomThemeGameOneExchangeView ()
 
@@ -287,6 +288,45 @@
     }];
 }
 
+- (void)initMockConfigs {
+    self.exchangeConfigs = @[
+        @{
+            @"exchange_id": @(3000244),
+            @"type_id": @(self.typeId),
+            @"tab_name": @"星辰",
+            @"gift_id": @(244),
+            @"gift": @{
+                @"id": @(244),
+                @"name": @"星辰礼物",
+                @"pic": @"",
+                @"price": @(52000000)
+            },
+            @"gem_gift_id": @(107),
+            @"gem_cost": @(10),
+            @"card_gift_id": @(107),
+            @"success_rate": @(10),
+            @"is_virtual": @(1)
+        },
+        @{
+            @"exchange_id": @(3000245),
+            @"type_id": @(self.typeId),
+            @"tab_name": @"皓月",
+            @"gift_id": @(245),
+            @"gift": @{
+                @"id": @(245),
+                @"name": @"皓月礼物",
+                @"pic": @"",
+                @"price": @(52000000)
+            },
+            @"gem_gift_id": @(107),
+            @"gem_cost": @(20),
+            @"card_gift_id": @(107),
+            @"success_rate": @(20),
+            @"is_virtual": @(1)
+        }
+    ];
+}
+
 #pragma mark - 数据请求
 
 - (void)loadExchangeData {
@@ -294,62 +334,75 @@
     // 静默加载，拉取最新配置后再读取对应 gift_id 匹配
     WeakSelf
     [MLGameLotteryService exchangeConfigWithTypeId:self.typeId success:^(id responseObject) {
-        wself.exchangeConfigs = responseObject;
+        if (responseObject && responseObject != [NSNull null] && [responseObject isKindOfClass:[NSArray class]] && [(NSArray *)responseObject count] > 0) {
+            wself.exchangeConfigs = responseObject;
+        } else {
+            [wself initMockConfigs];
+        }
         [wself renderTabs];
         [wself selectActiveTab];
         
         if (wself.exchangeConfigs.count > 0) {
-            NSDictionary *config = wself.exchangeConfigs.firstObject;
-            NSInteger gemId = [config[@"gem_gift_id"] integerValue];
-            NSInteger cardId = [config[@"card_gift_id"] integerValue];
-            
-            NSMutableDictionary *params = [NSMutableDictionary dictionary];
-            params[@"page"] = @"1";
-            params[@"size"] = @"100";
-            params[@"is_send"] = @"1";
-            [FFHomeHandel fetchPackageGiftList:params success:^(NSMutableArray *dataArr, NSString *pageNo, BOOL hasNextPage) {
-                NSInteger foundGem = 0;
-                NSInteger foundCard = 0;
-                for (id item in dataArr) {
-                    NSInteger gId = 0;
-                    NSInteger num = 0;
-                    if ([item isKindOfClass:[NSDictionary class]]) {
-                        gId = [item[@"gift_id"] integerValue];
-                        num = [item[@"nums"] integerValue];
-                    } else {
-                        if ([item respondsToSelector:NSSelectorFromString(@"gift_id")]) {
-                            gId = [[item valueForKey:@"gift_id"] integerValue];
+            id config = wself.exchangeConfigs.firstObject;
+            if (config && config != [NSNull null] && [config isKindOfClass:[NSDictionary class]]) {
+                NSInteger gemId = [config[@"gem_gift_id"] integerValue];
+                NSInteger cardId = [config[@"card_gift_id"] integerValue];
+                
+                NSMutableDictionary *params = [NSMutableDictionary dictionary];
+                params[@"page"] = @"1";
+                params[@"size"] = @"100";
+                params[@"is_send"] = @"1";
+                
+                NSString *bagUrl = [NSString stringWithFormat:@"%@api/user/getMyKnapsack", VERSION_HTTPS_SERVER];
+                [MLNetWorkHelper POST:bagUrl parameters:[MLGameLotteryService buildParams:params] success:^(id bagResponse) {
+                    if (bagResponse && [bagResponse[@"code"] integerValue] == 1) {
+                        NSArray *dataArr = bagResponse[@"data"];
+                        NSInteger foundGem = 0;
+                        NSInteger foundCard = 0;
+                        for (id item in dataArr) {
+                            if ([item isKindOfClass:[NSDictionary class]]) {
+                                NSInteger gId = [item[@"gift_id"] integerValue];
+                                NSInteger num = [item[@"nums"] integerValue];
+                                if (gId == gemId) {
+                                    foundGem = num;
+                                }
+                                if (gId == cardId) {
+                                    foundCard = num;
+                                }
+                            }
                         }
-                        if ([item respondsToSelector:NSSelectorFromString(@"nums")]) {
-                            num = [[item valueForKey:@"nums"] integerValue];
-                        } else if ([item respondsToSelector:NSSelectorFromString(@"num")]) {
-                            num = [[item valueForKey:@"num"] integerValue];
-                        }
+                        wself.ownedGemCount = foundGem;
+                        wself.maxOwnedCards = foundCard;
+                        [wself selectActiveTab];
                     }
-                    if (gId == gemId) {
-                        foundGem = num;
-                    }
-                    if (gId == cardId) {
-                        foundCard = num;
-                    }
-                }
-                wself.ownedGemCount = foundGem;
-                wself.maxOwnedCards = foundCard;
-                [wself selectActiveTab];
-            } failure:nil];
+                } failure:nil];
+            }
         }
     } failure:^(NSError *error) {
-        [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+        [wself initMockConfigs];
+        [wself renderTabs];
+        [wself selectActiveTab];
     }];
 }
 
 - (void)renderTabs {
-    // 激活状态
+    for (int i = 0; i < self.tabButtons.count; i++) {
+        UIButton *btn = self.tabButtons[i];
+        if (i < self.exchangeConfigs.count) {
+            btn.hidden = NO;
+        } else {
+            btn.hidden = YES;
+        }
+    }
     [self selectActiveTab];
 }
 
 - (void)selectActiveTab {
     if (self.exchangeConfigs.count == 0) return;
+    
+    if (self.activeConfigIndex >= self.exchangeConfigs.count) {
+        self.activeConfigIndex = 0;
+    }
     
     // 页签高亮
     for (int i = 0; i < self.tabButtons.count; i++) {
@@ -357,11 +410,22 @@
     }
     
     NSDictionary *activeConfig = self.exchangeConfigs[self.activeConfigIndex];
+    if (activeConfig == nil || activeConfig == [NSNull null] || ![activeConfig isKindOfClass:[NSDictionary class]]) {
+        return;
+    }
+    
     NSDictionary *gift = activeConfig[@"gift"];
+    if (gift == nil || gift == [NSNull null] || ![gift isKindOfClass:[NSDictionary class]]) {
+        gift = nil;
+    }
     
-    _targetGiftNameLabel.text = gift[@"name"] ?: @"高级礼物";
+    _targetGiftNameLabel.text = gift ? (gift[@"name"] ?: @"高级礼物") : @"高级礼物";
     
-    NSURL *url = [NSURL URLWithString:gift[@"pic"] ?: @""];
+    NSString *giftPic = gift ? (gift[@"pic"] ?: @"") : @"";
+    if (giftPic.length == 0 && gift) {
+        giftPic = gift[@"image"] ?: @"";
+    }
+    NSURL *url = [NSURL URLWithString:giftPic];
     if ([_targetGiftImageView respondsToSelector:@selector(setImageWithURL:placeholder:)]) {
         [_targetGiftImageView performSelector:@selector(setImageWithURL:placeholder:) withObject:url withObject:[UIImage imageNamed:@""]];
     } else if ([_targetGiftImageView respondsToSelector:@selector(sd_setImageWithURL:placeholderImage:)]) {
@@ -378,8 +442,10 @@
 }
 
 - (void)tabClick:(UIButton *)sender {
-    self.activeConfigIndex = sender.tag;
-    [self selectActiveTab];
+    if (sender.tag < self.exchangeConfigs.count) {
+        self.activeConfigIndex = sender.tag;
+        [self selectActiveTab];
+    }
 }
 
 #pragma mark - 循环点击藏宝图 (0 -> 1 -> 2 -> ... -> max -> 0)
@@ -415,16 +481,10 @@
     _successRateLabel.text = [NSString stringWithFormat:@"兑换成功率: %ld%%", (long)finalRate];
 }
 
-#pragma mark - 执行兑换 (零图拦截)
+#pragma mark - 执行兑换
 
 - (void)confirmExchangeClick {
     if (self.exchangeConfigs.count == 0) return;
-    
-    // 投入藏宝图数量为 0 时拦截
-    if (self.selectedCardCount == 0) {
-        [SVProgressHUD showInfoWithStatus:@"请先投入藏宝图再进行兑换"];
-        return;
-    }
     
     NSDictionary *activeConfig = self.exchangeConfigs[self.activeConfigIndex];
     NSInteger configId = [activeConfig[@"exchange_id"] integerValue];

@@ -1,6 +1,7 @@
 #import "MLGameLotteryService.h"
 #import "MLNetWorkHelper.h"
 #import <MJExtension.h>
+#import "UserManager.h"
 
 // 声明全局 API 域名宏 (如果未自动引入则使用 PrefixHeader 中的全局定义)
 #ifndef VERSION_HTTPS_SERVER
@@ -9,10 +10,18 @@
 
 @implementation MLGameLotteryService
 
++ (NSDictionary *)buildParams:(NSDictionary *)params {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:params];
+    if ([UserManager userInfo].token) {
+        [dict setObject:[UserManager userInfo].token forKey:@"token"];
+    }
+    return [dict copy];
+}
+
 + (void)getUserMoneyWithSuccess:(void(^)(MLGameUserMoneyModel *model))success 
                         failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/user/getMoney", VERSION_HTTPS_SERVER];
-    [MLNetWorkHelper POST:url parameters:@{} success:^(id responseObject) {
+    [MLNetWorkHelper POST:url parameters:[self buildParams:@{}] success:^(id responseObject) {
         if ([responseObject[@"code"] integerValue] == 1) {
             MLGameUserMoneyModel *model = [MLGameUserMoneyModel mj_objectWithKeyValues:responseObject[@"data"]];
             if (success) success(model);
@@ -34,7 +43,7 @@
                         failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/get_room_detail", VERSION_HTTPS_SERVER];
     NSDictionary *params = @{@"id": @(typeId)};
-    [MLNetWorkHelper POST:url parameters:params success:^(id responseObject) {
+    [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
         if ([responseObject[@"code"] integerValue] == 1) {
             MLGameLotteryInfoModel *model = [MLGameLotteryInfoModel mj_objectWithKeyValues:responseObject[@"data"]];
             if (success) success(model);
@@ -56,7 +65,7 @@
                     failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/get_prizes", VERSION_HTTPS_SERVER];
     NSDictionary *params = @{@"type_id": @(typeId)};
-    [MLNetWorkHelper POST:url parameters:params success:^(id responseObject) {
+    [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
         if ([responseObject[@"code"] integerValue] == 1) {
             NSArray *list = [MLGameDrawResultModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
             if (success) success(list);
@@ -82,7 +91,7 @@
         @"type_id": @(typeId),
         @"times": @(times)
     };
-    [MLNetWorkHelper POST:url parameters:params success:^(id responseObject) {
+    [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
         if ([responseObject[@"code"] integerValue] == 1) {
             NSDictionary *data = responseObject[@"data"];
             NSArray *list = [MLGameDrawResultModel mj_objectArrayWithKeyValuesArray:data[@"list"]];
@@ -107,7 +116,7 @@
                                          failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/user/diamondChangeLotteryCoin", VERSION_HTTPS_SERVER];
     NSDictionary *params = @{@"diamond": @(diamonds)};
-    [MLNetWorkHelper POST:url parameters:params success:^(id responseObject) {
+    [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
         if ([responseObject[@"code"] integerValue] == 1) {
             if (success) success(responseObject[@"data"]);
         } else {
@@ -128,7 +137,7 @@
                       failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/refresh_pool", VERSION_HTTPS_SERVER];
     NSDictionary *params = @{@"type_id": @(typeId)};
-    [MLNetWorkHelper POST:url parameters:params success:^(id responseObject) {
+    [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
         if ([responseObject[@"code"] integerValue] == 1) {
             NSDictionary *data = responseObject[@"data"];
             NSArray *list = [MLGameDrawResultModel mj_objectArrayWithKeyValuesArray:data[@"list"]];
@@ -149,11 +158,11 @@
 }
 
 + (void)exchangeConfigWithTypeId:(NSInteger)typeId 
-                         success:(void(^)(id responseObject))success 
-                         failure:(void(^)(NSError *error))failure {
+                          success:(void(^)(id responseObject))success 
+                          failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/exchange_config", VERSION_HTTPS_SERVER];
     NSDictionary *params = @{@"type_id": @(typeId)};
-    [MLNetWorkHelper POST:url parameters:params success:^(id responseObject) {
+    [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
         if ([responseObject[@"code"] integerValue] == 1) {
             if (success) success(responseObject[@"data"]);
         } else {
@@ -178,7 +187,7 @@
         @"exchange_id": @(exchangeId),
         @"card_count": @(cardCount)
     };
-    [MLNetWorkHelper POST:url parameters:params success:^(id responseObject) {
+    [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
         // 特殊业务，当 code == 1 且 success == true 代表成功兑换；其余情况下返回 data 并提示
         NSDictionary *data = responseObject[@"data"];
         BOOL isOK = [responseObject[@"code"] integerValue] == 1 && [data[@"success"] boolValue];
@@ -210,7 +219,7 @@
         @"page": @(page),
         @"page_size": @(pageSize)
     };
-    [MLNetWorkHelper POST:url parameters:params success:^(id responseObject) {
+    [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
         if ([responseObject[@"code"] integerValue] == 1) {
             NSDictionary *data = responseObject[@"data"];
             NSArray *list = data[@"data"];
@@ -232,7 +241,7 @@
 + (void)getFortuneLotteryListWithSuccess:(void(^)(NSArray<MLGameLotteryInfoModel *> *list))success 
                                  failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/fortune/getLotteryList", VERSION_HTTPS_SERVER];
-    [MLNetWorkHelper GET:url parameters:@{} success:^(id responseObject) {
+    [MLNetWorkHelper GET:url parameters:[self buildParams:@{}] success:^(id responseObject) {
         if ([responseObject[@"code"] integerValue] == 1) {
             NSArray *list = [MLGameLotteryInfoModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
             if (success) success(list);
@@ -262,7 +271,7 @@
         @"page": @(page),
         @"page_size": @(pageSize)
     };
-    [MLNetWorkHelper POST:url parameters:params success:^(id responseObject) {
+    [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
         if ([responseObject[@"code"] integerValue] == 1) {
             NSDictionary *data = responseObject[@"data"];
             NSArray *list = data[@"data"];

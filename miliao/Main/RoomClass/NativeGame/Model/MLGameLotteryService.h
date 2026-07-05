@@ -4,6 +4,8 @@
 
 @interface MLGameLotteryService : NSObject
 
++ (NSDictionary *)buildParams:(NSDictionary *)params;
+
 /**
  1. 查询个人余额
  */

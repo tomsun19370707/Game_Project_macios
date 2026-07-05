@@ -282,7 +282,7 @@
     _costLabel = [[UILabel alloc] init];
     _costLabel.textColor = mHexRGB(0xFFE400);
     _costLabel.font = [UIFont boldSystemFontOfSize:12];
-    _costLabel.text = @"消耗 200 钻石";
+    _costLabel.text = [NSString stringWithFormat:@"消耗 %ld 钻石", (long)[self getSingleKeyCost]];
     [_bgImageView addSubview:_costLabel];
     
     // 确认购买按钮 (theme_game_one_purchase_confirm.png, 宽 208, 高 42. 距底端 24 pt)
@@ -326,7 +326,7 @@
     if (_optOtherButton.selected) {
         costCount = [_inputTextField.text integerValue];
     }
-    _costLabel.text = [NSString stringWithFormat:@"消耗 %ld 钻石", (long)(costCount * 200)];
+    _costLabel.text = [NSString stringWithFormat:@"消耗 %ld 钻石", (long)(costCount * [self getSingleKeyCost])];
 }
 
 #pragma mark - 档位点击
@@ -367,6 +367,21 @@
     return [string isEqualToString:filtered];
 }
 
+- (NSInteger)getSingleKeyCost {
+    if (self.infoModel && self.infoModel.coin_cost_opt.count > 0) {
+        for (MLGameLotteryOptModel *opt in self.infoModel.coin_cost_opt) {
+            if (opt.nums == 1) {
+                return opt.coin_cost;
+            }
+        }
+        MLGameLotteryOptModel *firstOpt = self.infoModel.coin_cost_opt.firstObject;
+        if (firstOpt.nums > 0) {
+            return firstOpt.coin_cost / firstOpt.nums;
+        }
+    }
+    return 200; // 兜底 200
+}
+
 #pragma mark - 执行购买
 - (void)confirmPurchaseClick {
     NSInteger buyCount = 0;
@@ -386,7 +401,7 @@
         buyCount = self.selectedCount;
     }
     
-    NSInteger costDiamonds = buyCount * 200;
+    NSInteger costDiamonds = buyCount * [self getSingleKeyCost];
     if (self.localDiamonds < costDiamonds) {
         [SVProgressHUD showErrorWithStatus:@"钻石余额不足，请前往充值"];
         return;

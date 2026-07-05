@@ -26,7 +26,7 @@
     _contentLabel = [[UILabel alloc] init];
     _contentLabel.textColor = [UIColor whiteColor];
     _contentLabel.font = [UIFont systemFontOfSize:11];
-    _contentLabel.textAlignment = NSTextAlignmentLeft;
+    _contentLabel.textAlignment = NSTextAlignmentCenter;
     _contentLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [self addSubview:_contentLabel];
     [_contentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
