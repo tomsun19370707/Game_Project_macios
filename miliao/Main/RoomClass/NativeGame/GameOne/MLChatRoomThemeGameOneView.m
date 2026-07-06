@@ -152,6 +152,28 @@
         make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1136.0 / 740.0);
     }];
     
+    // SVGAPlayer 动效图层 (咬合背景图层，处于背景图最底层，其他按钮和卡片控件之下)
+    self.svgaPlayer = [[SVGAPlayer alloc] init];
+    self.svgaPlayer.loops = 0; // 无限循环播放
+    self.svgaPlayer.contentMode = UIViewContentModeScaleAspectFit;
+    self.svgaPlayer.hidden = YES;
+    [_bgImageView addSubview:self.svgaPlayer];
+    [self.svgaPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(_bgImageView);
+    }];
+    
+    // 异步预解析 SVGA 动画数据，避免抽奖点击时延迟
+    SVGAParser *parser = [[SVGAParser alloc] init];
+    NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_one_draw" withExtension:@"svga"];
+    if (svgaURL) {
+        WeakSelf
+        [parser parseWithURL:svgaURL completionBlock:^(SVGAVideoEntity * _Nonnull videoItem) {
+            if (wself) {
+                wself.svgaPlayer.videoItem = videoItem;
+            }
+        } failureBlock:nil];
+    }
+    
     // --- 容器初始化与布局对齐 ---
     
     // 1. 顶部容器 (高度占 100 pt)
@@ -756,6 +778,10 @@
     self.lastDrawTimes = times;
     self.lastDrawCost = cost;
     
+    // 显示并启动 SVGA 循环播放动效
+    self.svgaPlayer.hidden = NO;
+    [self.svgaPlayer startAnimation];
+    
     // 2. 立即启动无限匀速跑马灯 (Loading 态)
     [self startInfiniteRotation];
     
@@ -772,6 +798,10 @@
         
         if (activeResultView) {
             [wself stopInfiniteRotation];
+            if (wself.svgaPlayer) {
+                [wself.svgaPlayer stopAnimation];
+                wself.svgaPlayer.hidden = YES;
+            }
             [activeResultView updateGifts:list totalValue:totalValue];
             [wself lockButtons:NO];
             wself.isDrawing = NO;
@@ -791,6 +821,11 @@
         [wself stopInfiniteRotation];
         [wself lockButtons:NO];
         wself.isDrawing = NO;
+        
+        if (wself.svgaPlayer) {
+            [wself.svgaPlayer stopAnimation];
+            wself.svgaPlayer.hidden = YES;
+        }
         
         // 5. 计费回滚防御
         if (error.code == NSURLErrorTimedOut) {
@@ -918,30 +953,12 @@
     [self lockButtons:NO];
     self.isDrawing = NO;
     
-    if (self.svgaPlayer == nil) {
-        self.svgaPlayer = [[SVGAPlayer alloc] initWithFrame:self.bounds];
-        self.svgaPlayer.loops = 1;
-        self.svgaPlayer.delegate = self;
-        [self addSubview:self.svgaPlayer];
-    }
-    self.svgaPlayer.hidden = NO;
-    
-    SVGAParser *parser = [[SVGAParser alloc] init];
-    NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_one_draw" withExtension:@"svga"];
-    if (svgaURL) {
-        WeakSelf
-        [parser parseWithURL:svgaURL completionBlock:^(SVGAVideoEntity * _Nonnull videoItem) {
-            wself.svgaPlayer.videoItem = videoItem;
-            [wself.svgaPlayer startAnimation];
-        } failureBlock:^(NSError * _Nonnull error) {
-            wself.svgaPlayer.hidden = YES;
-            [wself realShowResult];
-        }];
-    } else {
+    if (self.svgaPlayer) {
+        [self.svgaPlayer stopAnimation];
         self.svgaPlayer.hidden = YES;
-        [self realShowResult];
     }
     
+    [self realShowResult];
     [self loadData];
 }
 

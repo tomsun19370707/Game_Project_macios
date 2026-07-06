@@ -521,10 +521,14 @@
     self.pendingTotalValue = totalValue;
     
     if (self.svgaPlayer == nil) {
-        self.svgaPlayer = [[SVGAPlayer alloc] initWithFrame:self.bounds];
+        self.svgaPlayer = [[SVGAPlayer alloc] init];
         self.svgaPlayer.loops = 1;
         self.svgaPlayer.delegate = self;
+        self.svgaPlayer.contentMode = UIViewContentModeScaleAspectFit;
         [self addSubview:self.svgaPlayer];
+        [self.svgaPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.mas_equalTo(self);
+        }];
     }
     self.svgaPlayer.hidden = NO;
     
