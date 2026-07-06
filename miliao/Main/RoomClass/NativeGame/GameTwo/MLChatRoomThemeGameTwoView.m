@@ -57,8 +57,6 @@
 @property (nonatomic, assign) NSInteger pendingTotalValue;
 @property (nonatomic, assign) NSInteger consumeValue;
 @property (nonatomic, assign) NSInteger produceValue;
-@property (nonatomic, strong) MLChatRoomMarqueeLabel *marqueeLabel;
-@property (nonatomic, strong) MASConstraint *marqueeHeightConstraint;
 
 @end
 
@@ -360,30 +358,6 @@
         make.centerY.mas_equalTo(assetContainer);
         make.size.mas_equalTo(CGSizeMake(30, 30));
     }];
-    
-    // 全服中奖轮播跑马灯 (水平居中, 距顶部返回按钮底部 10 pt. 高度默认为 0 隐蔽)
-    _marqueeLabel = [[MLChatRoomMarqueeLabel alloc] init];
-    _marqueeLabel.backgroundColor = [UIColor clearColor];
-    [_bgImageView addSubview:_marqueeLabel];
-    
-    WeakSelf
-    [_marqueeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(wself.backButton.mas_bottom).offset(10);
-        make.leading.mas_equalTo(24);
-        make.trailing.mas_equalTo(-24);
-        wself.marqueeHeightConstraint = make.height.mas_equalTo(0);
-    }];
-}
-
-- (void)updateMarqueeHeight:(CGFloat)height {
-    [self.marqueeHeightConstraint uninstall];
-    WeakSelf
-    [self.marqueeLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-        wself.marqueeHeightConstraint = make.height.mas_equalTo(height);
-    }];
-    [UIView animateWithDuration:0.25 animations:^{
-        [wself layoutIfNeeded];
-    }];
 }
 
 - (void)layoutSubviews {
@@ -393,9 +367,17 @@
 #pragma mark - 数据拉取与图片绑定
 - (void)loadData {
     WeakSelf
-    // 1. 获取个人资产
     [MLGameLotteryService getUserMoneyWithSuccess:^(MLGameUserMoneyModel *moneyModel) {
-        NSInteger diamondInt = (NSInteger)[moneyModel.diamond doubleValue];
+        if (!wself) return;
+        if (!moneyModel || moneyModel == (id)[NSNull null] || ![moneyModel isKindOfClass:[MLGameUserMoneyModel class]]) {
+            return;
+        }
+        id diamondVal = moneyModel.diamond;
+        double diamondDouble = 0.0;
+        if (diamondVal && diamondVal != [NSNull null]) {
+            diamondDouble = [diamondVal doubleValue];
+        }
+        NSInteger diamondInt = (NSInteger)diamondDouble;
         wself.diamondBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)diamondInt];
         wself.localKeyBalance = moneyModel.lottery_coin;
         [wself updateBalanceUI];
@@ -405,6 +387,10 @@
     
     // 2. 获取详情和价格
     [MLGameLotteryService getRoomDetailWithTypeId:self.typeId success:^(MLGameLotteryInfoModel *model) {
+        if (!wself) return;
+        if (!model || model == (id)[NSNull null] || ![model isKindOfClass:[MLGameLotteryInfoModel class]]) {
+            return;
+        }
         wself.infoModel = model;
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
@@ -412,6 +398,10 @@
     
     // 3. 获取 9 个灵果大奖的奖池配图
     [MLGameLotteryService getPrizesWithTypeId:self.typeId success:^(NSArray<MLGameDrawResultModel *> *list) {
+        if (!wself) return;
+        if (!list || ![list isKindOfClass:[NSArray class]]) {
+            return;
+        }
         wself.prizeList = list;
         [wself renderPrizePeaches];
     } failure:^(NSError *error) {
@@ -420,6 +410,10 @@
     
     // 4. 获取今日运势数据 (对接 typeId == 4 / lottery_id == 2)
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
+        if (!wself) return;
+        if (!list || ![list isKindOfClass:[NSArray class]]) {
+            return;
+        }
         for (MLGameLotteryInfoModel *model in list) {
             if (model.typeId == 2 || model.typeId == 4 || [model.name containsString:@"神木"]) {
                 wself.consumeValue = model.consume_diamonds;
@@ -429,49 +423,6 @@
         }
     } failure:^(NSError *error) {
         // 静默失败
-    }];
-    
-    // 5. 获取全服中奖广播跑马灯
-    [MLGameLotteryService getLotteryWinLogWithTypeId:self.typeId page:1 pageSize:20 success:^(NSArray *list, NSInteger total) {
-        if (list.count > 0) {
-            NSMutableArray<NSAttributedString *> *items = [NSMutableArray array];
-            for (NSDictionary *dict in list) {
-                NSString *nickname = dict[@"nickname"] ?: @"";
-                if (nickname.length > 0) {
-                    if (nickname.length == 1) {
-                        nickname = @"*";
-                    } else if (nickname.length == 2) {
-                        nickname = [NSString stringWithFormat:@"%@*", [nickname substringToIndex:1]];
-                    } else {
-                        nickname = [NSString stringWithFormat:@"%@***%@", [nickname substringToIndex:1], [nickname substringFromIndex:nickname.length - 1]];
-                    }
-                }
-                NSString *giftName = dict[@"name"] ?: @"";
-                NSString *fullText = [NSString stringWithFormat:@"恭喜 %@ 在神木栖灵获得 %@", nickname, giftName];
-                NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:fullText];
-                [attrStr addAttribute:NSForegroundColorAttributeName value:mHexRGB(0xE1F5FE) range:NSMakeRange(0, fullText.length)];
-                [attrStr addAttribute:NSFontAttributeName value:KFontBoldA(11) range:NSMakeRange(0, fullText.length)];
-                
-                NSRange nickRange = [fullText rangeOfString:nickname];
-                if (nickRange.location != NSNotFound) {
-                    [attrStr addAttribute:NSForegroundColorAttributeName value:mHexRGB(0xFFE66F) range:nickRange];
-                }
-                NSRange giftRange = [fullText rangeOfString:giftName options:NSBackwardsSearch];
-                if (giftRange.location != NSNotFound) {
-                    [attrStr addAttribute:NSForegroundColorAttributeName value:mHexRGB(0xFFE66F) range:giftRange];
-                }
-                [items addObject:attrStr];
-            }
-            [wself.marqueeLabel setMarqueeItems:items];
-            [wself.marqueeLabel startScroll];
-            [wself updateMarqueeHeight:24];
-        } else {
-            [wself.marqueeLabel stopScroll];
-            [wself updateMarqueeHeight:0];
-        }
-    } failure:^(NSError *error) {
-        [wself.marqueeLabel stopScroll];
-        [wself updateMarqueeHeight:0];
     }];
 }
 
@@ -711,8 +662,13 @@
         WeakSelf
         self.hidden = YES;
         re.dismissBlock = ^{
-            wself.hidden = NO;
-            [wself loadData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(wself) strongSelf = wself;
+                if (strongSelf) {
+                    strongSelf.hidden = NO;
+                    [strongSelf loadData];
+                }
+            });
         };
         if (curVC.navigationController) {
             [curVC.navigationController pushViewController:re animated:YES];

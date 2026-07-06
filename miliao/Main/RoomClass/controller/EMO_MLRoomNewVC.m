@@ -257,7 +257,7 @@ static SVGAParser *parser;
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    if (!self.socket) {
+    if (!self.socket || self.socket.readyState == SR_CLOSED || self.socket.readyState == SR_CLOSING) {
         self.socket = [[SRWebSocket alloc] initWithURLRequest:
                        [NSURLRequest requestWithURL:[NSURL URLWithString:@"ws://www.wx00fx.cn:9090/ws"]]];
         self.socket.delegate = self;
@@ -275,9 +275,11 @@ static SVGAParser *parser;
                                                                          );
     dispatch_queue_t queue = dispatch_queue_create("com.emo.websocket.connect", attr);
     
-    dispatch_async(queue, ^{
-        [self.socket open];
-    });
+    if (self.socket.readyState == SR_CONNECTING) {
+        dispatch_async(queue, ^{
+            [self.socket open];
+        });
+    }
 }
 
 

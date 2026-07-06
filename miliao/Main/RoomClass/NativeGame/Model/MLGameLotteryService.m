@@ -22,6 +22,10 @@
                         failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/user/getMoney", VERSION_HTTPS_SERVER];
     [MLNetWorkHelper POST:url parameters:[self buildParams:@{}] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (failure) failure([NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"数据格式错误"}]);
+            return;
+        }
         if ([responseObject[@"code"] integerValue] == 1) {
             MLGameUserMoneyModel *model = [MLGameUserMoneyModel mj_objectWithKeyValues:responseObject[@"data"]];
             if (success) success(model);
@@ -44,6 +48,10 @@
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/get_room_detail", VERSION_HTTPS_SERVER];
     NSDictionary *params = @{@"id": @(typeId)};
     [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (failure) failure([NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"数据格式错误"}]);
+            return;
+        }
         if ([responseObject[@"code"] integerValue] == 1) {
             MLGameLotteryInfoModel *model = [MLGameLotteryInfoModel mj_objectWithKeyValues:responseObject[@"data"]];
             if (success) success(model);
@@ -66,6 +74,10 @@
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/get_prizes", VERSION_HTTPS_SERVER];
     NSDictionary *params = @{@"type_id": @(typeId)};
     [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (failure) failure([NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"数据格式错误"}]);
+            return;
+        }
         if ([responseObject[@"code"] integerValue] == 1) {
             NSArray *list = [MLGameDrawResultModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
             if (success) success(list);
@@ -92,6 +104,10 @@
         @"times": @(times)
     };
     [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (failure) failure([NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"数据格式错误"}]);
+            return;
+        }
         if ([responseObject[@"code"] integerValue] == 1) {
             NSDictionary *data = responseObject[@"data"];
             NSArray *list = [MLGameDrawResultModel mj_objectArrayWithKeyValuesArray:data[@"list"]];
@@ -117,6 +133,10 @@
     NSString *url = [NSString stringWithFormat:@"%@api/emo/user/diamondChangeLotteryCoin", VERSION_HTTPS_SERVER];
     NSDictionary *params = @{@"diamond": @(diamonds)};
     [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (success) success(responseObject); // 保持原行为，兼容非Dict数据
+            return;
+        }
         if ([responseObject[@"code"] integerValue] == 1) {
             if (success) success(responseObject[@"data"]);
         } else {
@@ -138,6 +158,10 @@
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/refresh_pool", VERSION_HTTPS_SERVER];
     NSDictionary *params = @{@"type_id": @(typeId)};
     [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (failure) failure([NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"数据格式错误"}]);
+            return;
+        }
         if ([responseObject[@"code"] integerValue] == 1) {
             NSDictionary *data = responseObject[@"data"];
             NSArray *list = [MLGameDrawResultModel mj_objectArrayWithKeyValuesArray:data[@"list"]];
@@ -163,6 +187,10 @@
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/exchange_config", VERSION_HTTPS_SERVER];
     NSDictionary *params = @{@"type_id": @(typeId)};
     [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (success) success(responseObject); // 保持原行为，兼容非Dict
+            return;
+        }
         if ([responseObject[@"code"] integerValue] == 1) {
             if (success) success(responseObject[@"data"]);
         } else {
@@ -188,6 +216,10 @@
         @"card_count": @(cardCount)
     };
     [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (success) success(NO, nil, 0, 0, @"数据格式错误");
+            return;
+        }
         // 特殊业务，当 code == 1 且 success == true 代表成功兑换；其余情况下返回 data 并提示
         NSDictionary *data = responseObject[@"data"];
         BOOL isOK = [responseObject[@"code"] integerValue] == 1 && [data[@"success"] boolValue];
@@ -220,6 +252,10 @@
         @"page_size": @(pageSize)
     };
     [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (failure) failure([NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"数据格式错误"}]);
+            return;
+        }
         if ([responseObject[@"code"] integerValue] == 1) {
             NSDictionary *data = responseObject[@"data"];
             NSArray *list = data[@"data"];
@@ -242,6 +278,10 @@
                                  failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/fortune/getLotteryList", VERSION_HTTPS_SERVER];
     [MLNetWorkHelper GET:url parameters:[self buildParams:@{}] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (failure) failure([NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"数据格式错误"}]);
+            return;
+        }
         if ([responseObject[@"code"] integerValue] == 1) {
             NSArray *list = [MLGameLotteryInfoModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
             if (success) success(list);
@@ -272,6 +312,10 @@
         @"page_size": @(pageSize)
     };
     [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (failure) failure([NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"数据格式错误"}]);
+            return;
+        }
         if ([responseObject[@"code"] integerValue] == 1) {
             NSDictionary *data = responseObject[@"data"];
             NSArray *list = data[@"data"];

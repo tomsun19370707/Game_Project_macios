@@ -45,8 +45,6 @@
 
 @property (nonatomic, assign) NSInteger consumeValue;
 @property (nonatomic, assign) NSInteger produceValue;
-@property (nonatomic, strong) MLChatRoomMarqueeLabel *marqueeLabel;
-@property (nonatomic, strong) MASConstraint *marqueeHeightConstraint;
 
 @end
 
@@ -301,30 +299,6 @@
         make.trailing.bottom.mas_equalTo(0);
         make.size.mas_equalTo(CGSizeMake(104, 60));
     }];
-    
-    // 全服中奖轮播跑马灯 (水平居中, 距顶部返回按钮底部 10 pt. 高度默认为 0 隐蔽)
-    _marqueeLabel = [[MLChatRoomMarqueeLabel alloc] init];
-    _marqueeLabel.backgroundColor = [UIColor clearColor];
-    [_bgImageView addSubview:_marqueeLabel];
-    
-    WeakSelf
-    [_marqueeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(wself.backButton.mas_bottom).offset(10);
-        make.leading.mas_equalTo(24);
-        make.trailing.mas_equalTo(-24);
-        wself.marqueeHeightConstraint = make.height.mas_equalTo(0);
-    }];
-}
-
-- (void)updateMarqueeHeight:(CGFloat)height {
-    [self.marqueeHeightConstraint uninstall];
-    WeakSelf
-    [self.marqueeLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-        wself.marqueeHeightConstraint = make.height.mas_equalTo(height);
-    }];
-    [UIView animateWithDuration:0.25 animations:^{
-        [wself layoutIfNeeded];
-    }];
 }
 
 #pragma mark - 8宫格转盘底框容器 (圆形排布布局)
@@ -414,7 +388,16 @@
     WeakSelf
     // 1. 获取个人资产
     [MLGameLotteryService getUserMoneyWithSuccess:^(MLGameUserMoneyModel *moneyModel) {
-        NSInteger diamondInt = (NSInteger)[moneyModel.diamond doubleValue];
+        if (!wself) return;
+        if (!moneyModel || moneyModel == (id)[NSNull null] || ![moneyModel isKindOfClass:[MLGameUserMoneyModel class]]) {
+            return;
+        }
+        id diamondVal = moneyModel.diamond;
+        double diamondDouble = 0.0;
+        if (diamondVal && diamondVal != [NSNull null]) {
+            diamondDouble = [diamondVal doubleValue];
+        }
+        NSInteger diamondInt = (NSInteger)diamondDouble;
         wself.diamondBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)diamondInt];
         wself.localKeyBalance = moneyModel.lottery_coin;
         [wself updateBalanceUI];
@@ -424,6 +407,10 @@
     
     // 2. 详情、价格
     [MLGameLotteryService getRoomDetailWithTypeId:self.typeId success:^(MLGameLotteryInfoModel *model) {
+        if (!wself) return;
+        if (!model || model == (id)[NSNull null] || ![model isKindOfClass:[MLGameLotteryInfoModel class]]) {
+            return;
+        }
         wself.infoModel = model;
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
@@ -431,6 +418,10 @@
     
     // 3. 18 格大奖列表
     [MLGameLotteryService getPrizesWithTypeId:self.typeId success:^(NSArray<MLGameDrawResultModel *> *list) {
+        if (!wself) return;
+        if (!list || ![list isKindOfClass:[NSArray class]]) {
+            return;
+        }
         wself.prizesInPool = list;
         [wself renderGiftBoard];
     } failure:^(NSError *error) {
@@ -439,6 +430,10 @@
     
     // 4. 今日运势 (星辰序章 typeId == 5 / lottery_id == 3)
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
+        if (!wself) return;
+        if (!list || ![list isKindOfClass:[NSArray class]]) {
+            return;
+        }
         for (MLGameLotteryInfoModel *model in list) {
             if (model.typeId == 3 || model.typeId == 5 || [model.name containsString:@"星辰"]) {
                 wself.consumeValue = model.consume_diamonds;
@@ -448,49 +443,6 @@
         }
     } failure:^(NSError *error) {
         // 静默
-    }];
-    
-    // 5. 中奖广播跑马灯
-    [MLGameLotteryService getLotteryWinLogWithTypeId:self.typeId page:1 pageSize:20 success:^(NSArray *list, NSInteger total) {
-        if (list.count > 0) {
-            NSMutableArray<NSAttributedString *> *items = [NSMutableArray array];
-            for (NSDictionary *dict in list) {
-                NSString *nickname = dict[@"nickname"] ?: @"";
-                if (nickname.length > 0) {
-                    if (nickname.length == 1) {
-                        nickname = @"*";
-                    } else if (nickname.length == 2) {
-                        nickname = [NSString stringWithFormat:@"%@*", [nickname substringToIndex:1]];
-                    } else {
-                        nickname = [NSString stringWithFormat:@"%@***%@", [nickname substringToIndex:1], [nickname substringFromIndex:nickname.length - 1]];
-                    }
-                }
-                NSString *giftName = dict[@"name"] ?: @"";
-                NSString *fullText = [NSString stringWithFormat:@"恭喜 %@ 在星辰序章获得 %@", nickname, giftName];
-                NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:fullText];
-                [attrStr addAttribute:NSForegroundColorAttributeName value:mHexRGB(0xE1F5FE) range:NSMakeRange(0, fullText.length)];
-                [attrStr addAttribute:NSFontAttributeName value:KFontBoldA(11) range:NSMakeRange(0, fullText.length)];
-                
-                NSRange nickRange = [fullText rangeOfString:nickname];
-                if (nickRange.location != NSNotFound) {
-                    [attrStr addAttribute:NSForegroundColorAttributeName value:mHexRGB(0xFFE66F) range:nickRange];
-                }
-                NSRange giftRange = [fullText rangeOfString:giftName options:NSBackwardsSearch];
-                if (giftRange.location != NSNotFound) {
-                    [attrStr addAttribute:NSForegroundColorAttributeName value:mHexRGB(0xFFE66F) range:giftRange];
-                }
-                [items addObject:attrStr];
-            }
-            [wself.marqueeLabel setMarqueeItems:items];
-            [wself.marqueeLabel startScroll];
-            [wself updateMarqueeHeight:24];
-        } else {
-            [wself.marqueeLabel stopScroll];
-            [wself updateMarqueeHeight:0];
-        }
-    } failure:^(NSError *error) {
-        [wself.marqueeLabel stopScroll];
-        [wself updateMarqueeHeight:0];
     }];
 }
 
@@ -666,8 +618,13 @@
         WeakSelf
         self.hidden = YES;
         re.dismissBlock = ^{
-            wself.hidden = NO;
-            [wself loadData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(wself) strongSelf = wself;
+                if (strongSelf) {
+                    strongSelf.hidden = NO;
+                    [strongSelf loadData];
+                }
+            });
         };
         if (curVC.navigationController) {
             [curVC.navigationController pushViewController:re animated:YES];

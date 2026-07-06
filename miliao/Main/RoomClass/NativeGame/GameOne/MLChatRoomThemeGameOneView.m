@@ -254,7 +254,7 @@
     
     WeakSelf
     [_marqueeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(62));
+        make.top.mas_equalTo(KDialogAdaptedWidth(55));
         make.leading.mas_equalTo(KDialogAdaptedWidth(24));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(24));
         wself.marqueeHeightConstraint = make.height.mas_equalTo(0);
@@ -598,7 +598,16 @@
     WeakSelf
     // 1. 获取个人资产
     [MLGameLotteryService getUserMoneyWithSuccess:^(MLGameUserMoneyModel *moneyModel) {
-        NSInteger diamondInt = (NSInteger)[moneyModel.diamond doubleValue];
+        if (!wself) return;
+        if (!moneyModel || moneyModel == (id)[NSNull null] || ![moneyModel isKindOfClass:[MLGameUserMoneyModel class]]) {
+            return;
+        }
+        id diamondVal = moneyModel.diamond;
+        double diamondDouble = 0.0;
+        if (diamondVal && diamondVal != [NSNull null]) {
+            diamondDouble = [diamondVal doubleValue];
+        }
+        NSInteger diamondInt = (NSInteger)diamondDouble;
         wself.diamondBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)diamondInt];
         wself.localKeyBalance = moneyModel.lottery_coin;
         [wself updateBalanceUI];
@@ -608,6 +617,10 @@
     
     // 2. 详情、消耗档位 (寻梦值背景底图为静态 ImageView，仅更新文字，无 Progress 控制)
     [MLGameLotteryService getRoomDetailWithTypeId:self.typeId success:^(MLGameLotteryInfoModel *model) {
+        if (!wself) return;
+        if (!model || model == (id)[NSNull null] || ![model isKindOfClass:[MLGameLotteryInfoModel class]]) {
+            return;
+        }
         wself.infoModel = model;
         wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/200", (long)model.lucky];
     } failure:^(NSError *error) {
@@ -616,6 +629,10 @@
     
     // 3. 18 格奖池礼物列表
     [MLGameLotteryService getPrizesWithTypeId:self.typeId success:^(NSArray<MLGameDrawResultModel *> *list) {
+        if (!wself) return;
+        if (!list || ![list isKindOfClass:[NSArray class]]) {
+            return;
+        }
         wself.prizesInPool = list;
         [wself renderGiftBoard];
     } failure:^(NSError *error) {
@@ -624,6 +641,10 @@
     
     // 4. 获取今日运势数据 (对接 typeId == 3 / lottery_id == 7)
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
+        if (!wself) return;
+        if (!list || ![list isKindOfClass:[NSArray class]]) {
+            return;
+        }
         for (MLGameLotteryInfoModel *model in list) {
             if (model.typeId == 7 || model.typeId == 3 || [model.name containsString:@"寻梦"]) {
                 wself.consumeValue = model.consume_diamonds;
@@ -637,6 +658,10 @@
     
     // 5. 获取全服中奖广播跑马灯
     [MLGameLotteryService getLotteryWinLogWithTypeId:self.typeId page:1 pageSize:20 success:^(NSArray *list, NSInteger total) {
+        if (!wself) return;
+        if (!list || ![list isKindOfClass:[NSArray class]]) {
+            return;
+        }
         if (list.count > 0) {
             NSMutableArray<NSAttributedString *> *items = [NSMutableArray array];
             for (NSDictionary *dict in list) {
@@ -674,6 +699,7 @@
             [wself updateMarqueeHeight:0];
         }
     } failure:^(NSError *error) {
+        if (!wself) return;
         [wself.marqueeLabel stopScroll];
         [wself updateMarqueeHeight:0];
     }];
@@ -1009,8 +1035,13 @@
         WeakSelf
         self.hidden = YES;
         re.dismissBlock = ^{
-            wself.hidden = NO;
-            [wself loadData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(wself) strongSelf = wself;
+                if (strongSelf) {
+                    strongSelf.hidden = NO;
+                    [strongSelf loadData];
+                }
+            });
         };
         if (curVC.navigationController) {
             [curVC.navigationController pushViewController:re animated:YES];

@@ -57,6 +57,7 @@
     [super viewDidDisappear:animated];
     if (self.dismissBlock) {
         self.dismissBlock();
+        self.dismissBlock = nil;
     }
 }
 
