@@ -221,9 +221,9 @@
     for (int i = 0; i < displayCount; i++) {
         NSDictionary *gift = _mergedItems[i];
         
-        // 单行背景包裹容器 (使用 个人记录排名.png)
+        // 单行背景包裹容器 (在我的记录中显示 个人记录排名.png，在全服记录中透明直铺)
         UIImageView *rowBgView = [[UIImageView alloc] init];
-        rowBgView.image = [UIImage imageNamed:@"theme_game_one_record_gift_row_bg"];
+        rowBgView.image = _isMine ? [UIImage imageNamed:@"theme_game_one_record_gift_row_bg"] : nil;
         rowBgView.userInteractionEnabled = YES;
         [_giftsContainerView addSubview:rowBgView];
         
