@@ -59,13 +59,13 @@
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
     }];
     
-    // 2. 头像金圈底座 (头像.png)
+    // 2. 头像金圈底座 (头像.png, top 移到 2pt 垂直居中不越界)
     _avatarFrameView = [[UIImageView alloc] init];
     _avatarFrameView.image = [UIImage imageNamed:@"theme_game_one_record_avatar_frame"];
     _avatarFrameView.contentMode = UIViewContentModeScaleAspectFit;
     [_cellBgImageView addSubview:_avatarFrameView];
     [_avatarFrameView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(8));
+        make.top.mas_equalTo(KDialogAdaptedWidth(2));
         make.leading.mas_equalTo(KDialogAdaptedWidth(12));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
     }];
@@ -179,7 +179,7 @@
         }
         
         [_avatarFrameView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(KDialogAdaptedWidth(8));
+            make.top.mas_equalTo(KDialogAdaptedWidth(2));
             make.leading.mas_equalTo(KDialogAdaptedWidth(12));
             make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
         }];
@@ -202,129 +202,128 @@
         }];
     }
     
-    // 渲染礼物列表
+    // 渲染礼物列表 (折叠时始终展示第 1 个礼物以支撑卡片内容)
     for (UIView *sub in _giftsContainerView.subviews) {
         [sub removeFromSuperview];
     }
     
-    if (_isExpanded && _mergedItems.count > 0) {
-        _giftsContainerView.hidden = NO;
+    _giftsContainerView.hidden = NO;
+    [_giftsContainerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(KDialogAdaptedWidth(54)); // 刚好在紫色头部 54pt 之下
+        make.leading.trailing.mas_equalTo(_cellBgImageView);
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(8));
+    }];
+    
+    NSInteger displayCount = _isExpanded ? _mergedItems.count : (_mergedItems.count > 0 ? 1 : 0);
+    CGFloat rowH = KDialogAdaptedWidth(54);
+    CGFloat rowGap = KDialogAdaptedWidth(6);
+    
+    for (int i = 0; i < displayCount; i++) {
+        NSDictionary *gift = _mergedItems[i];
         
-        [_giftsContainerView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(KDialogAdaptedWidth(54)); // 刚好在紫色头部 54pt 之下
-            make.leading.trailing.mas_equalTo(_cellBgImageView);
-            make.bottom.mas_equalTo(-KDialogAdaptedWidth(8));
+        // 单行背景包裹容器 (使用 个人记录排名.png)
+        UIImageView *rowBgView = [[UIImageView alloc] init];
+        rowBgView.image = [UIImage imageNamed:@"theme_game_one_record_gift_row_bg"];
+        rowBgView.userInteractionEnabled = YES;
+        [_giftsContainerView addSubview:rowBgView];
+        
+        [rowBgView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(i * (rowH + rowGap));
+            make.leading.mas_equalTo(KDialogAdaptedWidth(12));
+            make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
+            make.height.mas_equalTo(rowH);
         }];
         
-        CGFloat rowH = KDialogAdaptedWidth(54);
-        CGFloat rowGap = KDialogAdaptedWidth(6);
+        // 礼物金圈底座 (头像.png)
+        UIImageView *giftFrameView = [[UIImageView alloc] init];
+        giftFrameView.image = [UIImage imageNamed:@"theme_game_one_record_avatar_frame"];
+        giftFrameView.contentMode = UIViewContentModeScaleAspectFit;
+        [rowBgView addSubview:giftFrameView];
+        [giftFrameView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.leading.mas_equalTo(KDialogAdaptedWidth(12));
+            make.centerY.mas_equalTo(rowBgView);
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
+        }];
         
-        for (int i = 0; i < _mergedItems.count; i++) {
-            NSDictionary *gift = _mergedItems[i];
-            
-            // 单行背景包裹容器 (使用 个人记录排名.png)
-            UIImageView *rowBgView = [[UIImageView alloc] init];
-            rowBgView.image = [UIImage imageNamed:@"theme_game_one_record_gift_row_bg"];
-            rowBgView.userInteractionEnabled = YES;
-            [_giftsContainerView addSubview:rowBgView];
-            
-            [rowBgView mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(i * (rowH + rowGap));
-                make.leading.mas_equalTo(KDialogAdaptedWidth(12));
-                make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
-                make.height.mas_equalTo(rowH);
-            }];
-            
-            // 礼物金圈底座 (头像.png)
-            UIImageView *giftFrameView = [[UIImageView alloc] init];
-            giftFrameView.image = [UIImage imageNamed:@"theme_game_one_record_avatar_frame"];
-            giftFrameView.contentMode = UIViewContentModeScaleAspectFit;
-            [rowBgView addSubview:giftFrameView];
-            [giftFrameView mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.leading.mas_equalTo(KDialogAdaptedWidth(12));
-                make.centerY.mas_equalTo(rowBgView);
-                make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
-            }];
-            
-            UIImageView *giftImg = [[UIImageView alloc] init];
-            giftImg.contentMode = UIViewContentModeScaleAspectFit;
-            [giftFrameView addSubview:giftImg];
-            [giftImg mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.center.mas_equalTo(giftFrameView);
-                make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
-            }];
-            
-            NSString *imgUrlStr = gift[@"pic"] ?: @"";
-            if (imgUrlStr.length == 0) {
-                imgUrlStr = gift[@"image"] ?: @"";
-            }
-            NSURL *url = [NSURL URLWithString:imgUrlStr];
-            if ([giftImg respondsToSelector:@selector(setImageWithURL:placeholder:)]) {
-                [giftImg performSelector:@selector(setImageWithURL:placeholder:) withObject:url withObject:[UIImage imageNamed:@""]];
-            } else if ([giftImg respondsToSelector:@selector(sd_setImageWithURL:placeholderImage:)]) {
-                [giftImg performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@""]];
-            }
-            
-            // 数量 (xN, 居右)
-            UILabel *giftNumLabel = [[UILabel alloc] init];
-            giftNumLabel.textColor = mHexRGB(0x81D4FA);
-            giftNumLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
-            giftNumLabel.text = [NSString stringWithFormat:@"x%@", gift[@"num"] ?: @"1"];
-            [rowBgView addSubview:giftNumLabel];
-            [giftNumLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
-                make.centerY.mas_equalTo(rowBgView);
-            }];
-            
-            // 礼物名称与钻石价格 (金圈右侧, 垂直堆叠)
-            UILabel *giftNameLabel = [[UILabel alloc] init];
-            giftNameLabel.textColor = kWhiteColor;
-            giftNameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
-            giftNameLabel.text = gift[@"name"] ?: @"";
-            [rowBgView addSubview:giftNameLabel];
-            [giftNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(giftFrameView.mas_top).offset(KDialogAdaptedWidth(1));
-                make.leading.mas_equalTo(giftFrameView.mas_trailing).offset(KDialogAdaptedWidth(8));
-                make.trailing.mas_equalTo(giftNumLabel.mas_leading).offset(-KDialogAdaptedWidth(8));
-            }];
-            
-            NSInteger price = [gift[@"price"] integerValue];
-            UILabel *giftPriceLabel = [[UILabel alloc] init];
-            giftPriceLabel.textColor = mHexRGB(0xFFE400);
-            giftPriceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
-            giftPriceLabel.text = [NSString stringWithFormat:@"%ld钻石", (long)price];
-            [rowBgView addSubview:giftPriceLabel];
-            [giftPriceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(giftFrameView.mas_bottom).offset(-KDialogAdaptedWidth(1));
-                make.leading.mas_equalTo(giftNameLabel);
-            }];
+        UIImageView *giftImg = [[UIImageView alloc] init];
+        giftImg.contentMode = UIViewContentModeScaleAspectFit;
+        [giftFrameView addSubview:giftImg];
+        [giftImg mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.mas_equalTo(giftFrameView);
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
+        }];
+        
+        NSString *imgUrlStr = gift[@"pic"] ?: @"";
+        if (imgUrlStr.length == 0) {
+            imgUrlStr = gift[@"image"] ?: @"";
         }
-    } else {
-        _giftsContainerView.hidden = YES;
-        [_giftsContainerView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(KDialogAdaptedWidth(54));
-            make.leading.trailing.mas_equalTo(_cellBgImageView);
-            make.height.mas_equalTo(0);
+        NSURL *url = [NSURL URLWithString:imgUrlStr];
+        if ([giftImg respondsToSelector:@selector(setImageWithURL:placeholder:)]) {
+            [giftImg performSelector:@selector(setImageWithURL:placeholder:) withObject:url withObject:[UIImage imageNamed:@""]];
+        } else if ([giftImg respondsToSelector:@selector(sd_setImageWithURL:placeholderImage:)]) {
+            [giftImg performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@""]];
+        }
+        
+        // 数量 (xN, 居右)
+        UILabel *giftNumLabel = [[UILabel alloc] init];
+        giftNumLabel.textColor = mHexRGB(0x81D4FA);
+        giftNumLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
+        giftNumLabel.text = [NSString stringWithFormat:@"x%@", gift[@"num"] ?: @"1"];
+        [rowBgView addSubview:giftNumLabel];
+        [giftNumLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
+            make.centerY.mas_equalTo(rowBgView);
+        }];
+        
+        // 礼物名称与钻石价格 (金圈右侧, 垂直堆叠)
+        UILabel *giftNameLabel = [[UILabel alloc] init];
+        giftNameLabel.textColor = kWhiteColor;
+        giftNameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
+        giftNameLabel.text = gift[@"name"] ?: @"";
+        [rowBgView addSubview:giftNameLabel];
+        [giftNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(giftFrameView.mas_top).offset(KDialogAdaptedWidth(1));
+            make.leading.mas_equalTo(giftFrameView.mas_trailing).offset(KDialogAdaptedWidth(8));
+            make.trailing.mas_equalTo(giftNumLabel.mas_leading).offset(-KDialogAdaptedWidth(8));
+        }];
+        
+        NSInteger price = [gift[@"price"] integerValue];
+        UILabel *giftPriceLabel = [[UILabel alloc] init];
+        giftPriceLabel.textColor = mHexRGB(0xFFE400);
+        giftPriceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
+        giftPriceLabel.text = [NSString stringWithFormat:@"%ld钻石", (long)price];
+        [rowBgView addSubview:giftPriceLabel];
+        [giftPriceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.bottom.mas_equalTo(giftFrameView.mas_bottom).offset(-KDialogAdaptedWidth(1));
+            make.leading.mas_equalTo(giftNameLabel);
         }];
     }
 }
 
 + (CGFloat)cellHeightWithData:(NSDictionary *)data isMine:(BOOL)isMine isExpanded:(BOOL)expanded {
     CGFloat baseH = KDialogAdaptedWidth(54) + KDialogAdaptedWidth(12); // 卡底上下 padding 加头部高
-    if (expanded) {
-        NSArray *items = data[@"items"];
-        // 算合并后的礼物行数
-        NSMutableSet *idSet = [NSMutableSet set];
-        for (NSDictionary *item in items) {
-            NSInteger gId = [item[@"gift_id"] integerValue];
-            if (gId == 0) {
-                gId = [item[@"id"] integerValue];
-            }
-            [idSet addObject:@(gId)];
+    
+    NSArray *items = data[@"items"];
+    // 算合并后的礼物种类数
+    NSMutableSet *idSet = [NSMutableSet set];
+    for (NSDictionary *item in items) {
+        NSInteger gId = [item[@"gift_id"] integerValue];
+        if (gId == 0) {
+            gId = [item[@"id"] integerValue];
         }
-        NSInteger count = idSet.count;
+        [idSet addObject:@(gId)];
+    }
+    NSInteger count = idSet.count;
+    
+    if (expanded) {
         if (count > 0) {
             CGFloat detailsH = count * KDialogAdaptedWidth(54) + (count - 1) * KDialogAdaptedWidth(6) + KDialogAdaptedWidth(8);
+            return baseH + detailsH;
+        }
+    } else {
+        // 折叠态：展示且只展示首个礼物 (保证高度 128pt 包含首礼物行不空底)
+        if (count > 0) {
+            CGFloat detailsH = 1 * KDialogAdaptedWidth(54) + KDialogAdaptedWidth(8);
             return baseH + detailsH;
         }
     }
@@ -425,7 +424,7 @@
         make.height.mas_equalTo(KDialogAdaptedWidth(100));
     }];
     
-    // 返回按钮 (左上角)
+    // 返回按钮 (左上角, 放大 20% 到 41x41pt)
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_closeButton setImage:[UIImage imageNamed:@"theme_game_one_record_back"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
@@ -433,27 +432,29 @@
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(18));
         make.leading.mas_equalTo(KDialogAdaptedWidth(24));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(34), KDialogAdaptedWidth(34)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(41), KDialogAdaptedWidth(41)));
     }];
     
-    // 双 Tab 容器与按钮组
+    // 双 Tab 容器与按钮组 (Tab 高度从 44pt 增到 51pt)
     UIView *tabBarView = [[UIView alloc] init];
     [_hudContainer addSubview:tabBarView];
     [tabBarView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(50));
         make.centerX.mas_equalTo(_hudContainer);
-        make.height.mas_equalTo(KDialogAdaptedWidth(44));
+        make.height.mas_equalTo(KDialogAdaptedWidth(51));
     }];
     
+    // 全服记录 Tab (放大 15% 到 145x51pt)
     _allRecordTab = [UIButton buttonWithType:UIButtonTypeCustom];
     [_allRecordTab setImage:[UIImage imageNamed:@"theme_game_one_record_tab_all_selected"] forState:UIControlStateNormal];
     [_allRecordTab addTarget:self action:@selector(allTabClick) forControlEvents:UIControlEventTouchUpInside];
     [tabBarView addSubview:_allRecordTab];
     [_allRecordTab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.bottom.mas_equalTo(tabBarView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(126), KDialogAdaptedWidth(44)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(145), KDialogAdaptedWidth(51)));
     }];
     
+    // 我的记录 Tab (放大 15% 到 145x51pt)
     _myRecordTab = [UIButton buttonWithType:UIButtonTypeCustom];
     [_myRecordTab setImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_normal"] forState:UIControlStateNormal];
     [_myRecordTab addTarget:self action:@selector(myTabClick) forControlEvents:UIControlEventTouchUpInside];
@@ -461,15 +462,15 @@
     [_myRecordTab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.bottom.trailing.mas_equalTo(tabBarView);
         make.leading.mas_equalTo(_allRecordTab.mas_trailing).offset(KDialogAdaptedWidth(10));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(126), KDialogAdaptedWidth(44)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(145), KDialogAdaptedWidth(51)));
     }];
     
-    // 3. 内容滚动展示区舱室 (GameplayContainer)
+    // 3. 内容滚动展示区舱室 (GameplayContainer, 提高位置至 Tab 底部下方仅偏移 4pt)
     _gameplayContainer = [[UIView alloc] init];
     _gameplayContainer.backgroundColor = [UIColor clearColor];
     [_bgImageView addSubview:_gameplayContainer];
     [_gameplayContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_hudContainer.mas_bottom).offset(KDialogAdaptedWidth(12));
+        make.top.mas_equalTo(tabBarView.mas_bottom).offset(KDialogAdaptedWidth(4));
         make.leading.mas_equalTo(KDialogAdaptedWidth(18));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(18));
         make.bottom.mas_equalTo(-KDialogAdaptedWidth(40)); // 安全距离全面屏手势
