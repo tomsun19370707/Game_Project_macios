@@ -426,7 +426,7 @@
     
     // 返回按钮 (左上角, 放大 20% 到 41x41pt)
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_closeButton setImage:[UIImage imageNamed:@"theme_game_one_record_back"] forState:UIControlStateNormal];
+    [_closeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_back"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
     [_hudContainer addSubview:_closeButton];
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -446,7 +446,7 @@
     
     // 全服记录 Tab (放大 15% 到 145x51pt)
     _allRecordTab = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_allRecordTab setImage:[UIImage imageNamed:@"theme_game_one_record_tab_all_selected"] forState:UIControlStateNormal];
+    [_allRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_all_selected"] forState:UIControlStateNormal];
     [_allRecordTab addTarget:self action:@selector(allTabClick) forControlEvents:UIControlEventTouchUpInside];
     [tabBarView addSubview:_allRecordTab];
     [_allRecordTab mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -456,7 +456,7 @@
     
     // 我的记录 Tab (放大 15% 到 145x51pt)
     _myRecordTab = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_myRecordTab setImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_normal"] forState:UIControlStateNormal];
+    [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_normal"] forState:UIControlStateNormal];
     [_myRecordTab addTarget:self action:@selector(myTabClick) forControlEvents:UIControlEventTouchUpInside];
     [tabBarView addSubview:_myRecordTab];
     [_myRecordTab mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -543,8 +543,8 @@
     if (!self.showingMyRecord) return;
     self.showingMyRecord = NO;
     self.currentPage = 1;
-    [_allRecordTab setImage:[UIImage imageNamed:@"theme_game_one_record_tab_all_selected"] forState:UIControlStateNormal];
-    [_myRecordTab setImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_normal"] forState:UIControlStateNormal];
+    [_allRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_all_selected"] forState:UIControlStateNormal];
+    [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_normal"] forState:UIControlStateNormal];
     [self loadData];
 }
 
@@ -552,8 +552,8 @@
     if (self.showingMyRecord) return;
     self.showingMyRecord = YES;
     self.currentPage = 1;
-    [_allRecordTab setImage:[UIImage imageNamed:@"theme_game_one_record_tab_all_normal"] forState:UIControlStateNormal];
-    [_myRecordTab setImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_selected"] forState:UIControlStateNormal];
+    [_allRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_all_normal"] forState:UIControlStateNormal];
+    [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_selected"] forState:UIControlStateNormal];
     [self loadData];
 }
 
