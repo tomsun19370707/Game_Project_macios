@@ -456,7 +456,7 @@
     
     // 我的记录 Tab (缩小 10% 到 131x46pt)
     _myRecordTab = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_normal"] forState:UIControlStateNormal];
+    [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_normal_equal"] forState:UIControlStateNormal];
     [_myRecordTab addTarget:self action:@selector(myTabClick) forControlEvents:UIControlEventTouchUpInside];
     [tabBarView addSubview:_myRecordTab];
     [_myRecordTab mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -544,7 +544,7 @@
     self.showingMyRecord = NO;
     self.currentPage = 1;
     [_allRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_all_selected"] forState:UIControlStateNormal];
-    [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_normal"] forState:UIControlStateNormal];
+    [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_normal_equal"] forState:UIControlStateNormal];
     [self loadData];
 }
 
@@ -552,7 +552,7 @@
     if (self.showingMyRecord) return;
     self.showingMyRecord = YES;
     self.currentPage = 1;
-    [_allRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_all_normal"] forState:UIControlStateNormal];
+    [_allRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_all_normal_equal"] forState:UIControlStateNormal];
     [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_selected"] forState:UIControlStateNormal];
     [self loadData];
 }
