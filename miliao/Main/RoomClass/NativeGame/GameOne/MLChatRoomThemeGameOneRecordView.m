@@ -45,7 +45,7 @@
 - (void)setupUI {
     // 1. 卡片底盘背景 (排行背景.png, CapInsets 局部无损拉伸)
     _cellBgImageView = [[UIImageView alloc] init];
-    _cellBgImageView.userInteractionEnabled = YES;
+    _cellBgImageView.userInteractionEnabled = NO;
     
     // Top Cap = 40 (锁定紫色头部), Bottom Cap = 10, Left/Right = 15
     UIEdgeInsets insets = UIEdgeInsetsMake(KDialogAdaptedWidth(40), KDialogAdaptedWidth(15), KDialogAdaptedWidth(10), KDialogAdaptedWidth(15));
@@ -214,7 +214,7 @@
         make.bottom.mas_equalTo(-KDialogAdaptedWidth(8));
     }];
     
-    NSInteger displayCount = _isExpanded ? _mergedItems.count : (_mergedItems.count > 0 ? 1 : 0);
+    NSInteger displayCount = (_isMine || _isExpanded) ? _mergedItems.count : (_mergedItems.count > 0 ? 1 : 0);
     CGFloat rowH = KDialogAdaptedWidth(54);
     CGFloat rowGap = KDialogAdaptedWidth(6);
     
@@ -224,7 +224,7 @@
         // 单行背景包裹容器 (在我的记录中显示 个人记录排名.png，在全服记录中透明直铺)
         UIImageView *rowBgView = [[UIImageView alloc] init];
         rowBgView.image = _isMine ? [UIImage imageNamed:@"theme_game_one_record_gift_row_bg"] : nil;
-        rowBgView.userInteractionEnabled = YES;
+        rowBgView.userInteractionEnabled = NO;
         [_giftsContainerView addSubview:rowBgView];
         
         [rowBgView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -315,7 +315,7 @@
     }
     NSInteger count = idSet.count;
     
-    if (expanded) {
+    if (isMine || expanded) {
         if (count > 0) {
             CGFloat detailsH = count * KDialogAdaptedWidth(54) + (count - 1) * KDialogAdaptedWidth(6) + KDialogAdaptedWidth(8);
             return baseH + detailsH;
@@ -578,6 +578,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.showingMyRecord) return; // 我的记录不支持折叠展开
     NSNumber *rowNum = @(indexPath.row);
     if ([self.expandedRowIds containsObject:rowNum]) {
         [self.expandedRowIds removeObject:rowNum];
