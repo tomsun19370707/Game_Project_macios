@@ -424,7 +424,7 @@
         make.height.mas_equalTo(KDialogAdaptedWidth(100));
     }];
     
-    // 返回按钮 (左上角, 放大 20% 到 41x41pt)
+    // 返回按钮 (左上角, 缩小 10% 到 37x37pt)
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_closeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_back"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
@@ -432,29 +432,29 @@
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(18));
         make.leading.mas_equalTo(KDialogAdaptedWidth(24));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(41), KDialogAdaptedWidth(41)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(37), KDialogAdaptedWidth(37)));
     }];
     
-    // 双 Tab 容器与按钮组 (Tab 高度从 44pt 增到 51pt)
+    // 双 Tab 容器与按钮组 (Tab 高度从 51pt 缩到 46pt)
     UIView *tabBarView = [[UIView alloc] init];
     [_hudContainer addSubview:tabBarView];
     [tabBarView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(50));
         make.centerX.mas_equalTo(_hudContainer);
-        make.height.mas_equalTo(KDialogAdaptedWidth(51));
+        make.height.mas_equalTo(KDialogAdaptedWidth(46));
     }];
     
-    // 全服记录 Tab (放大 15% 到 145x51pt)
+    // 全服记录 Tab (缩小 10% 到 131x46pt)
     _allRecordTab = [UIButton buttonWithType:UIButtonTypeCustom];
     [_allRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_all_selected"] forState:UIControlStateNormal];
     [_allRecordTab addTarget:self action:@selector(allTabClick) forControlEvents:UIControlEventTouchUpInside];
     [tabBarView addSubview:_allRecordTab];
     [_allRecordTab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.bottom.mas_equalTo(tabBarView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(145), KDialogAdaptedWidth(51)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(131), KDialogAdaptedWidth(46)));
     }];
     
-    // 我的记录 Tab (放大 15% 到 145x51pt)
+    // 我的记录 Tab (缩小 10% 到 131x46pt)
     _myRecordTab = [UIButton buttonWithType:UIButtonTypeCustom];
     [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_tab_mine_normal"] forState:UIControlStateNormal];
     [_myRecordTab addTarget:self action:@selector(myTabClick) forControlEvents:UIControlEventTouchUpInside];
@@ -462,7 +462,7 @@
     [_myRecordTab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.bottom.trailing.mas_equalTo(tabBarView);
         make.leading.mas_equalTo(_allRecordTab.mas_trailing).offset(KDialogAdaptedWidth(10));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(145), KDialogAdaptedWidth(51)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(131), KDialogAdaptedWidth(46)));
     }];
     
     // 3. 内容滚动展示区舱室 (GameplayContainer, 提高位置至 Tab 底部下方仅偏移 4pt)
