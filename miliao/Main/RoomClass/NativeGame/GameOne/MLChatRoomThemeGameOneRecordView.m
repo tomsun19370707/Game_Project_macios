@@ -63,10 +63,10 @@
     _avatarFrameView = [[UIImageView alloc] init];
     _avatarFrameView.image = [UIImage imageNamed:@"theme_game_one_record_avatar_frame"];
     _avatarFrameView.contentMode = UIViewContentModeScaleAspectFit;
-    [_cellBgImageView addSubview:_avatarFrameView];
+    [self.contentView addSubview:_avatarFrameView];
     [_avatarFrameView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(2));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(12));
+        make.top.mas_equalTo(_cellBgImageView.mas_top).offset(KDialogAdaptedWidth(2));
+        make.leading.mas_equalTo(_cellBgImageView.mas_leading).offset(KDialogAdaptedWidth(12));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
     }];
     
@@ -85,34 +85,35 @@
     _nicknameLabel = [[UILabel alloc] init];
     _nicknameLabel.textColor = kWhiteColor;
     _nicknameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(14)];
-    [_cellBgImageView addSubview:_nicknameLabel];
+    [self.contentView addSubview:_nicknameLabel];
     
     // 时间
     _timeLabel = [[UILabel alloc] init];
     _timeLabel.textColor = [UIColor colorWithWhite:1 alpha:0.6];
     _timeLabel.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(12)];
-    [_cellBgImageView addSubview:_timeLabel];
+    [self.contentView addSubview:_timeLabel];
     
     // 寻宝次数
     _drawTimesLabel = [[UILabel alloc] init];
     _drawTimesLabel.textColor = kWhiteColor;
     _drawTimesLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(14)];
     _drawTimesLabel.textAlignment = NSTextAlignmentRight;
-    [_cellBgImageView addSubview:_drawTimesLabel];
+    [self.contentView addSubview:_drawTimesLabel];
     
     // 3. 礼物纵向排列容器
     _giftsContainerView = [[UIView alloc] init];
     _giftsContainerView.backgroundColor = [UIColor clearColor];
-    [_cellBgImageView addSubview:_giftsContainerView];
+    _giftsContainerView.userInteractionEnabled = NO;
+    [self.contentView addSubview:_giftsContainerView];
 }
 
 - (void)configureWithData:(NSDictionary *)data isMine:(BOOL)isMine isExpanded:(BOOL)expanded {
-    _recordData = data;
     _isMine = isMine;
     _isExpanded = expanded;
     
-    // 合并同种礼物
     NSArray *items = data[@"items"];
+    
+    // 按 gift_id 合并去重相同礼物并累加数量
     NSMutableArray *mergedList = [NSMutableArray array];
     NSMutableDictionary *mergedDict = [NSMutableDictionary dictionary];
     for (NSDictionary *gift in items) {
@@ -120,18 +121,25 @@
         if (gId == 0) {
             gId = [gift[@"id"] integerValue];
         }
-        NSNumber *key = @(gId);
+        NSString *key = [NSString stringWithFormat:@"%ld", (long)gId];
         if (mergedDict[key]) {
             NSMutableDictionary *existing = mergedDict[key];
-            NSInteger count = [existing[@"num"] integerValue];
-            NSInteger addCount = [gift[@"num"] integerValue];
+            NSInteger count = [existing[@"gift_num"] integerValue];
+            if (count <= 0) count = [existing[@"num"] integerValue];
+            
+            NSInteger addCount = [gift[@"gift_num"] integerValue];
+            if (addCount <= 0) addCount = [gift[@"num"] integerValue];
             if (addCount <= 0) addCount = 1;
+            
+            existing[@"gift_num"] = @(count + addCount);
             existing[@"num"] = @(count + addCount);
         } else {
             NSMutableDictionary *clone = [gift mutableCopy];
-            if ([clone[@"num"] integerValue] <= 0) {
-                clone[@"num"] = @(1);
-            }
+            NSInteger numVal = [clone[@"gift_num"] integerValue];
+            if (numVal <= 0) numVal = [clone[@"num"] integerValue];
+            if (numVal <= 0) numVal = 1;
+            clone[@"gift_num"] = @(numVal);
+            clone[@"num"] = @(numVal);
             mergedDict[key] = clone;
             [mergedList addObject:clone];
         }
@@ -148,13 +156,13 @@
         _nicknameLabel.hidden = YES;
         
         [_drawTimesLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(KDialogAdaptedWidth(15));
-            make.leading.mas_equalTo(KDialogAdaptedWidth(12));
+            make.top.mas_equalTo(_cellBgImageView.mas_top).offset(KDialogAdaptedWidth(15));
+            make.leading.mas_equalTo(_cellBgImageView.mas_leading).offset(KDialogAdaptedWidth(12));
         }];
         
         [_timeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.centerY.mas_equalTo(_drawTimesLabel);
-            make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
+            make.trailing.mas_equalTo(_cellBgImageView.mas_trailing).offset(-KDialogAdaptedWidth(12));
         }];
     } else {
         // 全服记录下：显示头像、昵称
@@ -179,8 +187,8 @@
         }
         
         [_avatarFrameView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(KDialogAdaptedWidth(2));
-            make.leading.mas_equalTo(KDialogAdaptedWidth(12));
+            make.top.mas_equalTo(_cellBgImageView.mas_top).offset(KDialogAdaptedWidth(2));
+            make.leading.mas_equalTo(_cellBgImageView.mas_leading).offset(KDialogAdaptedWidth(12));
             make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
         }];
         
@@ -198,7 +206,7 @@
         
         [_drawTimesLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.centerY.mas_equalTo(_avatarFrameView);
-            make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
+            make.trailing.mas_equalTo(_cellBgImageView.mas_trailing).offset(-KDialogAdaptedWidth(12));
         }];
     }
     
@@ -209,9 +217,9 @@
     
     _giftsContainerView.hidden = NO;
     [_giftsContainerView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(54)); // 刚好在紫色头部 54pt 之下
+        make.top.mas_equalTo(_cellBgImageView.mas_top).offset(KDialogAdaptedWidth(54)); // 刚好在紫色头部 54pt 之下
         make.leading.trailing.mas_equalTo(_cellBgImageView);
-        make.bottom.mas_equalTo(-KDialogAdaptedWidth(8));
+        make.bottom.mas_equalTo(_cellBgImageView.mas_bottom).offset(-KDialogAdaptedWidth(8));
     }];
     
     NSInteger displayCount = (_isMine || _isExpanded) ? _mergedItems.count : (_mergedItems.count > 0 ? 1 : 0);
@@ -222,10 +230,19 @@
         NSDictionary *gift = _mergedItems[i];
         
         // 单行背景包裹容器 (在我的记录中显示 个人记录排名.png，在全服记录中透明直铺)
-        UIImageView *rowBgView = [[UIImageView alloc] init];
-        rowBgView.image = _isMine ? [UIImage imageNamed:@"theme_game_one_record_gift_row_bg"] : nil;
+        UIView *rowBgView = [[UIView alloc] init];
+        rowBgView.backgroundColor = [UIColor clearColor];
         rowBgView.userInteractionEnabled = NO;
         [_giftsContainerView addSubview:rowBgView];
+        
+        if (_isMine) {
+            UIImageView *bgImg = [[UIImageView alloc] init];
+            bgImg.image = [UIImage imageNamed:@"theme_game_one_record_gift_row_bg"];
+            [rowBgView addSubview:bgImg];
+            [bgImg mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.edges.mas_equalTo(rowBgView);
+            }];
+        }
         
         [rowBgView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(i * (rowH + rowGap));
@@ -253,10 +270,7 @@
             make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
         }];
         
-        NSString *imgUrlStr = gift[@"pic"] ?: @"";
-        if (imgUrlStr.length == 0) {
-            imgUrlStr = gift[@"image"] ?: @"";
-        }
+        NSString *imgUrlStr = gift[@"gift_image"] ?: gift[@"image"] ?: gift[@"pic"] ?: @"";
         NSURL *url = [NSURL URLWithString:imgUrlStr];
         if ([giftImg respondsToSelector:@selector(setImageWithURL:placeholder:)]) {
             [giftImg performSelector:@selector(setImageWithURL:placeholder:) withObject:url withObject:[UIImage imageNamed:@""]];
@@ -268,7 +282,10 @@
         UILabel *giftNumLabel = [[UILabel alloc] init];
         giftNumLabel.textColor = mHexRGB(0x81D4FA);
         giftNumLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
-        giftNumLabel.text = [NSString stringWithFormat:@"x%@", gift[@"num"] ?: @"1"];
+        NSInteger numVal = [gift[@"gift_num"] integerValue];
+        if (numVal <= 0) numVal = [gift[@"num"] integerValue];
+        if (numVal <= 0) numVal = 1;
+        giftNumLabel.text = [NSString stringWithFormat:@"x%ld", (long)numVal];
         [rowBgView addSubview:giftNumLabel];
         [giftNumLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
@@ -279,7 +296,7 @@
         UILabel *giftNameLabel = [[UILabel alloc] init];
         giftNameLabel.textColor = kWhiteColor;
         giftNameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
-        giftNameLabel.text = gift[@"name"] ?: @"";
+        giftNameLabel.text = gift[@"gift_name"] ?: gift[@"name"] ?: @"";
         [rowBgView addSubview:giftNameLabel];
         [giftNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(giftFrameView.mas_top).offset(KDialogAdaptedWidth(1));
@@ -287,7 +304,8 @@
             make.trailing.mas_equalTo(giftNumLabel.mas_leading).offset(-KDialogAdaptedWidth(8));
         }];
         
-        NSInteger price = [gift[@"price"] integerValue];
+        NSInteger price = [gift[@"gift_price"] integerValue];
+        if (price <= 0) price = [gift[@"price"] integerValue];
         UILabel *giftPriceLabel = [[UILabel alloc] init];
         giftPriceLabel.textColor = mHexRGB(0xFFE400);
         giftPriceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
@@ -481,6 +499,9 @@
     _tableView.backgroundColor = [UIColor clearColor];
     _tableView.delegate = self;
     _tableView.dataSource = self;
+    _tableView.estimatedRowHeight = 0;
+    _tableView.estimatedSectionHeaderHeight = 0;
+    _tableView.estimatedSectionFooterHeight = 0;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.showsVerticalScrollIndicator = NO;
     _tableView.tableFooterView = [[UIView alloc] init];
@@ -532,6 +553,7 @@
             [wself.expandedRowIds removeAllObjects];
         }
         [wself.recordList addObjectsFromArray:filteredList];
+        NSLog(@"[RecordView] loadData finished. recordList count = %ld", (long)wself.recordList.count);
         [wself.tableView reloadData];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
@@ -574,18 +596,30 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *data = self.recordList[indexPath.row];
     BOOL expanded = [self.expandedRowIds containsObject:@(indexPath.row)];
-    return [MLChatRoomThemeGameOneRecordCell cellHeightWithData:data isMine:self.showingMyRecord isExpanded:expanded];
+    CGFloat h = [MLChatRoomThemeGameOneRecordCell cellHeightWithData:data isMine:self.showingMyRecord isExpanded:expanded];
+    return h;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (self.showingMyRecord) return; // 我的记录不支持折叠展开
     NSNumber *rowNum = @(indexPath.row);
-    if ([self.expandedRowIds containsObject:rowNum]) {
+    
+    BOOL expanded = [self.expandedRowIds containsObject:rowNum];
+    if (expanded) {
         [self.expandedRowIds removeObject:rowNum];
     } else {
         [self.expandedRowIds addObject:rowNum];
     }
-    [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    
+    // 直接更新 Cell 内部礼物渲染状态为展开/收起态 (使 displayCount 增加)
+    MLChatRoomThemeGameOneRecordCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    if (cell) {
+        [cell configureWithData:self.recordList[indexPath.row] isMine:self.showingMyRecord isExpanded:!expanded];
+    }
+    
+    // 触发高度平滑变化动画
+    [tableView beginUpdates];
+    [tableView endUpdates];
 }
 
 #pragma mark - Animation & Close
