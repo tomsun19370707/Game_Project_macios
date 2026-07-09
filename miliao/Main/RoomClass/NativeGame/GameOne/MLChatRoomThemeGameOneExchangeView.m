@@ -4,6 +4,8 @@
 #import "Global.h"
 #import "MLNetWorkHelper.h"
 
+#define KDialogAdaptedWidth(x) (isPadA ? ceilf((x) * (390.0 / 375.0)) : KAdaptedWidth(x))
+
 @interface MLChatRoomThemeGameOneExchangeView ()
 
 @property (nonatomic, assign) NSInteger typeId;
@@ -79,16 +81,17 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeClick)];
     [_maskView addGestureRecognizer:tap];
     
-    // 背景弹窗 (344 * 528 pt, AspectFit 填充，禁止拉伸)
+    // 背景弹窗 (344 * 528 pt, 对齐安卓贴底显示，支持自适应拉伸)
     _bgImageView = [[UIImageView alloc] init];
     _bgImageView.image = [UIImage imageNamed:@"theme_game_one_exchange_popup_board"];
-    _bgImageView.contentMode = UIViewContentModeScaleAspectFit;
+    _bgImageView.contentMode = UIViewContentModeScaleToFill;
     _bgImageView.userInteractionEnabled = YES;
     [self addSubview:_bgImageView];
     
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_equalTo(self);
-        make.size.mas_equalTo(CGSizeMake(344, 528));
+        make.centerX.mas_equalTo(self);
+        make.bottom.mas_equalTo(self); // 贴底对齐
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(344), KDialogAdaptedWidth(528)));
     }];
     
     // 倒计时图标 (theme_game_one_exchange_time.png, 28 * 34 pt, 距顶 21 pt, 距右 30 pt)
@@ -97,9 +100,9 @@
     _timeIconView.contentMode = UIViewContentModeScaleAspectFit;
     [_bgImageView addSubview:_timeIconView];
     [_timeIconView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(21);
-        make.trailing.mas_equalTo(-30);
-        make.size.mas_equalTo(CGSizeMake(28, 34));
+        make.top.mas_equalTo(KDialogAdaptedWidth(21));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(30));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(28), KDialogAdaptedWidth(34)));
     }];
     
     // 5页签选择栏 (星辰/皓月/银河/荣耀/传奇)
@@ -122,16 +125,16 @@
     NSArray *tabLeftOffsets = @[@18, @82, @146, @210, @274];
     for (int i = 0; i < 5; i++) {
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [btn setImage:[UIImage imageNamed:tabNormalNames[i]] forState:UIControlStateNormal];
-        [btn setImage:[UIImage imageNamed:tabSelectedNames[i]] forState:UIControlStateSelected];
+        [btn setBackgroundImage:[UIImage imageNamed:tabNormalNames[i]] forState:UIControlStateNormal];
+        [btn setBackgroundImage:[UIImage imageNamed:tabSelectedNames[i]] forState:UIControlStateSelected];
         btn.tag = i;
         [btn addTarget:self action:@selector(tabClick:) forControlEvents:UIControlEventTouchUpInside];
         [_bgImageView addSubview:btn];
         
         [btn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(74);
-            make.leading.mas_equalTo([tabLeftOffsets[i] floatValue]);
-            make.size.mas_equalTo(CGSizeMake(54, 23));
+            make.top.mas_equalTo(KDialogAdaptedWidth(64));
+            make.leading.mas_equalTo(KDialogAdaptedWidth([tabLeftOffsets[i] floatValue]));
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(54), KDialogAdaptedWidth(23)));
         }];
         [self.tabButtons addObject:btn];
     }
@@ -142,9 +145,9 @@
     _giftLargeFrameView.contentMode = UIViewContentModeScaleToFill;
     [_bgImageView addSubview:_giftLargeFrameView];
     [_giftLargeFrameView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(126);
+        make.top.mas_equalTo(KDialogAdaptedWidth(126));
         make.centerX.mas_equalTo(_bgImageView);
-        make.size.mas_equalTo(CGSizeMake(106, 104));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(106), KDialogAdaptedWidth(104)));
     }];
     
     // 内藏礼物图片 (宽 56, 高 56 pt, 距大框顶 14 pt, 居中)
@@ -152,18 +155,18 @@
     _targetGiftImageView.contentMode = UIViewContentModeScaleAspectFit;
     [_giftLargeFrameView addSubview:_targetGiftImageView];
     [_targetGiftImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(14);
+        make.top.mas_equalTo(KDialogAdaptedWidth(14));
         make.centerX.mas_equalTo(_giftLargeFrameView);
-        make.size.mas_equalTo(CGSizeMake(56, 56));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(56), KDialogAdaptedWidth(56)));
     }];
     
     _targetGiftNameLabel = [[UILabel alloc] init];
     _targetGiftNameLabel.textColor = kWhiteColor;
-    _targetGiftNameLabel.font = [UIFont boldSystemFontOfSize:11];
+    _targetGiftNameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
     _targetGiftNameLabel.textAlignment = NSTextAlignmentCenter;
     [_giftLargeFrameView addSubview:_targetGiftNameLabel];
     [_targetGiftNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(-10);
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(10));
         make.leading.trailing.mas_equalTo(_giftLargeFrameView);
     }];
     
@@ -174,9 +177,9 @@
     _exchangeBoardView.userInteractionEnabled = YES;
     [_bgImageView addSubview:_exchangeBoardView];
     [_exchangeBoardView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(238);
+        make.top.mas_equalTo(KDialogAdaptedWidth(238));
         make.centerX.mas_equalTo(_bgImageView);
-        make.size.mas_equalTo(CGSizeMake(284, 133));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(284), KDialogAdaptedWidth(133)));
     }];
     
     // 左侧消耗小框 (theme_game_one_exchange_gift_small.png, 64 * 65 pt, 距顶 270 pt, 距左 68 pt)
@@ -185,9 +188,9 @@
     _leftSmallBoxView.contentMode = UIViewContentModeScaleToFill;
     [_bgImageView addSubview:_leftSmallBoxView];
     [_leftSmallBoxView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(270);
-        make.leading.mas_equalTo(_bgImageView.mas_leading).offset(68);
-        make.size.mas_equalTo(CGSizeMake(64, 65));
+        make.top.mas_equalTo(KDialogAdaptedWidth(270));
+        make.leading.mas_equalTo(_bgImageView.mas_leading).offset(KDialogAdaptedWidth(68));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(64), KDialogAdaptedWidth(65)));
     }];
     
     // 钻石碎片图标 (30 * 30 pt, 距小框顶 8 pt, 居中)
@@ -196,18 +199,18 @@
     _leftIconView.contentMode = UIViewContentModeScaleAspectFit;
     [_leftSmallBoxView addSubview:_leftIconView];
     [_leftIconView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(8);
+        make.top.mas_equalTo(KDialogAdaptedWidth(8));
         make.centerX.mas_equalTo(_leftSmallBoxView);
-        make.size.mas_equalTo(CGSizeMake(30, 30));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
     }];
     
     _leftCostLabel = [[UILabel alloc] init];
     _leftCostLabel.textColor = mHexRGB(0xFFE400);
-    _leftCostLabel.font = [UIFont boldSystemFontOfSize:10];
+    _leftCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(10)];
     _leftCostLabel.textAlignment = NSTextAlignmentCenter;
     [_leftSmallBoxView addSubview:_leftCostLabel];
     [_leftCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(-6);
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(6));
         make.leading.trailing.mas_equalTo(_leftSmallBoxView);
     }];
     
@@ -218,9 +221,9 @@
     _rightSmallBoxView.userInteractionEnabled = YES;
     [_bgImageView addSubview:_rightSmallBoxView];
     [_rightSmallBoxView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(270);
-        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-68);
-        make.size.mas_equalTo(CGSizeMake(64, 65));
+        make.top.mas_equalTo(KDialogAdaptedWidth(270));
+        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-KDialogAdaptedWidth(68));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(64), KDialogAdaptedWidth(65)));
     }];
     
     // 藏宝图图标 (30 * 30 pt, 距小框顶 8 pt, 居中)
@@ -229,18 +232,18 @@
     _rightIconView.contentMode = UIViewContentModeScaleAspectFit;
     [_rightSmallBoxView addSubview:_rightIconView];
     [_rightIconView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(8);
+        make.top.mas_equalTo(KDialogAdaptedWidth(8));
         make.centerX.mas_equalTo(_rightSmallBoxView);
-        make.size.mas_equalTo(CGSizeMake(30, 30));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
     }];
     
     _rightCostLabel = [[UILabel alloc] init];
     _rightCostLabel.textColor = mHexRGB(0xFFE400);
-    _rightCostLabel.font = [UIFont boldSystemFontOfSize:10];
+    _rightCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(10)];
     _rightCostLabel.textAlignment = NSTextAlignmentCenter;
     [_rightSmallBoxView addSubview:_rightCostLabel];
     [_rightCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(-6);
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(6));
         make.leading.trailing.mas_equalTo(_rightSmallBoxView);
     }];
     
@@ -250,9 +253,9 @@
     plusIcon.contentMode = UIViewContentModeScaleAspectFit;
     [_bgImageView addSubview:plusIcon];
     [plusIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(292);
+        make.top.mas_equalTo(KDialogAdaptedWidth(292));
         make.centerX.mas_equalTo(_bgImageView);
-        make.size.mas_equalTo(CGSizeMake(19, 19));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(19), KDialogAdaptedWidth(19)));
     }];
     
     // 右小框上的透明覆盖点击按钮
@@ -267,24 +270,24 @@
     // 成功率显示 Label (放置在底座下方，高 20, 距顶 390, 居中)
     _successRateLabel = [[UILabel alloc] init];
     _successRateLabel.textColor = mHexRGB(0xFFE400);
-    _successRateLabel.font = KFontBoldA(12);
+    _successRateLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
     _successRateLabel.textAlignment = NSTextAlignmentCenter;
     _successRateLabel.text = @"兑换成功率: 0%";
     [_bgImageView addSubview:_successRateLabel];
     [_successRateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(390);
+        make.top.mas_equalTo(KDialogAdaptedWidth(390));
         make.centerX.mas_equalTo(_bgImageView);
     }];
     
     // 确认兑换大按钮 (theme_game_one_exchange_confirm.png, 244 * 49 pt, 距顶 444 pt, 居中)
     _confirmExchangeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_confirmExchangeButton setImage:[UIImage imageNamed:@"theme_game_one_exchange_confirm"] forState:UIControlStateNormal];
+    [_confirmExchangeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_exchange_confirm"] forState:UIControlStateNormal];
     [_confirmExchangeButton addTarget:self action:@selector(confirmExchangeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_confirmExchangeButton];
     [_confirmExchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(444);
+        make.top.mas_equalTo(KDialogAdaptedWidth(444));
         make.centerX.mas_equalTo(_bgImageView);
-        make.size.mas_equalTo(CGSizeMake(244, 49));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(244), KDialogAdaptedWidth(49)));
     }];
 }
 
@@ -519,17 +522,19 @@
 
 - (void)animateShow {
     self.alpha = 0.0;
-    _bgImageView.transform = CGAffineTransformMakeScale(0.8, 0.8);
-    [UIView animateWithDuration:0.2 animations:^{
+    CGFloat height = KDialogAdaptedWidth(528);
+    _bgImageView.transform = CGAffineTransformMakeTranslation(0, height);
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         self.alpha = 1.0;
         self.bgImageView.transform = CGAffineTransformIdentity;
-    }];
+    } completion:nil];
 }
 
 - (void)closeClick {
-    [UIView animateWithDuration:0.2 animations:^{
+    CGFloat height = KDialogAdaptedWidth(528);
+    [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
         self.alpha = 0.0;
-        self.bgImageView.transform = CGAffineTransformMakeScale(0.8, 0.8);
+        self.bgImageView.transform = CGAffineTransformMakeTranslation(0, height);
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
     }];

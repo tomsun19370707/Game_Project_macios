@@ -220,16 +220,23 @@
             if (success) success(NO, nil, 0, 0, @"数据格式错误");
             return;
         }
-        // 特殊业务，当 code == 1 且 success == true 代表成功兑换；其余情况下返回 data 并提示
+        
         NSDictionary *data = responseObject[@"data"];
-        BOOL isOK = [responseObject[@"code"] integerValue] == 1 && [data[@"success"] boolValue];
+        BOOL isOK = NO;
         MLGameDrawResultModel *gift = nil;
-        if (data[@"gift"] && data[@"gift"] != [NSNull null]) {
-            gift = [MLGameDrawResultModel mj_objectWithKeyValues:data[@"gift"]];
-        }
-        NSInteger rCard = [data[@"remain_card_count"] integerValue];
-        NSInteger rGem = [data[@"remain_gem_count"] integerValue];
+        NSInteger rCard = 0;
+        NSInteger rGem = 0;
         NSString *msg = responseObject[@"msg"] ?: @"";
+        
+        if (data && data != [NSNull null] && [data isKindOfClass:[NSDictionary class]]) {
+            isOK = [responseObject[@"code"] integerValue] == 1 && [data[@"success"] boolValue];
+            if (data[@"gift"] && data[@"gift"] != [NSNull null]) {
+                gift = [MLGameDrawResultModel mj_objectWithKeyValues:data[@"gift"]];
+            }
+            rCard = [data[@"remain_card_count"] integerValue];
+            rGem = [data[@"remain_gem_count"] integerValue];
+        }
+        
         if (success) {
             success(isOK, gift, rCard, rGem, msg);
         }
