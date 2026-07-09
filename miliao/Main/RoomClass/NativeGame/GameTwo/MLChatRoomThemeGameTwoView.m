@@ -20,6 +20,8 @@
 #import "SVGAParser.h"
 #endif
 
+#define KDialogAdaptedWidth(x) (isPadA ? ceilf((x) * (390.0 / 375.0)) : KAdaptedWidth(x))
+
 @interface MLChatRoomThemeGameTwoView ()
 
 @property (nonatomic, assign) NSInteger typeId;
@@ -57,6 +59,11 @@
 @property (nonatomic, assign) NSInteger pendingTotalValue;
 @property (nonatomic, assign) NSInteger consumeValue;
 @property (nonatomic, assign) NSInteger produceValue;
+
+@property (nonatomic, strong) UIView *hudContainer;
+@property (nonatomic, strong) UIView *gameplayContainer;
+@property (nonatomic, strong) UIView *actionContainer;
+@property (nonatomic, strong) UILabel *fortuneLabel;
 
 @end
 
@@ -107,7 +114,7 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMaskTap:)];
     [_maskView addGestureRecognizer:tap];
     
-    // 背景大图 (锁定 750:1311 比例，在宽屏设备上限宽 390 pt 居中，防拉伸变形与漂移)
+    // 背景大图 (锁定 375:655.5 pt，即 750:1311 px 比例自适应居中，防变形与漂移)
     _bgImageView = [[UIImageView alloc] init];
     _bgImageView.image = [UIImage imageNamed:@"theme_game_two_clean_bg"];
     _bgImageView.contentMode = UIViewContentModeScaleToFill;
@@ -115,106 +122,131 @@
     [self addSubview:_bgImageView];
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(self);
-        make.width.mas_equalTo(self).priorityMedium();
-        make.width.mas_lessThanOrEqualTo(390).priorityHigh();
-        make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1311.0 / 750.0);
+        make.width.mas_equalTo(KDialogAdaptedWidth(375));
+        make.height.mas_equalTo(KDialogAdaptedWidth(655.5));
     }];
     
-    // 左上角返回/关闭按钮
+    // 实例化 CVCS 语义容器树
+    _hudContainer = [[UIView alloc] init];
+    _hudContainer.backgroundColor = [UIColor clearColor];
+    [_bgImageView addSubview:_hudContainer];
+    [_hudContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.leading.trailing.mas_equalTo(0);
+        make.height.mas_equalTo(KDialogAdaptedWidth(152));
+    }];
+    
+    _gameplayContainer = [[UIView alloc] init];
+    _gameplayContainer.backgroundColor = [UIColor clearColor];
+    [_bgImageView addSubview:_gameplayContainer];
+    [_gameplayContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_hudContainer.mas_bottom);
+        make.leading.trailing.mas_equalTo(0);
+        make.height.mas_equalTo(KDialogAdaptedWidth(370));
+    }];
+    
+    _actionContainer = [[UIView alloc] init];
+    _actionContainer.backgroundColor = [UIColor clearColor];
+    [_bgImageView addSubview:_actionContainer];
+    [_actionContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.leading.trailing.mas_equalTo(0);
+        make.top.mas_equalTo(_gameplayContainer.mas_bottom);
+    }];
+    
+    // 左上角返回/关闭按钮 (放置于 _hudContainer)
     _backButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_backButton setImage:[UIImage imageNamed:@"theme_game_two_rule_back"] forState:UIControlStateNormal];
     [_backButton addTarget:self action:@selector(backClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_backButton];
+    [_hudContainer addSubview:_backButton];
     [_backButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedWidth(16));
-        make.leading.mas_equalTo(KAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(36, 36));
+        make.top.mas_equalTo(KDialogAdaptedWidth(16));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(16));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
     }];
     
-    // 记录按钮 (距右边缘 16 pt, top 16)
+    // 记录按钮 (放置于 _hudContainer，宽度 105 pt，高度 47.4 pt，符合 124:56 的比例)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_recordButton setImage:[UIImage imageNamed:@"theme_game_two_record_btn"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_recordButton];
+    [_hudContainer addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedWidth(16));
-        make.trailing.mas_equalTo(-KAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(36, 36));
+        make.top.mas_equalTo(KDialogAdaptedWidth(105));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(8));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(105), KDialogAdaptedWidth(47.4)));
     }];
     
-    // 规则按钮 (位于记录按钮左侧 10 pt)
+    // 规则按钮 (放置于 _hudContainer，宽度 105 pt，高度 47.4 pt，符合 124:56 的比例)
     _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_ruleButton setImage:[UIImage imageNamed:@"theme_game_two_rule_btn"] forState:UIControlStateNormal];
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bgImageView addSubview:_ruleButton];
+    [_hudContainer addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KAdaptedWidth(16));
-        make.trailing.mas_equalTo(_recordButton.mas_leading).offset(-KAdaptedWidth(10));
-        make.size.mas_equalTo(CGSizeMake(36, 36));
+        make.top.mas_equalTo(KDialogAdaptedWidth(105));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(8));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(105), KDialogAdaptedWidth(47.4)));
     }];
     
-    // 今日运势悬浮条 (宽 74, 高 23. 水平悬浮在规则/记录按钮组左侧 10 pt. 40% 半透明黑底, 圆角 11.5 pt)
+    // 今日运势悬浮条 (放置于 _hudContainer，宽 74, 高 23, 对其右上角偏置)
     UIView *fortuneBar = [[UIView alloc] init];
     fortuneBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
-    setViewCorner(fortuneBar, 11.5);
+    setViewCorner(fortuneBar, KDialogAdaptedWidth(11.5));
     fortuneBar.userInteractionEnabled = YES;
-    [_bgImageView addSubview:fortuneBar];
+    [_hudContainer addSubview:fortuneBar];
     [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_bgImageView.mas_top).offset(-4);
-        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-8);
-        make.size.mas_equalTo(CGSizeMake(74, 23));
+        make.top.mas_equalTo(KDialogAdaptedWidth(16));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(74), KDialogAdaptedWidth(23)));
     }];
     
     UITapGestureRecognizer *fortuneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(fortuneClick)];
     [fortuneBar addGestureRecognizer:fortuneTap];
     
-    UILabel *fortuneLabel = [[UILabel alloc] init];
-    fortuneLabel.text = @"今日运势";
-    fortuneLabel.textColor = mHexRGB(0xE1F5FE);
-    fortuneLabel.font = [UIFont systemFontOfSize:10];
-    fortuneLabel.textAlignment = NSTextAlignmentCenter;
-    [fortuneBar addSubview:fortuneLabel];
-    [fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    _fortuneLabel = [[UILabel alloc] init];
+    _fortuneLabel.text = @"今日运势";
+    _fortuneLabel.textColor = mHexRGB(0xE1F5FE);
+    _fortuneLabel.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(10)];
+    _fortuneLabel.textAlignment = NSTextAlignmentCenter;
+    [fortuneBar addSubview:_fortuneLabel];
+    [_fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(fortuneBar);
     }];
     
-    // 9个灵果的设计绝对位置
+    // 9个灵果的设计绝对位置 (对标 Android 坐标并除以 2)
     static const CGPoint PEACH_CENTERS[] = {
-        {150.0f, 185.0f}, // 灵果 1
-        {105.0f, 235.0f}, // 灵果 2
-        {195.0f, 235.0f}, // 灵果 3
-        {70.0f, 290.0f},  // 灵果 4
-        {148.0f, 280.0f}, // 灵果 5
-        {230.0f, 290.0f}, // 灵果 6
-        {100.0f, 350.0f}, // 灵果 7
-        {200.0f, 350.0f}, // 灵果 8
-        {148.0f, 395.0f}  // 灵果 9
+        {192.5f, 165.0f}, // 灵果 1 (主桃)
+        {102.5f, 225.0f}, // 灵果 2
+        {292.5f, 230.0f}, // 灵果 3
+        {212.5f, 280.0f}, // 灵果 4
+        {50.0f,  305.0f}, // 灵果 5
+        {317.5f, 347.5f}, // 灵果 6
+        {135.0f, 340.0f}, // 灵果 7
+        {65.0f,  380.0f}, // 灵果 8
+        {235.0f, 415.0f}  // 灵果 9
     };
     
-    // 9个灵果从大到小的错落自适应尺寸 (高保真还原)
+    // 9个灵果从大到小的错落自适应尺寸 (对标 Android 缩放并乘以 0.6)
     static const CGSize PEACH_SIZES[] = {
-        {52.5f, 52.5f}, // 灵果 1 (主桃)
-        {37.5f, 37.5f}, // 灵果 2
-        {37.5f, 37.5f}, // 灵果 3
-        {30.0f, 30.0f}, // 灵果 4 (小挂件)
-        {32.5f, 32.5f}, // 灵果 5
-        {35.0f, 35.0f}, // 灵果 6
-        {30.0f, 30.0f}, // 灵果 7 (小挂件)
-        {32.5f, 32.5f}, // 灵果 8
-        {40.0f, 40.0f}  // 灵果 9
+        {63.0f, 63.0f}, // 灵果 1
+        {45.0f, 45.0f}, // 灵果 2
+        {45.0f, 45.0f}, // 灵果 3
+        {36.0f, 36.0f}, // 灵果 4
+        {39.0f, 39.0f}, // 灵果 5
+        {42.0f, 42.0f}, // 灵果 6
+        {36.0f, 36.0f}, // 灵果 7
+        {39.0f, 39.0f}, // 灵果 8
+        {48.0f, 48.0f}  // 灵果 9
     };
     
     for (int i = 0; i < 9; i++) {
         UIView *card = [[UIView alloc] init];
-        [_bgImageView addSubview:card];
+        [_gameplayContainer addSubview:card];
         [self.peachCardViews addObject:card];
         
         CGPoint center = PEACH_CENTERS[i];
         CGSize size = PEACH_SIZES[i];
         [card mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(_bgImageView.mas_leading).offset(KAdaptedWidth(center.x));
-            make.centerY.mas_equalTo(_bgImageView.mas_top).offset(KAdaptedWidth(center.y));
-            make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(size.width), KAdaptedWidth(size.height)));
+            make.centerX.mas_equalTo(_bgImageView.mas_leading).offset(KDialogAdaptedWidth(center.x));
+            make.centerY.mas_equalTo(_bgImageView.mas_top).offset(KDialogAdaptedWidth(center.y));
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(size.width), KDialogAdaptedWidth(size.height)));
         }];
         
         // 最底层发光光圈
@@ -237,12 +269,12 @@
         }];
         [self.peachFrameImageViews addObject:frameView];
         
-        // 最顶层礼物图 (带 5 pt 内缩边距)
+        // 最顶层礼物图 (带 5 pt 自适应缩进边距)
         UIImageView *giftImg = [[UIImageView alloc] init];
         giftImg.contentMode = UIViewContentModeScaleAspectFit;
         [card addSubview:giftImg];
         [giftImg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(card).insets(UIEdgeInsetsMake(5, 5, 5, 5));
+            make.edges.mas_equalTo(card).insets(UIEdgeInsetsMake(KDialogAdaptedWidth(5), KDialogAdaptedWidth(5), KDialogAdaptedWidth(5), KDialogAdaptedWidth(5)));
         }];
         [self.peachImageViews addObject:giftImg];
     }
@@ -250,53 +282,164 @@
     // 启动错峰浮游缓动
     [self startPeachFloatingAnimations];
     
-    // 三档抽奖按钮组 (一连/十连/百连)：水平一排平铺底端。单个宽 104 pt，高 60 pt。间距 10 pt，避让 Safe Area 14 pt，整组水平居中。
+    // 三档抽奖按钮包装容器 (放置于 _actionContainer)
     UIView *btnGroupContainer = [[UIView alloc] init];
-    [_bgImageView addSubview:btnGroupContainer];
+    [_actionContainer addSubview:btnGroupContainer];
     [btnGroupContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(_bgImageView);
-        make.bottom.mas_equalTo(-KAdaptedWidth(14)); // 使用宽自适应避让
-        make.size.mas_equalTo(CGSizeMake(332, 60)); // 104*3 + 10*2 = 332
+        make.centerX.mas_equalTo(_actionContainer);
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(14));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(332), KDialogAdaptedWidth(76)));
+    }];
+    
+    // 抽奖 1 次
+    UIView *oneWrapper = [[UIView alloc] init];
+    [btnGroupContainer addSubview:oneWrapper];
+    [oneWrapper mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(0);
+        make.top.bottom.mas_equalTo(0);
+        make.width.mas_equalTo(KDialogAdaptedWidth(104));
     }];
     
     _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_drawOneButton setImage:[UIImage imageNamed:@"theme_game_two_draw1_btn"] forState:UIControlStateNormal];
     [_drawOneButton addTarget:self action:@selector(drawOneClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnGroupContainer addSubview:_drawOneButton];
+    [oneWrapper addSubview:_drawOneButton];
     [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.leading.trailing.mas_equalTo(0);
+        make.height.mas_equalTo(KDialogAdaptedWidth(52));
+    }];
+    
+    UIView *onePriceContainer = [[UIView alloc] init];
+    onePriceContainer.userInteractionEnabled = NO;
+    [oneWrapper addSubview:onePriceContainer];
+    [onePriceContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_drawOneButton.mas_bottom).offset(KDialogAdaptedWidth(6));
+        make.centerX.mas_equalTo(oneWrapper);
+        make.height.mas_equalTo(KDialogAdaptedWidth(18));
+    }];
+    
+    UIImageView *oneKeyIcon = [[UIImageView alloc] init];
+    oneKeyIcon.image = [UIImage imageNamed:@"theme_game_one_purchase_key_icon"];
+    [onePriceContainer addSubview:oneKeyIcon];
+    [oneKeyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
-        make.top.mas_equalTo(0);
-        make.size.mas_equalTo(CGSizeMake(104, 60));
+        make.centerY.mas_equalTo(onePriceContainer);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(18), KDialogAdaptedWidth(18)));
+    }];
+    
+    UILabel *oneCostLabel = [[UILabel alloc] init];
+    oneCostLabel.textColor = mHexRGB(0xFF8FA8);
+    oneCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
+    oneCostLabel.text = @"x1";
+    [onePriceContainer addSubview:oneCostLabel];
+    [oneCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(oneKeyIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
+        make.trailing.mas_equalTo(0);
+        make.centerY.mas_equalTo(onePriceContainer);
+    }];
+    
+    // 抽奖 10 次
+    UIView *tenWrapper = [[UIView alloc] init];
+    [btnGroupContainer addSubview:tenWrapper];
+    [tenWrapper mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(oneWrapper.mas_trailing).offset(KDialogAdaptedWidth(10));
+        make.top.bottom.mas_equalTo(0);
+        make.width.mas_equalTo(KDialogAdaptedWidth(104));
     }];
     
     _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_drawTenButton setImage:[UIImage imageNamed:@"theme_game_two_draw10_btn"] forState:UIControlStateNormal];
     [_drawTenButton addTarget:self action:@selector(drawTenClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnGroupContainer addSubview:_drawTenButton];
+    [tenWrapper addSubview:_drawTenButton];
     [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_drawOneButton.mas_trailing).offset(10);
-        make.top.mas_equalTo(0);
-        make.size.mas_equalTo(CGSizeMake(104, 60));
+        make.top.leading.trailing.mas_equalTo(0);
+        make.height.mas_equalTo(KDialogAdaptedWidth(52));
+    }];
+    
+    UIView *tenPriceContainer = [[UIView alloc] init];
+    tenPriceContainer.userInteractionEnabled = NO;
+    [tenWrapper addSubview:tenPriceContainer];
+    [tenPriceContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_drawTenButton.mas_bottom).offset(KDialogAdaptedWidth(6));
+        make.centerX.mas_equalTo(tenWrapper);
+        make.height.mas_equalTo(KDialogAdaptedWidth(18));
+    }];
+    
+    UIImageView *tenKeyIcon = [[UIImageView alloc] init];
+    tenKeyIcon.image = [UIImage imageNamed:@"theme_game_one_purchase_key_icon"];
+    [tenPriceContainer addSubview:tenKeyIcon];
+    [tenKeyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(0);
+        make.centerY.mas_equalTo(tenPriceContainer);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(18), KDialogAdaptedWidth(18)));
+    }];
+    
+    UILabel *tenCostLabel = [[UILabel alloc] init];
+    tenCostLabel.textColor = mHexRGB(0xFF8FA8);
+    tenCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
+    tenCostLabel.text = @"x10";
+    [tenPriceContainer addSubview:tenCostLabel];
+    [tenCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(tenKeyIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
+        make.trailing.mas_equalTo(0);
+        make.centerY.mas_equalTo(tenPriceContainer);
+    }];
+    
+    // 抽奖 100 次
+    UIView *hundredWrapper = [[UIView alloc] init];
+    [btnGroupContainer addSubview:hundredWrapper];
+    [hundredWrapper mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(tenWrapper.mas_trailing).offset(KDialogAdaptedWidth(10));
+        make.top.bottom.mas_equalTo(0);
+        make.width.mas_equalTo(KDialogAdaptedWidth(104));
     }];
     
     _drawHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_drawHundredButton setImage:[UIImage imageNamed:@"theme_game_two_draw100_btn"] forState:UIControlStateNormal];
     [_drawHundredButton addTarget:self action:@selector(drawHundredClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnGroupContainer addSubview:_drawHundredButton];
+    [hundredWrapper addSubview:_drawHundredButton];
     [_drawHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_drawTenButton.mas_trailing).offset(10);
-        make.top.mas_equalTo(0);
-        make.size.mas_equalTo(CGSizeMake(104, 60));
+        make.top.leading.trailing.mas_equalTo(0);
+        make.height.mas_equalTo(KDialogAdaptedWidth(52));
     }];
     
-    // 资产显示栏 (钻石与祝灵珠)：高度 32 pt，距顶部 50 pt，左右边缘 18 pt。干净透明的线性布局。
+    UIView *hundredPriceContainer = [[UIView alloc] init];
+    hundredPriceContainer.userInteractionEnabled = NO;
+    [hundredWrapper addSubview:hundredPriceContainer];
+    [hundredPriceContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_drawHundredButton.mas_bottom).offset(KDialogAdaptedWidth(6));
+        make.centerX.mas_equalTo(hundredWrapper);
+        make.height.mas_equalTo(KDialogAdaptedWidth(18));
+    }];
+    
+    UIImageView *hundredKeyIcon = [[UIImageView alloc] init];
+    hundredKeyIcon.image = [UIImage imageNamed:@"theme_game_one_purchase_key_icon"];
+    [hundredPriceContainer addSubview:hundredKeyIcon];
+    [hundredKeyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(0);
+        make.centerY.mas_equalTo(hundredPriceContainer);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(18), KDialogAdaptedWidth(18)));
+    }];
+    
+    UILabel *hundredCostLabel = [[UILabel alloc] init];
+    hundredCostLabel.textColor = mHexRGB(0xFF8FA8);
+    hundredCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
+    hundredCostLabel.text = @"x100";
+    [hundredPriceContainer addSubview:hundredCostLabel];
+    [hundredCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(hundredKeyIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
+        make.trailing.mas_equalTo(0);
+        make.centerY.mas_equalTo(hundredPriceContainer);
+    }];
+    
+    // 资产显示栏 (钻石与祝灵珠)：高度 32 pt，靠底贴紧按钮组上方 12 pt (放置于 _actionContainer)
     UIView *assetContainer = [[UIView alloc] init];
-    [_bgImageView addSubview:assetContainer];
+    [_actionContainer addSubview:assetContainer];
     [assetContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(50);
-        make.leading.mas_equalTo(18);
-        make.trailing.mas_equalTo(-18);
-        make.height.mas_equalTo(32);
+        make.bottom.mas_equalTo(btnGroupContainer.mas_top).offset(-KDialogAdaptedWidth(12));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(18));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(18));
+        make.height.mas_equalTo(KDialogAdaptedWidth(32));
     }];
     
     // 钻石栏 (挂左)
@@ -306,16 +449,16 @@
     [diaIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(32, 32));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(32), KDialogAdaptedWidth(32)));
     }];
     
     _diamondBalanceLabel = [[UILabel alloc] init];
     _diamondBalanceLabel.textColor = kWhiteColor;
-    _diamondBalanceLabel.font = [UIFont systemFontOfSize:11];
+    _diamondBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
     _diamondBalanceLabel.text = @"0";
     [assetContainer addSubview:_diamondBalanceLabel];
     [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(diaIcon.mas_trailing).offset(4);
+        make.leading.mas_equalTo(diaIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
         make.centerY.mas_equalTo(assetContainer);
     }];
     
@@ -324,9 +467,9 @@
     [_diamondPlusButton addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
     [assetContainer addSubview:_diamondPlusButton];
     [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_diamondBalanceLabel.mas_trailing).offset(4);
+        make.leading.mas_equalTo(_diamondBalanceLabel.mas_trailing).offset(KDialogAdaptedWidth(4));
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(28, 28));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(28), KDialogAdaptedWidth(28)));
     }];
     
     // 祝灵珠栏 (挂右)
@@ -337,26 +480,26 @@
     [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(0);
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(28, 28));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(28), KDialogAdaptedWidth(28)));
     }];
     
     _keyBalanceLabel = [[UILabel alloc] init];
     _keyBalanceLabel.textColor = kWhiteColor;
-    _keyBalanceLabel.font = [UIFont systemFontOfSize:11];
+    _keyBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
     _keyBalanceLabel.text = @"0";
     [assetContainer addSubview:_keyBalanceLabel];
     [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(_keyPlusButton.mas_leading).offset(-4);
+        make.trailing.mas_equalTo(_keyPlusButton.mas_leading).offset(-KDialogAdaptedWidth(4));
         make.centerY.mas_equalTo(assetContainer);
     }];
     
     UIImageView *keyIcon = [[UIImageView alloc] init];
-    keyIcon.image = [UIImage imageNamed:@"theme_game_one_purchase_key_icon"]; // 跨玩法复用钥匙图
+    keyIcon.image = [UIImage imageNamed:@"theme_game_one_purchase_key_icon"];
     [assetContainer addSubview:keyIcon];
     [keyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(_keyBalanceLabel.mas_leading).offset(-4);
+        make.trailing.mas_equalTo(_keyBalanceLabel.mas_leading).offset(-KDialogAdaptedWidth(4));
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(30, 30));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
     }];
 }
 
@@ -415,9 +558,10 @@
             return;
         }
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == 2 || model.typeId == 4 || [model.name containsString:@"神木"]) {
+            if (model.typeId == wself.typeId || model.typeId == 2 || model.typeId == 4 || [model.name containsString:@"神木"]) {
                 wself.consumeValue = model.consume_diamonds;
                 wself.produceValue = model.produce_diamonds;
+                wself.fortuneLabel.text = [NSString stringWithFormat:@"今日运势: %.1f%%", model.profit_rate / 100.0f];
                 break;
             }
         }
