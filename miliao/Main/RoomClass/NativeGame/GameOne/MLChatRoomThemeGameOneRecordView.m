@@ -2,7 +2,6 @@
 #import "MLGameLotteryService.h"
 #import "Global.h"
 
-#define KDialogAdaptedWidth(x) (isPadA ? ceilf((x) * (390.0 / 375.0)) : KAdaptedWidth(x))
 
 // ==========================================
 // MLChatRoomThemeGameOneRecordCell (卡片记录单元格)
@@ -49,7 +48,7 @@
     
     // Top Cap = 40 (锁定紫色头部), Bottom Cap = 10, Left/Right = 15
     UIEdgeInsets insets = UIEdgeInsetsMake(KDialogAdaptedWidth(40), KDialogAdaptedWidth(15), KDialogAdaptedWidth(10), KDialogAdaptedWidth(15));
-    _cellBgImageView.image = [[UIImage imageNamed:@"theme_game_one_record_rank_bg"] resizableImageWithCapInsets:insets resizingMode:UIImageResizingModeTile];
+    _cellBgImageView.image = [[UIImage imageNamed:@"theme_game_one_record_rank_bg"] resizableImageWithCapInsets:insets resizingMode:UIImageResizingModeStretch];
     [self.contentView addSubview:_cellBgImageView];
     
     [_cellBgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -59,38 +58,38 @@
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
     }];
     
-    // 2. 头像金圈底座 (头像.png, top 移到 2pt 垂直居中不越界)
+    // 2. 头像金圈底座 (头像.png, top 移到 3pt 垂直居中不越界)
     _avatarFrameView = [[UIImageView alloc] init];
     _avatarFrameView.image = [UIImage imageNamed:@"theme_game_one_record_avatar_frame"];
     _avatarFrameView.contentMode = UIViewContentModeScaleAspectFit;
     [self.contentView addSubview:_avatarFrameView];
     [_avatarFrameView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_cellBgImageView.mas_top).offset(KDialogAdaptedWidth(2));
+        make.top.mas_equalTo(_cellBgImageView.mas_top).offset(KDialogAdaptedWidth(3));
         make.leading.mas_equalTo(_cellBgImageView.mas_leading).offset(KDialogAdaptedWidth(12));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(26), KDialogAdaptedWidth(26)));
     }];
     
     // 真实头像 (圆裁)
     _avatarImageView = [[UIImageView alloc] init];
     _avatarImageView.contentMode = UIViewContentModeScaleAspectFill;
     _avatarImageView.clipsToBounds = YES;
-    setViewCorner(_avatarImageView, KDialogAdaptedWidth(16));
+    setViewCorner(_avatarImageView, KDialogAdaptedWidth(11));
     [_avatarFrameView addSubview:_avatarImageView];
     [_avatarImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(_avatarFrameView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(32), KDialogAdaptedWidth(32)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
     }];
     
     // 昵称
     _nicknameLabel = [[UILabel alloc] init];
     _nicknameLabel.textColor = kWhiteColor;
-    _nicknameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(14)];
+    _nicknameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
     [self.contentView addSubview:_nicknameLabel];
     
     // 时间
     _timeLabel = [[UILabel alloc] init];
     _timeLabel.textColor = [UIColor colorWithWhite:1 alpha:0.6];
-    _timeLabel.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(12)];
+    _timeLabel.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(10)];
     [self.contentView addSubview:_timeLabel];
     
     // 寻宝次数
@@ -187,9 +186,9 @@
         }
         
         [_avatarFrameView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(_cellBgImageView.mas_top).offset(KDialogAdaptedWidth(2));
+            make.top.mas_equalTo(_cellBgImageView.mas_top).offset(KDialogAdaptedWidth(3));
             make.leading.mas_equalTo(_cellBgImageView.mas_leading).offset(KDialogAdaptedWidth(12));
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(26), KDialogAdaptedWidth(26)));
         }];
         
         [_nicknameLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -217,14 +216,14 @@
     
     _giftsContainerView.hidden = NO;
     [_giftsContainerView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_cellBgImageView.mas_top).offset(KDialogAdaptedWidth(54)); // 刚好在紫色头部 54pt 之下
+        make.top.mas_equalTo(_cellBgImageView.mas_top).offset(KDialogAdaptedWidth(31)); // 刚好在紫色头部 31pt 之下
         make.leading.trailing.mas_equalTo(_cellBgImageView);
-        make.bottom.mas_equalTo(_cellBgImageView.mas_bottom).offset(-KDialogAdaptedWidth(8));
+        make.bottom.mas_equalTo(_cellBgImageView.mas_bottom).offset(-KDialogAdaptedWidth(6));
     }];
     
     NSInteger displayCount = (_isMine || _isExpanded) ? _mergedItems.count : (_mergedItems.count > 0 ? 1 : 0);
-    CGFloat rowH = KDialogAdaptedWidth(54);
-    CGFloat rowGap = KDialogAdaptedWidth(6);
+    CGFloat rowH = KDialogAdaptedWidth(40);
+    CGFloat rowGap = KDialogAdaptedWidth(4);
     
     for (int i = 0; i < displayCount; i++) {
         NSDictionary *gift = _mergedItems[i];
@@ -259,7 +258,7 @@
         [giftFrameView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.leading.mas_equalTo(KDialogAdaptedWidth(12));
             make.centerY.mas_equalTo(rowBgView);
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(28), KDialogAdaptedWidth(28)));
         }];
         
         UIImageView *giftImg = [[UIImageView alloc] init];
@@ -267,7 +266,7 @@
         [giftFrameView addSubview:giftImg];
         [giftImg mas_makeConstraints:^(MASConstraintMaker *make) {
             make.center.mas_equalTo(giftFrameView);
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
         }];
         
         NSString *imgUrlStr = gift[@"gift_image"] ?: gift[@"image"] ?: gift[@"pic"] ?: @"";
@@ -281,7 +280,7 @@
         // 数量 (xN, 居右)
         UILabel *giftNumLabel = [[UILabel alloc] init];
         giftNumLabel.textColor = mHexRGB(0x81D4FA);
-        giftNumLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
+        giftNumLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
         NSInteger numVal = [gift[@"gift_num"] integerValue];
         if (numVal <= 0) numVal = [gift[@"num"] integerValue];
         if (numVal <= 0) numVal = 1;
@@ -295,7 +294,7 @@
         // 礼物名称与钻石价格 (金圈右侧, 垂直堆叠)
         UILabel *giftNameLabel = [[UILabel alloc] init];
         giftNameLabel.textColor = kWhiteColor;
-        giftNameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
+        giftNameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
         giftNameLabel.text = gift[@"gift_name"] ?: gift[@"name"] ?: @"";
         [rowBgView addSubview:giftNameLabel];
         [giftNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -308,7 +307,7 @@
         if (price <= 0) price = [gift[@"price"] integerValue];
         UILabel *giftPriceLabel = [[UILabel alloc] init];
         giftPriceLabel.textColor = mHexRGB(0xFFE400);
-        giftPriceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
+        giftPriceLabel.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(10)];
         giftPriceLabel.text = [NSString stringWithFormat:@"%ld钻石", (long)price];
         [rowBgView addSubview:giftPriceLabel];
         [giftPriceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -319,7 +318,7 @@
 }
 
 + (CGFloat)cellHeightWithData:(NSDictionary *)data isMine:(BOOL)isMine isExpanded:(BOOL)expanded {
-    CGFloat baseH = KDialogAdaptedWidth(54) + KDialogAdaptedWidth(12); // 卡底上下 padding 加头部高
+    CGFloat baseH = KDialogAdaptedWidth(31) + KDialogAdaptedWidth(12); // 从 54 变 31，baseH = 43
     
     NSArray *items = data[@"items"];
     // 算合并后的礼物种类数
@@ -335,13 +334,13 @@
     
     if (isMine || expanded) {
         if (count > 0) {
-            CGFloat detailsH = count * KDialogAdaptedWidth(54) + (count - 1) * KDialogAdaptedWidth(6) + KDialogAdaptedWidth(8);
+            CGFloat detailsH = count * KDialogAdaptedWidth(40) + (count - 1) * KDialogAdaptedWidth(4) + KDialogAdaptedWidth(6); // rowH = 40, gap = 4, bottomPadding = 6
             return baseH + detailsH;
         }
     } else {
-        // 折叠态：展示且只展示首个礼物 (保证高度 128pt 包含首礼物行不空底)
+        // 折叠态：展示且只展示首个礼物 (总高度为 89pt = 43pt baseH + 40pt rowH + 6pt bottomPadding)
         if (count > 0) {
-            CGFloat detailsH = 1 * KDialogAdaptedWidth(54) + KDialogAdaptedWidth(8);
+            CGFloat detailsH = 1 * KDialogAdaptedWidth(40) + KDialogAdaptedWidth(6);
             return baseH + detailsH;
         }
     }

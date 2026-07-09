@@ -295,9 +295,10 @@
     
     [self layout18GiftCardsInContainer:cardsContainer];
     
-    // 钻石余额条 (高 20 pt, 宽 82 pt. 位于卡片内圈上方，上移至 72)
-    UIView *diamondBar = [[UIView alloc] init];
+    // 钻石余额条 (高 20 pt, 宽 82 pt. 整个区域作为可点击按钮以增加点击热区)
+    UIButton *diamondBar = [UIButton buttonWithType:UIButtonTypeCustom];
     diamondBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    [diamondBar addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
     setViewCorner(diamondBar, 10); // 10 pt 圆角 (一半高度)
     [cardsContainer addSubview:diamondBar];
     [diamondBar mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -328,7 +329,7 @@
     
     _diamondPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_diamondPlusButton setImage:[UIImage imageNamed:@"theme_game_one_plus_icon"] forState:UIControlStateNormal];
-    [_diamondPlusButton addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
+    _diamondPlusButton.userInteractionEnabled = NO; // 禁止直接接收事件，交由父容器按钮响应
     [diamondBar addSubview:_diamondPlusButton];
     [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(6));
@@ -336,9 +337,10 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(14), KDialogAdaptedWidth(14)));
     }];
     
-    // 钥匙余额条 (高 20 pt, 宽 82 pt. 位于卡片内圈上方，上移至 72)
-    UIView *keyBar = [[UIView alloc] init];
+    // 钥匙余额条 (高 20 pt, 宽 82 pt. 整个区域作为可点击按钮以增加点击热区)
+    UIButton *keyBar = [UIButton buttonWithType:UIButtonTypeCustom];
     keyBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    [keyBar addTarget:self action:@selector(openPurchaseDialog) forControlEvents:UIControlEventTouchUpInside];
     setViewCorner(keyBar, 10); // 10 pt 圆角
     [cardsContainer addSubview:keyBar];
     [keyBar mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -369,7 +371,7 @@
     
     _keyPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_keyPlusButton setImage:[UIImage imageNamed:@"theme_game_one_plus_icon"] forState:UIControlStateNormal];
-    [_keyPlusButton addTarget:self action:@selector(openPurchaseDialog) forControlEvents:UIControlEventTouchUpInside];
+    _keyPlusButton.userInteractionEnabled = NO; // 禁止直接接收事件，交由父容器按钮响应
     [keyBar addSubview:_keyPlusButton];
     [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(6));

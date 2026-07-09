@@ -316,6 +316,8 @@
 #define kScreenHeightRatio (kHeight / 667.0)
 #define KAdaptedWidth(x)  ceilf((x) * kScreenWidthRatio)
 #define hh(x)             KAdaptedWidth(x)
+#define KDialogAdaptedWidth(x) (isPadA ? ceilf((x) * (390.0 / 375.0)) : KAdaptedWidth(x))
+
 
 #define IS_IPHONE_X \
 ({BOOL isPhoneX = NO;\

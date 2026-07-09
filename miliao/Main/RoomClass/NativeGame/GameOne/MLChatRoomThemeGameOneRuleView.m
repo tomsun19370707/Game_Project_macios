@@ -7,7 +7,6 @@
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) UITextView *textView;
-@property (nonatomic, strong) UILabel *titleLabel;
 
 @end
 
@@ -43,38 +42,29 @@
     _bgImageView.image = [UIImage imageNamed:@"theme_game_one_rule_popup"];
     _bgImageView.contentMode = UIViewContentModeScaleToFill;
     _bgImageView.userInteractionEnabled = YES;
-    setViewCorner(_bgImageView, 12);
+    setViewCorner(_bgImageView, KDialogAdaptedWidth(12));
     [self addSubview:_bgImageView];
     
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_equalTo(self);
-        make.size.mas_equalTo(CGSizeMake(315, 360));
-    }];
-    
-    _titleLabel = [[UILabel alloc] init];
-    _titleLabel.text = @"玩法规则";
-    _titleLabel.textColor = mHexRGB(0xFFE400);
-    _titleLabel.font = KFontBoldA(18);
-    [_bgImageView addSubview:_titleLabel];
-    [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(18);
-        make.centerX.mas_equalTo(_bgImageView);
+        make.centerX.mas_equalTo(self);
+        make.bottom.mas_equalTo(self.mas_bottom);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(343), KDialogAdaptedWidth(527)));
     }];
     
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_closeButton setImage:[UIImage imageNamed:@"theme_game_one_result_close"] forState:UIControlStateNormal];
+    [_closeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_rule_back"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_closeButton];
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(12);
-        make.trailing.mas_equalTo(-12);
-        make.size.mas_equalTo(CGSizeMake(32, 32));
+        make.centerY.mas_equalTo(_bgImageView.mas_top).offset(KDialogAdaptedWidth(37));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(14));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(42), KDialogAdaptedWidth(44)));
     }];
     
     _textView = [[UITextView alloc] init];
     _textView.backgroundColor = [UIColor clearColor];
     _textView.textColor = kWhiteColor;
-    _textView.font = KFontA(13);
+    _textView.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(13)];
     _textView.editable = NO;
     _textView.selectable = NO;
     
@@ -92,26 +82,26 @@
     [_bgImageView addSubview:_textView];
     
     [_textView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_titleLabel.mas_bottom).offset(15);
-        make.leading.mas_equalTo(16);
-        make.trailing.mas_equalTo(-16);
-        make.bottom.mas_equalTo(-20);
+        make.top.mas_equalTo(_bgImageView.mas_top).offset(KDialogAdaptedWidth(65));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(16));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(20));
     }];
 }
 
 - (void)animateShow {
     self.alpha = 0.0;
-    _bgImageView.transform = CGAffineTransformMakeScale(0.8, 0.8);
-    [UIView animateWithDuration:0.2 animations:^{
+    _bgImageView.transform = CGAffineTransformMakeTranslation(0, KDialogAdaptedWidth(527));
+    [UIView animateWithDuration:0.25 animations:^{
         self.alpha = 1.0;
         self.bgImageView.transform = CGAffineTransformIdentity;
     }];
 }
 
 - (void)closeClick {
-    [UIView animateWithDuration:0.2 animations:^{
+    [UIView animateWithDuration:0.25 animations:^{
         self.alpha = 0.0;
-        self.bgImageView.transform = CGAffineTransformMakeScale(0.8, 0.8);
+        _bgImageView.transform = CGAffineTransformMakeTranslation(0, KDialogAdaptedWidth(527));
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
     }];

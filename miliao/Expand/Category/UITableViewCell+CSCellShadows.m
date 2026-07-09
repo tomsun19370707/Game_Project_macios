@@ -7,6 +7,9 @@
 //
 
 #import "UITableViewCell+CSCellShadows.h"
+#import <objc/runtime.h>
+#import <Masonry/Masonry.h>
+#import "Global.h"
 
 @implementation UITableViewCell (CSCellShadows)
 
@@ -179,4 +182,36 @@
     // cell的背景view
     self.backgroundView = roundView;
 }
+@end
+
+#pragma mark - RCConversationCell Category for onlineView
+
+@implementation RCConversationCell (OnlineViewCategory)
+
+- (UIView *)onlineView {
+    UIView *view = objc_getAssociatedObject(self, _cmd);
+    if (!view) {
+        view = [[UIView alloc] init];
+        [self.contentView addSubview:view];
+        
+        if ([self respondsToSelector:@selector(headerImageView)]) {
+            UIView *avatar = [self performSelector:@selector(headerImageView)];
+            [view mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.bottom.trailing.mas_equalTo(avatar);
+                make.size.mas_equalTo(CGSizeMake(10, 10));
+            }];
+            view.layer.cornerRadius = 5;
+            view.layer.masksToBounds = YES;
+        } else {
+            [view mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.leading.mas_equalTo(12);
+                make.top.mas_equalTo(12);
+                make.size.mas_equalTo(CGSizeMake(10, 10));
+            }];
+        }
+        objc_setAssociatedObject(self, _cmd, view, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return view;
+}
+
 @end

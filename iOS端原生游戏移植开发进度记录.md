@@ -82,6 +82,6 @@
 * [x] **任务 4.4**：双玩法起播 SVGA 全屏动画并在播放结束后拉起结算结果页面。（完成）
 * [x] **任务 5.5 (编译修复)**：修复 `KFontBoldA`、`removeAllSetObjects`、`mergeAndSortDrawGifts`、`shareInstance` 四类编译错误，确保 `Command+B` 编译通过。（完成 2026-06-27）
 * [x] **任务 5.6 (房间入口挂载)**：在 `EMO_RoomBarrageView` 添加原生游戏浮窗入口按钮，`EMO_MLRoomNewVC` 中挂载 `tag==500` 触发逻辑。（完成 2026-06-27）
-* [ ] **任务 6.1 (入口按钮图标替换)**：将 `nativeGameBtn` 的图标从复用的 `UY_ZhuanPan` 替换为专属的抽卡游戏图标切图。
+* [x] **任务 6.1 (入口按钮图标替换)**：将 `nativeGameBtn` 的图标从复用的 `UY_ZhuanPan` 替换为专属的抽卡游戏图标切图。（已验证为专属图标 `chat_room_voice_draw_circle_icon` 并完成）
 * [ ] **任务 6.2 (真机联调测试)**：在真机或模拟器上验证完整流程：入口按钮 → 游戏选择面板 → 主面板 → 抽奖动画 → 结果弹窗。
 * [ ] **任务 6.3 (视觉还原验收)**：对照安卓效果图逐屏校验 UI 还原度，调整间距、字号、色值等细节。
