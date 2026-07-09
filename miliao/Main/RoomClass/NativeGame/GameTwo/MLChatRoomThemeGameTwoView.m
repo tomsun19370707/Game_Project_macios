@@ -288,7 +288,7 @@
     [btnGroupContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_actionContainer);
         make.bottom.mas_equalTo(-KDialogAdaptedWidth(14));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(332), KDialogAdaptedWidth(76)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(362), KDialogAdaptedWidth(83)));
     }];
     
     // 抽奖 1 次
@@ -297,7 +297,7 @@
     [oneWrapper mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
         make.top.bottom.mas_equalTo(0);
-        make.width.mas_equalTo(KDialogAdaptedWidth(104));
+        make.width.mas_equalTo(KDialogAdaptedWidth(114));
     }];
     
     _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -306,7 +306,7 @@
     [oneWrapper addSubview:_drawOneButton];
     [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.mas_equalTo(0);
-        make.height.mas_equalTo(KDialogAdaptedWidth(52));
+        make.height.mas_equalTo(KDialogAdaptedWidth(57));
     }];
     
     UIView *onePriceContainer = [[UIView alloc] init];
@@ -315,7 +315,7 @@
     [onePriceContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(_drawOneButton.mas_bottom).offset(KDialogAdaptedWidth(6));
         make.centerX.mas_equalTo(oneWrapper);
-        make.height.mas_equalTo(KDialogAdaptedWidth(18));
+        make.height.mas_equalTo(KDialogAdaptedWidth(20));
     }];
     
     UIImageView *oneKeyIcon = [[UIImageView alloc] init];
@@ -324,12 +324,12 @@
     [oneKeyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
         make.centerY.mas_equalTo(onePriceContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(18), KDialogAdaptedWidth(18)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(20), KDialogAdaptedWidth(20)));
     }];
     
     UILabel *oneCostLabel = [[UILabel alloc] init];
     oneCostLabel.textColor = mHexRGB(0xFF8FA8);
-    oneCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
+    oneCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
     oneCostLabel.text = @"x1";
     [onePriceContainer addSubview:oneCostLabel];
     [oneCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -344,7 +344,7 @@
     [tenWrapper mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(oneWrapper.mas_trailing).offset(KDialogAdaptedWidth(10));
         make.top.bottom.mas_equalTo(0);
-        make.width.mas_equalTo(KDialogAdaptedWidth(104));
+        make.width.mas_equalTo(KDialogAdaptedWidth(114));
     }];
     
     _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -353,7 +353,7 @@
     [tenWrapper addSubview:_drawTenButton];
     [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.mas_equalTo(0);
-        make.height.mas_equalTo(KDialogAdaptedWidth(52));
+        make.height.mas_equalTo(KDialogAdaptedWidth(57));
     }];
     
     UIView *tenPriceContainer = [[UIView alloc] init];
@@ -362,7 +362,7 @@
     [tenPriceContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(_drawTenButton.mas_bottom).offset(KDialogAdaptedWidth(6));
         make.centerX.mas_equalTo(tenWrapper);
-        make.height.mas_equalTo(KDialogAdaptedWidth(18));
+        make.height.mas_equalTo(KDialogAdaptedWidth(20));
     }];
     
     UIImageView *tenKeyIcon = [[UIImageView alloc] init];
@@ -371,12 +371,12 @@
     [tenKeyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
         make.centerY.mas_equalTo(tenPriceContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(18), KDialogAdaptedWidth(18)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(20), KDialogAdaptedWidth(20)));
     }];
     
     UILabel *tenCostLabel = [[UILabel alloc] init];
     tenCostLabel.textColor = mHexRGB(0xFF8FA8);
-    tenCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
+    tenCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
     tenCostLabel.text = @"x10";
     [tenPriceContainer addSubview:tenCostLabel];
     [tenCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -391,7 +391,7 @@
     [hundredWrapper mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(tenWrapper.mas_trailing).offset(KDialogAdaptedWidth(10));
         make.top.bottom.mas_equalTo(0);
-        make.width.mas_equalTo(KDialogAdaptedWidth(104));
+        make.width.mas_equalTo(KDialogAdaptedWidth(114));
     }];
     
     _drawHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -400,7 +400,7 @@
     [hundredWrapper addSubview:_drawHundredButton];
     [_drawHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.mas_equalTo(0);
-        make.height.mas_equalTo(KDialogAdaptedWidth(52));
+        make.height.mas_equalTo(KDialogAdaptedWidth(57));
     }];
     
     UIView *hundredPriceContainer = [[UIView alloc] init];
@@ -409,7 +409,7 @@
     [hundredPriceContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(_drawHundredButton.mas_bottom).offset(KDialogAdaptedWidth(6));
         make.centerX.mas_equalTo(hundredWrapper);
-        make.height.mas_equalTo(KDialogAdaptedWidth(18));
+        make.height.mas_equalTo(KDialogAdaptedWidth(20));
     }];
     
     UIImageView *hundredKeyIcon = [[UIImageView alloc] init];
@@ -418,12 +418,12 @@
     [hundredKeyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
         make.centerY.mas_equalTo(hundredPriceContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(18), KDialogAdaptedWidth(18)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(20), KDialogAdaptedWidth(20)));
     }];
     
     UILabel *hundredCostLabel = [[UILabel alloc] init];
     hundredCostLabel.textColor = mHexRGB(0xFF8FA8);
-    hundredCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
+    hundredCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
     hundredCostLabel.text = @"x100";
     [hundredPriceContainer addSubview:hundredCostLabel];
     [hundredCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -449,12 +449,12 @@
     [diaIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(32), KDialogAdaptedWidth(32)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(29), KDialogAdaptedWidth(29)));
     }];
     
     _diamondBalanceLabel = [[UILabel alloc] init];
     _diamondBalanceLabel.textColor = kWhiteColor;
-    _diamondBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
+    _diamondBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
     _diamondBalanceLabel.text = @"0";
     [assetContainer addSubview:_diamondBalanceLabel];
     [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -469,7 +469,7 @@
     [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(_diamondBalanceLabel.mas_trailing).offset(KDialogAdaptedWidth(4));
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(28), KDialogAdaptedWidth(28)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(31), KDialogAdaptedWidth(31)));
     }];
     
     // 祝灵珠栏 (挂右)
@@ -480,12 +480,12 @@
     [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(0);
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(28), KDialogAdaptedWidth(28)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(31), KDialogAdaptedWidth(31)));
     }];
     
     _keyBalanceLabel = [[UILabel alloc] init];
     _keyBalanceLabel.textColor = kWhiteColor;
-    _keyBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
+    _keyBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
     _keyBalanceLabel.text = @"0";
     [assetContainer addSubview:_keyBalanceLabel];
     [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -499,7 +499,7 @@
     [keyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(_keyBalanceLabel.mas_leading).offset(-KDialogAdaptedWidth(4));
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(27), KDialogAdaptedWidth(27)));
     }];
 }
 
