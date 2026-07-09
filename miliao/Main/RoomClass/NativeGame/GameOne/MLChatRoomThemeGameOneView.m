@@ -780,6 +780,14 @@
     self.lastDrawTimes = times;
     self.lastDrawCost = cost;
     
+    if (self.infoModel) {
+        self.infoModel.lucky += times;
+        if (self.infoModel.lucky > 200) {
+            self.infoModel.lucky = self.infoModel.lucky % 200;
+        }
+        self.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/200", (long)self.infoModel.lucky];
+    }
+    
     // 显示并启动 SVGA 循环播放动效
     self.svgaPlayer.hidden = NO;
     [self.svgaPlayer startAnimation];

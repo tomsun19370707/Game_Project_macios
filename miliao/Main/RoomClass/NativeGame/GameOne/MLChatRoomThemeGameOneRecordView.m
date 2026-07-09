@@ -143,6 +143,23 @@
             [mergedList addObject:clone];
         }
     }
+    
+    [mergedList sortUsingComparator:^NSComparisonResult(NSDictionary *obj1, NSDictionary *obj2) {
+        NSInteger price1 = [obj1[@"gift_price"] integerValue];
+        if (price1 <= 0) price1 = [obj1[@"price"] integerValue];
+        
+        NSInteger price2 = [obj2[@"gift_price"] integerValue];
+        if (price2 <= 0) price2 = [obj2[@"price"] integerValue];
+        
+        if (price1 > price2) {
+            return NSOrderedAscending;
+        } else if (price1 < price2) {
+            return NSOrderedDescending;
+        } else {
+            return NSOrderedSame;
+        }
+    }];
+    
     _mergedItems = [mergedList copy];
     
     // 头部排版
