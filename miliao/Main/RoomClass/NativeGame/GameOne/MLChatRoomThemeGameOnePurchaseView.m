@@ -1,5 +1,7 @@
 #import "MLChatRoomThemeGameOnePurchaseView.h"
 #import "MLGameLotteryService.h"
+#import "CFMWalletDiamondRechargeVc.h"
+#import "UIViewController+CurViewController.h"
 #import "Global.h"
 
 #define KDialogAdaptedWidth(x) (isPadA ? ceilf((x) * (390.0 / 375.0)) : KAdaptedWidth(x))
@@ -14,9 +16,10 @@
 @property (nonatomic, strong) UIButton *closeButton;
 
 // 顶部余额指示栏 (钻石/钥匙)
-@property (nonatomic, strong) UIImageView *diamondBarView;
+@property (nonatomic, strong) UIButton *diamondBarView;
 @property (nonatomic, strong) UIImageView *diamondIconView;
 @property (nonatomic, strong) UILabel *diamondBalanceLabel;
+@property (nonatomic, strong) UIButton *diamondPlusButton; // 新增充值加号按钮
 
 @property (nonatomic, strong) UIImageView *keyBarView;
 @property (nonatomic, strong) UIImageView *keyIconView;
@@ -100,18 +103,18 @@
     [_bgImageView addSubview:_closeButton];
     
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(16));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
+        make.top.mas_equalTo(KDialogAdaptedWidth(12)); // 调整边距以居中 44x44 的热区
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(44), KDialogAdaptedWidth(44)));
     }];
     
-    // 钻石余额指示栏 (钻石底座 theme_game_one_purchase_diamond_bar.png, 高 22 pt, 距顶 50 pt, 距左 24 pt)
-    _diamondBarView = [[UIImageView alloc] init];
-    _diamondBarView.image = [UIImage imageNamed:@"theme_game_one_purchase_diamond_bar"];
-    _diamondBarView.contentMode = UIViewContentModeScaleToFill;
+    // 钻石余额指示栏 (整个底座为 UIButton，实现点击整条充值，高 22 pt, 距顶 62 pt, 距左 24 pt)
+    _diamondBarView = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_diamondBarView setBackgroundImage:[UIImage imageNamed:@"theme_game_one_purchase_diamond_bar"] forState:UIControlStateNormal];
+    [_diamondBarView addTarget:self action:@selector(diamondPlusClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_diamondBarView];
     [_diamondBarView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(50));
+        make.top.mas_equalTo(KDialogAdaptedWidth(62));
         make.leading.mas_equalTo(KDialogAdaptedWidth(24));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(120), KDialogAdaptedWidth(22)));
     }];
@@ -119,11 +122,11 @@
     _diamondIconView = [[UIImageView alloc] init];
     _diamondIconView.image = [UIImage imageNamed:@"theme_game_one_purchase_diamond_icon"];
     _diamondIconView.contentMode = UIViewContentModeScaleAspectFit;
-    [_bgImageView addSubview:_diamondIconView];
+    [_diamondBarView addSubview:_diamondIconView];
     [_diamondIconView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_diamondBarView.mas_leading).offset(-KDialogAdaptedWidth(4));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(6)); // 缩小的图标在内嵌布局下偏置 6 pt
         make.centerY.mas_equalTo(_diamondBarView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(16), KDialogAdaptedWidth(16))); // 缩小至 16x16
     }];
     
     _diamondBalanceLabel = [[UILabel alloc] init];
@@ -132,17 +135,27 @@
     _diamondBalanceLabel.text = @"0";
     [_diamondBarView addSubview:_diamondBalanceLabel];
     [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(KDialogAdaptedWidth(24));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(26)); // 左移至 26 pt，紧凑美观且不重叠
         make.centerY.mas_equalTo(_diamondBarView);
     }];
+
+    _diamondPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_diamondPlusButton setImage:[UIImage imageNamed:@"theme_game_one_plus_icon"] forState:UIControlStateNormal];
+    _diamondPlusButton.userInteractionEnabled = NO; // 禁止用户交互，由父视图 _diamondBarView 统一处理点击
+    [_diamondBarView addSubview:_diamondPlusButton];
+    [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(6)); // 靠最右侧 6 pt 偏置
+        make.centerY.mas_equalTo(_diamondBarView);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(14), KDialogAdaptedWidth(14)));
+    }];
     
-    // 钥匙余额指示栏 (钥匙底座 theme_game_one_purchase_key_bar.png, 高 22 pt, 距顶 50 pt, 距右 24 pt)
+    // 钥匙余额指示栏 (钥匙底座 theme_game_one_purchase_key_bar.png, 高 22 pt, 距顶 62 pt, 距右 24 pt)
     _keyBarView = [[UIImageView alloc] init];
     _keyBarView.image = [UIImage imageNamed:@"theme_game_one_purchase_key_bar"];
     _keyBarView.contentMode = UIViewContentModeScaleToFill;
     [_bgImageView addSubview:_keyBarView];
     [_keyBarView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(50));
+        make.top.mas_equalTo(KDialogAdaptedWidth(62));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(24));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(120), KDialogAdaptedWidth(22)));
     }];
@@ -150,11 +163,11 @@
     _keyIconView = [[UIImageView alloc] init];
     _keyIconView.image = [UIImage imageNamed:@"theme_game_one_purchase_key_icon"];
     _keyIconView.contentMode = UIViewContentModeScaleAspectFit;
-    [_bgImageView addSubview:_keyIconView];
+    [_keyBarView addSubview:_keyIconView];
     [_keyIconView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_keyBarView.mas_leading).offset(-KDialogAdaptedWidth(4));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(6)); // 缩小的图标在内嵌布局下偏置 6 pt
         make.centerY.mas_equalTo(_keyBarView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(16), KDialogAdaptedWidth(16))); // 缩小至 16x16
     }];
     
     _keyBalanceLabel = [[UILabel alloc] init];
@@ -163,18 +176,18 @@
     _keyBalanceLabel.text = @"0";
     [_keyBarView addSubview:_keyBalanceLabel];
     [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(KDialogAdaptedWidth(24));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(26)); // 左移至 26 pt
         make.centerY.mas_equalTo(_keyBarView);
     }];
     
-    // 中部商品展示框组 (距顶 94 pt, 水平居中)
+    // 中部商品展示框组 (下移至 114 pt, 水平居中)
     // 左侧钥匙展示背板: theme_game_one_purchase_board_left.png (宽 97, 高 100 pt)
     _boardLeftView = [[UIImageView alloc] init];
     _boardLeftView.image = [UIImage imageNamed:@"theme_game_one_purchase_board_left"];
     _boardLeftView.contentMode = UIViewContentModeScaleToFill;
     [_bgImageView addSubview:_boardLeftView];
     [_boardLeftView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(94));
+        make.top.mas_equalTo(KDialogAdaptedWidth(114));
         make.trailing.mas_equalTo(_bgImageView.mas_centerX).offset(-KDialogAdaptedWidth(24));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(97), KDialogAdaptedWidth(100)));
     }];
@@ -185,7 +198,7 @@
     _boardGiftView.contentMode = UIViewContentModeScaleToFill;
     [_bgImageView addSubview:_boardGiftView];
     [_boardGiftView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(94));
+        make.top.mas_equalTo(KDialogAdaptedWidth(114));
         make.leading.mas_equalTo(_bgImageView.mas_centerX).offset(KDialogAdaptedWidth(24));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(97), KDialogAdaptedWidth(100)));
     }];
@@ -203,56 +216,56 @@
     
     // 4档快捷选择按钮组 (1 / 10 / 100 / 其它)
     _optOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optOneButton setImage:[UIImage imageNamed:@"theme_game_one_purchase_one_selected"] forState:UIControlStateSelected];
-    [_optOneButton setImage:[UIImage imageNamed:@"theme_game_one_purchase_one_normal"] forState:UIControlStateNormal];
+    [_optOneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_purchase_one_selected"] forState:UIControlStateSelected];
+    [_optOneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_purchase_one_normal"] forState:UIControlStateNormal];
     _optOneButton.selected = YES;
     [_optOneButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_optOneButton];
     
     _optTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optTenButton setImage:[UIImage imageNamed:@"theme_game_one_purchase_ten_selected"] forState:UIControlStateSelected];
-    [_optTenButton setImage:[UIImage imageNamed:@"theme_game_one_purchase_ten_normal"] forState:UIControlStateNormal];
+    [_optTenButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_purchase_ten_selected"] forState:UIControlStateSelected];
+    [_optTenButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_purchase_ten_normal"] forState:UIControlStateNormal];
     [_optTenButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_optTenButton];
     
     _optHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optHundredButton setImage:[UIImage imageNamed:@"theme_game_one_purchase_hundred_selected"] forState:UIControlStateSelected];
-    [_optHundredButton setImage:[UIImage imageNamed:@"theme_game_one_purchase_hundred_normal"] forState:UIControlStateNormal];
+    [_optHundredButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_purchase_hundred_selected"] forState:UIControlStateSelected];
+    [_optHundredButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_purchase_hundred_normal"] forState:UIControlStateNormal];
     [_optHundredButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_optHundredButton];
     
     _optOtherButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optOtherButton setImage:[UIImage imageNamed:@"theme_game_one_purchase_other_selected"] forState:UIControlStateSelected];
-    [_optOtherButton setImage:[UIImage imageNamed:@"theme_game_one_purchase_other_normal"] forState:UIControlStateNormal];
+    [_optOtherButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_purchase_other_selected"] forState:UIControlStateSelected];
+    [_optOtherButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_purchase_other_normal"] forState:UIControlStateNormal];
     [_optOtherButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_optOtherButton];
     
     _optButtons = @[_optOneButton, _optTenButton, _optHundredButton, _optOtherButton];
     
-    CGFloat btnW = KDialogAdaptedWidth(60.0f);
-    CGFloat btnH = KDialogAdaptedWidth(24.0f);
+    CGFloat btnW = KDialogAdaptedWidth(61.0f); // 缩小 10% (从 68 缩小为 61)
+    CGFloat btnH = KDialogAdaptedWidth(25.0f); // 缩小 10% (从 28 缩小为 25)
     CGFloat gap = KDialogAdaptedWidth(8.0f);
     
     [_optTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(220));
+        make.top.mas_equalTo(KDialogAdaptedWidth(236)); // 从 224 下移为 236
         make.trailing.mas_equalTo(_bgImageView.mas_centerX).offset(-gap/2.0);
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
     }];
     
     [_optOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(220));
+        make.top.mas_equalTo(KDialogAdaptedWidth(236)); // 从 224 下移为 236
         make.trailing.mas_equalTo(_optTenButton.mas_leading).offset(-gap);
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
     }];
     
     [_optHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(220));
+        make.top.mas_equalTo(KDialogAdaptedWidth(236)); // 从 224 下移为 236
         make.leading.mas_equalTo(_bgImageView.mas_centerX).offset(gap/2.0);
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
     }];
     
     [_optOtherButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(220));
+        make.top.mas_equalTo(KDialogAdaptedWidth(236)); // 从 224 下移为 236
         make.leading.mas_equalTo(_optHundredButton.mas_trailing).offset(gap);
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
     }];
@@ -264,22 +277,73 @@
     _costLabel.text = [NSString stringWithFormat:@"消耗 %ld 钻石", (long)[self getSingleKeyCost]];
     [_bgImageView addSubview:_costLabel];
     
-    // 确认购买按钮 (theme_game_one_purchase_confirm.png, 宽 208, 高 42. 距底端 24 pt)
+    // 确认购买按钮 (theme_game_one_purchase_confirm.png, 宽由 208 放大至 230，高由 42 放大至 48. 距底端 24 pt)
     _confirmButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_confirmButton setImage:[UIImage imageNamed:@"theme_game_one_purchase_confirm"] forState:UIControlStateNormal];
+    [_confirmButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_purchase_confirm"] forState:UIControlStateNormal];
     [_confirmButton addTarget:self action:@selector(confirmPurchaseClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_confirmButton];
     
     [_confirmButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(-KDialogAdaptedWidth(24));
         make.centerX.mas_equalTo(_bgImageView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(208), KDialogAdaptedWidth(42)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(207), KDialogAdaptedWidth(43))); // 缩小 10% (从 230x48 缩小为 207x43)
     }];
     
     [_costLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(_confirmButton.mas_top).offset(-KDialogAdaptedWidth(8));
         make.centerX.mas_equalTo(_bgImageView);
     }];
+}
+
+#pragma mark - 充值路由
+- (void)diamondPlusClick {
+    UIViewController *curVC = [UIViewController currentViewController];
+    if (curVC) {
+        CFMWalletDiamondRechargeVc *re = [[CFMWalletDiamondRechargeVc alloc] init];
+        WeakSelf
+        
+        // 隐藏购买弹窗
+        self.hidden = YES;
+        
+        // 查找并隐藏游戏大底面板 (MLChatRoomThemeGameOneView)
+        __block UIView *gameMainView = nil;
+        for (UIView *view in self.superview.subviews) {
+            if ([view isKindOfClass:NSClassFromString(@"MLChatRoomThemeGameOneView")]) {
+                gameMainView = view;
+                gameMainView.hidden = YES;
+                break;
+            }
+        }
+        
+        re.dismissBlock = ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(wself) strongSelf = wself;
+                if (strongSelf) {
+                    // 恢复显示弹窗和主面板
+                    strongSelf.hidden = NO;
+                    if (gameMainView) {
+                        gameMainView.hidden = NO;
+                        // 重新刷新主面板余额数据
+                        SEL loadDataSel = NSSelectorFromString(@"loadData");
+                        if ([gameMainView respondsToSelector:loadDataSel]) {
+                            IMP imp = [gameMainView methodForSelector:loadDataSel];
+                            void (*func)(id, SEL) = (void *)imp;
+                            func(gameMainView, loadDataSel);
+                        }
+                    }
+                    // 弹窗重新加载最新余额
+                    [strongSelf loadUserMoney];
+                }
+            });
+        };
+        
+        if (curVC.navigationController) {
+            [curVC.navigationController pushViewController:re animated:YES];
+        } else {
+            UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:re];
+            [curVC presentViewController:nav animated:YES completion:nil];
+        }
+    }
 }
 
 #pragma mark - 数据拉取
@@ -364,36 +428,10 @@
         [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"已选择购买 %ld 把钥匙", (long)count]];
     }]];
     
-    UIViewController *topVC = [self topViewController];
+    UIViewController *topVC = [UIViewController currentViewController];
     if (topVC) {
         [topVC presentViewController:alert animated:YES completion:nil];
     }
-}
-
-- (UIViewController *)topViewController {
-    UIViewController *resultVC = nil;
-    UIWindow *window = [[UIApplication sharedApplication] keyWindow];
-    if (window.windowLevel != UIWindowLevelNormal) {
-        NSArray *windows = [[UIApplication sharedApplication] windows];
-        for (UIWindow *tmpWin in windows) {
-            if (tmpWin.windowLevel == UIWindowLevelNormal) {
-                window = tmpWin;
-                break;
-            }
-        }
-    }
-    UIView *frontView = [[window subviews] objectAtIndex:0];
-    id nextResponder = [frontView nextResponder];
-    if ([nextResponder isKindOfClass:[UIViewController class]]) {
-        resultVC = nextResponder;
-    } else {
-        resultVC = window.rootViewController;
-    }
-    
-    while (resultVC.presentedViewController) {
-        resultVC = resultVC.presentedViewController;
-    }
-    return resultVC;
 }
 
 - (NSInteger)getSingleKeyCost {
