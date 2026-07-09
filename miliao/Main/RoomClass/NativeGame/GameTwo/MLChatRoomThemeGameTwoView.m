@@ -27,7 +27,6 @@
 @property (nonatomic, assign) NSInteger typeId;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIView *maskView;
-@property (nonatomic, strong) UIButton *backButton;
 @property (nonatomic, strong) UIButton *ruleButton;
 @property (nonatomic, strong) UIButton *recordButton;
 
@@ -152,37 +151,28 @@
         make.top.mas_equalTo(_gameplayContainer.mas_bottom);
     }];
     
-    // 左上角返回/关闭按钮 (放置于 _hudContainer)
-    _backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_backButton setImage:[UIImage imageNamed:@"theme_game_two_rule_back"] forState:UIControlStateNormal];
-    [_backButton addTarget:self action:@selector(backClick) forControlEvents:UIControlEventTouchUpInside];
-    [_hudContainer addSubview:_backButton];
-    [_backButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(16));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
-    }];
     
-    // 记录按钮 (放置于 _hudContainer，宽度 105 pt，高度 47.4 pt，符合 124:56 的比例)
+    
+    // 记录按钮 (放置于 _hudContainer，宽度 48 pt，高度 50 pt，符合 143:148 的实际切图比例)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_recordButton setImage:[UIImage imageNamed:@"theme_game_two_record_btn"] forState:UIControlStateNormal];
+    [_recordButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_record_btn"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_hudContainer addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(105));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(8));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(105), KDialogAdaptedWidth(47.4)));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(30));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(48), KDialogAdaptedWidth(50)));
     }];
     
-    // 规则按钮 (放置于 _hudContainer，宽度 105 pt，高度 47.4 pt，符合 124:56 的比例)
+    // 规则按钮 (放置于 _hudContainer，宽度 55 pt，高度 50 pt，符合 163:148 的实际切图比例)
     _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_ruleButton setImage:[UIImage imageNamed:@"theme_game_two_rule_btn"] forState:UIControlStateNormal];
+    [_ruleButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_rule_btn"] forState:UIControlStateNormal];
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [_hudContainer addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(105));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(8));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(105), KDialogAdaptedWidth(47.4)));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(30));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(55), KDialogAdaptedWidth(50)));
     }];
     
     // 今日运势悬浮条 (放置于 _hudContainer，宽 74, 高 23, 对其右上角偏置)
@@ -287,8 +277,8 @@
     [_actionContainer addSubview:btnGroupContainer];
     [btnGroupContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_actionContainer);
-        make.bottom.mas_equalTo(-KDialogAdaptedWidth(14));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(362), KDialogAdaptedWidth(83)));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(26));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(332), KDialogAdaptedWidth(78)));
     }];
     
     // 抽奖 1 次
@@ -297,16 +287,16 @@
     [oneWrapper mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
         make.top.bottom.mas_equalTo(0);
-        make.width.mas_equalTo(KDialogAdaptedWidth(114));
+        make.width.mas_equalTo(KDialogAdaptedWidth(104));
     }];
     
     _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawOneButton setImage:[UIImage imageNamed:@"theme_game_two_draw1_btn"] forState:UIControlStateNormal];
+    [_drawOneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_draw1_btn"] forState:UIControlStateNormal];
     [_drawOneButton addTarget:self action:@selector(drawOneClick) forControlEvents:UIControlEventTouchUpInside];
     [oneWrapper addSubview:_drawOneButton];
     [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.mas_equalTo(0);
-        make.height.mas_equalTo(KDialogAdaptedWidth(57));
+        make.height.mas_equalTo(KDialogAdaptedWidth(52));
     }];
     
     UIView *onePriceContainer = [[UIView alloc] init];
@@ -324,12 +314,12 @@
     [oneKeyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
         make.centerY.mas_equalTo(onePriceContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(20), KDialogAdaptedWidth(20)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(18), KDialogAdaptedWidth(18)));
     }];
     
     UILabel *oneCostLabel = [[UILabel alloc] init];
     oneCostLabel.textColor = mHexRGB(0xFF8FA8);
-    oneCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
+    oneCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(16)];
     oneCostLabel.text = @"x1";
     [onePriceContainer addSubview:oneCostLabel];
     [oneCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -344,16 +334,16 @@
     [tenWrapper mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(oneWrapper.mas_trailing).offset(KDialogAdaptedWidth(10));
         make.top.bottom.mas_equalTo(0);
-        make.width.mas_equalTo(KDialogAdaptedWidth(114));
+        make.width.mas_equalTo(KDialogAdaptedWidth(104));
     }];
     
     _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawTenButton setImage:[UIImage imageNamed:@"theme_game_two_draw10_btn"] forState:UIControlStateNormal];
+    [_drawTenButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_draw10_btn"] forState:UIControlStateNormal];
     [_drawTenButton addTarget:self action:@selector(drawTenClick) forControlEvents:UIControlEventTouchUpInside];
     [tenWrapper addSubview:_drawTenButton];
     [_drawTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.mas_equalTo(0);
-        make.height.mas_equalTo(KDialogAdaptedWidth(57));
+        make.height.mas_equalTo(KDialogAdaptedWidth(52));
     }];
     
     UIView *tenPriceContainer = [[UIView alloc] init];
@@ -371,12 +361,12 @@
     [tenKeyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
         make.centerY.mas_equalTo(tenPriceContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(20), KDialogAdaptedWidth(20)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(18), KDialogAdaptedWidth(18)));
     }];
     
     UILabel *tenCostLabel = [[UILabel alloc] init];
     tenCostLabel.textColor = mHexRGB(0xFF8FA8);
-    tenCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
+    tenCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(16)];
     tenCostLabel.text = @"x10";
     [tenPriceContainer addSubview:tenCostLabel];
     [tenCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -391,16 +381,16 @@
     [hundredWrapper mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(tenWrapper.mas_trailing).offset(KDialogAdaptedWidth(10));
         make.top.bottom.mas_equalTo(0);
-        make.width.mas_equalTo(KDialogAdaptedWidth(114));
+        make.width.mas_equalTo(KDialogAdaptedWidth(104));
     }];
     
     _drawHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawHundredButton setImage:[UIImage imageNamed:@"theme_game_two_draw100_btn"] forState:UIControlStateNormal];
+    [_drawHundredButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_draw100_btn"] forState:UIControlStateNormal];
     [_drawHundredButton addTarget:self action:@selector(drawHundredClick) forControlEvents:UIControlEventTouchUpInside];
     [hundredWrapper addSubview:_drawHundredButton];
     [_drawHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.mas_equalTo(0);
-        make.height.mas_equalTo(KDialogAdaptedWidth(57));
+        make.height.mas_equalTo(KDialogAdaptedWidth(52));
     }];
     
     UIView *hundredPriceContainer = [[UIView alloc] init];
@@ -418,12 +408,12 @@
     [hundredKeyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
         make.centerY.mas_equalTo(hundredPriceContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(20), KDialogAdaptedWidth(20)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(18), KDialogAdaptedWidth(18)));
     }];
     
     UILabel *hundredCostLabel = [[UILabel alloc] init];
     hundredCostLabel.textColor = mHexRGB(0xFF8FA8);
-    hundredCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
+    hundredCostLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(16)];
     hundredCostLabel.text = @"x100";
     [hundredPriceContainer addSubview:hundredCostLabel];
     [hundredCostLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -436,7 +426,7 @@
     UIView *assetContainer = [[UIView alloc] init];
     [_actionContainer addSubview:assetContainer];
     [assetContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(btnGroupContainer.mas_top).offset(-KDialogAdaptedWidth(12));
+        make.bottom.mas_equalTo(btnGroupContainer.mas_top).offset(-KDialogAdaptedWidth(24));
         make.leading.mas_equalTo(KDialogAdaptedWidth(18));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(18));
         make.height.mas_equalTo(KDialogAdaptedWidth(32));
@@ -445,11 +435,12 @@
     // 钻石栏 (挂左)
     UIImageView *diaIcon = [[UIImageView alloc] init];
     diaIcon.image = [UIImage imageNamed:@"theme_game_two_diamond_icon"];
+    diaIcon.contentMode = UIViewContentModeScaleAspectFit;
     [assetContainer addSubview:diaIcon];
     [diaIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(0);
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(29), KDialogAdaptedWidth(29)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(26), KDialogAdaptedWidth(26)));
     }];
     
     _diamondBalanceLabel = [[UILabel alloc] init];
@@ -463,24 +454,24 @@
     }];
     
     _diamondPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_diamondPlusButton setImage:[UIImage imageNamed:@"theme_game_two_plus_icon"] forState:UIControlStateNormal];
+    [_diamondPlusButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_plus_icon"] forState:UIControlStateNormal];
     [_diamondPlusButton addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
     [assetContainer addSubview:_diamondPlusButton];
     [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(_diamondBalanceLabel.mas_trailing).offset(KDialogAdaptedWidth(4));
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(31), KDialogAdaptedWidth(31)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
     }];
     
     // 祝灵珠栏 (挂右)
     _keyPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_keyPlusButton setImage:[UIImage imageNamed:@"theme_game_two_plus_icon"] forState:UIControlStateNormal];
+    [_keyPlusButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_plus_icon"] forState:UIControlStateNormal];
     [_keyPlusButton addTarget:self action:@selector(openPurchaseDialog) forControlEvents:UIControlEventTouchUpInside];
     [assetContainer addSubview:_keyPlusButton];
     [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(0);
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(31), KDialogAdaptedWidth(31)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
     }];
     
     _keyBalanceLabel = [[UILabel alloc] init];
@@ -495,11 +486,12 @@
     
     UIImageView *keyIcon = [[UIImageView alloc] init];
     keyIcon.image = [UIImage imageNamed:@"theme_game_one_purchase_key_icon"];
+    keyIcon.contentMode = UIViewContentModeScaleAspectFit;
     [assetContainer addSubview:keyIcon];
     [keyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(_keyBalanceLabel.mas_leading).offset(-KDialogAdaptedWidth(4));
         make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(27), KDialogAdaptedWidth(27)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(24), KDialogAdaptedWidth(24)));
     }];
 }
 
@@ -655,7 +647,6 @@
     self.drawOneButton.enabled = !lock;
     self.drawTenButton.enabled = !lock;
     self.drawHundredButton.enabled = !lock;
-    self.backButton.enabled = !lock;
     self.ruleButton.enabled = !lock;
     self.recordButton.enabled = !lock;
 }
@@ -827,12 +818,7 @@
     }
 }
 
-- (void)backClick {
-    if (self.isDrawing) {
-        return;
-    }
-    [self dismiss];
-}
+
 
 - (void)handleMaskTap:(UITapGestureRecognizer *)sender {
     if (self.isDrawing) {
