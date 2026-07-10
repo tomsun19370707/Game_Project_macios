@@ -32,8 +32,10 @@
 
 @property (nonatomic, strong) UILabel *keyBalanceLabel;
 @property (nonatomic, strong) UIButton *keyPlusButton;
+@property (nonatomic, strong) UIButton *keyBar;
 @property (nonatomic, strong) UILabel *diamondBalanceLabel;
 @property (nonatomic, strong) UIButton *diamondPlusButton;
+@property (nonatomic, strong) UIButton *diamondBar;
 
 @property (nonatomic, strong) UIButton *drawOneButton;
 @property (nonatomic, strong) UIButton *drawTenButton;
@@ -148,7 +150,7 @@
     [_bgImageView addSubview:_actionContainer];
     [_actionContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.leading.trailing.mas_equalTo(0);
-        make.top.mas_equalTo(_gameplayContainer.mas_bottom);
+        make.top.mas_equalTo(_gameplayContainer.mas_bottom).offset(-KDialogAdaptedWidth(40));
     }];
     
     
@@ -433,64 +435,100 @@
     }];
     
     // 钻石栏 (挂左)
+    _diamondBar = [UIButton buttonWithType:UIButtonTypeCustom];
+    _diamondBar.backgroundColor = [UIColor clearColor];
+    [_diamondBar addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
+    [assetContainer addSubview:_diamondBar];
+    
     UIImageView *diaIcon = [[UIImageView alloc] init];
     diaIcon.image = [UIImage imageNamed:@"theme_game_two_diamond_icon"];
     diaIcon.contentMode = UIViewContentModeScaleAspectFit;
-    [assetContainer addSubview:diaIcon];
-    [diaIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(0);
-        make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(26), KDialogAdaptedWidth(26)));
-    }];
+    diaIcon.userInteractionEnabled = NO;
+    [_diamondBar addSubview:diaIcon];
     
     _diamondBalanceLabel = [[UILabel alloc] init];
     _diamondBalanceLabel.textColor = kWhiteColor;
     _diamondBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
     _diamondBalanceLabel.text = @"0";
-    [assetContainer addSubview:_diamondBalanceLabel];
-    [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(diaIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
-        make.centerY.mas_equalTo(assetContainer);
-    }];
+    _diamondBalanceLabel.userInteractionEnabled = NO;
+    [_diamondBar addSubview:_diamondBalanceLabel];
     
     _diamondPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_diamondPlusButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_plus_icon"] forState:UIControlStateNormal];
-    [_diamondPlusButton addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
-    [assetContainer addSubview:_diamondPlusButton];
+    _diamondPlusButton.userInteractionEnabled = NO;
+    [_diamondBar addSubview:_diamondPlusButton];
+    
+    // Set all layout constraints
+    [_diamondBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(0);
+        make.centerY.mas_equalTo(assetContainer);
+        make.height.mas_equalTo(assetContainer);
+        make.trailing.mas_equalTo(_diamondPlusButton.mas_trailing);
+    }];
+    
+    [diaIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(0);
+        make.centerY.mas_equalTo(_diamondBar);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(26), KDialogAdaptedWidth(26)));
+    }];
+    
+    [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(diaIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
+        make.centerY.mas_equalTo(_diamondBar);
+    }];
+    
     [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(_diamondBalanceLabel.mas_trailing).offset(KDialogAdaptedWidth(4));
-        make.centerY.mas_equalTo(assetContainer);
+        make.centerY.mas_equalTo(_diamondBar);
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
     }];
     
     // 祝灵珠栏 (挂右)
+    _keyBar = [UIButton buttonWithType:UIButtonTypeCustom];
+    _keyBar.backgroundColor = [UIColor clearColor];
+    [_keyBar addTarget:self action:@selector(openPurchaseDialog) forControlEvents:UIControlEventTouchUpInside];
+    [assetContainer addSubview:_keyBar];
+    
     _keyPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_keyPlusButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_plus_icon"] forState:UIControlStateNormal];
-    [_keyPlusButton addTarget:self action:@selector(openPurchaseDialog) forControlEvents:UIControlEventTouchUpInside];
-    [assetContainer addSubview:_keyPlusButton];
-    [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(0);
-        make.centerY.mas_equalTo(assetContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
-    }];
+    _keyPlusButton.userInteractionEnabled = NO;
+    [_keyBar addSubview:_keyPlusButton];
     
     _keyBalanceLabel = [[UILabel alloc] init];
     _keyBalanceLabel.textColor = kWhiteColor;
     _keyBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
     _keyBalanceLabel.text = @"0";
-    [assetContainer addSubview:_keyBalanceLabel];
-    [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(_keyPlusButton.mas_leading).offset(-KDialogAdaptedWidth(4));
-        make.centerY.mas_equalTo(assetContainer);
-    }];
+    _keyBalanceLabel.userInteractionEnabled = NO;
+    [_keyBar addSubview:_keyBalanceLabel];
     
     UIImageView *keyIcon = [[UIImageView alloc] init];
     keyIcon.image = [UIImage imageNamed:@"theme_game_one_purchase_key_icon"];
     keyIcon.contentMode = UIViewContentModeScaleAspectFit;
-    [assetContainer addSubview:keyIcon];
+    keyIcon.userInteractionEnabled = NO;
+    [_keyBar addSubview:keyIcon];
+    
+    // Set all layout constraints
+    [_keyBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.mas_equalTo(0);
+        make.centerY.mas_equalTo(assetContainer);
+        make.height.mas_equalTo(assetContainer);
+        make.leading.mas_equalTo(keyIcon.mas_leading);
+    }];
+    
+    [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.mas_equalTo(0);
+        make.centerY.mas_equalTo(_keyBar);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
+    }];
+    
+    [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.mas_equalTo(_keyPlusButton.mas_leading).offset(-KDialogAdaptedWidth(4));
+        make.centerY.mas_equalTo(_keyBar);
+    }];
+    
     [keyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(_keyBalanceLabel.mas_leading).offset(-KDialogAdaptedWidth(4));
-        make.centerY.mas_equalTo(assetContainer);
+        make.centerY.mas_equalTo(_keyBar);
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(24), KDialogAdaptedWidth(24)));
     }];
 }
