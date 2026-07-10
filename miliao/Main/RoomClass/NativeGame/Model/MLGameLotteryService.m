@@ -2,6 +2,7 @@
 #import "MLNetWorkHelper.h"
 #import <MJExtension.h>
 #import "UserManager.h"
+#import "Global.h"
 
 // 声明全局 API 域名宏 (如果未自动引入则使用 PrefixHeader 中的全局定义)
 #ifndef VERSION_HTTPS_SERVER

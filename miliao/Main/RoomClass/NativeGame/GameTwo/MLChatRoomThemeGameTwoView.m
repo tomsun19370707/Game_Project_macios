@@ -520,8 +520,10 @@
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
     
+    NSInteger queryTypeId = (self.typeId == 6 || self.typeId == 8) ? 7 : self.typeId;
+    
     // 2. 获取详情和价格
-    [MLGameLotteryService getRoomDetailWithTypeId:self.typeId success:^(MLGameLotteryInfoModel *model) {
+    [MLGameLotteryService getRoomDetailWithTypeId:queryTypeId success:^(MLGameLotteryInfoModel *model) {
         if (!wself) return;
         if (!model || model == (id)[NSNull null] || ![model isKindOfClass:[MLGameLotteryInfoModel class]]) {
             return;
@@ -532,7 +534,7 @@
     }];
     
     // 3. 获取 9 个灵果大奖的奖池配图
-    [MLGameLotteryService getPrizesWithTypeId:self.typeId success:^(NSArray<MLGameDrawResultModel *> *list) {
+    [MLGameLotteryService getPrizesWithTypeId:queryTypeId success:^(NSArray<MLGameDrawResultModel *> *list) {
         if (!wself) return;
         if (!list || ![list isKindOfClass:[NSArray class]]) {
             return;
@@ -550,7 +552,7 @@
             return;
         }
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == wself.typeId || model.typeId == 2 || model.typeId == 4 || [model.name containsString:@"神木"]) {
+            if (model.typeId == queryTypeId || model.typeId == 2 || model.typeId == 4 || [model.name containsString:@"神木"]) {
                 wself.consumeValue = model.consume_diamonds;
                 wself.produceValue = model.produce_diamonds;
                 wself.fortuneLabel.text = [NSString stringWithFormat:@"今日运势: %.1f%%", model.profit_rate / 100.0f];
@@ -609,7 +611,8 @@
     
     // 4. 调用接口发包
     WeakSelf
-    [MLGameLotteryService drawWithTypeId:self.typeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
+    NSInteger queryTypeId = (self.typeId == 6 || self.typeId == 8) ? 7 : self.typeId;
+    [MLGameLotteryService drawWithTypeId:queryTypeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
         MLChatRoomThemeGameTwoResultView *activeResultView = nil;
         for (UIView *sub in wself.superview.subviews) {
             if ([sub isKindOfClass:[MLChatRoomThemeGameTwoResultView class]]) {
