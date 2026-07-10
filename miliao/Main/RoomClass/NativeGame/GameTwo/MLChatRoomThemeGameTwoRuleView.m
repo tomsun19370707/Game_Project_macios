@@ -7,7 +7,6 @@
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) UITextView *textView;
-@property (nonatomic, strong) UILabel *titleLabel;
 
 @end
 
@@ -50,28 +49,20 @@
     [self addSubview:_bgImageView];
     
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_equalTo(self);
-        make.size.mas_equalTo(CGSizeMake(315, 360));
+        make.bottom.mas_equalTo(0);
+        make.centerX.mas_equalTo(self);
+        make.width.mas_equalTo(self).offset(-KDialogAdaptedWidth(32)).priorityMedium();
+        make.width.mas_lessThanOrEqualTo(KDialogAdaptedWidth(344));
+        make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1326.0 / 750.0);
     }];
-    
-    _titleLabel = [[UILabel alloc] init];
-    _titleLabel.text = @"神木规则";
-    _titleLabel.textColor = mHexRGB(0xFFE400);
-    _titleLabel.font = KFontBoldA(18);
-    [_bgImageView addSubview:_titleLabel];
-    [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(18);
-        make.centerX.mas_equalTo(_bgImageView);
-    }];
-    
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_closeButton setImage:[UIImage imageNamed:@"theme_game_two_rule_back"] forState:UIControlStateNormal];
+    [_closeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_rule_back"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_closeButton];
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(28);
-        make.leading.mas_equalTo(32);
-        make.size.mas_equalTo(CGSizeMake(34, 34));
+        make.top.mas_equalTo(KDialogAdaptedWidth(28));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(32));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(44), KDialogAdaptedWidth(44)));
     }];
     
     _textView = [[UITextView alloc] init];
@@ -92,10 +83,10 @@
     [_bgImageView addSubview:_textView];
     
     [_textView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_titleLabel.mas_bottom).offset(15);
-        make.leading.mas_equalTo(16);
-        make.trailing.mas_equalTo(-16);
-        make.bottom.mas_equalTo(-20);
+        make.top.mas_equalTo(KDialogAdaptedWidth(120));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(28));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(28));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(40));
     }];
 }
 
