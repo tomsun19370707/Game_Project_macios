@@ -34,7 +34,6 @@
 @property (nonatomic, strong) UIButton *optOtherButton;
 @property (nonatomic, strong) NSArray<UIButton *> *optButtons;
 
-@property (nonatomic, strong) UITextField *inputTextField;
 @property (nonatomic, strong) UIButton *confirmButton;
 @property (nonatomic, strong) UILabel *costLabel;
 
@@ -82,7 +81,7 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeClick)];
     [_maskView addGestureRecognizer:tap];
     
-    // 背景外框 (315 * 360 pt)
+    // 背景外框 (315 * 312 pt)
     _bgImageView = [[UIImageView alloc] init];
     _bgImageView.image = [UIImage imageNamed:@"theme_game_two_purchase_bg"];
     if (_bgImageView.image == nil) {
@@ -93,16 +92,16 @@
     [self addSubview:_bgImageView];
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(self);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(315), KDialogAdaptedWidth(360)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(315), KDialogAdaptedWidth(312)));
     }];
     
-    // 标题切图 (theme_game_two_purchase_title.png, 164 * 45 pt, 距顶 18 pt, 水平居中)
+    // 标题切图 (theme_game_two_purchase_title.png, 164 * 45 pt, 距顶 12 pt, 水平居中)
     _titleImageView = [[UIImageView alloc] init];
     _titleImageView.image = [UIImage imageNamed:@"theme_game_two_purchase_title"];
     _titleImageView.contentMode = UIViewContentModeScaleAspectFit;
     [_bgImageView addSubview:_titleImageView];
     [_titleImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(18));
+        make.top.mas_equalTo(KDialogAdaptedWidth(12));
         make.centerX.mas_equalTo(_bgImageView);
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(164), KDialogAdaptedWidth(45)));
     }];
@@ -128,7 +127,7 @@
     [_diamondBarView addTarget:self action:@selector(diamondPlusClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_diamondBarView];
     [_diamondBarView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_titleImageView.mas_bottom).offset(KDialogAdaptedWidth(14));
+        make.top.mas_equalTo(_titleImageView.mas_bottom).offset(KDialogAdaptedWidth(10));
         make.trailing.mas_equalTo(_bgImageView.mas_centerX).offset(-KDialogAdaptedWidth(20));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(86), KDialogAdaptedWidth(24)));
     }];
@@ -173,7 +172,7 @@
     _keyBarView.contentMode = UIViewContentModeScaleToFill;
     [_bgImageView addSubview:_keyBarView];
     [_keyBarView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_titleImageView.mas_bottom).offset(KDialogAdaptedWidth(14));
+        make.top.mas_equalTo(_titleImageView.mas_bottom).offset(KDialogAdaptedWidth(10));
         make.leading.mas_equalTo(_bgImageView.mas_centerX).offset(KDialogAdaptedWidth(20));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(86), KDialogAdaptedWidth(24)));
     }];
@@ -209,7 +208,7 @@
     _boardLeftView.contentMode = UIViewContentModeScaleToFill;
     [_bgImageView addSubview:_boardLeftView];
     [_boardLeftView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_diamondBarView.mas_bottom).offset(KDialogAdaptedWidth(24));
+        make.top.mas_equalTo(_diamondBarView.mas_bottom).offset(KDialogAdaptedWidth(16));
         make.trailing.mas_equalTo(_bgImageView.mas_centerX).offset(-KDialogAdaptedWidth(24));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(97), KDialogAdaptedWidth(100)));
     }];
@@ -220,7 +219,7 @@
     _boardGiftView.contentMode = UIViewContentModeScaleToFill;
     [_bgImageView addSubview:_boardGiftView];
     [_boardGiftView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_diamondBarView.mas_bottom).offset(KDialogAdaptedWidth(24));
+        make.top.mas_equalTo(_diamondBarView.mas_bottom).offset(KDialogAdaptedWidth(16));
         make.leading.mas_equalTo(_bgImageView.mas_centerX).offset(KDialogAdaptedWidth(24));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(97), KDialogAdaptedWidth(100)));
     }];
@@ -238,7 +237,7 @@
     }];
     
     // 4档快捷选择按钮组 (1 / 10 / 100 / 其它)
-    // 单按钮宽 60 pt，高 24 pt，水平间距 8 pt. 距顶 220 pt
+    // 单按钮宽 60 pt，高 24 pt，水平间距 8 pt. 距顶 221 pt
     _optOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_optOneButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_one"] forState:UIControlStateNormal];
     _optOneButton.alpha = 1.0f;
@@ -270,48 +269,27 @@
     CGFloat gap = KDialogAdaptedWidth(8.0f);
     
     [_optTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(220));
+        make.top.mas_equalTo(KDialogAdaptedWidth(221));
         make.trailing.mas_equalTo(_bgImageView.mas_centerX).offset(-gap/2.0);
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
     }];
     
     [_optOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(220));
+        make.top.mas_equalTo(KDialogAdaptedWidth(221));
         make.trailing.mas_equalTo(_optTenButton.mas_leading).offset(-gap);
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
     }];
     
     [_optHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(220));
+        make.top.mas_equalTo(KDialogAdaptedWidth(221));
         make.leading.mas_equalTo(_bgImageView.mas_centerX).offset(gap/2.0);
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
     }];
     
     [_optOtherButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(220));
+        make.top.mas_equalTo(KDialogAdaptedWidth(221));
         make.leading.mas_equalTo(_optHundredButton.mas_trailing).offset(gap);
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
-    }];
-    
-    // 自定义输入框 (宽 180 pt, 高 32 pt)
-    _inputTextField = [[UITextField alloc] init];
-    _inputTextField.keyboardType = UIKeyboardTypeNumberPad;
-    _inputTextField.placeholder = @"请输入购买数量";
-    _inputTextField.textColor = kWhiteColor;
-    _inputTextField.font = [UIFont systemFontOfSize:13];
-    _inputTextField.textAlignment = NSTextAlignmentCenter;
-    _inputTextField.backgroundColor = [UIColor colorWithWhite:1 alpha:0.05];
-    setViewCorner(_inputTextField, 4);
-    _inputTextField.hidden = YES;
-    _inputTextField.delegate = self;
-    [_inputTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-    _inputTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"请输入购买数量" attributes:@{NSForegroundColorAttributeName: [UIColor colorWithWhite:1 alpha:0.3]}];
-    [_bgImageView addSubview:_inputTextField];
-    
-    [_inputTextField mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_optOneButton.mas_bottom).offset(KDialogAdaptedWidth(10));
-        make.centerX.mas_equalTo(_bgImageView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(180), KDialogAdaptedWidth(32)));
     }];
     
     // 消耗钻石提示 Label
@@ -321,20 +299,20 @@
     _costLabel.text = @"消耗 10 钻石";
     [_bgImageView addSubview:_costLabel];
     
-    // 确认购买按钮 (theme_game_two_purchase_confirm.png, 宽 208, 高 42. 距底端 24 pt)
+    // 确认购买按钮 (theme_game_two_purchase_confirm.png, 宽 208, 高 40. 距底端 16 pt)
     _confirmButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_confirmButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_confirm"] forState:UIControlStateNormal];
     [_confirmButton addTarget:self action:@selector(confirmPurchaseClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_confirmButton];
     
     [_confirmButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(-KDialogAdaptedWidth(24));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(16));
         make.centerX.mas_equalTo(_bgImageView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(208), KDialogAdaptedWidth(42)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(208), KDialogAdaptedWidth(40)));
     }];
     
     [_costLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_confirmButton.mas_top).offset(-KDialogAdaptedWidth(8));
+        make.bottom.mas_equalTo(_confirmButton.mas_top).offset(-KDialogAdaptedWidth(6));
         make.centerX.mas_equalTo(_bgImageView);
     }];
 }
@@ -359,9 +337,6 @@
 
 - (void)updateCostUI {
     NSInteger costCount = self.selectedCount;
-    if (_optOtherButton.selected) {
-        costCount = [_inputTextField.text integerValue];
-    }
     _costLabel.text = [NSString stringWithFormat:@"消耗 %ld 钻石", (long)(costCount * 10)];
 }
 
@@ -374,53 +349,55 @@
     
     if (sender == _optOneButton) {
         self.selectedCount = 1;
-        _inputTextField.hidden = YES;
-        [self.inputTextField resignFirstResponder];
+        [self updateCostUI];
     } else if (sender == _optTenButton) {
         self.selectedCount = 10;
-        _inputTextField.hidden = YES;
-        [self.inputTextField resignFirstResponder];
+        [self updateCostUI];
     } else if (sender == _optHundredButton) {
         self.selectedCount = 100;
-        _inputTextField.hidden = YES;
-        [self.inputTextField resignFirstResponder];
+        [self updateCostUI];
     } else if (sender == _optOtherButton) {
-        _inputTextField.hidden = NO;
-        [self.inputTextField becomeFirstResponder];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"自定义购买数量" message:@"请输入购买数量" preferredStyle:UIAlertControllerStyleAlert];
+        [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+            textField.placeholder = @"输入要购买的钥匙数量";
+            textField.keyboardType = UIKeyboardTypeNumberPad;
+        }];
+        WeakSelf
+        UIAlertAction *confirm = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            __strong typeof(wself) strongSelf = wself;
+            if (!strongSelf) return;
+            UITextField *textField = alert.textFields.firstObject;
+            NSString *text = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            NSInteger count = [text integerValue];
+            if (count <= 0) {
+                [SVProgressHUD showErrorWithStatus:@"购买数量必须大于0"];
+                return;
+            }
+            if (count > 9999) {
+                [SVProgressHUD showErrorWithStatus:@"单次购买不能超过 9999 个"];
+                return;
+            }
+            strongSelf.selectedCount = count;
+            [strongSelf updateCostUI];
+        }];
+        UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil];
+        [alert addAction:confirm];
+        [alert addAction:cancel];
+        
+        [[UIViewController currentViewController] presentViewController:alert animated:YES completion:nil];
     }
-    
-    [self updateCostUI];
-}
-
-#pragma mark - 输入变化
-- (void)textFieldDidChange:(UITextField *)textField {
-    [self updateCostUI];
-}
-
-#pragma mark - UITextFieldDelegate
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-    NSCharacterSet *numbers = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789"] invertedSet];
-    NSString *filtered = [[string componentsSeparatedByCharactersInSet:numbers] componentsJoinedByString:@""];
-    return [string isEqualToString:filtered];
 }
 
 #pragma mark - 执行购买
 - (void)confirmPurchaseClick {
-    NSInteger buyCount = 0;
-    
-    if (_optOtherButton.selected) {
-        NSString *inputStr = [_inputTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (inputStr.length == 0 || [inputStr integerValue] == 0) {
-            [SVProgressHUD showErrorWithStatus:@"请输入购买数量"];
-            return;
-        }
-        buyCount = [inputStr integerValue];
-        if (buyCount > 9999) {
-            [SVProgressHUD showErrorWithStatus:@"单次购买不能超过 9999 个"];
-            return;
-        }
-    } else {
-        buyCount = self.selectedCount;
+    NSInteger buyCount = self.selectedCount;
+    if (buyCount <= 0) {
+        [SVProgressHUD showErrorWithStatus:@"请选择购买数量"];
+        return;
+    }
+    if (buyCount > 9999) {
+        [SVProgressHUD showErrorWithStatus:@"单次购买不能超过 9999 个"];
+        return;
     }
     
     NSInteger costDiamonds = buyCount * 10;
