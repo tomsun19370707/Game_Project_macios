@@ -106,16 +106,16 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(164), KDialogAdaptedWidth(45)));
     }];
     
-    // 右上角关闭按钮 (theme_game_two_purchase_back.png, 36 * 36 pt, 距顶 16 pt, 距右 16 pt)
+    // 右上角关闭按钮 (theme_game_two_purchase_back.png, 72 * 72 pt, 距顶 8 pt, 距右 8 pt)
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_closeButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_back"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_closeButton];
     
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(16));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
+        make.top.mas_equalTo(KDialogAdaptedWidth(8));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(8));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(72), KDialogAdaptedWidth(72)));
     }];
     
     // 资产栏背景切图 (使用 resizableImage 确保拉伸不变形)
