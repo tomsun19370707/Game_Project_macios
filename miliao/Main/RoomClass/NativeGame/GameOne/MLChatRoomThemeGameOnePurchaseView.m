@@ -290,7 +290,7 @@
     }];
     
     [_costLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_confirmButton.mas_top).offset(-KDialogAdaptedWidth(8));
+        make.bottom.mas_equalTo(_confirmButton.mas_top).offset(KDialogAdaptedWidth(13)); // 再往下移动 5 pt (原 8)
         make.centerX.mas_equalTo(_bgImageView);
     }];
 }

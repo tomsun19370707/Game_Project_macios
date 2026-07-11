@@ -1,3 +1,4 @@
+
 #import "MLChatRoomThemeGameTwoPurchaseView.h"
 #import "MLGameLotteryService.h"
 #import "Global.h"
@@ -106,16 +107,21 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(164), KDialogAdaptedWidth(45)));
     }];
     
-    // 右上角关闭按钮 (theme_game_two_purchase_back.png, 72 * 72 pt, 距顶 8 pt, 距右 8 pt)
+    // 右上角关闭按钮 (theme_game_two_purchase_back.png, 50 * 50 pt, 距顶 10 pt, 距右 10 pt)
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_closeButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_back"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
+    _closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
+    _closeButton.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
+    _closeButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    CGFloat closeInset = KDialogAdaptedWidth(7);
+    _closeButton.imageEdgeInsets = UIEdgeInsetsMake(closeInset, closeInset, closeInset, closeInset);
     [_bgImageView addSubview:_closeButton];
     
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(8));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(8));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(72), KDialogAdaptedWidth(72)));
+        make.top.mas_equalTo(KDialogAdaptedWidth(10));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(10));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(50), KDialogAdaptedWidth(50)));
     }];
     
     // 资产栏背景切图 (使用 resizableImage 确保拉伸不变形)
@@ -154,10 +160,10 @@
     
     _diamondBalanceLabel = [[UILabel alloc] init];
     _diamondBalanceLabel.textColor = kWhiteColor;
-    _diamondBalanceLabel.font = [UIFont boldSystemFontOfSize:11];
+    _diamondBalanceLabel.font = [UIFont boldSystemFontOfSize:13];
     _diamondBalanceLabel.textAlignment = NSTextAlignmentCenter;
-    _diamondBalanceLabel.adjustsFontSizeToFitWidth = YES;
-    _diamondBalanceLabel.minimumScaleFactor = 0.5;
+    _diamondBalanceLabel.adjustsFontSizeToFitWidth = NO;
+    _diamondBalanceLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     _diamondBalanceLabel.text = @"0";
     [_diamondBarView addSubview:_diamondBalanceLabel];
     [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -189,10 +195,10 @@
     
     _keyBalanceLabel = [[UILabel alloc] init];
     _keyBalanceLabel.textColor = kWhiteColor;
-    _keyBalanceLabel.font = [UIFont boldSystemFontOfSize:11];
+    _keyBalanceLabel.font = [UIFont boldSystemFontOfSize:13];
     _keyBalanceLabel.textAlignment = NSTextAlignmentCenter;
-    _keyBalanceLabel.adjustsFontSizeToFitWidth = YES;
-    _keyBalanceLabel.minimumScaleFactor = 0.5;
+    _keyBalanceLabel.adjustsFontSizeToFitWidth = NO;
+    _keyBalanceLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     _keyBalanceLabel.text = @"0";
     [_keyBarView addSubview:_keyBalanceLabel];
     [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -201,30 +207,30 @@
         make.centerY.mas_equalTo(_keyBarView);
     }];
     
-    // 中部商品展示框组 (对齐 Android 相邻间距与位置)
-    // 左侧钥匙展示背板: theme_game_two_purchase_frame_left.png (宽 97, 高 100 pt)
+    // 中部商品展示框组 (对齐 Android 相邻间距与位置，缩小10%且完全对称居中)
+    // 左侧钥匙展示背板: theme_game_two_purchase_frame_left.png (原宽 97, 高 100 pt ➔ 现宽 87, 高 90 pt)
     _boardLeftView = [[UIImageView alloc] init];
     _boardLeftView.image = [UIImage imageNamed:@"theme_game_two_purchase_frame_left"];
     _boardLeftView.contentMode = UIViewContentModeScaleToFill;
     [_bgImageView addSubview:_boardLeftView];
     [_boardLeftView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(_diamondBarView.mas_bottom).offset(KDialogAdaptedWidth(16));
-        make.trailing.mas_equalTo(_bgImageView.mas_centerX).offset(-KDialogAdaptedWidth(24));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(97), KDialogAdaptedWidth(100)));
+        make.trailing.mas_equalTo(_bgImageView.mas_centerX).offset(-KDialogAdaptedWidth(20));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(87), KDialogAdaptedWidth(90)));
     }];
     
-    // 右侧礼物赠送背板: theme_game_two_purchase_frame_right.png (宽 97, 高 100 pt)
+    // 右侧礼物赠送背板: theme_game_two_purchase_frame_right.png (原宽 97, 高 100 pt ➔ 现宽 87, 高 90 pt)
     _boardGiftView = [[UIImageView alloc] init];
     _boardGiftView.image = [UIImage imageNamed:@"theme_game_two_purchase_frame_right"];
     _boardGiftView.contentMode = UIViewContentModeScaleToFill;
     [_bgImageView addSubview:_boardGiftView];
     [_boardGiftView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(_diamondBarView.mas_bottom).offset(KDialogAdaptedWidth(16));
-        make.leading.mas_equalTo(_bgImageView.mas_centerX).offset(KDialogAdaptedWidth(24));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(97), KDialogAdaptedWidth(100)));
+        make.leading.mas_equalTo(_bgImageView.mas_centerX).offset(KDialogAdaptedWidth(20));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(87), KDialogAdaptedWidth(90)));
     }];
     
-    // 中间加号 (使用 UILabel 对齐 Android，字体颜色为棕褐色 #B2834E)
+    // 中间加号 (使用 UILabel 对齐 Android，字体颜色为棕褐色 #B2834E，完全居中)
     _plusIconView = [[UILabel alloc] init];
     _plusIconView.text = @"+";
     _plusIconView.textColor = mHexRGB(0xB2834E);
@@ -236,58 +242,57 @@
         make.centerX.mas_equalTo(_bgImageView);
     }];
     
-    // 4档快捷选择按钮组 (1 / 10 / 100 / 其它)
-    // 单按钮宽 60 pt，高 24 pt，水平间距 8 pt. 距顶 221 pt
+    // 4档快捷选择按钮组 (1 / 10 / 100 / 其它，放大 10%，缩小间距，居中对齐，改用 setBackgroundImage 确保切图拉伸铺满)
     _optOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optOneButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_one"] forState:UIControlStateNormal];
+    [_optOneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_purchase_one"] forState:UIControlStateNormal];
     _optOneButton.alpha = 1.0f;
     [_optOneButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_optOneButton];
     
     _optTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optTenButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_ten"] forState:UIControlStateNormal];
+    [_optTenButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_purchase_ten"] forState:UIControlStateNormal];
     _optTenButton.alpha = 0.55f;
     [_optTenButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_optTenButton];
     
     _optHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optHundredButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_hundred"] forState:UIControlStateNormal];
+    [_optHundredButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_purchase_hundred"] forState:UIControlStateNormal];
     _optHundredButton.alpha = 0.55f;
     [_optHundredButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_optHundredButton];
     
     _optOtherButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optOtherButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_other"] forState:UIControlStateNormal];
+    [_optOtherButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_purchase_other"] forState:UIControlStateNormal];
     _optOtherButton.alpha = 0.55f;
     [_optOtherButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_optOtherButton];
     
     _optButtons = @[_optOneButton, _optTenButton, _optHundredButton, _optOtherButton];
     
-    CGFloat btnW = KDialogAdaptedWidth(60.0f);
-    CGFloat btnH = KDialogAdaptedWidth(24.0f);
-    CGFloat gap = KDialogAdaptedWidth(8.0f);
+    CGFloat btnW = KDialogAdaptedWidth(54.0f); // 水平缩短10% (原 60.0f)
+    CGFloat btnH = KDialogAdaptedWidth(35.0f); // 竖直再次增大10% (原 32.0f)
+    CGFloat gap = KDialogAdaptedWidth(4.0f);   // 缩小间距 (原 8.0f，现设为 4.0f)
     
     [_optTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(221));
-        make.trailing.mas_equalTo(_bgImageView.mas_centerX).offset(-gap/2.0);
+        make.top.mas_equalTo(KDialogAdaptedWidth(198)); // 再次往上提 8 pt (原 206.0f)
+        make.trailing.mas_equalTo(_bgImageView.mas_centerX).offset(-gap/2.0); // 居中对齐
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
     }];
     
     [_optOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(221));
+        make.top.mas_equalTo(KDialogAdaptedWidth(198)); // 再次往上提 8 pt (原 206.0f)
         make.trailing.mas_equalTo(_optTenButton.mas_leading).offset(-gap);
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
     }];
     
     [_optHundredButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(221));
-        make.leading.mas_equalTo(_bgImageView.mas_centerX).offset(gap/2.0);
+        make.top.mas_equalTo(KDialogAdaptedWidth(198)); // 再次往上提 8 pt (原 206.0f)
+        make.leading.mas_equalTo(_bgImageView.mas_centerX).offset(gap/2.0); // 居中对齐
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
     }];
     
     [_optOtherButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(221));
+        make.top.mas_equalTo(KDialogAdaptedWidth(198)); // 再次往上提 8 pt (原 206.0f)
         make.leading.mas_equalTo(_optHundredButton.mas_trailing).offset(gap);
         make.size.mas_equalTo(CGSizeMake(btnW, btnH));
     }];
@@ -299,20 +304,20 @@
     _costLabel.text = @"消耗 10 钻石";
     [_bgImageView addSubview:_costLabel];
     
-    // 确认购买按钮 (theme_game_two_purchase_confirm.png, 宽 208, 高 40. 距底端 16 pt)
+    // 确认购买按钮 (theme_game_two_purchase_confirm.png, 宽 188, 高 58. 距底端 26 pt，向上平移 10 pt，改用 setBackgroundImage 确保切图拉伸铺满)
     _confirmButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_confirmButton setImage:[UIImage imageNamed:@"theme_game_two_purchase_confirm"] forState:UIControlStateNormal];
+    [_confirmButton setBackgroundImage:[UIImage imageNamed:@"theme_game_two_purchase_confirm"] forState:UIControlStateNormal];
     [_confirmButton addTarget:self action:@selector(confirmPurchaseClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_confirmButton];
     
     [_confirmButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(-KDialogAdaptedWidth(16));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(26)); // 恢复为 -26 pt，不改变确认按钮本来的位置
         make.centerX.mas_equalTo(_bgImageView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(208), KDialogAdaptedWidth(40)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(188), KDialogAdaptedWidth(58))); // 长度缩短10% (188)，高度再次放大10% (58)
     }];
     
     [_costLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_confirmButton.mas_top).offset(-KDialogAdaptedWidth(6));
+        make.bottom.mas_equalTo(_confirmButton.mas_top).offset(KDialogAdaptedWidth(13)); // 再往下移动 5 pt (原 8)
         make.centerX.mas_equalTo(_bgImageView);
     }];
 }
