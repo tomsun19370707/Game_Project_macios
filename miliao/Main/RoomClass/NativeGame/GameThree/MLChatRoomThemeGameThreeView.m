@@ -321,15 +321,17 @@
 #pragma mark - 8宫格转盘底框容器 (圆形排布布局)
 - (void)layout8GiftCardsInContainer:(UIView *)container {
     static const CGPoint SLOT_CENTERS[] = {
-        {187.5f, 161.0f},   // 1 (0度)
-        {275.52f, 196.18f}, // 2 (45度)
+        {187.5f, 154.0f},   // 1 (0度)
+        {282.59f, 189.11f}, // 2 (45度)
         {312.0f, 298.0f},   // 3 (90度)
-        {275.52f, 399.82f}, // 4 (135度)
+        {282.59f, 406.89f}, // 4 (135度)
         {187.5f, 442.0f},   // 5 (180度)
-        {99.48f, 399.82f},  // 6 (225度)
+        {92.41f, 406.89f},  // 6 (225度)
         {63.0f, 298.0f},    // 7 (270度)
-        {99.48f, 196.18f}   // 8 (315度)
+        {92.41f, 189.11f}   // 8 (315度)
     };
+    
+    NSLog(@"[Antigravity Debug] Slot 1 center coord: {%f, %f}", SLOT_CENTERS[0].x, SLOT_CENTERS[0].y);
     
     for (int i = 0; i < 8; i++) {
         UIView *card = [[UIView alloc] init];
