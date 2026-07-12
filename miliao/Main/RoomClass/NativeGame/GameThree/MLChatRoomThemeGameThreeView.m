@@ -115,29 +115,29 @@
     [_bgImageView addSubview:hudContainer];
     [hudContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.mas_equalTo(_bgImageView);
-        make.height.mas_equalTo(KDialogAdaptedWidth(100));
+        make.height.mas_equalTo(KDialogAdaptedWidth(150));
     }];
 
     // 规则说明按钮 (左侧悬浮, 对齐 375x812 pt 视口)
     _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_ruleButton setImage:[UIImage imageNamed:@"theme_game_three_rule_btn"] forState:UIControlStateNormal];
+    [_ruleButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_rule_btn"] forState:UIControlStateNormal];
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [hudContainer addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(52));
+        make.top.mas_equalTo(KDialogAdaptedWidth(104));
         make.leading.mas_equalTo(KDialogAdaptedWidth(4));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(28)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(67.146f), KDialogAdaptedWidth(30.324f)));
     }];
 
     // 游戏记录按钮 (右侧悬浮, 对齐 375x812 pt 视口)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_recordButton setImage:[UIImage imageNamed:@"theme_game_three_record_btn"] forState:UIControlStateNormal];
+    [_recordButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_record_btn"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [hudContainer addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(52));
+        make.top.mas_equalTo(KDialogAdaptedWidth(104));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(4));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(28)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(67.146f), KDialogAdaptedWidth(30.324f)));
     }];
     
     // 今日运势悬浮条 (挂载在大背景最右上角，飘出面板顶边缘)
@@ -172,7 +172,7 @@
     [_ringImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView.mas_leading).offset(KDialogAdaptedWidth(187.5f));
         make.centerY.mas_equalTo(_bgImageView.mas_top).offset(KDialogAdaptedWidth(298.0f));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(338), KDialogAdaptedWidth(338)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(371.8f), KDialogAdaptedWidth(371.8f)));
     }];
     
     // 吉祥物角色 (同心对齐圆环底板，完全防漂移)
