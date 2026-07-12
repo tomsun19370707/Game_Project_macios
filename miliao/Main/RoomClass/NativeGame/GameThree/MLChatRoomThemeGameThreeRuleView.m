@@ -7,8 +7,6 @@
 @property (nonatomic, strong) UIView *maskView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIButton *closeButton;
-@property (nonatomic, strong) UITextView *textView;
-@property (nonatomic, strong) UILabel *titleLabel;
 
 @end
 
@@ -41,8 +39,8 @@
     [_maskView addGestureRecognizer:tap];
     
     _bgImageView = [[UIImageView alloc] init];
-    // 占位资源使用玩法二规则背景
-    _bgImageView.image = [UIImage imageNamed:@"theme_game_two_rule_clean"];
+    // 使用玩法三规则图片背景 (包含全部预渲染好的标题与规则文字)
+    _bgImageView.image = [UIImage imageNamed:@"theme_game_three_rule_clean"];
     if (_bgImageView.image == nil) {
          _bgImageView.backgroundColor = mHexRGB(0x111C24); // 玩法三深靛蓝底色
     }
@@ -52,58 +50,24 @@
     [self addSubview:_bgImageView];
     
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_equalTo(self);
-        make.size.mas_equalTo(CGSizeMake(315, 360));
-    }];
-    
-    _titleLabel = [[UILabel alloc] init];
-    _titleLabel.text = @"星辰规则";
-    _titleLabel.textColor = mHexRGB(0xFFE400);
-    _titleLabel.font = KFontBoldA(18);
-    [_bgImageView addSubview:_titleLabel];
-    [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(18);
-        make.centerX.mas_equalTo(_bgImageView);
+        make.bottom.leading.trailing.mas_equalTo(self);
+        make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1312.0 / 750.0);
     }];
     
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _closeButton.backgroundColor = [UIColor clearColor];
-    // 占位使用玩法一/二返回按钮
-    [_closeButton setImage:[UIImage imageNamed:@"theme_game_two_rule_back"] forState:UIControlStateNormal];
-    if ([_closeButton imageForState:UIControlStateNormal] == nil) {
+    // 使用玩法三专用返回按钮
+    [_closeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_rule_back"] forState:UIControlStateNormal];
+    if ([_closeButton backgroundImageForState:UIControlStateNormal] == nil) {
         [_closeButton setTitle:@"✕" forState:UIControlStateNormal];
         [_closeButton setTitleColor:kWhiteColor forState:UIControlStateNormal];
     }
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_closeButton];
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(28);
-        make.leading.mas_equalTo(32);
-        make.size.mas_equalTo(CGSizeMake(34, 34));
-    }];
-    
-    _textView = [[UITextView alloc] init];
-    _textView.backgroundColor = [UIColor clearColor];
-    _textView.textColor = kWhiteColor;
-    _textView.font = KFontA(13);
-    _textView.editable = NO;
-    _textView.selectable = NO;
-    
-    NSString *ruleText = @"【玩法说明】\n"
-                          "1. 星辰序章（玩法三）每次启航将消耗指定数量的钥匙代币。\n"
-                          "2. 玩家可以点击底部的“启航1次”、“启航10次”、“启航100次”发起探索。\n"
-                          "3. 启航后会播放星辰旋转动画，减速停靠在最终落点，之后弹出结算页面并刷新余额。\n\n"
-                          "【星辰奖池】\n"
-                          "1. 星辰转盘上分布着 18 个星辰格子，对应当前的 18 个稀有大奖。\n"
-                          "2. 中奖概率和奖励配置完全遵循后台游戏规则。";
-    _textView.text = ruleText;
-    [_bgImageView addSubview:_textView];
-    
-    [_textView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_titleLabel.mas_bottom).offset(15);
-        make.leading.mas_equalTo(16);
-        make.trailing.mas_equalTo(-16);
-        make.bottom.mas_equalTo(-20);
+        make.top.mas_equalTo(KDialogAdaptedWidth(28));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(18));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(51), KDialogAdaptedWidth(51)));
     }];
 }
 

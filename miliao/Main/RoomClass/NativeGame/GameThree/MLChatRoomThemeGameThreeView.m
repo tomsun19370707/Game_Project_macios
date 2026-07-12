@@ -188,6 +188,7 @@
     // 8宫格转盘底框容器 (全屏等比对齐背景图)
     UIView *cardsContainer = [[UIView alloc] init];
     cardsContainer.backgroundColor = [UIColor clearColor];
+    cardsContainer.userInteractionEnabled = NO;
     [_bgImageView addSubview:cardsContainer];
     [cardsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(_bgImageView);
