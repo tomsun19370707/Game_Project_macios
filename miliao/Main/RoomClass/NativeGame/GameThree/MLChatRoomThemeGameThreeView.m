@@ -232,36 +232,40 @@
     diaIcon.image = [UIImage imageNamed:@"theme_game_three_diamond_icon"];
     [_diamondBarView addSubview:diaIcon];
     [diaIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(KDialogAdaptedWidth(6));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(3));
         make.centerY.mas_equalTo(_diamondBarView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22.4f), KDialogAdaptedWidth(22.4f)));
-    }];
-    
-    _diamondBalanceLabel = [[UILabel alloc] init];
-    _diamondBalanceLabel.textColor = kWhiteColor;
-    _diamondBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
-    _diamondBalanceLabel.text = @"0";
-    _diamondBalanceLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [_diamondBarView addSubview:_diamondBalanceLabel];
-    [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(diaIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
-        make.trailing.mas_equalTo(_diamondBarView.mas_trailing).offset(-KDialogAdaptedWidth(46.4f));
-        make.centerY.mas_equalTo(_diamondBarView);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(20.0f), KDialogAdaptedWidth(20.0f)));
     }];
     
     _diamondPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_diamondPlusButton setImage:[UIImage imageNamed:@"theme_game_three_plus_icon"] forState:UIControlStateNormal];
     _diamondPlusButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
     _diamondPlusButton.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
-    CGFloat diaPlusInset = KDialogAdaptedWidth(8.2f);
+    CGFloat diaPlusInset = KDialogAdaptedWidth(4.0f);
     _diamondPlusButton.imageEdgeInsets = UIEdgeInsetsMake(diaPlusInset, diaPlusInset, diaPlusInset, diaPlusInset);
     [_diamondPlusButton addTarget:self action:@selector(plusClick) forControlEvents:UIControlEventTouchUpInside];
     [_diamondBarView addSubview:_diamondPlusButton];
     [_diamondPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(KDialogAdaptedWidth(2.2f));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(1.0f));
         make.centerY.mas_equalTo(_diamondBarView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36.4f), KDialogAdaptedWidth(36.4f)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(28.0f), KDialogAdaptedWidth(28.0f)));
     }];
+    
+    _diamondBalanceLabel = [[UILabel alloc] init];
+    _diamondBalanceLabel.textColor = kWhiteColor;
+    _diamondBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(14)];
+    _diamondBalanceLabel.text = @"0";
+    _diamondBalanceLabel.lineBreakMode = NSLineBreakByClipping;
+    [_diamondBarView addSubview:_diamondBalanceLabel];
+    [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(diaIcon.mas_trailing).offset(KDialogAdaptedWidth(2));
+        make.trailing.mas_equalTo(_diamondPlusButton.mas_leading).offset(-KDialogAdaptedWidth(1));
+        make.centerY.mas_equalTo(_diamondBarView);
+    }];
+    
+    _diamondBarView.userInteractionEnabled = YES;
+    UITapGestureRecognizer *diaTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(plusClick)];
+    [_diamondBarView addGestureRecognizer:diaTap];
     
     // 钥匙余额栏 (右对齐，距底盘右边缘 18 pt，悬浮在抽奖容器上方 18 pt)
     _keyBarView = [[UIView alloc] init];
@@ -279,36 +283,40 @@
     keyIcon.image = [UIImage imageNamed:@"theme_game_three_purchase_key_icon"];
     [_keyBarView addSubview:keyIcon];
     [keyIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(KDialogAdaptedWidth(6));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(3));
         make.centerY.mas_equalTo(_keyBarView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(21.0f), KDialogAdaptedWidth(21.0f)));
-    }];
-    
-    _keyBalanceLabel = [[UILabel alloc] init];
-    _keyBalanceLabel.textColor = kWhiteColor;
-    _keyBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
-    _keyBalanceLabel.text = @"0";
-    _keyBalanceLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [_keyBarView addSubview:_keyBalanceLabel];
-    [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(keyIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
-        make.trailing.mas_equalTo(_keyBarView.mas_trailing).offset(-KDialogAdaptedWidth(46.4f));
-        make.centerY.mas_equalTo(_keyBarView);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(20.0f), KDialogAdaptedWidth(20.0f)));
     }];
     
     _keyPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_keyPlusButton setImage:[UIImage imageNamed:@"theme_game_three_plus_icon"] forState:UIControlStateNormal];
     _keyPlusButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
     _keyPlusButton.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
-    CGFloat keyPlusInset = KDialogAdaptedWidth(8.2f);
+    CGFloat keyPlusInset = KDialogAdaptedWidth(4.0f);
     _keyPlusButton.imageEdgeInsets = UIEdgeInsetsMake(keyPlusInset, keyPlusInset, keyPlusInset, keyPlusInset);
     [_keyPlusButton addTarget:self action:@selector(openPurchaseDialog) forControlEvents:UIControlEventTouchUpInside];
     [_keyBarView addSubview:_keyPlusButton];
     [_keyPlusButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(KDialogAdaptedWidth(2.2f));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(1.0f));
         make.centerY.mas_equalTo(_keyBarView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36.4f), KDialogAdaptedWidth(36.4f)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(28.0f), KDialogAdaptedWidth(28.0f)));
     }];
+    
+    _keyBalanceLabel = [[UILabel alloc] init];
+    _keyBalanceLabel.textColor = kWhiteColor;
+    _keyBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(14)];
+    _keyBalanceLabel.text = @"0";
+    _keyBalanceLabel.lineBreakMode = NSLineBreakByClipping;
+    [_keyBarView addSubview:_keyBalanceLabel];
+    [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(keyIcon.mas_trailing).offset(KDialogAdaptedWidth(2));
+        make.trailing.mas_equalTo(_keyPlusButton.mas_leading).offset(-KDialogAdaptedWidth(1));
+        make.centerY.mas_equalTo(_keyBarView);
+    }];
+    
+    _keyBarView.userInteractionEnabled = YES;
+    UITapGestureRecognizer *keyTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openPurchaseDialog)];
+    [_keyBarView addGestureRecognizer:keyTap];
     
     // 一星纳福 (1次 - 底部靠左)
     _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -442,7 +450,11 @@
             diamondDouble = [diamondVal doubleValue];
         }
         NSInteger diamondInt = (NSInteger)diamondDouble;
-        wself.diamondBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)diamondInt];
+        NSString *diamondStr = [NSString stringWithFormat:@"%ld", (long)diamondInt];
+        if (diamondStr.length > 6) {
+            diamondStr = [NSString stringWithFormat:@"%@...", [diamondStr substringToIndex:6]];
+        }
+        wself.diamondBalanceLabel.text = diamondStr;
         wself.localKeyBalance = moneyModel.lottery_coin;
         [wself updateBalanceUI];
     } failure:^(NSError *error) {
@@ -517,7 +529,11 @@
 }
 
 - (void)updateBalanceUI {
-    _keyBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)_localKeyBalance];
+    NSString *keyStr = [NSString stringWithFormat:@"%ld", (long)_localKeyBalance];
+    if (keyStr.length > 6) {
+        keyStr = [NSString stringWithFormat:@"%@...", [keyStr substringToIndex:6]];
+    }
+    _keyBalanceLabel.text = keyStr;
 }
 
 #pragma mark - 交互点击与抽奖逻辑

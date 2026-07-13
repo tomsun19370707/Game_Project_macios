@@ -2,11 +2,9 @@
 #import "MLGameLotteryService.h"
 #import "CFMWalletDiamondRechargeVc.h"
 #import "Global.h"
-#import <objc/runtime.h>
 
 @interface MLChatRoomThemeGameThreePurchaseView ()
 
-@property (nonatomic, strong) MLGameLotteryInfoModel *infoModel;
 @property (nonatomic, copy) void(^purchaseSuccessBlock)(NSInteger);
 
 @property (nonatomic, strong) UIView *maskView;
@@ -34,8 +32,9 @@
 @property (nonatomic, strong) UIButton *optOtherButton;
 @property (nonatomic, strong) NSArray<UIButton *> *optButtons;
 
+@property (nonatomic, strong) UILabel *selectedCountLabel; // 选定数量指示 Label
+
 @property (nonatomic, strong) UIButton *confirmButton;
-@property (nonatomic, strong) UILabel *costLabel;
 
 @property (nonatomic, assign) NSInteger selectedCount; // 选择购买的钥匙数量
 @property (nonatomic, assign) NSInteger localDiamonds; // 本地钻石余额
@@ -57,10 +56,8 @@
                     infoModel:(MLGameLotteryInfoModel *)info 
              purchaseSuccess:(void(^)(NSInteger))success {
     if (self = [super initWithFrame:frame]) {
-        self.infoModel = info;
         self.purchaseSuccessBlock = success;
         self.selectedCount = 1; // 默认买1个
-        self.optButtons = [NSMutableArray array];
         
         [self setupUI];
         [self loadUserMoney];
@@ -105,14 +102,14 @@
     
     // Close button
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_closeButton setImage:[UIImage imageNamed:@"theme_game_three_purchase_back"] forState:UIControlStateNormal];
+    [_closeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_purchase_back"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
     [hudContainer addSubview:_closeButton];
     
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(64));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(28));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
+        make.top.mas_equalTo(KDialogAdaptedWidth(59));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(23));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(42), KDialogAdaptedWidth(42)));
     }];
     
     // Balances Container
@@ -212,7 +209,7 @@
     UIView *gameplayContainer = [[UIView alloc] init];
     [_bgImageView addSubview:gameplayContainer];
     [gameplayContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(hudContainer.mas_bottom).offset(KDialogAdaptedWidth(72));
+        make.top.mas_equalTo(hudContainer.mas_bottom).offset(KDialogAdaptedWidth(36));
         make.centerX.mas_equalTo(_bgImageView);
         make.width.mas_equalTo(KDialogAdaptedWidth(296)); // 120 + 56 + 120 = 296
         make.height.mas_equalTo(KDialogAdaptedWidth(120));
@@ -249,44 +246,44 @@
     UIView *actionContainer = [[UIView alloc] init];
     [_bgImageView addSubview:actionContainer];
     [actionContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(gameplayContainer.mas_bottom).offset(KDialogAdaptedWidth(48));
+        make.top.mas_equalTo(gameplayContainer.mas_bottom).offset(KDialogAdaptedWidth(24));
         make.leading.trailing.bottom.mas_equalTo(0);
     }];
     
     // 4 option buttons
     _optOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optOneButton setImage:[UIImage imageNamed:@"theme_game_three_purchase_one_normal"] forState:UIControlStateNormal];
-    [_optOneButton setImage:[UIImage imageNamed:@"theme_game_three_purchase_one"] forState:UIControlStateSelected];
+    [_optOneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_purchase_one_normal"] forState:UIControlStateNormal];
+    [_optOneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_purchase_one"] forState:UIControlStateSelected];
     _optOneButton.selected = YES;
     _optOneButton.alpha = 1.0f;
     [_optOneButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [actionContainer addSubview:_optOneButton];
     
     _optTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optTenButton setImage:[UIImage imageNamed:@"theme_game_three_purchase_ten_normal"] forState:UIControlStateNormal];
-    [_optTenButton setImage:[UIImage imageNamed:@"theme_game_three_purchase_ten"] forState:UIControlStateSelected];
+    [_optTenButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_purchase_ten_normal"] forState:UIControlStateNormal];
+    [_optTenButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_purchase_ten"] forState:UIControlStateSelected];
     _optTenButton.alpha = 0.55f;
     [_optTenButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [actionContainer addSubview:_optTenButton];
     
     _optHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optHundredButton setImage:[UIImage imageNamed:@"theme_game_three_purchase_hundred_normal"] forState:UIControlStateNormal];
-    [_optHundredButton setImage:[UIImage imageNamed:@"theme_game_three_purchase_hundred"] forState:UIControlStateSelected];
+    [_optHundredButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_purchase_hundred_normal"] forState:UIControlStateNormal];
+    [_optHundredButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_purchase_hundred"] forState:UIControlStateSelected];
     _optHundredButton.alpha = 0.55f;
     [_optHundredButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [actionContainer addSubview:_optHundredButton];
     
     _optOtherButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_optOtherButton setImage:[UIImage imageNamed:@"theme_game_three_purchase_other_normal"] forState:UIControlStateNormal];
-    [_optOtherButton setImage:[UIImage imageNamed:@"theme_game_three_purchase_other"] forState:UIControlStateSelected];
+    [_optOtherButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_purchase_other_normal"] forState:UIControlStateNormal];
+    [_optOtherButton setBackgroundImage:[UIImage imageNamed:@"theme_game_three_purchase_other"] forState:UIControlStateSelected];
     _optOtherButton.alpha = 0.55f;
     [_optOtherButton addTarget:self action:@selector(optClick:) forControlEvents:UIControlEventTouchUpInside];
     [actionContainer addSubview:_optOtherButton];
     
     _optButtons = @[_optOneButton, _optTenButton, _optHundredButton, _optOtherButton];
     
-    CGFloat btnW = KDialogAdaptedWidth(72);
-    CGFloat btnH = KDialogAdaptedWidth(26);
+    CGFloat btnW = KDialogAdaptedWidth(76);
+    CGFloat btnH = KDialogAdaptedWidth(47);
     CGFloat optGap = KDialogAdaptedWidth(6);
     
     [_optTenButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -326,22 +323,14 @@
     }];
     
     // Text Label showing selection
-    UILabel *selectedCountLabel = [[UILabel alloc] init];
-    selectedCountLabel.textColor = mHexRGB(0xFFDB83);
-    selectedCountLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
-    selectedCountLabel.text = @"已选择: 1 个";
-    [numBoxView addSubview:selectedCountLabel];
-    [selectedCountLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    _selectedCountLabel = [[UILabel alloc] init];
+    _selectedCountLabel.textColor = mHexRGB(0xFFDB83);
+    _selectedCountLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
+    _selectedCountLabel.text = @"已选择: 1 个";
+    [numBoxView addSubview:_selectedCountLabel];
+    [_selectedCountLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(numBoxView);
     }];
-    objc_setAssociatedObject(self, @"selectedCountLabel", selectedCountLabel, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
-    // Diamond cost warning text label
-    _costLabel = [[UILabel alloc] init];
-    _costLabel.textColor = mHexRGB(0xFFE400);
-    _costLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
-    _costLabel.text = @"消耗 200 钻石";
-    [actionContainer addSubview:_costLabel];
     
     // Confirm Purchase Button
     _confirmButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -353,11 +342,6 @@
         make.bottom.mas_equalTo(actionContainer.mas_bottom).offset(-KDialogAdaptedWidth(18));
         make.centerX.mas_equalTo(actionContainer);
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(260), KDialogAdaptedWidth(86)));
-    }];
-    
-    [_costLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_confirmButton.mas_top).offset(-KDialogAdaptedWidth(8));
-        make.centerX.mas_equalTo(actionContainer);
     }];
 }
 
@@ -376,12 +360,6 @@
 - (void)updateBalanceUI {
     _diamondBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)self.localDiamonds];
     _keyBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)self.localKeys];
-    [self updateCostUI];
-}
-
-- (void)updateCostUI {
-    NSInteger costCount = self.selectedCount;
-    _costLabel.text = [NSString stringWithFormat:@"消耗 %ld 钻石", (long)(costCount * 200)];
 }
 
 #pragma mark - 档位点击
@@ -391,20 +369,15 @@
         btn.alpha = (btn == sender) ? 1.0f : 0.55f;
     }
     
-    UILabel *selectedCountLabel = objc_getAssociatedObject(self, @"selectedCountLabel");
-    
     if (sender == _optOneButton) {
         self.selectedCount = 1;
-        selectedCountLabel.text = @"已选择: 1 个";
-        [self updateCostUI];
+        self.selectedCountLabel.text = @"已选择: 1 个";
     } else if (sender == _optTenButton) {
         self.selectedCount = 10;
-        selectedCountLabel.text = @"已选择: 10 个";
-        [self updateCostUI];
+        self.selectedCountLabel.text = @"已选择: 10 个";
     } else if (sender == _optHundredButton) {
         self.selectedCount = 100;
-        selectedCountLabel.text = @"已选择: 100 个";
-        [self updateCostUI];
+        self.selectedCountLabel.text = @"已选择: 100 个";
     } else if (sender == _optOtherButton) {
         [self showCustomInputAlert];
     }
@@ -445,9 +418,7 @@
             return;
         }
         wself.selectedCount = count;
-        UILabel *selectedCountLabel = objc_getAssociatedObject(wself, @"selectedCountLabel");
-        selectedCountLabel.text = [NSString stringWithFormat:@"已选择: %ld 个", (long)count];
-        [wself updateCostUI];
+        wself.selectedCountLabel.text = [NSString stringWithFormat:@"已选择: %ld 个", (long)count];
     }]];
     
     UIViewController *curVC = [UIViewController currentViewController];
