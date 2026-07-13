@@ -12,14 +12,17 @@
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *nicknameLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
+
+@property (nonatomic, strong) UIView *drawCountContainer;
+@property (nonatomic, strong) UILabel *drawCountLabel;
+
 @property (nonatomic, strong) UIImageView *giftBgFrameView;
 @property (nonatomic, strong) UIImageView *giftImageView;
-@property (nonatomic, strong) UIView *textContainer;
-@property (nonatomic, strong) UILabel *giftNameLabel;
-@property (nonatomic, strong) UILabel *priceLabel;
-@property (nonatomic, strong) UIImageView *diamondIcon;
+
+@property (nonatomic, strong) UIView *giftsContainerView;
 
 @property (nonatomic, assign) BOOL isMine;
+@property (nonatomic, assign) BOOL isExpanded;
 @property (nonatomic, strong) NSDictionary *recordData;
 
 - (void)configureWithData:(NSDictionary *)data isMine:(BOOL)isMine isExpanded:(BOOL)expanded;
@@ -41,119 +44,146 @@
     _cardBgImageView = [[UIImageView alloc] init];
     _cardBgImageView.contentMode = UIViewContentModeScaleToFill;
     _cardBgImageView.image = [UIImage imageNamed:@"theme_game_three_record_bg"];
+    _cardBgImageView.userInteractionEnabled = NO;
     [self.contentView addSubview:_cardBgImageView];
     
     [_cardBgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(self.contentView).insets(UIEdgeInsetsMake(0, 0, KDialogAdaptedWidth(8), 0));
+        make.top.mas_equalTo(0);
+        make.leading.mas_equalTo(KDialogAdaptedWidth(12));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
+        make.height.mas_equalTo(KDialogAdaptedWidth(80));
     }];
     
     _avatarBgView = [[UIImageView alloc] init];
     _avatarBgView.contentMode = UIViewContentModeScaleAspectFit;
     _avatarBgView.image = [UIImage imageNamed:@"theme_game_three_record_avatar_bg"];
-    [_cardBgImageView addSubview:_avatarBgView];
-    
-    [_avatarBgView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(KDialogAdaptedWidth(14));
-        make.centerY.mas_equalTo(_cardBgImageView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(44), KDialogAdaptedWidth(44)));
-    }];
+    [self.contentView addSubview:_avatarBgView];
     
     _avatarImageView = [[UIImageView alloc] init];
     _avatarImageView.contentMode = UIViewContentModeScaleAspectFill;
     _avatarImageView.clipsToBounds = YES;
-    setViewCorner(_avatarImageView, KDialogAdaptedWidth(16));
-    [_avatarBgView addSubview:_avatarImageView];
-    [_avatarImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_equalTo(_avatarBgView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(32), KDialogAdaptedWidth(32)));
-    }];
+    [self.contentView addSubview:_avatarImageView];
     
     _nicknameLabel = [[UILabel alloc] init];
     _nicknameLabel.textColor = kWhiteColor;
     _nicknameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
-    [_cardBgImageView addSubview:_nicknameLabel];
+    [self.contentView addSubview:_nicknameLabel];
     
     _timeLabel = [[UILabel alloc] init];
     _timeLabel.textColor = [UIColor colorWithWhite:1 alpha:0.5];
     _timeLabel.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(11)];
-    [_cardBgImageView addSubview:_timeLabel];
+    [self.contentView addSubview:_timeLabel];
+    
+    _drawCountContainer = [[UIView alloc] init];
+    _drawCountContainer.userInteractionEnabled = NO;
+    [self.contentView addSubview:_drawCountContainer];
+    
+    _drawCountLabel = [[UILabel alloc] init];
+    _drawCountLabel.textColor = kWhiteColor;
+    _drawCountLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
+    [_drawCountContainer addSubview:_drawCountLabel];
+    
+    [_drawCountLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(_drawCountContainer);
+    }];
     
     _giftBgFrameView = [[UIImageView alloc] init];
     _giftBgFrameView.contentMode = UIViewContentModeScaleAspectFit;
     _giftBgFrameView.image = [UIImage imageNamed:@"theme_game_three_record_gift_bg"];
-    [_cardBgImageView addSubview:_giftBgFrameView];
-    
-    [_giftBgFrameView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(14));
-        make.centerY.mas_equalTo(_cardBgImageView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(50), KDialogAdaptedWidth(50)));
-    }];
+    [self.contentView addSubview:_giftBgFrameView];
     
     _giftImageView = [[UIImageView alloc] init];
     _giftImageView.contentMode = UIViewContentModeScaleAspectFit;
-    [_giftBgFrameView addSubview:_giftImageView];
-    [_giftImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_equalTo(_giftBgFrameView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(36)));
-    }];
+    [self.contentView addSubview:_giftImageView];
     
-    _textContainer = [[UIView alloc] init];
-    [_cardBgImageView addSubview:_textContainer];
-    
-    _giftNameLabel = [[UILabel alloc] init];
-    _giftNameLabel.textColor = kWhiteColor;
-    _giftNameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
-    [_textContainer addSubview:_giftNameLabel];
-    
-    _priceLabel = [[UILabel alloc] init];
-    _priceLabel.textColor = mHexRGB(0xE9F2FF);
-    _priceLabel.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(11)];
-    [_textContainer addSubview:_priceLabel];
-    
-    _diamondIcon = [[UIImageView alloc] init];
-    _diamondIcon.contentMode = UIViewContentModeScaleAspectFit;
-    _diamondIcon.image = [UIImage imageNamed:@"theme_game_three_diamond_icon"];
-    [_textContainer addSubview:_diamondIcon];
+    _giftsContainerView = [[UIView alloc] init];
+    _giftsContainerView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.03];
+    setViewCorner(_giftsContainerView, 6);
+    _giftsContainerView.clipsToBounds = YES;
+    [self.contentView addSubview:_giftsContainerView];
 }
 
 - (void)configureWithData:(NSDictionary *)data isMine:(BOOL)isMine isExpanded:(BOOL)expanded {
     _recordData = data;
     _isMine = isMine;
+    _isExpanded = expanded;
     
-    _timeLabel.text = data[@"create_time"];
+    NSString *createTime = data[@"create_time"] ?: @"";
+    if (!_isMine && createTime.length >= 10) {
+        createTime = [createTime substringToIndex:10];
+    }
+    _timeLabel.text = createTime;
+    
+    NSArray *items = data[@"items"];
+    // Sort items by price descending
+    items = [items sortedArrayUsingComparator:^NSComparisonResult(NSDictionary *obj1, NSDictionary *obj2) {
+        NSInteger p1 = [obj1[@"gift_price"] ?: obj1[@"price"] integerValue];
+        NSInteger p2 = [obj2[@"gift_price"] ?: obj2[@"price"] integerValue];
+        if (p1 < p2) return NSOrderedDescending;
+        if (p1 > p2) return NSOrderedAscending;
+        return NSOrderedSame;
+    }];
+    
+    NSDictionary *firstGift = items.firstObject;
+    if (firstGift) {
+        _giftBgFrameView.hidden = NO;
+        _giftImageView.hidden = NO;
+        
+        [_giftBgFrameView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(_cardBgImageView);
+            make.trailing.mas_equalTo(_cardBgImageView.mas_trailing).offset(-KDialogAdaptedWidth(12));
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(72), KDialogAdaptedWidth(72)));
+        }];
+        
+        [_giftImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.center.mas_equalTo(_giftBgFrameView);
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(52), KDialogAdaptedWidth(52)));
+        }];
+        
+        NSString *imgUrlStr = firstGift[@"gift_image"] ?: firstGift[@"image"] ?: firstGift[@"pic"] ?: @"";
+        NSURL *url = [NSURL URLWithString:imgUrlStr];
+        if ([_giftImageView respondsToSelector:@selector(setImageWithURL:placeholder:)]) {
+            [_giftImageView performSelector:@selector(setImageWithURL:placeholder:) withObject:url withObject:[UIImage imageNamed:@""]];
+        } else if ([_giftImageView respondsToSelector:@selector(sd_setImageWithURL:placeholderImage:)]) {
+            [_giftImageView performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@""]];
+        }
+    } else {
+        _giftBgFrameView.hidden = YES;
+        _giftImageView.hidden = YES;
+    }
+    
+    NSString *drawTimesStr = [NSString stringWithFormat:@"抽奖%@次", data[@"draw_times"] ?: @"0"];
+    _drawCountLabel.text = drawTimesStr;
     
     if (_isMine) {
         _avatarBgView.hidden = YES;
+        _avatarImageView.hidden = YES;
         _nicknameLabel.hidden = YES;
-        _timeLabel.hidden = YES;
         
-        [_textContainer mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.leading.mas_equalTo(KDialogAdaptedWidth(14));
+        [_timeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.centerY.mas_equalTo(_cardBgImageView);
-            make.trailing.mas_lessThanOrEqualTo(_giftBgFrameView.mas_leading).offset(-KDialogAdaptedWidth(12));
+            make.leading.mas_equalTo(_cardBgImageView.mas_leading).offset(KDialogAdaptedWidth(14));
         }];
         
-        _giftNameLabel.textAlignment = NSTextAlignmentLeft;
-        [_giftNameLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.leading.mas_equalTo(_textContainer);
-            make.trailing.mas_lessThanOrEqualTo(_textContainer);
-        }];
-        
-        _priceLabel.textAlignment = NSTextAlignmentLeft;
-        [_priceLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(_giftNameLabel.mas_bottom).offset(KDialogAdaptedWidth(3));
-            make.leading.bottom.mas_equalTo(_textContainer);
-        }];
-        
-        [_diamondIcon mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(_priceLabel);
-            make.leading.mas_equalTo(_priceLabel.mas_trailing).offset(KDialogAdaptedWidth(4));
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(12), KDialogAdaptedWidth(12)));
+        [_drawCountContainer mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(_cardBgImageView);
+            make.leading.mas_equalTo(_timeLabel.mas_trailing).offset(KDialogAdaptedWidth(30));
+            make.height.mas_equalTo(KDialogAdaptedWidth(20));
         }];
     } else {
         _avatarBgView.hidden = NO;
+        _avatarImageView.hidden = NO;
         _nicknameLabel.hidden = NO;
-        _timeLabel.hidden = NO;
+        
+        [_drawCountContainer mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(_cardBgImageView);
+            if (firstGift) {
+                make.trailing.mas_equalTo(_giftBgFrameView.mas_leading).offset(-KDialogAdaptedWidth(10));
+            } else {
+                make.trailing.mas_equalTo(_cardBgImageView.mas_trailing).offset(-KDialogAdaptedWidth(10));
+            }
+            make.height.mas_equalTo(KDialogAdaptedWidth(20));
+        }];
         
         NSURL *avatarUrl = [NSURL URLWithString:data[@"avatar"] ?: @""];
         if ([_avatarImageView respondsToSelector:@selector(setImageWithURL:placeholder:)]) {
@@ -173,56 +203,126 @@
         }
         
         [_avatarBgView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.leading.mas_equalTo(KDialogAdaptedWidth(14));
             make.centerY.mas_equalTo(_cardBgImageView);
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(44), KDialogAdaptedWidth(44)));
+            make.leading.mas_equalTo(_cardBgImageView.mas_leading).offset(KDialogAdaptedWidth(12));
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(62)));
         }];
         
+        [_avatarImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.center.mas_equalTo(_avatarBgView);
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(46), KDialogAdaptedWidth(46)));
+        }];
+        setViewCorner(_avatarImageView, KDialogAdaptedWidth(23));
+        
         [_nicknameLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(_avatarBgView.mas_top).offset(KDialogAdaptedWidth(2));
-            make.leading.mas_equalTo(_avatarBgView.mas_trailing).offset(KDialogAdaptedWidth(12));
-            make.trailing.mas_equalTo(_textContainer.mas_leading).offset(-KDialogAdaptedWidth(8));
+            make.top.mas_equalTo(_avatarBgView).offset(KDialogAdaptedWidth(4));
+            make.leading.mas_equalTo(_avatarBgView.mas_trailing).offset(KDialogAdaptedWidth(8));
+            make.trailing.mas_equalTo(_drawCountContainer.mas_leading).offset(-KDialogAdaptedWidth(8));
         }];
         
         [_timeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.bottom.mas_equalTo(_avatarBgView.mas_bottom).offset(-KDialogAdaptedWidth(2));
+            make.bottom.mas_equalTo(_avatarBgView).offset(-KDialogAdaptedWidth(4));
             make.leading.mas_equalTo(_nicknameLabel);
             make.trailing.mas_equalTo(_nicknameLabel);
         }];
-        
-        [_textContainer mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.trailing.mas_equalTo(_giftBgFrameView.mas_leading).offset(-KDialogAdaptedWidth(12));
-            make.centerY.mas_equalTo(_cardBgImageView);
-            make.leading.mas_greaterThanOrEqualTo(_nicknameLabel.mas_trailing).offset(KDialogAdaptedWidth(8));
-        }];
-        
-        _giftNameLabel.textAlignment = NSTextAlignmentRight;
-        [_giftNameLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.leading.trailing.mas_equalTo(_textContainer);
-        }];
-        
-        _priceLabel.textAlignment = NSTextAlignmentRight;
-        [_priceLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(_giftNameLabel.mas_bottom).offset(KDialogAdaptedWidth(3));
-            make.bottom.mas_equalTo(_textContainer);
-        }];
-        
-        [_diamondIcon mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(_priceLabel);
-            make.trailing.mas_equalTo(_textContainer);
-            make.leading.mas_equalTo(_priceLabel.mas_trailing).offset(KDialogAdaptedWidth(4));
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(12), KDialogAdaptedWidth(12)));
-        }];
     }
     
-    _giftNameLabel.text = data[@"gift_name"] ?: @"";
-    _priceLabel.text = [NSString stringWithFormat:@"%@", data[@"gift_price"] ?: @"0"];
+    for (UIView *sub in _giftsContainerView.subviews) {
+        [sub removeFromSuperview];
+    }
     
-    NSURL *giftUrl = [NSURL URLWithString:data[@"gift_image"] ?: @""];
-    if ([_giftImageView respondsToSelector:@selector(setImageWithURL:placeholder:)]) {
-        [_giftImageView performSelector:@selector(setImageWithURL:placeholder:) withObject:giftUrl withObject:[UIImage imageNamed:@""]];
-    } else if ([_giftImageView respondsToSelector:@selector(sd_setImageWithURL:placeholderImage:)]) {
-        [_giftImageView performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:giftUrl withObject:[UIImage imageNamed:@""]];
+    if (_isExpanded) {
+        _giftsContainerView.hidden = NO;
+        
+        CGFloat containerLeft = KDialogAdaptedWidth(14);
+        [_giftsContainerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(_cardBgImageView.mas_bottom).offset(KDialogAdaptedWidth(8));
+            make.leading.mas_equalTo(containerLeft);
+            make.trailing.mas_equalTo(-KDialogAdaptedWidth(14));
+            make.bottom.mas_equalTo(-KDialogAdaptedWidth(8));
+        }];
+        
+        CGFloat startY = KDialogAdaptedWidth(8.0f);
+        CGFloat rowH = KDialogAdaptedWidth(28.0f);
+        CGFloat gap = KDialogAdaptedWidth(4.0f);
+        
+        for (int i = 0; i < items.count; i++) {
+            NSDictionary *gift = items[i];
+            
+            UIView *rowView = [[UIView alloc] init];
+            [_giftsContainerView addSubview:rowView];
+            [rowView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.top.mas_equalTo(startY + i * (rowH + gap));
+                make.leading.mas_equalTo(KDialogAdaptedWidth(12));
+                make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
+                make.height.mas_equalTo(rowH);
+            }];
+            
+            UIImageView *iconView = [[UIImageView alloc] init];
+            iconView.contentMode = UIViewContentModeScaleAspectFit;
+            [rowView addSubview:iconView];
+            [iconView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.leading.mas_equalTo(0);
+                make.centerY.mas_equalTo(rowView);
+                make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(20), KDialogAdaptedWidth(20)));
+            }];
+            
+            NSString *imgUrlStr = gift[@"gift_image"] ?: gift[@"image"] ?: gift[@"pic"] ?: @"";
+            NSURL *url = [NSURL URLWithString:imgUrlStr];
+            if ([iconView respondsToSelector:@selector(setImageWithURL:placeholder:)]) {
+                [iconView performSelector:@selector(setImageWithURL:placeholder:) withObject:url withObject:[UIImage imageNamed:@""]];
+            } else if ([iconView respondsToSelector:@selector(sd_setImageWithURL:placeholderImage:)]) {
+                [iconView performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@""]];
+            }
+            
+            UILabel *nameLabel = [[UILabel alloc] init];
+            nameLabel.textColor = kWhiteColor;
+            nameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
+            nameLabel.text = gift[@"gift_name"] ?: gift[@"name"] ?: @"";
+            [rowView addSubview:nameLabel];
+            [nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.leading.mas_equalTo(iconView.mas_trailing).offset(KDialogAdaptedWidth(8));
+                make.centerY.mas_equalTo(rowView);
+            }];
+            
+            UILabel *countLabel = [[UILabel alloc] init];
+            countLabel.textColor = [UIColor colorWithWhite:1 alpha:0.8];
+            countLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
+            countLabel.text = [NSString stringWithFormat:@"x%@", gift[@"gift_num"] ?: gift[@"num"] ?: @"1"];
+            [rowView addSubview:countLabel];
+            [countLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.trailing.mas_equalTo(0);
+                make.centerY.mas_equalTo(rowView);
+            }];
+            
+            UILabel *priceLabel = [[UILabel alloc] init];
+            priceLabel.textColor = mHexRGB(0xE9F2FF);
+            priceLabel.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(11)];
+            priceLabel.text = [NSString stringWithFormat:@"%@钻石", gift[@"gift_price"] ?: gift[@"price"] ?: @"0"];
+            [rowView addSubview:priceLabel];
+            [priceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.trailing.mas_equalTo(countLabel.mas_leading).offset(-KDialogAdaptedWidth(12));
+                make.centerY.mas_equalTo(rowView);
+            }];
+        }
+        
+        UILabel *totalLabel = [[UILabel alloc] init];
+        totalLabel.textColor = kWhiteColor;
+        totalLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
+        totalLabel.text = [NSString stringWithFormat:@"总价值：%@钻石", data[@"total_value"] ?: @"0"];
+        [_giftsContainerView addSubview:totalLabel];
+        [totalLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(startY + items.count * (rowH + gap) + KDialogAdaptedWidth(4.0f));
+            make.leading.mas_equalTo(KDialogAdaptedWidth(12));
+            make.height.mas_equalTo(KDialogAdaptedWidth(30.0f));
+        }];
+    } else {
+        _giftsContainerView.hidden = YES;
+        [_giftsContainerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(_cardBgImageView.mas_bottom);
+            make.leading.trailing.mas_equalTo(self.contentView);
+            make.height.mas_equalTo(0);
+        }];
     }
 }
 
@@ -321,28 +421,28 @@
     UIView *tabsContainer = [[UIView alloc] init];
     [_bgImageView addSubview:tabsContainer];
     [tabsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(96));
+        make.top.mas_equalTo(KDialogAdaptedWidth(80));
         make.centerX.mas_equalTo(_bgImageView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(168), KDialogAdaptedWidth(32)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(276), KDialogAdaptedWidth(54)));
     }];
     
     _allRecordTab = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_allRecordTab setImage:[UIImage imageNamed:@"theme_game_three_record_tab_all_selected"] forState:UIControlStateNormal];
+    [_allRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_three_record_tab_all_selected"] forState:UIControlStateNormal];
     [_allRecordTab addTarget:self action:@selector(allTabClick) forControlEvents:UIControlEventTouchUpInside];
     [tabsContainer addSubview:_allRecordTab];
     [_allRecordTab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.top.mas_equalTo(0);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(80), KDialogAdaptedWidth(32)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(134), KDialogAdaptedWidth(54)));
     }];
     
     _myRecordTab = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_myRecordTab setImage:[UIImage imageNamed:@"theme_game_three_record_tab_mine"] forState:UIControlStateNormal];
+    [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_three_record_tab_mine"] forState:UIControlStateNormal];
     [_myRecordTab addTarget:self action:@selector(myTabClick) forControlEvents:UIControlEventTouchUpInside];
     [tabsContainer addSubview:_myRecordTab];
     [_myRecordTab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(0);
         make.leading.mas_equalTo(_allRecordTab.mas_trailing).offset(KDialogAdaptedWidth(8));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(80), KDialogAdaptedWidth(32)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(134), KDialogAdaptedWidth(54)));
     }];
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
@@ -371,10 +471,11 @@
                                           page:self.currentPage 
                                       pageSize:30 
                                        success:^(NSArray *list, NSInteger total) {
-        NSMutableArray *flatList = [NSMutableArray array];
+        NSMutableArray *filteredList = [NSMutableArray array];
         for (id logItem in list) {
             if ([logItem isKindOfClass:[NSDictionary class]]) {
                 NSArray *items = logItem[@"items"];
+                NSMutableArray *filteredLogItems = [NSMutableArray array];
                 for (NSDictionary *gift in items) {
                     NSInteger gId = [gift[@"gift_id"] integerValue];
                     if (gId == 0) {
@@ -385,17 +486,13 @@
                         name = gift[@"name"] ?: @"";
                     }
                     if (gId != 0 && name.length > 0) {
-                        NSMutableDictionary *flatItem = [NSMutableDictionary dictionary];
-                        flatItem[@"avatar"] = logItem[@"avatar"] ?: @"";
-                        flatItem[@"nickname"] = logItem[@"nickname"] ?: @"";
-                        flatItem[@"create_time"] = logItem[@"create_time"] ?: @"";
-                        flatItem[@"gift_id"] = @(gId);
-                        flatItem[@"gift_name"] = name;
-                        flatItem[@"gift_price"] = gift[@"gift_price"] ?: gift[@"price"] ?: @(0);
-                        flatItem[@"gift_image"] = gift[@"gift_image"] ?: gift[@"image"] ?: gift[@"pic"] ?: @"";
-                        flatItem[@"num"] = gift[@"gift_num"] ?: gift[@"num"] ?: @(1);
-                        [flatList addObject:flatItem];
+                        [filteredLogItems addObject:gift];
                     }
+                }
+                if (filteredLogItems.count > 0) {
+                    NSMutableDictionary *mutLogItem = [logItem mutableCopy];
+                    mutLogItem[@"items"] = [filteredLogItems copy];
+                    [filteredList addObject:mutLogItem];
                 }
             }
         }
@@ -404,7 +501,7 @@
             [wself.recordList removeAllObjects];
             [wself.expandedRowIds removeAllObjects];
         }
-        [wself.recordList addObjectsFromArray:flatList];
+        [wself.recordList addObjectsFromArray:filteredList];
         [wself.tableView reloadData];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
@@ -415,8 +512,8 @@
     if (!self.showingMyRecord) return;
     self.showingMyRecord = NO;
     self.currentPage = 1;
-    [_allRecordTab setImage:[UIImage imageNamed:@"theme_game_three_record_tab_all_selected"] forState:UIControlStateNormal];
-    [_myRecordTab setImage:[UIImage imageNamed:@"theme_game_three_record_tab_mine"] forState:UIControlStateNormal];
+    [_allRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_three_record_tab_all_selected"] forState:UIControlStateNormal];
+    [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_three_record_tab_mine"] forState:UIControlStateNormal];
     [self loadData];
 }
 
@@ -424,8 +521,8 @@
     if (self.showingMyRecord) return;
     self.showingMyRecord = YES;
     self.currentPage = 1;
-    [_allRecordTab setImage:[UIImage imageNamed:@"theme_game_three_record_tab_all"] forState:UIControlStateNormal];
-    [_myRecordTab setImage:[UIImage imageNamed:@"theme_game_three_record_tab_mine_selected"] forState:UIControlStateNormal];
+    [_allRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_three_record_tab_all"] forState:UIControlStateNormal];
+    [_myRecordTab setBackgroundImage:[UIImage imageNamed:@"theme_game_three_record_tab_mine_selected"] forState:UIControlStateNormal];
     [self loadData];
 }
 
@@ -438,16 +535,34 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MLChatRoomThemeGameThreeRecordCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RecordCell" forIndexPath:indexPath];
     NSDictionary *data = self.recordList[indexPath.row];
-    [cell configureWithData:data isMine:self.showingMyRecord isExpanded:NO];
+    BOOL expanded = [self.expandedRowIds containsObject:@(indexPath.row)];
+    [cell configureWithData:data isMine:self.showingMyRecord isExpanded:expanded];
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return KDialogAdaptedWidth(70);
+    BOOL expanded = [self.expandedRowIds containsObject:@(indexPath.row)];
+    if (expanded) {
+        if (indexPath.row < self.recordList.count) {
+            NSDictionary *data = self.recordList[indexPath.row];
+            NSArray *items = data[@"items"];
+            NSInteger count = items.count;
+            CGFloat detailsH = count * KDialogAdaptedWidth(28.0f) + (count - 1) * KDialogAdaptedWidth(4.0f) + KDialogAdaptedWidth(8.0f) + KDialogAdaptedWidth(30.0f) + KDialogAdaptedWidth(16.0f);
+            CGFloat finalHeight = KDialogAdaptedWidth(80.0f) + detailsH;
+            return finalHeight;
+        }
+    }
+    return KDialogAdaptedWidth(88.0f);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    // 拍平模式下，点击不触发展开
+    NSNumber *rowNum = @(indexPath.row);
+    if ([self.expandedRowIds containsObject:rowNum]) {
+        [self.expandedRowIds removeObject:rowNum];
+    } else {
+        [self.expandedRowIds addObject:rowNum];
+    }
+    [tableView reloadData];
 }
 
 #pragma mark - Animation & Close

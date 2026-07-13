@@ -178,8 +178,8 @@
             // 打开玩法2 (神木栖灵, lottery_id = 2, typeId = 6)
             [MLChatRoomThemeGameTwoView showInView:parentView typeId:6];
         } else if (indexPath.item == 2) {
-            // 打开玩法3 (星辰序章, lottery_id = 3, typeId = 3)
-            [MLChatRoomThemeGameThreeView showInView:parentView typeId:3];
+            // 打开玩法3 (星辰序章, lottery_id = 3, typeId = 7)
+            [MLChatRoomThemeGameThreeView showInView:parentView typeId:7];
         }
     }];
 }
