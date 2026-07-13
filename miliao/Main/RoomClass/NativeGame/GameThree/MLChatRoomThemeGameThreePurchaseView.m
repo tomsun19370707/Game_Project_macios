@@ -150,16 +150,6 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(28), KDialogAdaptedWidth(28)));
     }];
     
-    _diamondBalanceLabel = [[UILabel alloc] init];
-    _diamondBalanceLabel.textColor = kWhiteColor;
-    _diamondBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
-    _diamondBalanceLabel.text = @"0";
-    [_diamondBarView addSubview:_diamondBalanceLabel];
-    [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(_diamondIconView.mas_trailing).offset(KDialogAdaptedWidth(2));
-        make.centerY.mas_equalTo(_diamondBarView);
-    }];
-    
     // Plus icon in diamond bar to match Android
     UIImageView *diamondPlusIcon = [[UIImageView alloc] init];
     diamondPlusIcon.image = [UIImage imageNamed:@"theme_game_three_ic_plus"];
@@ -172,6 +162,18 @@
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(6));
         make.centerY.mas_equalTo(_diamondBarView);
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(22), KDialogAdaptedWidth(22)));
+    }];
+    
+    _diamondBalanceLabel = [[UILabel alloc] init];
+    _diamondBalanceLabel.textColor = kWhiteColor;
+    _diamondBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
+    _diamondBalanceLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    _diamondBalanceLabel.text = @"0";
+    [_diamondBarView addSubview:_diamondBalanceLabel];
+    [_diamondBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(_diamondIconView.mas_trailing).offset(KDialogAdaptedWidth(2));
+        make.trailing.mas_equalTo(diamondPlusIcon.mas_leading).offset(-KDialogAdaptedWidth(2));
+        make.centerY.mas_equalTo(_diamondBarView);
     }];
     
     // Key Bar View
@@ -197,10 +199,12 @@
     _keyBalanceLabel = [[UILabel alloc] init];
     _keyBalanceLabel.textColor = kWhiteColor;
     _keyBalanceLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
+    _keyBalanceLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     _keyBalanceLabel.text = @"0";
     [_keyBarView addSubview:_keyBalanceLabel];
     [_keyBalanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(_keyIconView.mas_trailing).offset(KDialogAdaptedWidth(2));
+        make.trailing.mas_equalTo(_keyBarView.mas_trailing).offset(-KDialogAdaptedWidth(8));
         make.centerY.mas_equalTo(_keyBarView);
     }];
     
