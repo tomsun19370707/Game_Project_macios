@@ -4,7 +4,7 @@
 #import "Global.h"
 #import <objc/runtime.h>
 
-@interface MLChatRoomThemeGameThreePurchaseView () <UITextFieldDelegate>
+@interface MLChatRoomThemeGameThreePurchaseView ()
 
 @property (nonatomic, strong) MLGameLotteryInfoModel *infoModel;
 @property (nonatomic, copy) void(^purchaseSuccessBlock)(NSInteger);
@@ -34,7 +34,6 @@
 @property (nonatomic, strong) UIButton *optOtherButton;
 @property (nonatomic, strong) NSArray<UIButton *> *optButtons;
 
-@property (nonatomic, strong) UITextField *inputTextField;
 @property (nonatomic, strong) UIButton *confirmButton;
 @property (nonatomic, strong) UILabel *costLabel;
 
@@ -333,23 +332,6 @@
     }];
     objc_setAssociatedObject(self, @"selectedCountLabel", selectedCountLabel, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
-    // Custom input text field (hidden by default)
-    _inputTextField = [[UITextField alloc] init];
-    _inputTextField.keyboardType = UIKeyboardTypeNumberPad;
-    _inputTextField.placeholder = @"请输入数量";
-    _inputTextField.textColor = mHexRGB(0xFFDB83);
-    _inputTextField.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
-    _inputTextField.textAlignment = NSTextAlignmentCenter;
-    _inputTextField.hidden = YES;
-    _inputTextField.delegate = self;
-    [_inputTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-    _inputTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"请输入数量" attributes:@{NSForegroundColorAttributeName: [UIColor colorWithWhite:1 alpha:0.3]}];
-    [numBoxView addSubview:_inputTextField];
-    
-    [_inputTextField mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(numBoxView);
-    }];
-    
     // Diamond cost warning text label
     _costLabel = [[UILabel alloc] init];
     _costLabel.textColor = mHexRGB(0xFFE400);
@@ -395,9 +377,6 @@
 
 - (void)updateCostUI {
     NSInteger costCount = self.selectedCount;
-    if (_optOtherButton.selected) {
-        costCount = [_inputTextField.text integerValue];
-    }
     _costLabel.text = [NSString stringWithFormat:@"消耗 %ld 钻石", (long)(costCount * 200)];
 }
 
@@ -412,65 +391,73 @@
     
     if (sender == _optOneButton) {
         self.selectedCount = 1;
-        _inputTextField.hidden = YES;
-        selectedCountLabel.hidden = NO;
         selectedCountLabel.text = @"已选择: 1 个";
-        [self.inputTextField resignFirstResponder];
+        [self updateCostUI];
     } else if (sender == _optTenButton) {
         self.selectedCount = 10;
-        _inputTextField.hidden = YES;
-        selectedCountLabel.hidden = NO;
         selectedCountLabel.text = @"已选择: 10 个";
-        [self.inputTextField resignFirstResponder];
+        [self updateCostUI];
     } else if (sender == _optHundredButton) {
         self.selectedCount = 100;
-        _inputTextField.hidden = YES;
-        selectedCountLabel.hidden = NO;
         selectedCountLabel.text = @"已选择: 100 个";
-        [self.inputTextField resignFirstResponder];
+        [self updateCostUI];
     } else if (sender == _optOtherButton) {
-        _inputTextField.hidden = NO;
-        selectedCountLabel.hidden = YES;
-        [self.inputTextField becomeFirstResponder];
+        [self showCustomInputAlert];
     }
+}
+
+#pragma mark - 自定义输入 Alert
+- (void)showCustomInputAlert {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"自定义购买数量"
+                                                                   message:@"请输入购买数量"
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"输入要购买的钥匙数量";
+        textField.keyboardType = UIKeyboardTypeNumberPad;
+        if (self.selectedCount > 0 && self.selectedCount != 1 && self.selectedCount != 10 && self.selectedCount != 100) {
+            textField.text = [NSString stringWithFormat:@"%ld", (long)self.selectedCount];
+        }
+    }];
     
-    [self updateCostUI];
-}
-
-#pragma mark - 输入变化
-- (void)textFieldDidChange:(UITextField *)textField {
-    UILabel *selectedCountLabel = objc_getAssociatedObject(self, @"selectedCountLabel");
-    if (_optOtherButton.selected) {
-        NSString *txt = textField.text ?: @"";
-        selectedCountLabel.text = [NSString stringWithFormat:@"已选择: %@ 个", txt.length > 0 ? txt : @"0"];
+    WeakSelf
+    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        if (wself.selectedCount != 1 && wself.selectedCount != 10 && wself.selectedCount != 100) {
+            [wself optClick:wself.optOneButton];
+        }
+    }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UITextField *textField = alert.textFields.firstObject;
+        NSString *inputStr = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        NSInteger count = [inputStr integerValue];
+        if (count <= 0) {
+            [SVProgressHUD showErrorWithStatus:@"购买数量必须大于0"];
+            [wself optClick:wself.optOneButton];
+            return;
+        }
+        if (count > 9999) {
+            [SVProgressHUD showErrorWithStatus:@"单次购买不能超过 9999 个"];
+            [wself optClick:wself.optOneButton];
+            return;
+        }
+        wself.selectedCount = count;
+        UILabel *selectedCountLabel = objc_getAssociatedObject(wself, @"selectedCountLabel");
+        selectedCountLabel.text = [NSString stringWithFormat:@"已选择: %ld 个", (long)count];
+        [wself updateCostUI];
+    }]];
+    
+    UIViewController *curVC = [UIViewController currentViewController];
+    if (curVC) {
+        [curVC presentViewController:alert animated:YES completion:nil];
     }
-    [self updateCostUI];
-}
-
-#pragma mark - UITextFieldDelegate
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-    NSCharacterSet *numbers = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789"] invertedSet];
-    NSString *filtered = [[string componentsSeparatedByCharactersInSet:numbers] componentsJoinedByString:@""];
-    return [string isEqualToString:filtered];
 }
 
 #pragma mark - 执行购买
 - (void)confirmPurchaseClick {
-    NSInteger buyCount = 0;
-    
-    if (_optOtherButton.selected) {
-        NSString *inputStr = [_inputTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (inputStr.length == 0 || [inputStr integerValue] == 0) {
-            [SVProgressHUD showErrorWithStatus:@"请输入购买数量"];
-            return;
-        }
-        buyCount = [inputStr integerValue];
-        if (buyCount > 9999) {
-            [SVProgressHUD showErrorWithStatus:@"单次购买不能超过 9999 个"];
-            return;
-        }
-    } else {
-        buyCount = self.selectedCount;
+    NSInteger buyCount = self.selectedCount;
+    if (buyCount <= 0) {
+        [SVProgressHUD showErrorWithStatus:@"请选择购买数量"];
+        return;
     }
     
     NSInteger costDiamonds = buyCount * 200;
