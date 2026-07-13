@@ -462,6 +462,7 @@
 		7C70E97C2FED864E00A11B29 /* MLChatRoomThemeGameOneRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E96A2FED864D00A11B29 /* MLChatRoomThemeGameOneRecordView.m */; };
 		7C70E9802FED86A900A11B29 /* theme_game_one_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = 7C70E97E2FED86A900A11B29 /* theme_game_one_draw.svga */; };
 		7C70E9812FED86A900A11B29 /* theme_game_two_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = 7C70E97F2FED86A900A11B29 /* theme_game_two_draw.svga */; };
+		7C70E9822FED86A900A11B29 /* theme_game_three_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = 7C70E9832FED86A900A11B29 /* theme_game_three_draw.svga */; };
 		8500721C2A52B31D00D7D380 /* EMO_MySkillsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8500721B2A52B31D00D7D380 /* EMO_MySkillsViewController.m */; };
 		8500721F2A52B38900D7D380 /* EMO_MyRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8500721E2A52B38900D7D380 /* EMO_MyRoomViewController.m */; };
 		850072222A52B3C900D7D380 /* EMO_FaminlCenterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 850072212A52B3C900D7D380 /* EMO_FaminlCenterViewController.m */; };
@@ -2066,6 +2067,7 @@
 		7C70E96B2FED864D00A11B29 /* MLChatRoomThemeGameOneResultView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameOneResultView.h; sourceTree = "<group>"; };
 		7C70E97E2FED86A900A11B29 /* theme_game_one_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_one_draw.svga; sourceTree = "<group>"; };
 		7C70E97F2FED86A900A11B29 /* theme_game_two_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_two_draw.svga; sourceTree = "<group>"; };
+		7C70E9832FED86A900A11B29 /* theme_game_three_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_three_draw.svga; sourceTree = "<group>"; };
 		8194F4AC49A2CF33B3D29DBA /* CFMRewardHistoryAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMRewardHistoryAlert.xib; sourceTree = "<group>"; };
 		83556612FDA7E2F9BCDADB3E /* CFMRewardHistoryRate.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMRewardHistoryRate.xib; sourceTree = "<group>"; };
 		836B17E7A83E3E0120BC405F /* CFMRewardHistoryCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMRewardHistoryCell.h; sourceTree = "<group>"; };
@@ -5627,6 +5629,7 @@
 			children = (
 				7C70E97E2FED86A900A11B29 /* theme_game_one_draw.svga */,
 				7C70E97F2FED86A900A11B29 /* theme_game_two_draw.svga */,
+				7C70E9832FED86A900A11B29 /* theme_game_three_draw.svga */,
 			);
 			path = SVGA;
 			sourceTree = "<group>";
@@ -8992,6 +8995,7 @@
 				E44A18E12B5A8C69009B5052 /* ATAuthSDK.bundle in Resources */,
 				CBD5936C2EE3DA62001C499F /* CFMMineHeader.xib in Resources */,
 				7C70E9812FED86A900A11B29 /* theme_game_two_draw.svga in Resources */,
+				7C70E9822FED86A900A11B29 /* theme_game_three_draw.svga in Resources */,
 				008DFD1D22DC16900072ED90 /* PublishControlView.xib in Resources */,
 				CB7C0C432EE6CA2D0001229C /* STAccountSafeCell.xib in Resources */,
 				CB66CF522EE7FDFE006B5FD1 /* CFMWalletDiamondExGiftCollCell.xib in Resources */,

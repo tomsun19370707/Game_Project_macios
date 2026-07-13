@@ -13,7 +13,7 @@
 #import "CFMWalletDiamondRechargeVc.h"
 #import <Masonry/Masonry.h>
 
-@interface MLChatRoomThemeGameThreeView ()
+@interface MLChatRoomThemeGameThreeView () <SVGAPlayerDelegate>
 
 @property (nonatomic, assign) NSInteger typeId;
 @property (nonatomic, strong) UIImageView *bgImageView;
@@ -29,6 +29,8 @@
 @property (nonatomic, strong) UIButton *keyPlusButton;
 @property (nonatomic, strong) UILabel *diamondBalanceLabel;
 @property (nonatomic, strong) UIButton *diamondPlusButton;
+@property (nonatomic, strong) SVGAPlayer *svgaPlayer;
+@property (nonatomic, copy, nullable) void (^svgaCompletionBlock)(void);
 
 @property (nonatomic, strong) UIButton *drawOneButton;
 @property (nonatomic, strong) UIButton *drawTenButton;
@@ -108,6 +110,29 @@
         make.width.mas_lessThanOrEqualTo(390).priorityHigh();
         make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1267.0 / 750.0);
     }];
+    
+    // SVGAPlayer 动效图层 (重合整个大背景，放置在最顶层)
+    self.svgaPlayer = [[SVGAPlayer alloc] init];
+    self.svgaPlayer.loops = 1;
+    self.svgaPlayer.delegate = self;
+    self.svgaPlayer.contentMode = UIViewContentModeScaleAspectFit;
+    self.svgaPlayer.hidden = YES;
+    [self addSubview:self.svgaPlayer];
+    [self.svgaPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(_bgImageView);
+    }];
+    
+    // 异步预解析 SVGA 动画数据，避免点击抽奖时延迟
+    SVGAParser *parser = [[SVGAParser alloc] init];
+    NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_three_draw" withExtension:@"svga"];
+    if (svgaURL) {
+        WeakSelf
+        [parser parseWithURL:svgaURL completionBlock:^(SVGAVideoEntity * _Nonnull videoItem) {
+            if (wself) {
+                wself.svgaPlayer.videoItem = videoItem;
+            }
+        } failureBlock:nil];
+    }
     
     // 头部信息与控制区语义容器 (HUDContainer)
     UIView *hudContainer = [[UIView alloc] init];
@@ -593,17 +618,28 @@
         
         // 执行减速旋转动画
         [wself runDeceleratingAnimationToTargetIndex:targetIndex completion:^{
-            [wself lockButtons:NO];
-            wself.isDrawing = NO;
             // 清理光圈
             for (UIView *card in wself.giftCardViews) {
                 [card viewWithTag:999].hidden = YES;
             }
-            // 模态弹框结算
-            [MLChatRoomThemeGameThreeResultView showInView:wself.superview gifts:list totalValue:totalValue times:times retryBlock:^{
-                [wself drawWithTimes:times cost:cost];
-            }];
-            [wself loadData];
+            
+            void (^showResultBlock)(void) = ^{
+                [wself lockButtons:NO];
+                wself.isDrawing = NO;
+                [MLChatRoomThemeGameThreeResultView showInView:wself.superview gifts:list totalValue:totalValue times:times retryBlock:^{
+                    [wself drawWithTimes:times cost:cost];
+                }];
+                [wself loadData];
+            };
+            
+            if (wself.svgaPlayer.videoItem) {
+                wself.svgaPlayer.hidden = NO;
+                [wself.svgaPlayer startAnimation];
+                wself.svgaCompletionBlock = showResultBlock;
+            } else {
+                // SVGAPlayer 预加载失败兜底逻辑：直接弹窗结算
+                showResultBlock();
+            }
         }];
         
     } failure:^(NSError *error) {
@@ -716,6 +752,12 @@
 }
 
 - (void)dismiss {
+    if (_svgaPlayer) {
+        [_svgaPlayer stopAnimation];
+        _svgaPlayer.hidden = YES;
+    }
+    _svgaCompletionBlock = nil;
+    
     [UIView animateWithDuration:0.25 animations:^{
         self.alpha = 0.0;
     } completion:^(BOOL finished) {
@@ -730,6 +772,16 @@
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     if (appDelegate.roomViewController && appDelegate.roomViewController.floatingWindow) {
         appDelegate.roomViewController.floatingWindow.hidden = NO;
+    }
+}
+
+#pragma mark - SVGAPlayerDelegate
+- (void)svgaPlayerDidFinishedAnimation:(SVGAPlayer *)player {
+    self.svgaPlayer.hidden = YES;
+    if (self.svgaCompletionBlock) {
+        void (^block)(void) = self.svgaCompletionBlock;
+        self.svgaCompletionBlock = nil;
+        block();
     }
 }
 
