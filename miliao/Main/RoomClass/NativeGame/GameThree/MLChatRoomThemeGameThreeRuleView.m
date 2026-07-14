@@ -50,7 +50,10 @@
     [self addSubview:_bgImageView];
     
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.leading.trailing.mas_equalTo(self);
+        make.bottom.mas_equalTo(self);
+        make.centerX.mas_equalTo(self);
+        make.width.mas_equalTo(self).offset(-KDialogAdaptedWidth(32)).priorityMedium();
+        make.width.mas_lessThanOrEqualTo(KDialogAdaptedWidth(344)).priorityHigh();
         make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1312.0 / 750.0);
     }];
     

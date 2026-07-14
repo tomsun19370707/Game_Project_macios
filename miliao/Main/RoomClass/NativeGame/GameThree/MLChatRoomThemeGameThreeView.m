@@ -45,8 +45,6 @@
 
 @property (nonatomic, assign) BOOL isDrawing;
 @property (nonatomic, assign) NSInteger localKeyBalance;
-@property (nonatomic, assign) NSInteger lastDrawTimes;
-@property (nonatomic, assign) NSInteger lastDrawCost;
 
 @property (nonatomic, assign) NSInteger consumeValue;
 @property (nonatomic, assign) NSInteger produceValue;
@@ -585,9 +583,6 @@
     // 乐观扣钱
     self.isDrawing = YES;
     [self lockButtons:YES];
-    
-    self.lastDrawTimes = times;
-    self.lastDrawCost = cost;
     
     NSInteger originalBalance = self.localKeyBalance;
     self.localKeyBalance -= cost;
