@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */ = {isa = PBXBuildFile; fileRef = 09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */; };
 		00030BA222CDAF18003896EE /* EMO_RoomAnnouncementVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 00030BA122CDAF18003896EE /* EMO_RoomAnnouncementVC.m */; };
 		00030BAF22CE0388003896EE /* RoomSearchView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00030BAE22CE0388003896EE /* RoomSearchView.m */; };
 		000716F422BB213D00E5F8DC /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 000716F322BB213D00E5F8DC /* libc++.tbd */; };
@@ -1172,6 +1173,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		674F5B233D9A41B7AD4614A3 /* MLChatRoomThemeGameFourView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourView.h; sourceTree = "<group>"; };
+		09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourView.m; sourceTree = "<group>"; };
 		00030BA022CDAF18003896EE /* EMO_RoomAnnouncementVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMO_RoomAnnouncementVC.h; sourceTree = "<group>"; };
 		00030BA122CDAF18003896EE /* EMO_RoomAnnouncementVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMO_RoomAnnouncementVC.m; sourceTree = "<group>"; };
 		00030BAD22CE0388003896EE /* RoomSearchView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomSearchView.h; sourceTree = "<group>"; };
@@ -3391,6 +3394,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		ED0B8DB30C101FE22F0F4506 /* GameFour */ = {
+			isa = PBXGroup;
+			children = (
+				674F5B233D9A41B7AD4614A3 /* MLChatRoomThemeGameFourView.h */,
+				09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */,
+			);
+			path = GameFour;
+			sourceTree = "<group>";
+		};
 		0009F61822BA0AEB0035B354 /* PopupWindowView */ = {
 			isa = PBXGroup;
 			children = (
@@ -5550,6 +5562,7 @@
 		7C70E9452FED864D00A11B29 /* NativeGame */ = {
 			isa = PBXGroup;
 			children = (
+				ED0B8DB30C101FE22F0F4506 /* GameFour */,
 				EA7F9B3E17404C57A44B9917 /* GameThree */,
 				FA76D0B8AB834D29BF718252 /* Common */,
 				F414E9175D5E46A483D78496 /* MLChatRoomThemeGameFortuneView.h */,
@@ -9178,6 +9191,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
 				FA85CE392A7A21A000CDC75E /* CSVisitorSDKStub.m in Sources */,
 				85E5AE9E28F295D600C6DD6B /* NSAttributedString+EmojiExtension.m in Sources */,
 				859DD0792A54134700FD3F52 /* EMO_EditFamilyCenterVC.m in Sources */,
@@ -10127,6 +10141,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
 				0076BCAC2294DED900CB58DE /* miliaoTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -10135,6 +10150,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
 				0076BCB72294DED900CB58DE /* miliaoUITests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

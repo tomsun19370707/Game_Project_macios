@@ -17,6 +17,7 @@
 #import "HorizontallyPageableFlowLayout.h"
 #define Room_btn_mainColor MHColorFromHexString(@"#BD4AFF")
 #import "RoomFuDaiModel.h"
+#import "MLChatRoomThemeGameFourView.h"
 //#import "FuDaiXQTipView.h"
 #import "CustomAlertViewA.h"
 #import "BJGiftViewCell.h"
@@ -63,6 +64,9 @@ UIGestureRecognizerDelegate,XHInputViewDelagete>
 @property(nonatomic, strong) UIButton *giftButton;//礼物按钮
 @property(nonatomic, strong) UIButton *beibaoButton;//背包
 @property(nonatomic, strong) UIButton *fudaiButton;//福袋
+@property(nonatomic, strong) UIButton *tequanButton;//特权
+@property(nonatomic, strong) UIButton *synthesizeGiftButton;//合成礼物
+@property(nonatomic, strong) NSArray *tequanArray;//特权本地数据
 
 @property(nonatomic, strong) WZDLayoutButton *chargeButton;//充值按钮
 @property(nonatomic, strong) UIButton *selectAllButton;//全麦
@@ -290,8 +294,13 @@ static SVGAParser *parser;
             self.fuDaiModel = model;
             self.lastSeletedIndex = indexPath;
             
-            [CustomAlertViewA showAlertView_Type:AlertType_Bottom ContentType:BlessingBagCustomCententViewTag andData:@{@"data":self.fudaiArray}];
-            
+            if (self.currentType == 4) {
+                UIView *parentView = self.superview;
+                [self removeFromSuperview];
+                [MLChatRoomThemeGameFourView showInView:parentView typeId:[model.fuDaiID integerValue]];
+            } else {
+                [CustomAlertViewA showAlertView_Type:AlertType_Bottom ContentType:BlessingBagCustomCententViewTag andData:@{@"data":self.fudaiArray}];
+            }
         }
 
 }
@@ -799,11 +808,10 @@ static SVGAParser *parser;
     
     self.numBgView.frame=CGRectMake(10, 65+self.topView.bottom, kWidth-20, 30);
     
-//    self.ButtonView.frame = CGRectMake(10, 65+self.topView.bottom, 192, 30);
-    self.ButtonView.frame = CGRectMake(10, 65+self.topView.bottom, 128, 30);
+    self.ButtonView.frame = CGRectMake(10, 65+self.topView.bottom, 192, 30);
     self.giftButton.frame = CGRectMake(1, 1, 60, 28);
     self.beibaoButton.frame = CGRectMake(66, 1, 60, 28);
-    self.fudaiButton.frame = CGRectMake(131, 1, 60, 28);
+    self.tequanButton.frame = CGRectMake(131, 1, 60, 28);
     
     
     
@@ -811,7 +819,7 @@ static SVGAParser *parser;
     self.chargeButton.frame = CGRectMake(kWidth-KAdaptedWidth(100+10), 65+self.topView.bottom, 100, 30);
     // 2. 关键：设置图片的目标显示尺寸【你只需要改这两个值】
     CGFloat targetImgW = 17; // 图片要显示的宽度
-    CGFloat targetImgH = 17; // 图片要显示的高度
+    CGFloat targetImgH = 17; // 图片要显示高度
     // 3. 计算图片内边距 (向内压缩，让imageView的显示区域变成我们要的尺寸)
     CGFloat imgEdgeInsetX = (self.chargeButton.frame.size.width - targetImgW) / 2;
     CGFloat imgEdgeInsetY = (self.chargeButton.frame.size.height - targetImgH) / 2;
@@ -824,10 +832,13 @@ static SVGAParser *parser;
     
     [self.bottomBgView addSubview:self.numBgView];
     [self.bottomBgView addSubview:self.chargeButton];
+    [self.bottomBgView addSubview:self.synthesizeGiftButton];
+    self.synthesizeGiftButton.frame = CGRectMake(kWidth-KAdaptedWidth(100+10), 65+self.topView.bottom, 100, 30);
+    self.synthesizeGiftButton.hidden = YES;
     [self.bottomBgView addSubview:self.ButtonView];
     [self.ButtonView addSubview:self.giftButton];
     [self.ButtonView addSubview:self.beibaoButton];
-//    [self.ButtonView addSubview:self.fudaiButton];
+    [self.ButtonView addSubview:self.tequanButton];
 
     
     self.numArray = @[@"1", @"10", @"66", @"自定义"];
@@ -856,10 +867,11 @@ static SVGAParser *parser;
     
     CGFloat bottomBGHeight = 160+ScreenWidth/2.0+self.topView.bottom;
     self.bottomBgView.frame= CGRectMake(0, ScreenHeight-bottomBGHeight-SAFE_AREA_INSERTS_BOTTOM-self.changeHeight, ScreenWidth, bottomBGHeight+SAFE_AREA_INSERTS_BOTTOM+10+self.changeHeight);
-    self.ButtonView.frame = CGRectMake(10, 65+self.topView.bottom+self.changeHeight, 128, 30);
+    self.ButtonView.frame = CGRectMake(10, 65+self.topView.bottom+self.changeHeight, 192, 30);
     self.collectView.frame = CGRectMake(0, 95+self.topView.bottom+self.changeHeight, ScreenWidth, ScreenWidth/2.0+40);
     self.pageControl.frame = CGRectMake(-ScreenWidth/2.0, bottomBGHeight-70+20+self.changeHeight, ScreenWidth, 20);
     self.chargeButton.frame = CGRectMake(kWidth-KAdaptedWidth(100+10), 65+self.topView.bottom+self.changeHeight, 100, 30);
+    self.synthesizeGiftButton.frame = CGRectMake(kWidth-KAdaptedWidth(100+10), 65+self.topView.bottom+self.changeHeight, 100, 30);
 
 }
 
@@ -877,22 +889,28 @@ static SVGAParser *parser;
 
 #pragma mark ======================  礼物，钻石，我的 按钮点击事件   ======================
 - (void)handleGiftTypeButtonClick:(UIButton *)sender {
-    [sender setTitleColor:RGBA(255, 255, 255, 1) forState:UIControlStateNormal];
     [self uploadType:sender.tag];
-    for (int i=0; i<3; i++  ) {
-        UIButton *button = [self viewWithTag:i+1000];
-        if (button.tag==sender.tag) {
+    NSArray *buttons = @[self.giftButton, self.beibaoButton, self.tequanButton];
+    for (UIButton *button in buttons) {
+        if (button.tag == sender.tag) {
             [button setTitleColor:RGBA(255, 255, 255, 1) forState:UIControlStateNormal];
-            [sender setBackgroundImage:KGetImage(@"giftBgImg") forState:0];
-            button.titleLabel.font=KFontBold(13);
-        }else{
-            button.titleLabel.font=KFontA(13);
-            [sender setBackgroundImage:KGetImage(@"") forState:0];
+            [button setBackgroundImage:KGetImage(@"giftBgImg") forState:UIControlStateNormal];
+            button.titleLabel.font = KFontBold(13);
+        } else {
+            button.titleLabel.font = KFontA(13);
+            [button setBackgroundImage:KGetImage(@"") forState:UIControlStateNormal];
             [button setTitleColor:RGBA(207, 221, 248, 1) forState:UIControlStateNormal];
         }
     }
 }
 -(void)uploadType:(NSInteger)tag{
+    if (tag == 1003) {
+        self.chargeButton.hidden = YES;
+        self.synthesizeGiftButton.hidden = NO;
+    } else {
+        self.chargeButton.hidden = NO;
+        self.synthesizeGiftButton.hidden = YES;
+    }
     self.changeHeight=0;
     self.numBgView.hidden=YES;
     [self upDataView];
@@ -906,6 +924,7 @@ static SVGAParser *parser;
     if (tag == 1000) {
         [self.fudaiButton setBackgroundImage:KGetImage(@"") forState:0];
         [self.beibaoButton setBackgroundImage:KGetImage(@"") forState:0];
+        [self.tequanButton setBackgroundImage:KGetImage(@"") forState:0];
         [self.giftButton setBackgroundImage:KGetImage(@"giftBgImg") forState:0];
         self.giftNum = @"1";
         self.giftCarouseArray = self.giftArray;
@@ -913,6 +932,7 @@ static SVGAParser *parser;
     }else if(tag == 1001){
         [self.fudaiButton setBackgroundImage:KGetImage(@"") forState:0];
         [self.giftButton setBackgroundImage:KGetImage(@"") forState:0];
+        [self.tequanButton setBackgroundImage:KGetImage(@"") forState:0];
         [self.beibaoButton setBackgroundImage:KGetImage(@"giftBgImg") forState:0];
         self.giftNum = @"1";
         self.giftCarouseArray = self.myArray;
@@ -923,6 +943,7 @@ static SVGAParser *parser;
     }else if(tag == 1002){
         [self.beibaoButton setBackgroundImage:KGetImage(@"") forState:0];
         [self.giftButton setBackgroundImage:KGetImage(@"") forState:0];
+        [self.tequanButton setBackgroundImage:KGetImage(@"") forState:0];
         [self.fudaiButton setBackgroundImage:KGetImage(@"giftBgImg") forState:0];
         self.giftNum = @"1";
         self.giftCarouseArray = self.fudaiArray;
@@ -933,6 +954,41 @@ static SVGAParser *parser;
         [self.collectView reloadData];
 
         [self.usersCollectionView reloadData];
+    }else if(tag == 1003){
+        [self.beibaoButton setBackgroundImage:KGetImage(@"") forState:0];
+        [self.giftButton setBackgroundImage:KGetImage(@"") forState:0];
+        [self.fudaiButton setBackgroundImage:KGetImage(@"") forState:0];
+        [self.tequanButton setBackgroundImage:KGetImage(@"giftBgImg") forState:0];
+        self.giftNum = @"1";
+        
+        if (self.tequanArray.count == 0) {
+            RoomFuDaiModel *green = [[RoomFuDaiModel alloc] init];
+            green.fuDaiID = @"8";
+            green.name = @"青玉福袋";
+            green.price = @"200";
+            green.image = @"theme_game_four_bag_green";
+            
+            RoomFuDaiModel *blue = [[RoomFuDaiModel alloc] init];
+            blue.fuDaiID = @"9";
+            blue.name = @"碧海福袋";
+            blue.price = @"1000";
+            blue.image = @"theme_game_four_bag_blue";
+            
+            RoomFuDaiModel *yellow = [[RoomFuDaiModel alloc] init];
+            yellow.fuDaiID = @"10";
+            yellow.name = @"鎏金福袋";
+            yellow.price = @"5000";
+            yellow.image = @"theme_game_four_bag_yellow";
+            
+            self.tequanArray = @[green, blue, yellow];
+        }
+        
+        self.giftCarouseArray = [self.tequanArray mutableCopy];
+        if ([[[UIDevice currentDevice] systemVersion] floatValue]<13) {
+            [self refreshLayout];
+        }
+        
+        [self.collectView reloadData];
     }
     
     self.pageControl.currentPage = 0;
@@ -1123,6 +1179,47 @@ static SVGAParser *parser;
         [_fudaiButton addTarget:self action:@selector(handleGiftTypeButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _fudaiButton;
+}
+
+- (UIButton *)tequanButton {
+    if (!_tequanButton) {
+        _tequanButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_tequanButton setTitle:getLanguage(@"特权") forState:UIControlStateNormal];
+        [_tequanButton setTitleColor:RGBA(207, 221, 248, 1) forState:UIControlStateNormal];
+        [_tequanButton setBackgroundImage:KGetImage(@"") forState:0];
+        _tequanButton.titleLabel.font = FONT_14;
+        _tequanButton.tag = 1003;
+        [_tequanButton addTarget:self action:@selector(handleGiftTypeButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _tequanButton;
+}
+
+- (UIButton *)synthesizeGiftButton {
+    if (!_synthesizeGiftButton) {
+        _synthesizeGiftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_synthesizeGiftButton setTitle:getLanguage(@"合成礼物") forState:UIControlStateNormal];
+        [_synthesizeGiftButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        _synthesizeGiftButton.titleLabel.font = FONT_12;
+        [_synthesizeGiftButton setImage:ImageNamed(@"mission_gift_icon") forState:UIControlStateNormal];
+        
+        CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+        gradientLayer.colors = @[
+            (__bridge id)[UIColor colorWithHexString:@"#E028B3"].CGColor,
+            (__bridge id)[UIColor colorWithHexString:@"#8002EC"].CGColor
+        ];
+        gradientLayer.startPoint = CGPointMake(0, 0.5);
+        gradientLayer.endPoint = CGPointMake(1, 0.5);
+        gradientLayer.frame = CGRectMake(0, 0, 100, 30);
+        gradientLayer.cornerRadius = 15;
+        [_synthesizeGiftButton.layer insertSublayer:gradientLayer atIndex:0];
+        
+        _synthesizeGiftButton.layer.cornerRadius = 15;
+        _synthesizeGiftButton.layer.masksToBounds = YES;
+        
+        _synthesizeGiftButton.imageEdgeInsets = UIEdgeInsetsMake(0, -4, 0, 4);
+        _synthesizeGiftButton.titleEdgeInsets = UIEdgeInsetsMake(0, 4, 0, -4);
+    }
+    return _synthesizeGiftButton;
 }
 
 - (UIView *)bgView{

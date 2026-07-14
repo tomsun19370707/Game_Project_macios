@@ -89,7 +89,11 @@ static NSString *ReuseIdentifier = @"BJGiftViewCell";
     _SelectIndexPath=SelectIndexPath;
     NSString *str = [fuDaiModel.price stringByReplacingOccurrencesOfString:@".00" withString:@""];
     self.packageGiftCount.text =[NSString stringWithFormat:@"%ld",[str integerValue]];
-    [self.giftIcon sd_setImageWithURL:[NSURL URLWithString:fuDaiModel.image] placeholderImage:ImageNamed(@"未加载头像")];
+    if ([fuDaiModel.image hasPrefix:@"http"]) {
+        [self.giftIcon sd_setImageWithURL:[NSURL URLWithString:fuDaiModel.image] placeholderImage:ImageNamed(@"未加载头像")];
+    } else {
+        self.giftIcon.image = ImageNamed(fuDaiModel.image);
+    }
         [self.giftName setTitle:fuDaiModel.price forState:UIControlStateNormal];
     self.giftPrice.text = NSStringFormat(@"%@",fuDaiModel.name);
     [self.giftName setImage:ImageNamed(@"coinImg") forState:UIControlStateNormal];
@@ -151,8 +155,13 @@ static NSString *ReuseIdentifier = @"BJGiftViewCell";
     if (isSelect) {
 //        [self shakeToShow:self.giftIcon];//暂时取消
         self.bkImageView.hidden = NO;
+        if (currentInex == 4) {
+            [self.sendBtn setTitle:@"开奖" forState:UIControlStateNormal];
+        } else {
+            [self.sendBtn setTitle:@"投喂" forState:UIControlStateNormal];
+        }
         self.sendBtn.hidden=NO;
-        if(currentInex==3){
+        if(currentInex==3 || currentInex==4){
             self.sendBtn.hidden=YES;
             [self.giftPrice mas_updateConstraints:^(MASConstraintMaker *make) {
                 make.top.mas_equalTo(self.giftIcon.mas_bottom).offset(8);
