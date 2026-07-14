@@ -49,8 +49,8 @@
     
     [_cardBgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(0);
-        make.leading.mas_equalTo(KDialogAdaptedWidth(12));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(6));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(6));
         make.height.mas_equalTo(KDialogAdaptedWidth(80));
     }];
     
@@ -160,15 +160,16 @@
         _avatarImageView.hidden = YES;
         _nicknameLabel.hidden = YES;
         
-        [_timeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(_cardBgImageView);
-            make.leading.mas_equalTo(_cardBgImageView.mas_leading).offset(KDialogAdaptedWidth(14));
-        }];
-        
         [_drawCountContainer mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(_cardBgImageView);
-            make.leading.mas_equalTo(_timeLabel.mas_trailing).offset(KDialogAdaptedWidth(30));
+            make.top.mas_equalTo(_cardBgImageView).offset(KDialogAdaptedWidth(18));
+            make.leading.mas_equalTo(_cardBgImageView.mas_leading).offset(KDialogAdaptedWidth(14));
             make.height.mas_equalTo(KDialogAdaptedWidth(20));
+        }];
+
+        [_timeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(_drawCountContainer.mas_bottom).offset(KDialogAdaptedWidth(6));
+            make.leading.mas_equalTo(_drawCountContainer);
+            make.trailing.mas_equalTo(_giftBgFrameView.mas_leading).offset(-KDialogAdaptedWidth(10));
         }];
     } else {
         _avatarBgView.hidden = NO;
@@ -401,8 +402,8 @@
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(self);
         make.centerX.mas_equalTo(self);
-        make.width.mas_equalTo(self).offset(-KDialogAdaptedWidth(32)).priorityMedium();
-        make.width.mas_lessThanOrEqualTo(KDialogAdaptedWidth(344)).priorityHigh();
+        make.width.mas_equalTo(self).offset(-KDialogAdaptedWidth(16)).priorityMedium();
+        make.width.mas_lessThanOrEqualTo(KDialogAdaptedWidth(360)).priorityHigh();
         make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1312.0 / 750.0);
     }];
     
@@ -460,8 +461,8 @@
     
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(tabsContainer.mas_bottom).offset(KDialogAdaptedWidth(12));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(24));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(24));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(12));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(12));
         make.bottom.mas_equalTo(-KDialogAdaptedWidth(36));
     }];
 }
