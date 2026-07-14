@@ -626,9 +626,7 @@
             void (^showResultBlock)(void) = ^{
                 [wself lockButtons:NO];
                 wself.isDrawing = NO;
-                [MLChatRoomThemeGameThreeResultView showInView:wself.superview gifts:list totalValue:totalValue times:times retryBlock:^{
-                    [wself drawWithTimes:times cost:cost];
-                }];
+                [MLChatRoomThemeGameThreeResultView showInView:wself.superview gifts:list totalValue:totalValue];
                 [wself loadData];
             };
             
