@@ -12,6 +12,7 @@
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *image;
 @property (nonatomic, copy) NSString *pic;
+@property (nonatomic, copy) NSString *content; // 玩法规则文本说明
 @property (nonatomic, strong) NSArray<MLGameLotteryOptModel *> *coin_cost_opt;
 @property (nonatomic, assign) NSInteger lottery_coin; // 当前玩法的钥匙余额
 @property (nonatomic, assign) NSInteger lucky; // 玩法保底寻梦值

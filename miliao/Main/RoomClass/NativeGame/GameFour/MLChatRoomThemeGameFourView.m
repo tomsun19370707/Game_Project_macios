@@ -482,7 +482,7 @@
         [self loadData];
         return;
     }
-    [MLChatRoomThemeGameFourRuleView showInView:self.superview ruleContent:self.infoModel.pic]; // pic field usually stores rules text returned by server
+    [MLChatRoomThemeGameFourRuleView showInView:self.superview ruleContent:self.infoModel.content]; // content field stores rules text returned by server
 }
 
 - (void)recordClick {
