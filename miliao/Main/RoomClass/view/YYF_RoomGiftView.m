@@ -433,11 +433,7 @@ static SVGAParser *parser;
 //}
 
 - (void)setGiftCarouse:(NSMutableArray *)giftCarouseArray userCarousel:(NSMutableArray *)userCarouselArray userMiZuan:(NSString *)miZuan allUsers:(NSArray *)allUsers andUserNum:(NSInteger)allNum{
-    self.currentType =1;
-    self.giftNum = @"1";
-    self.changeHeight=0;
-    self.numBgView.hidden=YES;
-    [self upDataView];
+    [self handleGiftTypeButtonClick:self.giftButton];
 //    [self.giftNumButton setTitle:@"x1" forState:UIControlStateNormal];
     [self.usersIsSelectedArray removeAllObjects];
     self.allNum=allNum;
@@ -1200,7 +1196,16 @@ static SVGAParser *parser;
         [_synthesizeGiftButton setTitle:getLanguage(@"合成礼物") forState:UIControlStateNormal];
         [_synthesizeGiftButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         _synthesizeGiftButton.titleLabel.font = FONT_12;
-        [_synthesizeGiftButton setImage:ImageNamed(@"mission_gift_icon") forState:UIControlStateNormal];
+        
+        // Resize mission_gift_icon to 15x14 to avoid distortion and text truncation
+        UIImage *originalImage = ImageNamed(@"mission_gift_icon");
+        CGSize targetSize = CGSizeMake(15, 14);
+        UIGraphicsBeginImageContextWithOptions(targetSize, NO, 0.0);
+        [originalImage drawInRect:CGRectMake(0, 0, targetSize.width, targetSize.height)];
+        UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        [_synthesizeGiftButton setImage:resizedImage forState:UIControlStateNormal];
         
         CAGradientLayer *gradientLayer = [CAGradientLayer layer];
         gradientLayer.colors = @[
@@ -1211,7 +1216,13 @@ static SVGAParser *parser;
         gradientLayer.endPoint = CGPointMake(1, 0.5);
         gradientLayer.frame = CGRectMake(0, 0, 100, 30);
         gradientLayer.cornerRadius = 15;
-        [_synthesizeGiftButton.layer insertSublayer:gradientLayer atIndex:0];
+        
+        UIGraphicsBeginImageContextWithOptions(gradientLayer.bounds.size, NO, 0.0);
+        [gradientLayer renderInContext:UIGraphicsGetCurrentContext()];
+        UIImage *gradientImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        [_synthesizeGiftButton setBackgroundImage:gradientImage forState:UIControlStateNormal];
         
         _synthesizeGiftButton.layer.cornerRadius = 15;
         _synthesizeGiftButton.layer.masksToBounds = YES;

@@ -155,11 +155,7 @@ static NSString *ReuseIdentifier = @"BJGiftViewCell";
     if (isSelect) {
 //        [self shakeToShow:self.giftIcon];//暂时取消
         self.bkImageView.hidden = NO;
-        if (currentInex == 4) {
-            [self.sendBtn setTitle:@"开奖" forState:UIControlStateNormal];
-        } else {
-            [self.sendBtn setTitle:@"投喂" forState:UIControlStateNormal];
-        }
+        [self.sendBtn setTitle:@"投喂" forState:UIControlStateNormal];
         self.sendBtn.hidden=NO;
         if(currentInex==3 || currentInex==4){
             self.sendBtn.hidden=YES;
