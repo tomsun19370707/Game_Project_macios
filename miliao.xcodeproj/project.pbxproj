@@ -15,6 +15,7 @@
 		33221FD9883A474BAA4579B4 /* MLChatRoomThemeGameFourRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */; };
 		B8F8986484E3483BBBB71C37 /* MLChatRoomThemeGameFourRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */; };
 		5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */ = {isa = PBXBuildFile; fileRef = 09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */; };
+		E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */; };
 		00030BA222CDAF18003896EE /* EMO_RoomAnnouncementVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 00030BA122CDAF18003896EE /* EMO_RoomAnnouncementVC.m */; };
 		00030BAF22CE0388003896EE /* RoomSearchView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00030BAE22CE0388003896EE /* RoomSearchView.m */; };
 		000716F422BB213D00E5F8DC /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 000716F322BB213D00E5F8DC /* libc++.tbd */; };
@@ -1192,6 +1193,8 @@
 		371F211E4A4D4D8BBD81DCB7 /* MLChatRoomThemeGameFourRuleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourRuleView.h; sourceTree = "<group>"; };
 		9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourRuleView.m; sourceTree = "<group>"; };
 		674F5B233D9A41B7AD4614A3 /* MLChatRoomThemeGameFourView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourView.h; sourceTree = "<group>"; };
+		E4C4B13B1FDF417A902A24F1 /* MLChatRoomThemeGameFourRankView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourRankView.h; sourceTree = "<group>"; };
+		E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourRankView.m; sourceTree = "<group>"; };
 		09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourView.m; sourceTree = "<group>"; };
 		00030BA022CDAF18003896EE /* EMO_RoomAnnouncementVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMO_RoomAnnouncementVC.h; sourceTree = "<group>"; };
 		00030BA122CDAF18003896EE /* EMO_RoomAnnouncementVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMO_RoomAnnouncementVC.m; sourceTree = "<group>"; };
@@ -3425,6 +3428,8 @@
 				9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */,
 				674F5B233D9A41B7AD4614A3 /* MLChatRoomThemeGameFourView.h */,
 				09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */,
+				E4C4B13B1FDF417A902A24F1 /* MLChatRoomThemeGameFourRankView.h */,
+				E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */,
 			);
 			path = GameFour;
 			sourceTree = "<group>";
@@ -9224,6 +9229,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
+				E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */,
 				4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */,
 				89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */,
 				33221FD9883A474BAA4579B4 /* MLChatRoomThemeGameFourRecordView.m in Sources */,
@@ -10178,6 +10184,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
+				E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */,
 				4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */,
 				89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */,
 				33221FD9883A474BAA4579B4 /* MLChatRoomThemeGameFourRecordView.m in Sources */,
@@ -10191,6 +10198,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
+				E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */,
 				4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */,
 				89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */,
 				33221FD9883A474BAA4579B4 /* MLChatRoomThemeGameFourRecordView.m in Sources */,

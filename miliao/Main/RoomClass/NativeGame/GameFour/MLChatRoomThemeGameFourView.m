@@ -21,6 +21,7 @@
 #import "MLChatRoomThemeGameFourResultView.h"
 #import "MLChatRoomThemeGameFourRecordView.h"
 #import "MLChatRoomThemeGameFourRuleView.h"
+#import "MLChatRoomThemeGameFourRankView.h"
 
 @interface MLChatRoomThemeGameFourView () <SVGAPlayerDelegate>
 
@@ -473,8 +474,7 @@
 #pragma mark - Button Actions
 
 - (void)rankClick {
-    [SVProgressHUD showInfoWithStatus:@"排行榜正在构建中..."];
-    // Will show [MLChatRoomThemeGameFourRankView showInView:self.superview typeId:self.typeId];
+    [MLChatRoomThemeGameFourRankView showInView:self.superview typeId:self.typeId];
 }
 
 - (void)ruleClick {
