@@ -4,6 +4,7 @@
 #import "MLChatRoomThemeGameTwoView.h"
 #import "MLChatRoomThemeGameThreeView.h"
 #import "Global.h"
+#import <SVProgressHUD.h>
 
 @interface MLChatRoomNativeGameView () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -154,6 +155,10 @@
         [cell configureWithTitle:@"星辰序章"
                        logoName:@"native_game_entry_icon"
                       textColor:[UIColor blackColor]];
+    } else if (indexPath.item == 3) {
+        [cell configureWithTitle:@"奇妙星球"
+                       logoName:@"theme_game_five_entry_icon"
+                      textColor:[UIColor blackColor]];
     } else {
         [cell configureWithTitle:@"敬请期待"
                        logoName:@"chat_room_plate_draw"
@@ -164,8 +169,12 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.item >= 3) {
-        // “敬请期待”格子 -> 拦截点击事件，直接忽略
+    if (indexPath.item == 3) {
+        [SVProgressHUD showInfoWithStatus:getLanguage(@"游戏开发中，敬请期待")];
+        return;
+    }
+    if (indexPath.item >= 4) {
+        // “敬请期待”从第四位开始
         return;
     }
     
