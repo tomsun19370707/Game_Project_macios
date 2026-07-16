@@ -703,7 +703,7 @@
         self.svgaPlayer.contentMode = UIViewContentModeScaleAspectFit;
         [self addSubview:self.svgaPlayer];
         [self.svgaPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(self);
+            make.edges.mas_equalTo(_bgImageView);
         }];
     }
     self.svgaPlayer.hidden = NO;
