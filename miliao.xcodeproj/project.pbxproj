@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1970F86AA1154E0C8C0C9375 /* MLChatRoomThemeGameFiveView.m in Sources */ = {isa = PBXBuildFile; fileRef = E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */; };
 		04136C8868494FCDBD839778 /* theme_game_four_green_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = A4A5B0D9D044423EA3A37F7C /* theme_game_four_green_draw.svga */; };
 		3374BD94BA504808A3AB0C8A /* theme_game_four_blue_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = 1963B5DE13A94E07BBD5F201 /* theme_game_four_blue_draw.svga */; };
 		4AB3CB01B19E4E87B04773C2 /* theme_game_four_yellow_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = E910B19BDD7E4BB29730EBF7 /* theme_game_four_yellow_draw.svga */; };
@@ -1181,6 +1182,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		34EBE39101E84B7FA78C0D47 /* MLChatRoomThemeGameFiveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MLChatRoomThemeGameFiveView.h; path = MLChatRoomThemeGameFiveView.h; sourceTree = "<group>"; };
+		E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MLChatRoomThemeGameFiveView.m; path = MLChatRoomThemeGameFiveView.m; sourceTree = "<group>"; };
 		A4A5B0D9D044423EA3A37F7C /* theme_game_four_green_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_four_green_draw.svga; sourceTree = "<group>"; };
 		1963B5DE13A94E07BBD5F201 /* theme_game_four_blue_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_four_blue_draw.svga; sourceTree = "<group>"; };
 		E910B19BDD7E4BB29730EBF7 /* theme_game_four_yellow_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_four_yellow_draw.svga; sourceTree = "<group>"; };
@@ -3415,6 +3418,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1BD1D3A6ADB741A48CD4561E /* GameFive */ = {
+			isa = PBXGroup;
+			children = (
+				34EBE39101E84B7FA78C0D47 /* MLChatRoomThemeGameFiveView.h */,
+				E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */,
+			);
+			name = GameFive;
+			path = GameFive;
+			sourceTree = "<group>";
+		};
 		ED0B8DB30C101FE22F0F4506 /* GameFour */ = {
 			isa = PBXGroup;
 			children = (
@@ -5593,6 +5606,7 @@
 		7C70E9452FED864D00A11B29 /* NativeGame */ = {
 			isa = PBXGroup;
 			children = (
+				1BD1D3A6ADB741A48CD4561E /* GameFive */,
 				ED0B8DB30C101FE22F0F4506 /* GameFour */,
 				EA7F9B3E17404C57A44B9917 /* GameThree */,
 				FA76D0B8AB834D29BF718252 /* Common */,
@@ -9229,6 +9243,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
+				1970F86AA1154E0C8C0C9375 /* MLChatRoomThemeGameFiveView.m in Sources */,
 				E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */,
 				4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */,
 				89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */,
@@ -10184,6 +10199,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
+				1970F86AA1154E0C8C0C9375 /* MLChatRoomThemeGameFiveView.m in Sources */,
 				E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */,
 				4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */,
 				89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */,
@@ -10198,6 +10214,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
+				1970F86AA1154E0C8C0C9375 /* MLChatRoomThemeGameFiveView.m in Sources */,
 				E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */,
 				4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */,
 				89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */,

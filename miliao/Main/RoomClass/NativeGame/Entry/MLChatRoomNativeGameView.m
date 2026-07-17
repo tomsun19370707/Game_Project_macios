@@ -3,6 +3,7 @@
 #import "MLChatRoomThemeGameOneView.h"
 #import "MLChatRoomThemeGameTwoView.h"
 #import "MLChatRoomThemeGameThreeView.h"
+#import "MLChatRoomThemeGameFiveView.h"
 #import "Global.h"
 #import <SVProgressHUD.h>
 
@@ -169,10 +170,6 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.item == 3) {
-        [SVProgressHUD showInfoWithStatus:getLanguage(@"游戏开发中，敬请期待")];
-        return;
-    }
     if (indexPath.item >= 4) {
         // “敬请期待”从第四位开始
         return;
@@ -189,6 +186,9 @@
         } else if (indexPath.item == 2) {
             // 打开玩法3 (星辰序章, lottery_id = 3, typeId = 7)
             [MLChatRoomThemeGameThreeView showInView:parentView typeId:7];
+        } else if (indexPath.item == 3) {
+            // 打开玩法5 (奇妙星球, 复用 typeId = 7)
+            [MLChatRoomThemeGameFiveView showInView:parentView typeId:7];
         }
     }];
 }
