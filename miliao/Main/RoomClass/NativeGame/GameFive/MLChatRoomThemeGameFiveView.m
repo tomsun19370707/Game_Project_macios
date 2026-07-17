@@ -8,6 +8,7 @@
 #import "Global.h"
 #import "UIViewController+CurViewController.h"
 #import "CFMWalletDiamondRechargeVc.h"
+#import "MLChatRoomThemeGameFiveGiftView.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD.h>
 
@@ -140,7 +141,6 @@
 @property (nonatomic, strong) UIImageView *bgImageView;
 
 // HUD Buttons
-@property (nonatomic, strong) UIView *hudContainer;
 @property (nonatomic, strong) UIButton *giftButton;
 @property (nonatomic, strong) UIButton *ruleButton;
 @property (nonatomic, strong) UIButton *recordButton;
@@ -236,20 +236,11 @@
         make.edges.mas_equalTo(_backgroundContainer);
     }];
 
-    // 3. HUD Container (Top bar controls)
-    _hudContainer = [[UIView alloc] init];
-    _hudContainer.backgroundColor = [UIColor clearColor];
-    [_backgroundContainer addSubview:_hudContainer];
-    [_hudContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.leading.trailing.mas_equalTo(_backgroundContainer);
-        make.height.mas_equalTo(KDialogAdaptedWidth(80));
-    }];
-
     // Left Gift Button
     _giftButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_giftButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_btn_gift"] forState:UIControlStateNormal];
     [_giftButton addTarget:self action:@selector(giftClick) forControlEvents:UIControlEventTouchUpInside];
-    [_hudContainer addSubview:_giftButton];
+    [_backgroundContainer addSubview:_giftButton];
     [_giftButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(125));
         make.leading.mas_equalTo(KDialogAdaptedWidth(5));
@@ -260,7 +251,7 @@
     _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_ruleButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_btn_rule"] forState:UIControlStateNormal];
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
-    [_hudContainer addSubview:_ruleButton];
+    [_backgroundContainer addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(125));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(5));
@@ -271,7 +262,7 @@
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_recordButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_btn_record"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
-    [_hudContainer addSubview:_recordButton];
+    [_backgroundContainer addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(_ruleButton.mas_bottom).offset(KDialogAdaptedWidth(5));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(5));
@@ -518,7 +509,7 @@
 #pragma mark - Click Action Handlers
 
 - (void)giftClick {
-    [SVProgressHUD showInfoWithStatus:getLanguage(@"礼物详情开发中")];
+    [MLChatRoomThemeGameFiveGiftView showInView:self.superview typeId:self.typeId prizes:self.prizesInPool];
 }
 
 - (void)ruleClick {
