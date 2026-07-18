@@ -10,6 +10,7 @@
 #import "CFMWalletDiamondRechargeVc.h"
 #import "MLChatRoomThemeGameFiveGiftView.h"
 #import "MLChatRoomThemeGameFiveRuleView.h"
+#import "MLChatRoomThemeGameFiveResultView.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD.h>
 
@@ -168,7 +169,8 @@
 
 @property (nonatomic, strong) UIButton *rechargeButton;
 
-// Local Balances
+// Local Balances & States
+@property (nonatomic, assign) BOOL isDrawing;
 @property (nonatomic, assign) NSInteger localKeyBalance;
 @property (nonatomic, strong) MLGameLotteryInfoModel *infoModel;
 
@@ -521,6 +523,10 @@
     [SVProgressHUD showInfoWithStatus:getLanguage(@"记录开发中")];
 }
 
+- (void)keyPurchaseClick {
+    [self rechargeClick];
+}
+
 - (void)rechargeClick {
     // Recharge redirection
     UIViewController *currVC = [UIViewController currentViewController];
@@ -559,30 +565,40 @@
 }
 
 - (void)performDrawWithTimes:(NSInteger)times {
-    // 1. Estimate cost (236, 2360, or 23600 diamonds)
-    NSInteger cost = 236;
-    if (times == 10) cost = 2360;
-    if (times == 100) cost = 23600;
+    if (self.isDrawing) return;
     
-    // We can fetch diamond balance safely from label
-    double balance = [self.diamondBalanceLabel.text doubleValue];
-    if (balance < cost) {
-        [SVProgressHUD showErrorWithStatus:getLanguage(@"钻石余额不足，请先充值")];
+    NSInteger requiredKeys = times;
+    
+    // Verify key balance
+    if (self.localKeyBalance < requiredKeys) {
+        [self keyPurchaseClick];
         return;
     }
     
-    // 2. Perform lottery request
+    self.isDrawing = YES;
+    
+    // Optimistic local key balance deduction
+    self.localKeyBalance -= requiredKeys;
+    [self updateBalanceUI];
+    
+    // Perform lottery request
     __weak typeof(self) weakSelf = self;
     [SVProgressHUD show];
     [MLGameLotteryService drawWithTypeId:self.typeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (!strongSelf) return;
         [SVProgressHUD dismiss];
+        strongSelf.isDrawing = NO;
         
-        // Show success alert and reload data
-        [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"抽奖成功，共获得 %ld 个礼物！", (long)list.count]];
+        // Show result view and reload data
+        [MLChatRoomThemeGameFiveResultView showInView:strongSelf.superview gifts:list totalValue:totalValue];
         [strongSelf loadData];
     } failure:^(NSError *error) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (strongSelf) {
+            strongSelf.isDrawing = NO;
+            [strongSelf loadData];
+        }
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
 }
