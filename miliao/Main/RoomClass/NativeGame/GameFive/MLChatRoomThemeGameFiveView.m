@@ -9,6 +9,7 @@
 #import "UIViewController+CurViewController.h"
 #import "CFMWalletDiamondRechargeVc.h"
 #import "MLChatRoomThemeGameFiveGiftView.h"
+#import "MLChatRoomThemeGameFiveRuleView.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD.h>
 
@@ -513,11 +514,7 @@
 }
 
 - (void)ruleClick {
-    NSString *ruleText = self.infoModel.content;
-    if (ruleText.length == 0) {
-        ruleText = @"1. 玩法说明\n本活动为奇妙星球探索活动，使用钻石兑换钥匙即可开启探索，获得精美礼物。\n\n2. 钻石兑换\n用户可兑换专属钥匙，兑换比例为：10 钻石 = 1 把钥匙。\n\n3. 奇妙探索\n• 开启 1 次探索：消耗 236 钻石，赠送金钥匙*23，赠送抽奖1次。\n• 开启 10 次探索：消耗 2360 钻石，赠送金钥匙*230，赠送抽奖10次。\n• 开启 100 次探索：消耗 23600 钻石，赠送金钥匙*2300，赠送抽奖100次。";
-    }
-    [SVProgressHUD showInfoWithStatus:ruleText];
+    [MLChatRoomThemeGameFiveRuleView showInView:self.superview ruleContent:self.infoModel.content];
 }
 
 - (void)recordClick {

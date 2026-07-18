@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A5A5553327E511880000551C /* MLChatRoomThemeGameFiveRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5552227E511880000551B /* MLChatRoomThemeGameFiveRuleView.m */; };
 		2D57223BC7A9436B89F257B9 /* MLChatRoomThemeGameFiveGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0C8089ED964013A0332E16 /* MLChatRoomThemeGameFiveGiftView.m */; };
 		1970F86AA1154E0C8C0C9375 /* MLChatRoomThemeGameFiveView.m in Sources */ = {isa = PBXBuildFile; fileRef = E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */; };
 		04136C8868494FCDBD839778 /* theme_game_four_green_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = A4A5B0D9D044423EA3A37F7C /* theme_game_four_green_draw.svga */; };
@@ -1183,6 +1184,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A5A5551127E511880000551A /* MLChatRoomThemeGameFiveRuleView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveRuleView.h; sourceTree = "<group>"; };
+		A5A5552227E511880000551B /* MLChatRoomThemeGameFiveRuleView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveRuleView.m; sourceTree = "<group>"; };
 		29CC52D51AF1466394E32495 /* MLChatRoomThemeGameFiveGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MLChatRoomThemeGameFiveGiftView.h; path = MLChatRoomThemeGameFiveGiftView.h; sourceTree = "<group>"; };
 		4F0C8089ED964013A0332E16 /* MLChatRoomThemeGameFiveGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MLChatRoomThemeGameFiveGiftView.m; path = MLChatRoomThemeGameFiveGiftView.m; sourceTree = "<group>"; };
 		34EBE39101E84B7FA78C0D47 /* MLChatRoomThemeGameFiveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MLChatRoomThemeGameFiveView.h; path = MLChatRoomThemeGameFiveView.h; sourceTree = "<group>"; };
@@ -3426,6 +3429,8 @@
 			children = (
 				29CC52D51AF1466394E32495 /* MLChatRoomThemeGameFiveGiftView.h */,
 				4F0C8089ED964013A0332E16 /* MLChatRoomThemeGameFiveGiftView.m */,
+				A5A5551127E511880000551A /* MLChatRoomThemeGameFiveRuleView.h */,
+				A5A5552227E511880000551B /* MLChatRoomThemeGameFiveRuleView.m */,
 				34EBE39101E84B7FA78C0D47 /* MLChatRoomThemeGameFiveView.h */,
 				E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */,
 			);
@@ -9247,6 +9252,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5A5553327E511880000551C /* MLChatRoomThemeGameFiveRuleView.m in Sources */,
 				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
 				1970F86AA1154E0C8C0C9375 /* MLChatRoomThemeGameFiveView.m in Sources */,
 				2D57223BC7A9436B89F257B9 /* MLChatRoomThemeGameFiveGiftView.m in Sources */,
