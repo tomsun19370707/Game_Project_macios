@@ -11,6 +11,7 @@
 #import "MLChatRoomThemeGameFiveGiftView.h"
 #import "MLChatRoomThemeGameFiveRuleView.h"
 #import "MLChatRoomThemeGameFiveResultView.h"
+#import "MLChatRoomThemeGameFiveRecordView.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD.h>
 
@@ -520,7 +521,7 @@
 }
 
 - (void)recordClick {
-    [SVProgressHUD showInfoWithStatus:getLanguage(@"记录开发中")];
+    [MLChatRoomThemeGameFiveRecordView showInView:self.superview typeId:self.typeId];
 }
 
 - (void)keyPurchaseClick {

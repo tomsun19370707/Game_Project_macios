@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A5A5559927E5118800005522 /* MLChatRoomThemeGameFiveRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5558827E5118800005521 /* MLChatRoomThemeGameFiveRecordView.m */; };
 		A5A5556627E511880000551F /* MLChatRoomThemeGameFiveResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5555527E511880000551E /* MLChatRoomThemeGameFiveResultView.m */; };
 		A5A5553327E511880000551C /* MLChatRoomThemeGameFiveRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5552227E511880000551B /* MLChatRoomThemeGameFiveRuleView.m */; };
 		2D57223BC7A9436B89F257B9 /* MLChatRoomThemeGameFiveGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0C8089ED964013A0332E16 /* MLChatRoomThemeGameFiveGiftView.m */; };
@@ -1185,6 +1186,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A5A5557727E5118800005520 /* MLChatRoomThemeGameFiveRecordView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveRecordView.h; sourceTree = "<group>"; };
+		A5A5558827E5118800005521 /* MLChatRoomThemeGameFiveRecordView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveRecordView.m; sourceTree = "<group>"; };
 		A5A5554427E511880000551D /* MLChatRoomThemeGameFiveResultView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveResultView.h; sourceTree = "<group>"; };
 		A5A5555527E511880000551E /* MLChatRoomThemeGameFiveResultView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveResultView.m; sourceTree = "<group>"; };
 		A5A5551127E511880000551A /* MLChatRoomThemeGameFiveRuleView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveRuleView.h; sourceTree = "<group>"; };
@@ -3436,6 +3439,8 @@
 				A5A5552227E511880000551B /* MLChatRoomThemeGameFiveRuleView.m */,
 				A5A5554427E511880000551D /* MLChatRoomThemeGameFiveResultView.h */,
 				A5A5555527E511880000551E /* MLChatRoomThemeGameFiveResultView.m */,
+				A5A5557727E5118800005520 /* MLChatRoomThemeGameFiveRecordView.h */,
+				A5A5558827E5118800005521 /* MLChatRoomThemeGameFiveRecordView.m */,
 				34EBE39101E84B7FA78C0D47 /* MLChatRoomThemeGameFiveView.h */,
 				E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */,
 			);
@@ -9257,6 +9262,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5A5559927E5118800005522 /* MLChatRoomThemeGameFiveRecordView.m in Sources */,
 				A5A5556627E511880000551F /* MLChatRoomThemeGameFiveResultView.m in Sources */,
 				A5A5553327E511880000551C /* MLChatRoomThemeGameFiveRuleView.m in Sources */,
 				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
