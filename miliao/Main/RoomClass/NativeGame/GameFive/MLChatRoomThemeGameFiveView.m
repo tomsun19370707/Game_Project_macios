@@ -176,6 +176,14 @@
 @property (nonatomic, assign) NSInteger localKeyBalance;
 @property (nonatomic, strong) MLGameLotteryInfoModel *infoModel;
 
+// Marquee Spin Animation States
+@property (nonatomic, strong) NSTimer *spinTimer;
+@property (nonatomic, assign) NSInteger currentHighlightIndex;
+@property (nonatomic, assign) NSInteger totalSpinSteps;
+@property (nonatomic, assign) NSInteger currentSpinStep;
+@property (nonatomic, assign) NSInteger targetLandingIndex;
+@property (nonatomic, copy) void(^spinCompletionBlock)(void);
+
 @end
 
 @implementation MLChatRoomThemeGameFiveView
@@ -493,6 +501,10 @@
     }];
 }
 
+- (void)dealloc {
+    [self stopSpinTimer];
+}
+
 - (void)updateBalanceUI {
     NSString *keyStr = [NSString stringWithFormat:@"%ld", (long)_localKeyBalance];
     if (keyStr.length > 8) {
@@ -504,7 +516,7 @@
 - (void)renderGiftBoard {
     for (int i = 0; i < _cardViews.count; i++) {
         MLChatRoomThemeGameFiveCard *card = _cardViews[i];
-        BOOL isYellow = NO;
+        BOOL isYellow = (i == self.currentHighlightIndex);
         if (i < self.prizesInPool.count) {
             [card configureWithModel:self.prizesInPool[i] isYellow:isYellow];
         } else {
@@ -513,21 +525,99 @@
     }
 }
 
+#pragma mark - Marquee Spin Animation Controls
+
+- (void)updateCardHighlightIndex:(NSInteger)highlightIndex {
+    for (NSInteger i = 0; i < self.cardViews.count; i++) {
+        MLChatRoomThemeGameFiveCard *card = self.cardViews[i];
+        MLGameDrawResultModel *model = (i < self.prizesInPool.count) ? self.prizesInPool[i] : nil;
+        [card configureWithModel:model isYellow:(i == highlightIndex)];
+    }
+}
+
+- (void)resetCardHighlights {
+    self.currentHighlightIndex = -1;
+    [self updateCardHighlightIndex:-1];
+}
+
+- (void)startPhase1UniformSpin {
+    [self stopSpinTimer];
+    __weak typeof(self) weakSelf = self;
+    self.spinTimer = [NSTimer scheduledTimerWithTimeInterval:0.08 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        strongSelf.currentHighlightIndex = (strongSelf.currentHighlightIndex + 1) % 16;
+        [strongSelf updateCardHighlightIndex:strongSelf.currentHighlightIndex];
+    }];
+}
+
+- (void)startPhase2DecelerateSpinToTargetIndex:(NSInteger)targetIndex completion:(void(^)(void))completion {
+    [self stopSpinTimer];
+    self.spinCompletionBlock = completion;
+    self.targetLandingIndex = targetIndex;
+    
+    // Calculate total steps: 2 full rounds (32 steps) + target offset
+    NSInteger extraSteps = (targetIndex - self.currentHighlightIndex + 16) % 16;
+    self.totalSpinSteps = 32 + extraSteps;
+    self.currentSpinStep = 0;
+    
+    [self scheduleNextDecelerateStep];
+}
+
+- (void)scheduleNextDecelerateStep {
+    if (self.currentSpinStep >= self.totalSpinSteps) {
+        self.currentHighlightIndex = self.targetLandingIndex;
+        [self updateCardHighlightIndex:self.targetLandingIndex];
+        if (self.spinCompletionBlock) {
+            self.spinCompletionBlock();
+            self.spinCompletionBlock = nil;
+        }
+        return;
+    }
+    
+    self.currentHighlightIndex = (self.currentHighlightIndex + 1) % 16;
+    [self updateCardHighlightIndex:self.currentHighlightIndex];
+    self.currentSpinStep++;
+    
+    // Calculate decelerated interval: 0.08s -> 0.35s
+    double progress = (double)self.currentSpinStep / (double)self.totalSpinSteps;
+    double interval = 0.08 + (0.35 - 0.08) * (progress * progress); // quadratic decelerate
+    
+    __weak typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (strongSelf && strongSelf.isDrawing) {
+            [strongSelf scheduleNextDecelerateStep];
+        }
+    });
+}
+
+- (void)stopSpinTimer {
+    if (self.spinTimer) {
+        [self.spinTimer invalidate];
+        self.spinTimer = nil;
+    }
+}
+
 #pragma mark - Click Action Handlers
 
 - (void)giftClick {
+    if (self.isDrawing) return;
     [MLChatRoomThemeGameFiveGiftView showInView:self.superview typeId:self.typeId prizes:self.prizesInPool];
 }
 
 - (void)ruleClick {
+    if (self.isDrawing) return;
     [MLChatRoomThemeGameFiveRuleView showInView:self.superview ruleContent:self.infoModel.content];
 }
 
 - (void)recordClick {
+    if (self.isDrawing) return;
     [MLChatRoomThemeGameFiveRecordView showInView:self.superview typeId:self.typeId];
 }
 
 - (void)keyPurchaseClick {
+    if (self.isDrawing) return;
     __weak typeof(self) weakSelf = self;
     [MLChatRoomThemeGameFivePurchaseView showInView:self.superview infoModel:self.infoModel purchaseSuccess:^(NSInteger newKeyBalance) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
@@ -539,6 +629,7 @@
 }
 
 - (void)rechargeClick {
+    if (self.isDrawing) return;
     // Recharge redirection
     UIViewController *currVC = [UIViewController currentViewController];
     if (currVC) {
@@ -592,22 +683,48 @@
     self.localKeyBalance -= requiredKeys;
     [self updateBalanceUI];
     
+    // Start Phase 1 uniform card spin (0 -> 1 -> ... -> 15)
+    [self startPhase1UniformSpin];
+    
     // Perform lottery request
     __weak typeof(self) weakSelf = self;
-    [SVProgressHUD show];
     [MLGameLotteryService drawWithTypeId:self.typeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (!strongSelf) return;
-        [SVProgressHUD dismiss];
-        strongSelf.isDrawing = NO;
         
-        // Show result view and reload data
-        [MLChatRoomThemeGameFiveResultView showInView:strongSelf.superview gifts:list totalValue:totalValue];
-        [strongSelf loadData];
+        // Find highest price prize in result list to land on
+        NSInteger targetIndex = 0;
+        if (list && list.count > 0 && strongSelf.prizesInPool && strongSelf.prizesInPool.count > 0) {
+            MLGameDrawResultModel *highestPrize = nil;
+            for (MLGameDrawResultModel *prize in list) {
+                if (!highestPrize || prize.price > highestPrize.price) {
+                    highestPrize = prize;
+                }
+            }
+            if (highestPrize) {
+                for (NSInteger i = 0; i < strongSelf.prizesInPool.count; i++) {
+                    if (strongSelf.prizesInPool[i].price == highestPrize.price || [strongSelf.prizesInPool[i].name isEqualToString:highestPrize.name]) {
+                        targetIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Start Phase 2 decelerated spin to target card index
+        [strongSelf startPhase2DecelerateSpinToTargetIndex:targetIndex completion:^{
+            strongSelf.isDrawing = NO;
+            [MLChatRoomThemeGameFiveResultView showInView:strongSelf.superview gifts:list totalValue:totalValue];
+            [strongSelf loadData];
+        }];
     } failure:^(NSError *error) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (strongSelf) {
+            [strongSelf stopSpinTimer];
+            [strongSelf resetCardHighlights];
             strongSelf.isDrawing = NO;
+            strongSelf.localKeyBalance += requiredKeys; // Rollback
+            [strongSelf updateBalanceUI];
             [strongSelf loadData];
         }
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
@@ -626,6 +743,7 @@
 }
 
 - (void)handleMaskTap:(UITapGestureRecognizer *)gesture {
+    if (self.isDrawing) return;
     CGPoint point = [gesture locationInView:self];
     if (!CGRectContainsPoint(_backgroundContainer.frame, point)) {
         [self closeClick];
@@ -633,10 +751,12 @@
 }
 
 - (void)closeClick {
+    if (self.isDrawing) return;
     [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
         self.alpha = 0;
         self.backgroundContainer.transform = CGAffineTransformMakeScale(0.7, 0.7);
     } completion:^(BOOL finished) {
+        [self stopSpinTimer];
         [self removeFromSuperview];
     }];
 }
