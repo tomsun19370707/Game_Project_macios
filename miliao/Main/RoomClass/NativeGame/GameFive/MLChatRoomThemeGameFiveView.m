@@ -12,6 +12,7 @@
 #import "MLChatRoomThemeGameFiveRuleView.h"
 #import "MLChatRoomThemeGameFiveResultView.h"
 #import "MLChatRoomThemeGameFiveRecordView.h"
+#import "MLChatRoomThemeGameFivePurchaseView.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD.h>
 
@@ -371,6 +372,8 @@
     _keyBarView.image = [UIImage imageNamed:@"theme_game_five_bar_key"];
     _keyBarView.contentMode = UIViewContentModeScaleToFill;
     _keyBarView.userInteractionEnabled = YES;
+    UITapGestureRecognizer *keyTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(keyPurchaseClick)];
+    [_keyBarView addGestureRecognizer:keyTap];
     [_statusBar addSubview:_keyBarView];
     [_keyBarView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(KDialogAdaptedWidth(10));
@@ -525,7 +528,14 @@
 }
 
 - (void)keyPurchaseClick {
-    [self rechargeClick];
+    __weak typeof(self) weakSelf = self;
+    [MLChatRoomThemeGameFivePurchaseView showInView:self.superview infoModel:self.infoModel purchaseSuccess:^(NSInteger newKeyBalance) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (strongSelf) {
+            strongSelf.localKeyBalance = newKeyBalance;
+            [strongSelf updateBalanceUI];
+        }
+    }];
 }
 
 - (void)rechargeClick {
