@@ -4,6 +4,7 @@
 #import "MLChatRoomThemeGameTwoView.h"
 #import "MLChatRoomThemeGameThreeView.h"
 #import "MLChatRoomThemeGameFiveView.h"
+#import "MLChatRoomThemeGameSixView.h"
 #import "Global.h"
 #import <SVProgressHUD.h>
 
@@ -195,7 +196,7 @@
             [MLChatRoomThemeGameFiveView showInView:parentView typeId:7];
         } else if (indexPath.item == 4) {
             // 打开玩法6 (玲珑珍宝塔)
-            [SVProgressHUD showInfoWithStatus:@"游戏开发中，敬请期待"];
+            [MLChatRoomThemeGameSixView showInView:parentView typeId:6];
         }
     }];
 }

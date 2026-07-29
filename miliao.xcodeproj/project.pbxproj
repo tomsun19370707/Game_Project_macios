@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA6000032970000000000006 /* MLChatRoomThemeGameSixView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000022970000000000006 /* MLChatRoomThemeGameSixView.m */; };
 		A5A555CC27E5118800005525 /* MLChatRoomThemeGameFivePurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A555BB27E5118800005524 /* MLChatRoomThemeGameFivePurchaseView.m */; };
 		A5A5559927E5118800005522 /* MLChatRoomThemeGameFiveRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5558827E5118800005521 /* MLChatRoomThemeGameFiveRecordView.m */; };
 		A5A5556627E511880000551F /* MLChatRoomThemeGameFiveResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5555527E511880000551E /* MLChatRoomThemeGameFiveResultView.m */; };
@@ -1187,6 +1188,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FA6000012970000000000006 /* MLChatRoomThemeGameSixView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixView.h; sourceTree = "<group>"; };
+		FA6000022970000000000006 /* MLChatRoomThemeGameSixView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixView.m; sourceTree = "<group>"; };
 		A5A555AA27E5118800005523 /* MLChatRoomThemeGameFivePurchaseView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFivePurchaseView.h; sourceTree = "<group>"; };
 		A5A555BB27E5118800005524 /* MLChatRoomThemeGameFivePurchaseView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFivePurchaseView.m; sourceTree = "<group>"; };
 		A5A5557727E5118800005520 /* MLChatRoomThemeGameFiveRecordView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveRecordView.h; sourceTree = "<group>"; };
@@ -5628,9 +5631,19 @@
 			path = "UIViewController+AlertViewAndActionSheet";
 			sourceTree = "<group>";
 		};
+				FA6000002970000000000006 /* GameSix */ = {
+			isa = PBXGroup;
+			children = (
+				FA6000012970000000000006 /* MLChatRoomThemeGameSixView.h */,
+				FA6000022970000000000006 /* MLChatRoomThemeGameSixView.m */,
+			);
+			path = GameSix;
+			sourceTree = "<group>";
+		};
 		7C70E9452FED864D00A11B29 /* NativeGame */ = {
 			isa = PBXGroup;
 			children = (
+				FA6000002970000000000006 /* GameSix */,
 				1BD1D3A6ADB741A48CD4561E /* GameFive */,
 				ED0B8DB30C101FE22F0F4506 /* GameFour */,
 				EA7F9B3E17404C57A44B9917 /* GameThree */,
@@ -9267,6 +9280,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA6000032970000000000006 /* MLChatRoomThemeGameSixView.m in Sources */,
 				A5A555CC27E5118800005525 /* MLChatRoomThemeGameFivePurchaseView.m in Sources */,
 				A5A5559927E5118800005522 /* MLChatRoomThemeGameFiveRecordView.m in Sources */,
 				A5A5556627E511880000551F /* MLChatRoomThemeGameFiveResultView.m in Sources */,
