@@ -1,4 +1,5 @@
 #import "MLChatRoomThemeGameSixView.h"
+#import "MLChatRoomThemeGameSixRuleDialog.h"
 #import "Global.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD/SVProgressHUD.h>
@@ -421,7 +422,7 @@
 }
 
 - (void)ruleClick {
-    [SVProgressHUD showInfoWithStatus:@"规则弹窗准备中"];
+    [MLChatRoomThemeGameSixRuleDialog showInView:self];
 }
 
 - (void)giftPackClick {
