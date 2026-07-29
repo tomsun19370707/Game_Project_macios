@@ -160,6 +160,10 @@
         [cell configureWithTitle:@"奇妙星球"
                        logoName:@"theme_game_five_entry_icon"
                       textColor:[UIColor blackColor]];
+    } else if (indexPath.item == 4) {
+        [cell configureWithTitle:@"玲珑珍宝塔"
+                       logoName:@"theme_game_six_entry_icon"
+                      textColor:[UIColor blackColor]];
     } else {
         [cell configureWithTitle:@"敬请期待"
                        logoName:@"chat_room_plate_draw"
@@ -170,8 +174,8 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.item >= 4) {
-        // “敬请期待”从第四位开始
+    if (indexPath.item >= 5) {
+        // “敬请期待”从第五位开始
         return;
     }
     
@@ -189,6 +193,9 @@
         } else if (indexPath.item == 3) {
             // 打开玩法5 (奇妙星球, 复用 typeId = 7)
             [MLChatRoomThemeGameFiveView showInView:parentView typeId:7];
+        } else if (indexPath.item == 4) {
+            // 打开玩法6 (玲珑珍宝塔)
+            [SVProgressHUD showInfoWithStatus:@"游戏开发中，敬请期待"];
         }
     }];
 }
