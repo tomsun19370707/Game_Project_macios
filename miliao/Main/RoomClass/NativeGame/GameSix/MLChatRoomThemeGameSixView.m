@@ -1,5 +1,6 @@
 #import "MLChatRoomThemeGameSixView.h"
 #import "MLChatRoomThemeGameSixRuleDialog.h"
+#import "MLChatRoomThemeGameSixFusionDialog.h"
 #import "Global.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD/SVProgressHUD.h>
@@ -339,28 +340,28 @@
     [_actionContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(_backgroundContainer).offset(-KDialogAdaptedWidth(10));
         make.leading.trailing.mas_equalTo(_backgroundContainer);
-        make.height.mas_equalTo(KDialogAdaptedWidth(150));
+        make.height.mas_equalTo(KDialogAdaptedWidth(290));
     }];
     
-    // 礼物包 (左侧 - 放大10%至79pt)
+    // 礼物包 (左侧 - 100% 精确恢复最初绝对高度位置)
     _giftPackButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_giftPackButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_btn_gift_pack"] forState:UIControlStateNormal];
     [_giftPackButton addTarget:self action:@selector(giftPackClick) forControlEvents:UIControlEventTouchUpInside];
     [_actionContainer addSubview:_giftPackButton];
     [_giftPackButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(KDialogAdaptedWidth(6));
-        make.top.mas_equalTo(-KDialogAdaptedWidth(130));
+        make.top.mas_equalTo(_actionContainer);
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(79), KDialogAdaptedWidth(79)));
     }];
     
-    // 主页融合 (右侧 - 放大10%至79pt)
+    // 主页融合 (右侧 - 100% 精确恢复最初绝对高度位置)
     _fusionButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_fusionButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_btn_fusion"] forState:UIControlStateNormal];
     [_fusionButton addTarget:self action:@selector(fusionClick) forControlEvents:UIControlEventTouchUpInside];
     [_actionContainer addSubview:_fusionButton];
     [_fusionButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(6));
-        make.top.mas_equalTo(-KDialogAdaptedWidth(130));
+        make.top.mas_equalTo(_actionContainer);
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(79), KDialogAdaptedWidth(79)));
     }];
     
@@ -430,7 +431,7 @@
 }
 
 - (void)fusionClick {
-    [SVProgressHUD showInfoWithStatus:@"主页融合准备中"];
+    [MLChatRoomThemeGameSixFusionDialog showInView:self];
 }
 
 - (void)recastClick {
