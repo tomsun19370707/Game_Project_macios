@@ -1,6 +1,7 @@
 #import "MLChatRoomThemeGameSixView.h"
 #import "MLChatRoomThemeGameSixRuleDialog.h"
 #import "MLChatRoomThemeGameSixFusionDialog.h"
+#import "MLThemeGameModel.h"
 #import "Global.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD/SVProgressHUD.h>
@@ -32,8 +33,9 @@
 
 // 右侧 7 层导航
 @property (nonatomic, strong) UIView *verticalNavView;
-@property (nonatomic, strong) UIImageView *towerLinkBar;
 @property (nonatomic, strong) NSMutableArray<UIButton *> *layerButtons;
+@property (nonatomic, strong) UIImageView *towerLinkBar;
+@property (nonatomic, strong) UIImageView *layerProgressFill;
 
 // 7 层宝塔礼物矩阵
 @property (nonatomic, strong) NSMutableArray<UIView *> *pagodaRows;
@@ -135,8 +137,9 @@
     [self setupGameplayContainer];
     [self setupActionContainer];
     
-    // 初始选中第 1 层
-    [self selectLayer:1];
+    // 初始设置第 1 层默认状态，并立即发起 bootstrap 请求同步服务端权威的 current_layer 与门票数据
+    [self selectLayer:1 animated:NO];
+    [self loadBootstrapData];
 }
 
 #pragma mark - 1. HUD Container (顶栏资产与控制)
@@ -201,10 +204,12 @@
     _diamondLabel.text = @"100";
     _diamondLabel.textColor = kWhiteColor;
     _diamondLabel.font = KFontBoldA(11);
+    _diamondLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [_diamondBar addSubview:_diamondLabel];
     [_diamondLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_diamondBar);
         make.leading.mas_equalTo(_diamondIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
+        make.trailing.mas_equalTo(_diamondBar).offset(-KDialogAdaptedWidth(4));
     }];
     
     // 钥匙资产条
@@ -236,10 +241,12 @@
     _keyLabel.text = @"100";
     _keyLabel.textColor = kWhiteColor;
     _keyLabel.font = KFontBoldA(11);
+    _keyLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [_keyBar addSubview:_keyLabel];
     [_keyLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_keyBar);
         make.leading.mas_equalTo(_keyIcon.mas_trailing).offset(KDialogAdaptedWidth(4));
+        make.trailing.mas_equalTo(_keyBar).offset(-KDialogAdaptedWidth(4));
     }];
 }
 
@@ -272,6 +279,11 @@
         make.width.mas_equalTo(KDialogAdaptedWidth(14));
     }];
     
+    // 绿能量柱 (Center-to-Center 分段延伸层叠于脊柱之上)
+    _layerProgressFill = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"theme_game_six_tower_link_bar_green"]];
+    _layerProgressFill.contentMode = UIViewContentModeScaleToFill;
+    [_verticalNavView addSubview:_layerProgressFill];
+    
     // 7 层按钮从上到下：7层 down to 1层
     CGFloat btnHeight = KDialogAdaptedWidth(36);
     CGFloat gap = (KDialogAdaptedWidth(266) - 7 * btnHeight) / 6.0;
@@ -279,7 +291,7 @@
     for (NSInteger i = 7; i >= 1; i--) {
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
         NSString *imgName = [NSString stringWithFormat:@"theme_game_six_layer_%ld", (long)i];
-        [btn setImage:[UIImage imageNamed:imgName] forState:UIControlStateNormal];
+        [btn setImage:[UIImage imageNamed:@"theme_game_six_layer_green"] ? : [UIImage imageNamed:imgName] forState:UIControlStateNormal];
         btn.tag = i;
         [btn addTarget:self action:@selector(layerBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_verticalNavView addSubview:btn];
@@ -399,21 +411,58 @@
     }];
 }
 
-#pragma mark - Layer Selection Logic (右侧导航点选)
+#pragma mark - Layer Selection & Energy Animation (1:1 安卓复刻)
 
-- (void)selectLayer:(NSInteger)layer {
-    _currentLayer = layer;
+- (void)selectLayer:(NSInteger)layer animated:(BOOL)animated {
+    self.currentLayer = layer;
+    if (layer < 1) layer = 1;
+    if (layer > 7) layer = 7;
+    
+    // 1. 刷新 7 个按钮高亮放大动画 (当前层 scale 1.15, 非当前层 alpha 0.5)
     for (UIButton *btn in _layerButtons) {
-        if (btn.tag == layer) {
-            btn.alpha = 1.0f;
-        } else {
-            btn.alpha = 0.4f;
-        }
+        BOOL isSelected = (btn.tag == layer);
+        [UIView animateWithDuration:(animated ? 0.25 : 0.0) animations:^{
+            btn.alpha = isSelected ? 1.0f : 0.5f;
+            if (isSelected) {
+                btn.transform = CGAffineTransformMakeScale(1.15, 1.15);
+            } else {
+                btn.transform = CGAffineTransformIdentity;
+            }
+        }];
+    }
+    
+    // 2. 动态计算绿充能能量柱 (layerProgressFill) 顶端延伸位置
+    CGFloat btnHeight = KDialogAdaptedWidth(36);
+    CGFloat totalHeight = KDialogAdaptedWidth(266);
+    CGFloat gap = (totalHeight - 7 * btnHeight) / 6.0;
+    
+    NSInteger indexFromTop = 7 - layer;
+    CGFloat targetTop = indexFromTop * (btnHeight + gap) + KDialogAdaptedWidth(18);
+    if (layer == 7) {
+        targetTop = 0; // 7层拉伸至最顶部
+    }
+    
+    [_layerProgressFill mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(_verticalNavView);
+        make.bottom.mas_equalTo(_verticalNavView);
+        make.top.mas_equalTo(targetTop);
+        make.width.mas_equalTo(KDialogAdaptedWidth(10));
+    }];
+    
+    if (animated) {
+        _layerProgressFill.alpha = 0.6f;
+        [UIView animateWithDuration:0.3 animations:^{
+            [self.verticalNavView layoutIfNeeded];
+            self.layerProgressFill.alpha = 1.0f;
+        }];
+    } else {
+        [self.verticalNavView layoutIfNeeded];
+        _layerProgressFill.alpha = 1.0f;
     }
 }
 
 - (void)layerBtnClick:(UIButton *)btn {
-    [self selectLayer:btn.tag];
+    [self selectLayer:btn.tag animated:YES];
 }
 
 #pragma mark - User Actions
@@ -431,11 +480,60 @@
 }
 
 - (void)fusionClick {
-    [MLChatRoomThemeGameSixFusionDialog showInView:self];
+    MLChatRoomThemeGameSixFusionDialog *dialog = [MLChatRoomThemeGameSixFusionDialog showInView:self];
+    __weak typeof(self) weakSelf = self;
+    dialog.onFusionSuccessBlock = ^{
+        [weakSelf loadBootstrapData];
+    };
 }
 
 - (void)recastClick {
-    [SVProgressHUD showInfoWithStatus:@"重铸功能准备中"];
+    [SVProgressHUD showWithStatus:@"正在重铸抽奖..."];
+    [[MLThemeGameModel sharedInstance] fetchTowerGameSixBootstrapWithRoomId:nil success:^(id _Nullable responseObj) {
+        NSInteger freshStateVersion = 0;
+        if ([responseObj isKindOfClass:[MLTowerGameSixBootstrapModel class]]) {
+            MLTowerGameSixBootstrapModel *bsModel = (MLTowerGameSixBootstrapModel *)responseObj;
+            if (bsModel.player) {
+                freshStateVersion = bsModel.player.state_version;
+            }
+        } else if ([responseObj isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *playerDict = ((NSDictionary *)responseObj)[@"player"];
+            if ([playerDict isKindOfClass:[NSDictionary class]] && playerDict[@"state_version"] != nil) {
+                freshStateVersion = [playerDict[@"state_version"] integerValue];
+            }
+        }
+        
+        [[MLThemeGameModel sharedInstance] recastTowerGameSixWithStateVersion:freshStateVersion success:^(id _Nullable responseObj) {
+            NSString *msg = @"恭喜重铸成功！中奖宝物已存入暂存包";
+            if ([responseObj isKindOfClass:[NSDictionary class]]) {
+                NSDictionary *gift = responseObj[@"gift"];
+                if (gift && gift[@"name"]) {
+                    msg = [NSString stringWithFormat:@"恭喜抽中: %@！已存入暂存包", gift[@"name"]];
+                }
+            }
+            [SVProgressHUD showSuccessWithStatus:msg];
+            // 重新请求主页数据以刷新当前层数与剩余重铸次数
+            [self loadBootstrapData];
+        } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
+            [SVProgressHUD dismiss];
+            [SVProgressHUD showInfoWithStatus:msg ?: @"重铸失败"];
+        }];
+    } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
+        [SVProgressHUD dismiss];
+        [SVProgressHUD showInfoWithStatus:msg ?: @"网络请求失败"];
+    }];
+}
+
+- (void)loadBootstrapData {
+    [[MLThemeGameModel sharedInstance] fetchTowerGameSixBootstrapWithRoomId:nil success:^(MLTowerGameSixBootstrapModel * _Nullable bsModel) {
+        if (bsModel && bsModel.player) {
+            NSInteger layer = bsModel.player.current_layer > 0 ? bsModel.player.current_layer : 1;
+            [self selectLayer:layer animated:YES];
+        }
+        if (bsModel && bsModel.ticket) {
+            self.keyLabel.text = [NSString stringWithFormat:@"%ld", (long)bsModel.ticket.remaining_recasts];
+        }
+    } failure:nil];
 }
 
 #pragma mark - Presentation & Dismissal
