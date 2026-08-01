@@ -203,7 +203,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame typeId:(NSInteger)typeId {
     if (self = [super initWithFrame:frame]) {
-        self.typeId = typeId;
+        self.typeId = typeId > 0 ? typeId : 14;
         self.cardViews = [NSMutableArray array];
         [self setupUI];
         [self loadData];

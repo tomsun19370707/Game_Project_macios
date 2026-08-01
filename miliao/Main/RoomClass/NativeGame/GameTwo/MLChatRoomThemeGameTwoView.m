@@ -81,7 +81,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame typeId:(NSInteger)typeId {
     if (self = [super initWithFrame:frame]) {
-        self.typeId = typeId;
+        self.typeId = typeId > 0 ? typeId : 12;
         self.isDrawing = NO;
         self.peachCardViews = [NSMutableArray array];
         self.peachFrameImageViews = [NSMutableArray array];
@@ -590,7 +590,7 @@
             return;
         }
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == queryTypeId || model.typeId == 2 || model.typeId == 4 || [model.name containsString:@"神木"]) {
+            if (model.typeId == wself.typeId || [model.name containsString:@"神木"]) {
                 wself.consumeValue = model.consume_diamonds;
                 wself.produceValue = model.produce_diamonds;
                 wself.fortuneLabel.text = [NSString stringWithFormat:@"今日运势: %.1f%%", model.profit_rate / 100.0f];

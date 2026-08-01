@@ -96,7 +96,7 @@
 - (instancetype)initWithFrame:(CGRect)frame typeId:(NSInteger)typeId {
     self = [super initWithFrame:frame];
     if (self) {
-        _typeId = typeId;
+        _typeId = typeId > 0 ? typeId : 8;
         
         // Map typeId to theme color suffix
         if (_typeId == 8) {

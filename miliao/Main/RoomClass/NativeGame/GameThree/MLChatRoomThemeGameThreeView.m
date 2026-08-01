@@ -61,7 +61,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame typeId:(NSInteger)typeId {
     if (self = [super initWithFrame:frame]) {
-        self.typeId = typeId;
+        self.typeId = typeId > 0 ? typeId : 13;
         self.giftCardViews = [NSMutableArray array];
         self.giftImageViews = [NSMutableArray array];
         self.giftNameLabels = [NSMutableArray array];
@@ -514,7 +514,7 @@
             return;
         }
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == 3 || model.typeId == 5 || [model.name containsString:@"星辰"]) {
+            if (model.typeId == wself.typeId || [model.name containsString:@"星辰"]) {
                 wself.consumeValue = model.consume_diamonds;
                 wself.produceValue = model.produce_diamonds;
                 break;
