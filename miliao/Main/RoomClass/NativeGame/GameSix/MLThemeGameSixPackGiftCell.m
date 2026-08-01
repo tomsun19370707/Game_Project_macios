@@ -44,12 +44,12 @@
     // 2. 顶栏礼物名称
     _nameLabel = [[UILabel alloc] init];
     _nameLabel.textColor = [UIColor whiteColor];
-    _nameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(9)];
+    _nameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
     _nameLabel.textAlignment = NSTextAlignmentCenter;
     _nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [self.contentView addSubview:_nameLabel];
     [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(10));
+        make.top.mas_equalTo(KDialogAdaptedWidth(17));
         make.leading.mas_equalTo(KDialogAdaptedWidth(8));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(26));
     }];
@@ -57,11 +57,11 @@
     // 3. 右上角数量标记 (如 x4)
     _countLabel = [[UILabel alloc] init];
     _countLabel.textColor = [UIColor whiteColor];
-    _countLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(9)];
+    _countLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
     _countLabel.textAlignment = NSTextAlignmentRight;
     [self.contentView addSubview:_countLabel];
     [_countLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(10));
+        make.top.mas_equalTo(KDialogAdaptedWidth(6));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(8));
     }];
     
@@ -82,7 +82,7 @@
     [self.contentView addSubview:_valueLabel];
     [_valueLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(self.contentView).offset(-KDialogAdaptedWidth(8));
-        make.centerX.mas_equalTo(self.contentView);
+        make.centerX.mas_equalTo(self.contentView).offset(-KDialogAdaptedWidth(5));
     }];
     
     // 6. 选中遮罩与对勾角标
