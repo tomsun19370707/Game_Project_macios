@@ -44,6 +44,15 @@ typedef void(^MLGameSixFailureBlock)(NSError *error, NSString * _Nullable msg);
                                    success:(MLGameSixSuccessBlock)success
                                    failure:(MLGameSixFailureBlock)failure;
 
+/// 6. 查询玩法6暂存包礼物列表 (/api/emo/tower_game_six/temp_inventory)
+- (void)fetchTowerGameSixTempInventoryWithSuccess:(MLGameSixSuccessBlock)success
+                                           failure:(MLGameSixFailureBlock)failure;
+
+/// 7. 提交暂存包礼物取回大背包 (/api/emo/tower_game_six/withdraw)
+- (void)withdrawTowerGameSixTempGiftsWithItems:(NSArray<NSDictionary *> *)items
+                                       success:(MLGameSixSuccessBlock)success
+                                       failure:(MLGameSixFailureBlock)failure;
+
 @end
 
 NS_ASSUME_NONNULL_END

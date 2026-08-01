@@ -164,4 +164,33 @@
     [self postJSONWithURL:url parameters:params success:success failure:failure];
 }
 
+- (void)fetchTowerGameSixTempInventoryWithSuccess:(MLGameSixSuccessBlock)success
+                                           failure:(MLGameSixFailureBlock)failure {
+    NSString *url = [NSString stringWithFormat:@"%@api/emo/tower_game_six/temp_inventory", VERSION_HTTPS_SERVER];
+    
+    [MLNetWorkHelper GET:url parameters:[self buildParams:@{}] success:^(id responseObject) {
+        if ([responseObject[@"code"] integerValue] == 1) {
+            NSArray *list = [MLCandidateItemModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            if (success) success(list);
+        } else {
+            if (failure) failure(nil, responseObject[@"msg"] ?: @"获取暂存包失败");
+        }
+    } failure:^(NSError *error) {
+        if (failure) failure(error, error.localizedDescription);
+    }];
+}
+
+- (void)withdrawTowerGameSixTempGiftsWithItems:(NSArray<NSDictionary *> *)items
+                                       success:(MLGameSixSuccessBlock)success
+                                       failure:(MLGameSixFailureBlock)failure {
+    NSString *url = [NSString stringWithFormat:@"%@api/emo/tower_game_six/withdraw", VERSION_HTTPS_SERVER];
+    NSString *requestId = [[NSUUID UUID] UUIDString];
+    NSDictionary *params = @{
+        @"request_id": requestId,
+        @"items": items ?: @[]
+    };
+    
+    [self postJSONWithURL:url parameters:params success:success failure:failure];
+}
+
 @end

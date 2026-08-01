@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *source; // "global" 或 "temp"
 @end
 
+typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
+
 @interface MLTowerPlayerModel : NSObject
 @property (nonatomic, assign) NSInteger current_layer;
 @property (nonatomic, assign) NSInteger next_recast_layer;

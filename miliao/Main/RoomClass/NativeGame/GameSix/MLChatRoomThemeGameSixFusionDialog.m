@@ -190,9 +190,12 @@
                 checkMarkIV.hidden = YES;
             }
         } else {
+            itemBtn.hidden = NO;
+            itemBtn.alpha = 0.5f;
+            itemBtn.transform = CGAffineTransformIdentity;
+            itemBtn.layer.borderWidth = 0.0;
             tempIV.hidden = YES;
             tempIV.image = nil;
-            itemBtn.hidden = YES;
             checkMarkIV.hidden = YES;
         }
     }

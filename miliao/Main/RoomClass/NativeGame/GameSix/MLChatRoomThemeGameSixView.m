@@ -1,6 +1,7 @@
 #import "MLChatRoomThemeGameSixView.h"
 #import "MLChatRoomThemeGameSixRuleDialog.h"
 #import "MLChatRoomThemeGameSixFusionDialog.h"
+#import "MLChatRoomThemeGameSixPackDialog.h"
 #import "MLThemeGameModel.h"
 #import "Global.h"
 #import <Masonry/Masonry.h>
@@ -476,7 +477,11 @@
 }
 
 - (void)giftPackClick {
-    [SVProgressHUD showInfoWithStatus:@"礼物包准备中"];
+    MLChatRoomThemeGameSixPackDialog *dialog = [MLChatRoomThemeGameSixPackDialog showInView:self];
+    __weak typeof(self) weakSelf = self;
+    dialog.onWithdrawSuccessBlock = ^{
+        [weakSelf loadBootstrapData];
+    };
 }
 
 - (void)fusionClick {
