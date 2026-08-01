@@ -50,7 +50,9 @@
 
 @property (nonatomic, strong) UIImageView *drawPanelBg;
 @property (nonatomic, strong) UIImageView *tokenIcon;
+@property (nonatomic, strong) UILabel *tokenRecastLabel;
 @property (nonatomic, strong) UIButton *recastButton;
+@property (nonatomic, assign) NSInteger remainingRecasts;
 // 留作后续联网功能扩展:
 // @property (nonatomic, strong) UIButton *drawOneButton;
 // @property (nonatomic, strong) UIButton *drawTenButton;
@@ -393,11 +395,28 @@
     // 令牌图标 (往右平移10pt至30pt)
     _tokenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"theme_game_six_ic_token"]];
     _tokenIcon.contentMode = UIViewContentModeScaleToFill;
+    _tokenIcon.userInteractionEnabled = YES;
     [_drawPanelBg addSubview:_tokenIcon];
     [_tokenIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_drawPanelBg);
         make.leading.mas_equalTo(KDialogAdaptedWidth(30));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(44), KDialogAdaptedWidth(54)));
+    }];
+    
+    // 剩余重铸次数提示框 (宝石绿 #50E3C2, 14pt bold 竖排 餘\nN\n次, 黑阴影)
+    _tokenRecastLabel = [[UILabel alloc] init];
+    _tokenRecastLabel.textColor = [UIColor colorWithRed:0x50/255.0 green:0xE3/255.0 blue:0xC2/255.0 alpha:1.0];
+    _tokenRecastLabel.font = [UIFont boldSystemFontOfSize:KAdaptedWidth(14)];
+    _tokenRecastLabel.numberOfLines = 3;
+    _tokenRecastLabel.textAlignment = NSTextAlignmentCenter;
+    _tokenRecastLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+    _tokenRecastLabel.layer.shadowRadius = 1.0f;
+    _tokenRecastLabel.layer.shadowOffset = CGSizeMake(0, 1);
+    _tokenRecastLabel.layer.shadowOpacity = 0.8f;
+    _tokenRecastLabel.text = @"餘\n0\n次";
+    [_tokenIcon addSubview:_tokenRecastLabel];
+    [_tokenRecastLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.mas_equalTo(_tokenIcon);
     }];
     
     // 重铸按钮 (解除原图留白封锁，使用 setBackgroundImage + ScaleToFill 提升至 72pt)
@@ -495,6 +514,10 @@
 }
 
 - (void)recastClick {
+    if (self.remainingRecasts <= 0) {
+        [SVProgressHUD showInfoWithStatus:@"暂无可用门票，请先融合门票"];
+        return;
+    }
     __weak typeof(self) weakSelf = self;
     [SVProgressHUD showWithStatus:@"正在重铸抽奖..."];
     [[MLThemeGameModel sharedInstance] fetchTowerGameSixBootstrapWithRoomId:nil success:^(id _Nullable responseObj) {
@@ -503,6 +526,16 @@
             MLTowerGameSixBootstrapModel *bsModel = (MLTowerGameSixBootstrapModel *)responseObj;
             if (bsModel.player) {
                 freshStateVersion = bsModel.player.state_version;
+            }
+            if (bsModel.ticket) {
+                weakSelf.remainingRecasts = bsModel.ticket.remaining_recasts;
+                weakSelf.keyLabel.text = [NSString stringWithFormat:@"%ld", (long)weakSelf.remainingRecasts];
+                weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
+                if (weakSelf.remainingRecasts <= 0) {
+                    [SVProgressHUD dismiss];
+                    [SVProgressHUD showInfoWithStatus:@"暂无可用门票，请先融合门票"];
+                    return;
+                }
             }
         } else if ([responseObj isKindOfClass:[NSDictionary class]]) {
             NSDictionary *playerDict = ((NSDictionary *)responseObj)[@"player"];
@@ -514,6 +547,14 @@
         [[MLThemeGameModel sharedInstance] recastTowerGameSixWithStateVersion:freshStateVersion success:^(id _Nullable responseObj) {
             [SVProgressHUD dismiss];
             MLTowerGameSixRecastResultModel *resultModel = [MLTowerGameSixRecastResultModel mj_objectWithKeyValues:responseObj];
+            if (resultModel) {
+                weakSelf.remainingRecasts = resultModel.remaining_recasts;
+                weakSelf.keyLabel.text = [NSString stringWithFormat:@"%ld", (long)weakSelf.remainingRecasts];
+                weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
+                if (resultModel.to_layer > 0) {
+                    [weakSelf selectLayer:resultModel.to_layer animated:YES];
+                }
+            }
             
             MLChatRoomThemeGameSixResultDialog *resultDialog = [MLChatRoomThemeGameSixResultDialog showInView:weakSelf resultModel:resultModel];
             resultDialog.onContinueRecastBlock = ^{
@@ -523,7 +564,7 @@
                 [weakSelf loadBootstrapData];
             };
             
-            // 重新请求主页数据以刷新当前层数与剩余重铸次数
+            // 再次触发后台同步
             [weakSelf loadBootstrapData];
         } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
             [SVProgressHUD dismiss];
@@ -542,7 +583,13 @@
             [self selectLayer:layer animated:YES];
         }
         if (bsModel && bsModel.ticket) {
-            self.keyLabel.text = [NSString stringWithFormat:@"%ld", (long)bsModel.ticket.remaining_recasts];
+            self.remainingRecasts = bsModel.ticket.remaining_recasts;
+            self.keyLabel.text = [NSString stringWithFormat:@"%ld", (long)self.remainingRecasts];
+            self.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)self.remainingRecasts];
+        } else {
+            self.remainingRecasts = 0;
+            self.keyLabel.text = @"0";
+            self.tokenRecastLabel.text = @"餘\n0\n次";
         }
     } failure:nil];
 }

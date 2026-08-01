@@ -55,6 +55,8 @@ typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
 @property (nonatomic, assign) NSInteger to_layer;
 @property (nonatomic, assign) long long inventory_id;
 @property (nonatomic, strong) MLCandidateItemModel *gift;
+@property (nonatomic, assign) NSInteger remaining_recasts;
+@property (nonatomic, assign) NSInteger state_version;
 @end
 
 NS_ASSUME_NONNULL_END

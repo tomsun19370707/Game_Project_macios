@@ -117,17 +117,15 @@ static NSString * const kDefaultRuleContent =
         make.edges.mas_equalTo(_rulePanelContainer);
     }];
     
-    // 3. 右上角关闭按钮 (theme_game_six_rule_close 35x35pt)
+    // 3. 左上角关闭按钮 (30x30pt, 与中奖记录弹窗视觉排版保持一致)
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_closeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_rule_close"] forState:UIControlStateNormal];
-    _closeButton.contentMode = UIViewContentModeScaleToFill;
-    _closeButton.imageView.contentMode = UIViewContentModeScaleToFill;
+    [_closeButton setImage:[UIImage imageNamed:@"theme_game_six_record_close"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
     [_rulePanelContainer addSubview:_closeButton];
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(68));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(28));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(35), KDialogAdaptedWidth(35)));
+        make.top.mas_equalTo(_rulePanelContainer).offset(KDialogAdaptedWidth(12));
+        make.leading.mas_equalTo(_rulePanelContainer).offset(KDialogAdaptedWidth(12));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(30), KDialogAdaptedWidth(30)));
     }];
     
     // 4. 可垂直平滑滑动的规则 ScrollView
