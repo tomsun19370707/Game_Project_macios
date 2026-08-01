@@ -3,6 +3,7 @@
 #import "MLChatRoomThemeGameOneView.h"
 #import "MLChatRoomThemeGameTwoView.h"
 #import "MLChatRoomThemeGameThreeView.h"
+#import "MLChatRoomThemeGameFourView.h"
 #import "MLChatRoomThemeGameFiveView.h"
 #import "MLChatRoomThemeGameSixView.h"
 #import "Global.h"
@@ -174,6 +175,38 @@
     return cell;
 }
 
++ (void)openGameWithTypeId:(NSInteger)typeId parentView:(nullable UIView *)parentView {
+    if (typeId >= 1 && typeId <= 7) {
+        // H5 网页游戏路由分发 (保留后续加载 Web 扩展)
+        return;
+    }
+    
+    switch (typeId) {
+        case 8:
+        case 9:
+        case 10:
+            [MLChatRoomThemeGameFourView showInView:parentView typeId:typeId];
+            break;
+        case 11:
+            [MLChatRoomThemeGameOneView showInView:parentView typeId:typeId];
+            break;
+        case 12:
+            [MLChatRoomThemeGameTwoView showInView:parentView typeId:typeId];
+            break;
+        case 13:
+            [MLChatRoomThemeGameThreeView showInView:parentView typeId:typeId];
+            break;
+        case 14:
+            [MLChatRoomThemeGameFiveView showInView:parentView typeId:typeId];
+            break;
+        case 15:
+            [MLChatRoomThemeGameSixView showInView:parentView typeId:typeId];
+            break;
+        default:
+            break;
+    }
+}
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.item >= 5) {
         // “敬请期待”从第五位开始
@@ -182,21 +215,21 @@
     
     UIView *parentView = self.superview;
     [self dismissWithCompletion:^{
+        NSInteger targetTypeId = 0;
         if (indexPath.item == 0) {
-            // 打开玩法1 (寻梦之旅, lottery_id = 7, typeId = 7)
-            [MLChatRoomThemeGameOneView showInView:parentView typeId:7];
+            targetTypeId = 11; // 玩法1 (寻梦之旅)
         } else if (indexPath.item == 1) {
-            // 打开玩法2 (神木栖灵, lottery_id = 2, typeId = 6)
-            [MLChatRoomThemeGameTwoView showInView:parentView typeId:6];
+            targetTypeId = 12; // 玩法2 (神木栖灵 / 幸运转盘)
         } else if (indexPath.item == 2) {
-            // 打开玩法3 (星辰序章, lottery_id = 3, typeId = 7)
-            [MLChatRoomThemeGameThreeView showInView:parentView typeId:7];
+            targetTypeId = 13; // 玩法3 (星辰序章 / 魔法星盘)
         } else if (indexPath.item == 3) {
-            // 打开玩法5 (奇妙星球, 复用 typeId = 7)
-            [MLChatRoomThemeGameFiveView showInView:parentView typeId:7];
+            targetTypeId = 14; // 玩法5 (奇妙星球 / 奇幻星系)
         } else if (indexPath.item == 4) {
-            // 打开玩法6 (玲珑珍宝塔)
-            [MLChatRoomThemeGameSixView showInView:parentView typeId:6];
+            targetTypeId = 15; // 玩法6 (玲珑珍宝塔)
+        }
+        
+        if (targetTypeId > 0) {
+            [MLChatRoomNativeGameView openGameWithTypeId:targetTypeId parentView:parentView];
         }
     }];
 }
