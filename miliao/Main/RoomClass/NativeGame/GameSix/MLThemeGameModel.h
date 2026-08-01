@@ -53,6 +53,13 @@ typedef void(^MLGameSixFailureBlock)(NSError *error, NSString * _Nullable msg);
                                        success:(MLGameSixSuccessBlock)success
                                        failure:(MLGameSixFailureBlock)failure;
 
+/// 8. 查询玩法6抽奖游戏历史记录 (/api/emo/tower_game_six/records)
+- (void)fetchTowerGameSixRecordsWithPage:(NSInteger)page
+                                   limit:(NSInteger)limit
+                                    type:(NSString * _Nullable)type
+                                 success:(MLGameSixSuccessBlock)success
+                                 failure:(MLGameSixFailureBlock)failure;
+
 @end
 
 NS_ASSUME_NONNULL_END

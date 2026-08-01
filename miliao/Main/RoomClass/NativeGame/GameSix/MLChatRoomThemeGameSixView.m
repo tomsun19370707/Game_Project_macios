@@ -3,6 +3,7 @@
 #import "MLChatRoomThemeGameSixFusionDialog.h"
 #import "MLChatRoomThemeGameSixPackDialog.h"
 #import "MLChatRoomThemeGameSixResultDialog.h"
+#import "MLChatRoomThemeGameSixRecordDialog.h"
 #import "MLThemeGameModel.h"
 #import "Global.h"
 #import <Masonry/Masonry.h>
@@ -470,7 +471,7 @@
 #pragma mark - User Actions
 
 - (void)recordClick {
-    [SVProgressHUD showInfoWithStatus:@"抽奖记录准备中"];
+    [MLChatRoomThemeGameSixRecordDialog showInView:self];
 }
 
 - (void)ruleClick {

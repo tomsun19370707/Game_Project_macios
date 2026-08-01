@@ -1160,6 +1160,9 @@
 		FA9E08B724293105000A52CF /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9E08B624293105000A52CF /* CFNetwork.framework */; };
 		FA9E08B92429310E000A52CF /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9E08B82429310E000A52CF /* CoreMotion.framework */; };
 		FFE315EAE2D34FCC975B6A47 /* MLChatRoomThemeGameFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = D99D569BD56B4F348EDC0441 /* MLChatRoomThemeGameFortuneView.m */; };
+		73CB338BEBEB545096AF3C97 /* MLChatRoomThemeGameSixRecordDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 5813CEC352BD5616900D36C0 /* MLChatRoomThemeGameSixRecordDialog.m */; };
+		E36EA150F9AE5DA4A6ACCD59 /* MLThemeGameSixRecordCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B80314A43FC5B95BAC4F712 /* MLThemeGameSixRecordCell.m */; };
+		2E669F5CDF425F78B83EC324 /* MLThemeGameSixRecordDateHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1729EDB1375A08BF32D804 /* MLThemeGameSixRecordDateHeader.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3379,6 +3382,12 @@
 		FDB552DCF212294C30FB6CA4 /* CFMExDiamondAndBagPackageCollCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExDiamondAndBagPackageCollCell.h; sourceTree = "<group>"; };
 		FE00C3E6293CD22D1CE7BE8D /* CFMExDiamondAndBagDiamond.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExDiamondAndBagDiamond.h; sourceTree = "<group>"; };
 		FFFD90DD199A72D8F667EBC6 /* CFMHomeSignAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMHomeSignAlert.xib; sourceTree = "<group>"; };
+		D830C5B8D17F5458AD74DA09 /* MLChatRoomThemeGameSixRecordDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixRecordDialog.h; sourceTree = "<group>"; };
+		5813CEC352BD5616900D36C0 /* MLChatRoomThemeGameSixRecordDialog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixRecordDialog.m; sourceTree = "<group>"; };
+		81BDBBC740245A649F4CADB8 /* MLThemeGameSixRecordCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLThemeGameSixRecordCell.h; sourceTree = "<group>"; };
+		4B80314A43FC5B95BAC4F712 /* MLThemeGameSixRecordCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameSixRecordCell.m; sourceTree = "<group>"; };
+		26C1B7877AD95CBE9119792D /* MLThemeGameSixRecordDateHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLThemeGameSixRecordDateHeader.h; sourceTree = "<group>"; };
+		2B1729EDB1375A08BF32D804 /* MLThemeGameSixRecordDateHeader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameSixRecordDateHeader.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -5676,6 +5685,12 @@
 				FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */,
 				FA6000192970000000000009 /* MLChatRoomThemeGameSixResultDialog.h */,
 				FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */,
+				D830C5B8D17F5458AD74DA09 /* MLChatRoomThemeGameSixRecordDialog.h */,
+				5813CEC352BD5616900D36C0 /* MLChatRoomThemeGameSixRecordDialog.m */,
+				81BDBBC740245A649F4CADB8 /* MLThemeGameSixRecordCell.h */,
+				4B80314A43FC5B95BAC4F712 /* MLThemeGameSixRecordCell.m */,
+				26C1B7877AD95CBE9119792D /* MLThemeGameSixRecordDateHeader.h */,
+				2B1729EDB1375A08BF32D804 /* MLThemeGameSixRecordDateHeader.m */,
 			);
 			path = GameSix;
 			sourceTree = "<group>";
@@ -9329,6 +9344,9 @@
 				FA6000152970000000000007 /* MLThemeGameSixPackGiftCell.m in Sources */,
 				FA6000182970000000000008 /* MLChatRoomThemeGameSixPackDialog.m in Sources */,
 				FA60001B2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m in Sources */,
+				73CB338BEBEB545096AF3C97 /* MLChatRoomThemeGameSixRecordDialog.m in Sources */,
+				E36EA150F9AE5DA4A6ACCD59 /* MLThemeGameSixRecordCell.m in Sources */,
+				2E669F5CDF425F78B83EC324 /* MLThemeGameSixRecordDateHeader.m in Sources */,
 				A5A555CC27E5118800005525 /* MLChatRoomThemeGameFivePurchaseView.m in Sources */,
 				A5A5559927E5118800005522 /* MLChatRoomThemeGameFiveRecordView.m in Sources */,
 				A5A5556627E511880000551F /* MLChatRoomThemeGameFiveResultView.m in Sources */,

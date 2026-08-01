@@ -193,4 +193,26 @@
     [self postJSONWithURL:url parameters:params success:success failure:failure];
 }
 
+- (void)fetchTowerGameSixRecordsWithPage:(NSInteger)page
+                                   limit:(NSInteger)limit
+                                    type:(NSString * _Nullable)type
+                                 success:(MLGameSixSuccessBlock)success
+                                 failure:(MLGameSixFailureBlock)failure {
+    NSString *url = [NSString stringWithFormat:@"%@api/emo/tower_game_six/records", VERSION_HTTPS_SERVER];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"page"] = @(page > 0 ? page : 1);
+    params[@"limit"] = @(limit > 0 ? limit : 100);
+    params[@"type"] = type.length > 0 ? type : @"draw";
+    
+    [MLNetWorkHelper GET:url parameters:[self buildParams:params] success:^(id responseObject) {
+        if ([responseObject[@"code"] integerValue] == 1) {
+            if (success) success(responseObject[@"data"]);
+        } else {
+            if (failure) failure(nil, responseObject[@"msg"] ?: @"获取游戏记录失败");
+        }
+    } failure:^(NSError *error) {
+        if (failure) failure(error, error.localizedDescription);
+    }];
+}
+
 @end
