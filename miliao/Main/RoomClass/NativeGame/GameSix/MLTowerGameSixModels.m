@@ -7,6 +7,14 @@
 #import <MJExtension/MJExtension.h>
 
 @implementation MLCandidateItemModel
+
+- (NSString *)value {
+    if (_value && _value.length > 0) {
+        return _value;
+    }
+    return _unit_value ?: @"0";
+}
+
 @end
 
 @implementation MLTowerPlayerModel
@@ -34,4 +42,7 @@
     };
 }
 
+@end
+
+@implementation MLTowerGameSixRecastResultModel
 @end

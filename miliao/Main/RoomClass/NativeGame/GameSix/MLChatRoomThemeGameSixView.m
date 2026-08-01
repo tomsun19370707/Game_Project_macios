@@ -2,6 +2,7 @@
 #import "MLChatRoomThemeGameSixRuleDialog.h"
 #import "MLChatRoomThemeGameSixFusionDialog.h"
 #import "MLChatRoomThemeGameSixPackDialog.h"
+#import "MLChatRoomThemeGameSixResultDialog.h"
 #import "MLThemeGameModel.h"
 #import "Global.h"
 #import <Masonry/Masonry.h>
@@ -493,6 +494,7 @@
 }
 
 - (void)recastClick {
+    __weak typeof(self) weakSelf = self;
     [SVProgressHUD showWithStatus:@"正在重铸抽奖..."];
     [[MLThemeGameModel sharedInstance] fetchTowerGameSixBootstrapWithRoomId:nil success:^(id _Nullable responseObj) {
         NSInteger freshStateVersion = 0;
@@ -509,16 +511,19 @@
         }
         
         [[MLThemeGameModel sharedInstance] recastTowerGameSixWithStateVersion:freshStateVersion success:^(id _Nullable responseObj) {
-            NSString *msg = @"恭喜重铸成功！中奖宝物已存入暂存包";
-            if ([responseObj isKindOfClass:[NSDictionary class]]) {
-                NSDictionary *gift = responseObj[@"gift"];
-                if (gift && gift[@"name"]) {
-                    msg = [NSString stringWithFormat:@"恭喜抽中: %@！已存入暂存包", gift[@"name"]];
-                }
-            }
-            [SVProgressHUD showSuccessWithStatus:msg];
+            [SVProgressHUD dismiss];
+            MLTowerGameSixRecastResultModel *resultModel = [MLTowerGameSixRecastResultModel mj_objectWithKeyValues:responseObj];
+            
+            MLChatRoomThemeGameSixResultDialog *resultDialog = [MLChatRoomThemeGameSixResultDialog showInView:weakSelf resultModel:resultModel];
+            resultDialog.onContinueRecastBlock = ^{
+                [weakSelf recastClick];
+            };
+            resultDialog.onWithdrawSuccessBlock = ^{
+                [weakSelf loadBootstrapData];
+            };
+            
             // 重新请求主页数据以刷新当前层数与剩余重铸次数
-            [self loadBootstrapData];
+            [weakSelf loadBootstrapData];
         } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
             [SVProgressHUD dismiss];
             [SVProgressHUD showInfoWithStatus:msg ?: @"重铸失败"];

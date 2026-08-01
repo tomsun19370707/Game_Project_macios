@@ -15,6 +15,7 @@
 		FA6000122970000000000006 /* MLGlobalGiftSelectorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000112970000000000006 /* MLGlobalGiftSelectorPicker.m */; };
 		FA6000152970000000000007 /* MLThemeGameSixPackGiftCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000142970000000000007 /* MLThemeGameSixPackGiftCell.m */; };
 		FA6000182970000000000008 /* MLChatRoomThemeGameSixPackDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */; };
+		FA60001B2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */; };
 		A5A555CC27E5118800005525 /* MLChatRoomThemeGameFivePurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A555BB27E5118800005524 /* MLChatRoomThemeGameFivePurchaseView.m */; };
 		A5A5559927E5118800005522 /* MLChatRoomThemeGameFiveRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5558827E5118800005521 /* MLChatRoomThemeGameFiveRecordView.m */; };
 		A5A5556627E511880000551F /* MLChatRoomThemeGameFiveResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5555527E511880000551E /* MLChatRoomThemeGameFiveResultView.m */; };
@@ -1211,6 +1212,8 @@
 		FA6000142970000000000007 /* MLThemeGameSixPackGiftCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameSixPackGiftCell.m; sourceTree = "<group>"; };
 		FA6000162970000000000008 /* MLChatRoomThemeGameSixPackDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixPackDialog.h; sourceTree = "<group>"; };
 		FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixPackDialog.m; sourceTree = "<group>"; };
+		FA6000192970000000000009 /* MLChatRoomThemeGameSixResultDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixResultDialog.h; sourceTree = "<group>"; };
+		FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixResultDialog.m; sourceTree = "<group>"; };
 		A5A555AA27E5118800005523 /* MLChatRoomThemeGameFivePurchaseView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFivePurchaseView.h; sourceTree = "<group>"; };
 		A5A555BB27E5118800005524 /* MLChatRoomThemeGameFivePurchaseView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFivePurchaseView.m; sourceTree = "<group>"; };
 		A5A5557727E5118800005520 /* MLChatRoomThemeGameFiveRecordView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveRecordView.h; sourceTree = "<group>"; };
@@ -5671,6 +5674,8 @@
 				FA6000142970000000000007 /* MLThemeGameSixPackGiftCell.m */,
 				FA6000162970000000000008 /* MLChatRoomThemeGameSixPackDialog.h */,
 				FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */,
+				FA6000192970000000000009 /* MLChatRoomThemeGameSixResultDialog.h */,
+				FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */,
 			);
 			path = GameSix;
 			sourceTree = "<group>";
@@ -9323,6 +9328,7 @@
 				FA6000122970000000000006 /* MLGlobalGiftSelectorPicker.m in Sources */,
 				FA6000152970000000000007 /* MLThemeGameSixPackGiftCell.m in Sources */,
 				FA6000182970000000000008 /* MLChatRoomThemeGameSixPackDialog.m in Sources */,
+				FA60001B2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m in Sources */,
 				A5A555CC27E5118800005525 /* MLChatRoomThemeGameFivePurchaseView.m in Sources */,
 				A5A5559927E5118800005522 /* MLChatRoomThemeGameFiveRecordView.m in Sources */,
 				A5A5556627E511880000551F /* MLChatRoomThemeGameFiveResultView.m in Sources */,

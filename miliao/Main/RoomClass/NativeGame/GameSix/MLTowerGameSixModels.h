@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *image;
 @property (nonatomic, copy) NSString *unit_value;
+@property (nonatomic, copy) NSString *value;
 @property (nonatomic, assign) NSInteger num;
 @property (nonatomic, copy) NSString *source; // "global" 或 "temp"
 @end
@@ -48,6 +49,12 @@ typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
 @property (nonatomic, copy) NSString *threshold_value;
 @property (nonatomic, strong) NSArray<MLCandidateItemModel *> *global_inventory;
 @property (nonatomic, strong) NSArray<MLCandidateItemModel *> *temp_inventory;
+@end
+
+@interface MLTowerGameSixRecastResultModel : NSObject
+@property (nonatomic, assign) NSInteger to_layer;
+@property (nonatomic, assign) long long inventory_id;
+@property (nonatomic, strong) MLCandidateItemModel *gift;
 @end
 
 NS_ASSUME_NONNULL_END
