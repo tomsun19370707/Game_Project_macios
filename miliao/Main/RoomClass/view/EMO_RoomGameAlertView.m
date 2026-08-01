@@ -87,11 +87,23 @@
 
     [FFHomeHandel customeNoPageListRequestHandle:parameter apiStr:lottery_get_rooms success:^(NSMutableArray <NSDictionary *> *dataArr) {
         i = 1;
+        NSMutableArray *filteredArr = [NSMutableArray array];
+        if (dataArr && [dataArr isKindOfClass:[NSArray class]]) {
+            for (NSDictionary *dict in dataArr) {
+                if (![dict isKindOfClass:[NSDictionary class]]) continue;
+                NSInteger gameId = [dict[@"id"] integerValue];
+                NSString *name = dict[@"name"] ?: @"";
+                // H5 抽奖盘仅展示 id < 8 的旧版 7 个纯 H5 网页游戏，过滤掉 id >= 8 的原生游戏及旧版寻梦(id=7)
+                if (gameId < 8 && ![name containsString:@"寻梦"]) {
+                    [filteredArr addObject:dict];
+                }
+            }
+        }
         if (i + j == 2) {
-            [wself.dataArr insertObjects:dataArr atIndex:0];
+            [wself.dataArr insertObjects:filteredArr atIndex:0];
             [wself refreshCell];
         } else {
-            [wself.dataArr addObjectsFromArray:dataArr];
+            [wself.dataArr addObjectsFromArray:filteredArr];
         }
     } failure:^{
         [wself refreshCell];
