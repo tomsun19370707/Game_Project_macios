@@ -472,11 +472,9 @@
         if (diamondVal && diamondVal != [NSNull null]) {
             diamondDouble = [diamondVal doubleValue];
         }
-        NSInteger diamondInt = (NSInteger)diamondDouble;
-        NSString *diamondStr = [NSString stringWithFormat:@"%ld", (long)diamondInt];
-        strongSelf.diamondBalanceLabel.text = diamondStr;
+        strongSelf.diamondBalanceLabel.text = MLFormatLargeNumber(diamondDouble);
         strongSelf.localKeyBalance = moneyModel.lottery_coin;
-        [strongSelf updateBalanceUI];
+        strongSelf.keyBalanceLabel.text = MLFormatLargeNumber((double)strongSelf.localKeyBalance);
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
@@ -506,11 +504,7 @@
 }
 
 - (void)updateBalanceUI {
-    NSString *keyStr = [NSString stringWithFormat:@"%ld", (long)_localKeyBalance];
-    if (keyStr.length > 8) {
-        keyStr = [NSString stringWithFormat:@"%@...", [keyStr substringToIndex:8]];
-    }
-    _keyBalanceLabel.text = keyStr;
+    _keyBalanceLabel.text = MLFormatLargeNumber((double)_localKeyBalance);
 }
 
 - (void)renderGiftBoard {

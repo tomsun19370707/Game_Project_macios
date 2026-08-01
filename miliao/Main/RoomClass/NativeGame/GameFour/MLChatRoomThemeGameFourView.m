@@ -423,14 +423,9 @@
         if (diamondVal && diamondVal != [NSNull null]) {
             diamondDouble = [diamondVal doubleValue];
         }
-        NSInteger diamondInt = (NSInteger)diamondDouble;
-        NSString *diamondStr = [NSString stringWithFormat:@"%ld", (long)diamondInt];
-        if (diamondStr.length > 6) {
-            diamondStr = [NSString stringWithFormat:@"%@...", [diamondStr substringToIndex:6]];
-        }
-        strongSelf.diamondBalanceLabel.text = diamondStr;
+        strongSelf.diamondBalanceLabel.text = MLFormatLargeNumber(diamondDouble);
         strongSelf.localKeyBalance = moneyModel.lottery_coin;
-        [strongSelf updateBalanceUI];
+        strongSelf.keyBalanceLabel.text = MLFormatLargeNumber((double)strongSelf.localKeyBalance);
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];

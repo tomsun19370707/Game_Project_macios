@@ -205,7 +205,7 @@ static const NSInteger KEY_PRICE_DIAMOND = 200; // 1 key = 200 diamonds
     _tvKeyCount.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
     _tvKeyCount.textAlignment = NSTextAlignmentCenter;
     _tvKeyCount.lineBreakMode = NSLineBreakByTruncatingTail;
-    _tvKeyCount.text = [NSString stringWithFormat:@"%ld", (long)_currentKeyCount];
+    _tvKeyCount.text = MLFormatLargeNumber((double)_currentKeyCount);
     [_keyBar addSubview:_tvKeyCount];
     [_tvKeyCount mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(_ivKey.mas_trailing).offset(KDialogAdaptedWidth(2));
@@ -333,7 +333,7 @@ static const NSInteger KEY_PRICE_DIAMOND = 200; // 1 key = 200 diamonds
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (model && model.diamond) {
             strongSelf.currentDiamondCount = [model.diamond integerValue];
-            strongSelf.tvDiamondCount.text = model.diamond;
+            strongSelf.tvDiamondCount.text = MLFormatLargeNumber([model.diamond doubleValue]);
         }
     } failure:nil];
 }
@@ -422,7 +422,7 @@ static const NSInteger KEY_PRICE_DIAMOND = 200; // 1 key = 200 diamonds
         // Update local key balance and UI
         NSInteger newBalance = strongSelf.currentKeyCount + actualCount;
         strongSelf.currentKeyCount = newBalance;
-        strongSelf.tvKeyCount.text = [NSString stringWithFormat:@"%ld", (long)newBalance];
+        strongSelf.tvKeyCount.text = MLFormatLargeNumber((double)newBalance);
         
         // Fetch fresh diamond balance from server
         [strongSelf loadUserMoney];

@@ -631,10 +631,9 @@
         if (diamondVal && diamondVal != [NSNull null]) {
             diamondDouble = [diamondVal doubleValue];
         }
-        NSInteger diamondInt = (NSInteger)diamondDouble;
-        wself.diamondBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)diamondInt];
+        wself.diamondBalanceLabel.text = MLFormatLargeNumber(diamondDouble);
         wself.localKeyBalance = moneyModel.lottery_coin;
-        [wself updateBalanceUI];
+        wself.keyBalanceLabel.text = MLFormatLargeNumber((double)wself.localKeyBalance);
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
@@ -760,7 +759,7 @@
 }
 
 - (void)updateBalanceUI {
-    self.keyBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)self.localKeyBalance];
+    self.keyBalanceLabel.text = MLFormatLargeNumber((double)self.localKeyBalance);
 }
 
 #pragma mark - 抽奖与跑马灯动画算法 (带减速步进)

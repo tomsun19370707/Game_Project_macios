@@ -5,6 +5,7 @@
 #import "MLChatRoomThemeGameSixResultDialog.h"
 #import "MLChatRoomThemeGameSixRecordDialog.h"
 #import "MLThemeGameModel.h"
+#import "MLGameLotteryService.h"
 #import "Global.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD/SVProgressHUD.h>
@@ -529,7 +530,7 @@
             }
             if (bsModel.ticket) {
                 weakSelf.remainingRecasts = bsModel.ticket.remaining_recasts;
-                weakSelf.keyLabel.text = [NSString stringWithFormat:@"%ld", (long)weakSelf.remainingRecasts];
+                weakSelf.keyLabel.text = MLFormatLargeNumber((double)weakSelf.remainingRecasts);
                 weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
                 if (weakSelf.remainingRecasts <= 0) {
                     [SVProgressHUD dismiss];
@@ -549,7 +550,7 @@
             MLTowerGameSixRecastResultModel *resultModel = [MLTowerGameSixRecastResultModel mj_objectWithKeyValues:responseObj];
             if (resultModel) {
                 weakSelf.remainingRecasts = resultModel.remaining_recasts;
-                weakSelf.keyLabel.text = [NSString stringWithFormat:@"%ld", (long)weakSelf.remainingRecasts];
+                weakSelf.keyLabel.text = MLFormatLargeNumber((double)weakSelf.remainingRecasts);
                 weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
                 if (resultModel.to_layer > 0) {
                     [weakSelf selectLayer:resultModel.to_layer animated:YES];
@@ -584,7 +585,7 @@
         }
         if (bsModel && bsModel.ticket) {
             self.remainingRecasts = bsModel.ticket.remaining_recasts;
-            self.keyLabel.text = [NSString stringWithFormat:@"%ld", (long)self.remainingRecasts];
+            self.keyLabel.text = MLFormatLargeNumber((double)self.remainingRecasts);
             self.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)self.remainingRecasts];
         } else {
             self.remainingRecasts = 0;

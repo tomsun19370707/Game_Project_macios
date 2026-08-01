@@ -335,8 +335,8 @@
 }
 
 - (void)updateBalanceUI {
-    _diamondBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)self.localDiamonds];
-    _keyBalanceLabel.text = [NSString stringWithFormat:@"%ld", (long)self.localKeys];
+    _diamondBalanceLabel.text = MLFormatLargeNumber((double)self.localDiamonds);
+    _keyBalanceLabel.text = MLFormatLargeNumber((double)self.localKeys);
     [self updateCostUI];
 }
 

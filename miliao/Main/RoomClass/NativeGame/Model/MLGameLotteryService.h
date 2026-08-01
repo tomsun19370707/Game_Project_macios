@@ -2,6 +2,8 @@
 #import "MLGameLotteryInfoModel.h"
 #import "MLGameDrawResultModel.h"
 
+FOUNDATION_EXPORT NSString *MLFormatLargeNumber(double num);
+
 @interface MLGameLotteryService : NSObject
 
 + (NSDictionary *)buildParams:(NSDictionary *)params;

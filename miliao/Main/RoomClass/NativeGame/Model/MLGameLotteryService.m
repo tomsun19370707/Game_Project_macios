@@ -12,6 +12,24 @@
 static NSInteger g_poolId = 0;
 static NSInteger g_poolVersion = 0;
 
+NSString *MLFormatLargeNumber(double num) {
+    if (num >= 1000000000000.0) {
+        double v = num / 1000000000000.0;
+        NSString *str = [NSString stringWithFormat:@"%.2f万亿", v];
+        return [str stringByReplacingOccurrencesOfString:@".00" withString:@""];
+    } else if (num >= 100000000.0) {
+        double v = num / 100000000.0;
+        NSString *str = [NSString stringWithFormat:@"%.2f亿", v];
+        return [str stringByReplacingOccurrencesOfString:@".00" withString:@""];
+    } else if (num >= 10000.0) {
+        double v = num / 10000.0;
+        NSString *str = [NSString stringWithFormat:@"%.2f万", v];
+        return [str stringByReplacingOccurrencesOfString:@".00" withString:@""];
+    } else {
+        return [NSString stringWithFormat:@"%.0f", floor(num)];
+    }
+}
+
 @implementation MLGameLotteryService
 
 + (NSDictionary *)buildParams:(NSDictionary *)params {
