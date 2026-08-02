@@ -546,7 +546,6 @@
             }
             if (bsModel.ticket) {
                 weakSelf.remainingRecasts = bsModel.ticket.remaining_recasts;
-                weakSelf.keyLabel.text = MLFormatLargeNumber((double)weakSelf.remainingRecasts);
                 weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
                 if (weakSelf.remainingRecasts <= 0) {
                     [SVProgressHUD dismiss];
@@ -566,7 +565,6 @@
             MLTowerGameSixRecastResultModel *resultModel = [MLTowerGameSixRecastResultModel mj_objectWithKeyValues:responseObj];
             if (resultModel) {
                 weakSelf.remainingRecasts = resultModel.remaining_recasts;
-                weakSelf.keyLabel.text = MLFormatLargeNumber((double)weakSelf.remainingRecasts);
                 weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
                 if (resultModel.to_layer > 0) {
                     [weakSelf selectLayer:resultModel.to_layer animated:YES];
@@ -593,7 +591,23 @@
     }];
 }
 
+- (void)loadUserMoney {
+    __weak typeof(self) weakSelf = self;
+    [MLGameLotteryService getUserMoneyWithSuccess:^(MLGameUserMoneyModel *moneyModel) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf || !moneyModel) return;
+        
+        double diamondDouble = 0.0;
+        if (moneyModel.diamond && moneyModel.diamond != (id)[NSNull null]) {
+            diamondDouble = [moneyModel.diamond doubleValue];
+        }
+        strongSelf.diamondLabel.text = MLFormatLargeNumber(diamondDouble);
+        strongSelf.keyLabel.text = MLFormatLargeNumber((double)moneyModel.lottery_coin);
+    } failure:nil];
+}
+
 - (void)loadBootstrapData {
+    [self loadUserMoney];
     [[MLThemeGameModel sharedInstance] fetchTowerGameSixBootstrapWithRoomId:nil success:^(MLTowerGameSixBootstrapModel * _Nullable bsModel) {
         if (bsModel && bsModel.player) {
             NSInteger layer = bsModel.player.current_layer > 0 ? bsModel.player.current_layer : 1;
@@ -601,11 +615,9 @@
         }
         if (bsModel && bsModel.ticket) {
             self.remainingRecasts = bsModel.ticket.remaining_recasts;
-            self.keyLabel.text = MLFormatLargeNumber((double)self.remainingRecasts);
             self.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)self.remainingRecasts];
         } else {
             self.remainingRecasts = 0;
-            self.keyLabel.text = @"0";
             self.tokenRecastLabel.text = @"餘\n0\n次";
         }
         if (bsModel && bsModel.layers) {
