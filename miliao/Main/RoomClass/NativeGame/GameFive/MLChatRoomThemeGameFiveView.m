@@ -176,6 +176,14 @@
 @property (nonatomic, assign) NSInteger localKeyBalance;
 @property (nonatomic, strong) MLGameLotteryInfoModel *infoModel;
 
+// 全服中奖跑马灯视图与数据
+@property (nonatomic, strong) UIView *marqueeContainer;
+@property (nonatomic, strong) UILabel *marqueeCurrentLabel;
+@property (nonatomic, strong) UILabel *marqueeNextLabel;
+@property (nonatomic, strong) NSTimer *marqueeTimer;
+@property (nonatomic, strong) NSArray<NSDictionary *> *marqueeDataList;
+@property (nonatomic, assign) NSInteger marqueeCurrentIndex;
+
 // Marquee Spin Animation States
 @property (nonatomic, strong) NSTimer *spinTimer;
 @property (nonatomic, assign) NSInteger currentHighlightIndex;
@@ -280,6 +288,37 @@
         make.top.mas_equalTo(_ruleButton.mas_bottom).offset(KDialogAdaptedWidth(5));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(5));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(53), KDialogAdaptedWidth(44.5)));
+    }];
+
+    // Marquee View Container (百分比 32.5% 高度锚定，左右受控于 _giftButton 与 _ruleButton)
+    _marqueeContainer = [[UIView alloc] init];
+    _marqueeContainer.clipsToBounds = YES;
+    _marqueeContainer.hidden = YES;
+    [_backgroundContainer addSubview:_marqueeContainer];
+    [_marqueeContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(_backgroundContainer.mas_top).offset(KDialogAdaptedWidth(540 * 0.325));
+        make.leading.mas_equalTo(_giftButton.mas_trailing).offset(KDialogAdaptedWidth(10));
+        make.trailing.mas_equalTo(_ruleButton.mas_leading).offset(-KDialogAdaptedWidth(10));
+        make.height.mas_equalTo(KDialogAdaptedWidth(28));
+    }];
+
+    _marqueeCurrentLabel = [[UILabel alloc] init];
+    _marqueeCurrentLabel.textColor = [UIColor whiteColor];
+    _marqueeCurrentLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13.5)];
+    _marqueeCurrentLabel.textAlignment = NSTextAlignmentCenter;
+    [_marqueeContainer addSubview:_marqueeCurrentLabel];
+    [_marqueeCurrentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(_marqueeContainer);
+    }];
+
+    _marqueeNextLabel = [[UILabel alloc] init];
+    _marqueeNextLabel.textColor = [UIColor whiteColor];
+    _marqueeNextLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13.5)];
+    _marqueeNextLabel.textAlignment = NSTextAlignmentCenter;
+    _marqueeNextLabel.hidden = YES;
+    [_marqueeContainer addSubview:_marqueeNextLabel];
+    [_marqueeNextLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(_marqueeContainer);
     }];
 
     // 4. Gameplay Container (4x4 Grid layout)
@@ -460,6 +499,7 @@
 #pragma mark - Data Fetching & Refreshes
 
 - (void)loadData {
+    [self loadMarqueeData];
     __weak typeof(self) weakSelf = self;
     
     // 1. Fetch user asset balances
@@ -499,9 +539,7 @@
     }];
 }
 
-- (void)dealloc {
-    [self stopSpinTimer];
-}
+
 
 - (void)updateBalanceUI {
     _keyBalanceLabel.text = MLFormatLargeNumber((double)_localKeyBalance);
@@ -719,9 +757,8 @@
             strongSelf.isDrawing = NO;
             strongSelf.localKeyBalance += requiredKeys; // Rollback
             [strongSelf updateBalanceUI];
-            [strongSelf loadData];
+            [SVProgressHUD showErrorWithStatus:error.localizedDescription];
         }
-        [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
 }
 
@@ -750,9 +787,105 @@
         self.alpha = 0;
         self.backgroundContainer.transform = CGAffineTransformMakeScale(0.7, 0.7);
     } completion:^(BOOL finished) {
+        [self stopMarqueeTimer];
         [self stopSpinTimer];
         [self removeFromSuperview];
     }];
+}
+
+- (void)dealloc {
+    [self stopMarqueeTimer];
+    [self stopSpinTimer];
+}
+
+#pragma mark - 全服中奖消息广播跑马灯与垂直翻页
+
+- (void)loadMarqueeData {
+    __weak typeof(self) weakSelf = self;
+    [MLGameLotteryService getLotteryWinLogWithTypeId:self.typeId page:1 pageSize:20 success:^(NSArray *list, NSInteger total) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        if (list && [list isKindOfClass:[NSArray class]] && list.count > 0) {
+            strongSelf.marqueeDataList = list;
+            strongSelf.marqueeCurrentIndex = 0;
+            strongSelf.marqueeContainer.hidden = NO;
+            [strongSelf updateMarqueeLabel:strongSelf.marqueeCurrentLabel withItem:list[0]];
+            [strongSelf startMarqueeTimer];
+        } else {
+            strongSelf.marqueeContainer.hidden = YES;
+            [strongSelf stopMarqueeTimer];
+        }
+    } failure:^(NSError *error) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        strongSelf.marqueeContainer.hidden = YES;
+        [strongSelf stopMarqueeTimer];
+    }];
+}
+
+- (void)updateMarqueeLabel:(UILabel *)label withItem:(NSDictionary *)item {
+    if (!item || ![item isKindOfClass:[NSDictionary class]] || !label) return;
+    NSString *nickname = item[@"nickname"] ?: @"";
+    NSString *giftName = item[@"name"] ?: @"";
+    NSString *text = [NSString stringWithFormat:@"恭喜 %@ 抽中 %@", nickname, giftName];
+    NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:text];
+    [attrStr addAttribute:NSForegroundColorAttributeName value:[UIColor whiteColor] range:NSMakeRange(0, text.length)];
+    [attrStr addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13.5)] range:NSMakeRange(0, text.length)];
+    
+    UIColor *goldColor = [UIColor colorWithRed:0xFF/255.0 green:0xE6/255.0 blue:0x6F/255.0 alpha:1.0];
+    NSRange nickRange = [text rangeOfString:nickname];
+    if (nickRange.location != NSNotFound) {
+        [attrStr addAttribute:NSForegroundColorAttributeName value:goldColor range:nickRange];
+    }
+    NSRange giftRange = [text rangeOfString:giftName options:NSBackwardsSearch];
+    if (giftRange.location != NSNotFound) {
+        [attrStr addAttribute:NSForegroundColorAttributeName value:goldColor range:giftRange];
+    }
+    label.attributedText = attrStr;
+}
+
+- (void)startMarqueeTimer {
+    [self stopMarqueeTimer];
+    if (!self.marqueeDataList || self.marqueeDataList.count <= 1) return;
+    
+    __weak typeof(self) weakSelf = self;
+    self.marqueeTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf || !strongSelf.marqueeDataList || strongSelf.marqueeDataList.count == 0) return;
+        [strongSelf showNextMarqueeItem];
+    }];
+}
+
+- (void)showNextMarqueeItem {
+    if (!self.marqueeDataList || self.marqueeDataList.count == 0) return;
+    NSInteger nextIndex = (self.marqueeCurrentIndex + 1) % self.marqueeDataList.count;
+    NSDictionary *nextItem = self.marqueeDataList[nextIndex];
+    [self updateMarqueeLabel:self.marqueeNextLabel withItem:nextItem];
+    
+    CGFloat containerH = KDialogAdaptedWidth(28);
+    self.marqueeNextLabel.transform = CGAffineTransformMakeTranslation(0, containerH);
+    self.marqueeNextLabel.hidden = NO;
+    
+    __weak typeof(self) weakSelf = self;
+    [UIView animateWithDuration:0.5 animations:^{
+        weakSelf.marqueeCurrentLabel.transform = CGAffineTransformMakeTranslation(0, -containerH);
+        weakSelf.marqueeNextLabel.transform = CGAffineTransformIdentity;
+    } completion:^(BOOL finished) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        strongSelf.marqueeCurrentIndex = nextIndex;
+        strongSelf.marqueeCurrentLabel.attributedText = strongSelf.marqueeNextLabel.attributedText;
+        strongSelf.marqueeCurrentLabel.transform = CGAffineTransformIdentity;
+        strongSelf.marqueeNextLabel.hidden = YES;
+        strongSelf.marqueeNextLabel.transform = CGAffineTransformIdentity;
+    }];
+}
+
+- (void)stopMarqueeTimer {
+    if (self.marqueeTimer) {
+        [self.marqueeTimer invalidate];
+        self.marqueeTimer = nil;
+    }
 }
 
 @end
