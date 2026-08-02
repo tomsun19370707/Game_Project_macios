@@ -213,6 +213,7 @@
     if (self = [super initWithFrame:frame]) {
         self.typeId = typeId > 0 ? typeId : 14;
         self.cardViews = [NSMutableArray array];
+        _currentHighlightIndex = -1;
         [self setupUI];
         [self loadData];
     }
