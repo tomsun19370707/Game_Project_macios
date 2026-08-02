@@ -9,6 +9,7 @@
 #import "Global.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD/SVProgressHUD.h>
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface MLChatRoomThemeGameSixView ()
 
@@ -43,6 +44,7 @@
 
 // 7 层宝塔礼物矩阵
 @property (nonatomic, strong) NSMutableArray<UIView *> *pagodaRows;
+@property (nonatomic, strong) NSMutableArray<NSMutableArray<UIImageView *> *> *cardImageViews;
 
 // 3. Action 容器 (底栏抽奖与决策)
 @property (nonatomic, strong) UIView *actionContainer;
@@ -315,6 +317,9 @@
     CGFloat rowWidthPercents[] = {0.44, 0.47, 0.49, 0.50, 0.52, 0.53, 0.62};
     CGFloat rowTopOffsets[] = {-40, 35, 110, 188, 265, 342, 440};
     
+    _pagodaRows = [NSMutableArray array];
+    _cardImageViews = [NSMutableArray array];
+    
     for (int r = 0; r < 7; r++) {
         UIView *rowView = [[UIView alloc] init];
         [_gameplayContainer addSubview:rowView];
@@ -335,6 +340,9 @@
         CGFloat cardSize = KDialogAdaptedWidth(baseCardSize);
         CGFloat cardGap = (width - 5 * cardSize) / 4.0;
         
+        NSMutableArray<UIImageView *> *rowCardImageViews = [NSMutableArray array];
+        [_cardImageViews addObject:rowCardImageViews];
+        
         for (int c = 0; c < 5; c++) {
             UIImageView *cardBg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"theme_game_six_gift_card_bg"]];
             cardBg.contentMode = UIViewContentModeScaleAspectFit;
@@ -344,6 +352,14 @@
                 make.leading.mas_equalTo(c * (cardSize + cardGap));
                 make.size.mas_equalTo(CGSizeMake(cardSize, cardSize));
             }];
+            
+            UIImageView *iconIv = [[UIImageView alloc] init];
+            iconIv.contentMode = UIViewContentModeScaleAspectFit;
+            [cardBg addSubview:iconIv];
+            [iconIv mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.edges.mas_equalTo(cardBg).insets(UIEdgeInsetsMake(1.5, 1.5, 1.5, 1.5));
+            }];
+            [rowCardImageViews addObject:iconIv];
         }
         
         [_pagodaRows addObject:rowView];
@@ -592,7 +608,33 @@
             self.keyLabel.text = @"0";
             self.tokenRecastLabel.text = @"餘\n0\n次";
         }
+        if (bsModel && bsModel.layers) {
+            [self renderTowerLayersGifts:bsModel.layers];
+        }
     } failure:nil];
+}
+
+- (void)renderTowerLayersGifts:(NSArray<MLTowerLayerInfoModel *> *)layers {
+    if (!layers || ![layers isKindOfClass:[NSArray class]] || layers.count == 0) return;
+    
+    for (MLTowerLayerInfoModel *layerBean in layers) {
+        if (![layerBean isKindOfClass:[MLTowerLayerInfoModel class]]) continue;
+        NSInteger layerIndex = layerBean.layer - 1; // 1~7 转 0~6
+        if (layerIndex < 0 || layerIndex >= 7 || !layerBean.gifts) continue;
+        
+        for (MLTowerGiftModel *gift in layerBean.gifts) {
+            if (![gift isKindOfClass:[MLTowerGiftModel class]]) continue;
+            NSInteger posIndex = gift.position - 1; // 1~5 转 0~4
+            if (posIndex < 0 || posIndex >= 5) continue;
+            
+            if (layerIndex < self.cardImageViews.count && posIndex < self.cardImageViews[layerIndex].count) {
+                UIImageView *iconIv = self.cardImageViews[layerIndex][posIndex];
+                if (gift.image && gift.image.length > 0) {
+                    [iconIv sd_setImageWithURL:[NSURL URLWithString:gift.image]];
+                }
+            }
+        }
+    }
 }
 
 #pragma mark - Presentation & Dismissal

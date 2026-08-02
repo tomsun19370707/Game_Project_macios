@@ -23,10 +23,24 @@
 @implementation MLTowerTicketModel
 @end
 
+@implementation MLTowerGiftModel
+@end
+
+@implementation MLTowerLayerInfoModel
+
++ (NSDictionary *)mj_objectClassInArray {
+    return @{
+        @"gifts": [MLTowerGiftModel class]
+    };
+}
+
+@end
+
 @implementation MLTowerGameSixBootstrapModel
 
 + (NSDictionary *)mj_objectClassInArray {
     return @{
+        @"layers": [MLTowerLayerInfoModel class],
         @"temp_inventory": [MLCandidateItemModel class]
     };
 }

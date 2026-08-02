@@ -38,10 +38,25 @@ typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
 @property (nonatomic, assign) long long created_at;
 @end
 
+@interface MLTowerGiftModel : NSObject
+@property (nonatomic, assign) NSInteger position; // 1~5
+@property (nonatomic, assign) NSInteger gift_id;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) NSString *image;
+@property (nonatomic, copy) NSString *value;
+@property (nonatomic, assign) NSInteger advance_step; // 0, 1, 2
+@end
+
+@interface MLTowerLayerInfoModel : NSObject
+@property (nonatomic, assign) NSInteger layer; // 1~7
+@property (nonatomic, strong) NSArray<MLTowerGiftModel *> *gifts;
+@end
+
 @interface MLTowerGameSixBootstrapModel : NSObject
 @property (nonatomic, strong) MLTowerPlayerModel *player;
 @property (nonatomic, strong) MLTowerTicketModel *ticket;
 @property (nonatomic, assign) NSInteger token_count;
+@property (nonatomic, strong) NSArray<MLTowerLayerInfoModel *> *layers;
 @property (nonatomic, strong) NSArray<MLCandidateItemModel *> *temp_inventory;
 @end
 
