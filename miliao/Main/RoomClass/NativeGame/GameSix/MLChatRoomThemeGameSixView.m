@@ -45,6 +45,13 @@
 // 7 层宝塔礼物矩阵
 @property (nonatomic, strong) NSMutableArray<UIView *> *pagodaRows;
 @property (nonatomic, strong) NSMutableArray<NSMutableArray<UIImageView *> *> *cardImageViews;
+@property (nonatomic, strong) NSMutableArray<NSMutableArray<UIView *> *> *cardHighlightViews;
+@property (nonatomic, strong) NSMutableArray<NSMutableArray<UIImageView *> *> *cardBgViews;
+
+@property (nonatomic, strong) NSTimer *marqueeTimer;
+@property (nonatomic, assign) NSInteger marqueeCurrentPos;
+@property (nonatomic, assign) BOOL isMarqueeRunning;
+@property (nonatomic, assign) BOOL isRecasting;
 
 // 3. Action 容器 (底栏抽奖与决策)
 @property (nonatomic, strong) UIView *actionContainer;
@@ -319,6 +326,8 @@
     
     _pagodaRows = [NSMutableArray array];
     _cardImageViews = [NSMutableArray array];
+    _cardHighlightViews = [NSMutableArray array];
+    _cardBgViews = [NSMutableArray array];
     
     for (int r = 0; r < 7; r++) {
         UIView *rowView = [[UIView alloc] init];
@@ -341,7 +350,12 @@
         CGFloat cardGap = (width - 5 * cardSize) / 4.0;
         
         NSMutableArray<UIImageView *> *rowCardImageViews = [NSMutableArray array];
+        NSMutableArray<UIView *> *rowHighlightViews = [NSMutableArray array];
+        NSMutableArray<UIImageView *> *rowCardBgViews = [NSMutableArray array];
+        
         [_cardImageViews addObject:rowCardImageViews];
+        [_cardHighlightViews addObject:rowHighlightViews];
+        [_cardBgViews addObject:rowCardBgViews];
         
         for (int c = 0; c < 5; c++) {
             UIImageView *cardBg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"theme_game_six_gift_card_bg"]];
@@ -352,6 +366,7 @@
                 make.leading.mas_equalTo(c * (cardSize + cardGap));
                 make.size.mas_equalTo(CGSizeMake(cardSize, cardSize));
             }];
+            [rowCardBgViews addObject:cardBg];
             
             UIImageView *iconIv = [[UIImageView alloc] init];
             iconIv.contentMode = UIViewContentModeScaleAspectFit;
@@ -360,6 +375,19 @@
                 make.edges.mas_equalTo(cardBg).insets(UIEdgeInsetsMake(1.5, 1.5, 1.5, 1.5));
             }];
             [rowCardImageViews addObject:iconIv];
+            
+            UIView *highlightView = [[UIView alloc] init];
+            highlightView.backgroundColor = [UIColor colorWithRed:0xFF/255.0 green:0xE0/255.0 blue:0x82/255.0 alpha:0.2];
+            highlightView.layer.borderColor = [UIColor colorWithRed:0xFF/255.0 green:0xE0/255.0 blue:0x82/255.0 alpha:1.0].CGColor;
+            highlightView.layer.borderWidth = KDialogAdaptedWidth(2.5);
+            highlightView.layer.cornerRadius = KDialogAdaptedWidth(6.0);
+            highlightView.layer.masksToBounds = YES;
+            highlightView.hidden = YES;
+            [cardBg addSubview:highlightView];
+            [highlightView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.edges.mas_equalTo(cardBg);
+            }];
+            [rowHighlightViews addObject:highlightView];
         }
         
         [_pagodaRows addObject:rowView];
@@ -531,12 +559,17 @@
 }
 
 - (void)recastClick {
+    if (self.isRecasting) return;
     if (self.remainingRecasts <= 0) {
         [SVProgressHUD showInfoWithStatus:@"暂无可用门票，请先融合门票"];
         return;
     }
+    
+    self.isRecasting = YES;
+    NSInteger activeLayer = self.currentLayer;
+    [self startMarqueeScanWithLayer:activeLayer];
+    
     __weak typeof(self) weakSelf = self;
-    [SVProgressHUD showWithStatus:@"正在重铸抽奖..."];
     [[MLThemeGameModel sharedInstance] fetchTowerGameSixBootstrapWithRoomId:nil success:^(id _Nullable responseObj) {
         NSInteger freshStateVersion = 0;
         if ([responseObj isKindOfClass:[MLTowerGameSixBootstrapModel class]]) {
@@ -548,7 +581,7 @@
                 weakSelf.remainingRecasts = bsModel.ticket.remaining_recasts;
                 weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
                 if (weakSelf.remainingRecasts <= 0) {
-                    [SVProgressHUD dismiss];
+                    [weakSelf stopMarqueeAndResetRecastState];
                     [SVProgressHUD showInfoWithStatus:@"暂无可用门票，请先融合门票"];
                     return;
                 }
@@ -561,32 +594,39 @@
         }
         
         [[MLThemeGameModel sharedInstance] recastTowerGameSixWithStateVersion:freshStateVersion success:^(id _Nullable responseObj) {
-            [SVProgressHUD dismiss];
             MLTowerGameSixRecastResultModel *resultModel = [MLTowerGameSixRecastResultModel mj_objectWithKeyValues:responseObj];
             if (resultModel) {
                 weakSelf.remainingRecasts = resultModel.remaining_recasts;
                 weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
-                if (resultModel.to_layer > 0) {
-                    [weakSelf selectLayer:resultModel.to_layer animated:YES];
-                }
+                
+                NSInteger rawTargetPos = (resultModel.gift && resultModel.gift.position > 0) ? resultModel.gift.position : 1;
+                NSInteger targetPosIndex = MAX(0, MIN(4, rawTargetPos - 1));
+                
+                [weakSelf transitionMarqueeToDecelerateWithLayer:activeLayer targetPosIndex:targetPosIndex completion:^{
+                    weakSelf.isRecasting = NO;
+                    if (resultModel.to_layer > 0) {
+                        [weakSelf selectLayer:resultModel.to_layer animated:YES];
+                    }
+                    
+                    MLChatRoomThemeGameSixResultDialog *resultDialog = [MLChatRoomThemeGameSixResultDialog showInView:weakSelf resultModel:resultModel];
+                    resultDialog.onContinueRecastBlock = ^{
+                        [weakSelf recastClick];
+                    };
+                    resultDialog.onWithdrawSuccessBlock = ^{
+                        [weakSelf loadBootstrapData];
+                    };
+                    
+                    [weakSelf loadBootstrapData];
+                }];
+            } else {
+                [weakSelf stopMarqueeAndResetRecastState];
             }
-            
-            MLChatRoomThemeGameSixResultDialog *resultDialog = [MLChatRoomThemeGameSixResultDialog showInView:weakSelf resultModel:resultModel];
-            resultDialog.onContinueRecastBlock = ^{
-                [weakSelf recastClick];
-            };
-            resultDialog.onWithdrawSuccessBlock = ^{
-                [weakSelf loadBootstrapData];
-            };
-            
-            // 再次触发后台同步
-            [weakSelf loadBootstrapData];
         } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
-            [SVProgressHUD dismiss];
+            [weakSelf stopMarqueeAndResetRecastState];
             [SVProgressHUD showInfoWithStatus:msg ?: @"重铸失败"];
         }];
     } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
-        [SVProgressHUD dismiss];
+        [weakSelf stopMarqueeAndResetRecastState];
         [SVProgressHUD showInfoWithStatus:msg ?: @"网络请求失败"];
     }];
 }
@@ -626,12 +666,118 @@
     } failure:nil];
 }
 
+- (void)dealloc {
+    [self stopMarqueeAndResetRecastState];
+}
+
+#pragma mark - 跑马灯轮询与减速定格算法
+
+- (void)setCardHighlightWithLayer:(NSInteger)layer highlightPosIndex:(NSInteger)highlightPosIndex scale:(CGFloat)scale {
+    NSInteger layerIndex = 7 - layer; // 1~7 映射为 6~0 (从下到上: 1层对应最底部r=6, 7层对应最顶部r=0)
+    if (layerIndex < 0 || layerIndex >= 7) return;
+    
+    for (NSInteger c = 0; c < 5; c++) {
+        if (layerIndex < self.cardHighlightViews.count && c < self.cardHighlightViews[layerIndex].count) {
+            UIView *hlView = self.cardHighlightViews[layerIndex][c];
+            UIImageView *cardBg = self.cardBgViews[layerIndex][c];
+            if (c == highlightPosIndex) {
+                hlView.hidden = NO;
+                cardBg.transform = CGAffineTransformMakeScale(scale, scale);
+            } else {
+                hlView.hidden = YES;
+                cardBg.transform = CGAffineTransformIdentity;
+            }
+        }
+    }
+}
+
+- (void)resetAllCardHighlights {
+    for (NSInteger r = 0; r < self.cardHighlightViews.count; r++) {
+        for (NSInteger c = 0; c < self.cardHighlightViews[r].count; c++) {
+            UIView *hlView = self.cardHighlightViews[r][c];
+            UIImageView *cardBg = self.cardBgViews[r][c];
+            hlView.hidden = YES;
+            cardBg.transform = CGAffineTransformIdentity;
+        }
+    }
+}
+
+- (void)startMarqueeScanWithLayer:(NSInteger)layer {
+    [self stopMarqueeTimer];
+    self.isMarqueeRunning = YES;
+    self.marqueeCurrentPos = 0;
+    
+    __weak typeof(self) weakSelf = self;
+    self.marqueeTimer = [NSTimer scheduledTimerWithTimeInterval:0.065 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf || !strongSelf.isMarqueeRunning) return;
+        [strongSelf setCardHighlightWithLayer:layer highlightPosIndex:strongSelf.marqueeCurrentPos scale:1.15];
+        strongSelf.marqueeCurrentPos = (strongSelf.marqueeCurrentPos + 1) % 5;
+    }];
+}
+
+- (void)transitionMarqueeToDecelerateWithLayer:(NSInteger)layer targetPosIndex:(NSInteger)targetPosIndex completion:(void(^)(void))completion {
+    [self stopMarqueeTimer];
+    self.isMarqueeRunning = NO;
+    
+    NSArray<NSNumber *> *delays = @[@0.065, @0.085, @0.120, @0.170, @0.240, @0.320];
+    NSInteger startPos = (targetPosIndex + 1) % 5;
+    [self stepDecelerateWithLayer:layer currentPos:startPos stepIndex:0 delays:delays targetPosIndex:targetPosIndex completion:completion];
+}
+
+- (void)stepDecelerateWithLayer:(NSInteger)layer currentPos:(NSInteger)currentPos stepIndex:(NSInteger)stepIndex delays:(NSArray<NSNumber *> *)delays targetPosIndex:(NSInteger)targetPosIndex completion:(void(^)(void))completion {
+    __weak typeof(self) weakSelf = self;
+    if (stepIndex < 4) {
+        [self setCardHighlightWithLayer:layer highlightPosIndex:currentPos scale:1.15];
+        NSInteger nextPos = (currentPos + 1) % 5;
+        NSTimeInterval delay = [delays[stepIndex] doubleValue];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            __strong typeof(weakSelf) strongSelf = weakSelf;
+            if (!strongSelf) return;
+            [strongSelf stepDecelerateWithLayer:layer currentPos:nextPos stepIndex:stepIndex + 1 delays:delays targetPosIndex:targetPosIndex completion:completion];
+        });
+    } else if (stepIndex == 4) {
+        [self setCardHighlightWithLayer:layer highlightPosIndex:targetPosIndex scale:1.15];
+        NSTimeInterval delay = [delays[4] doubleValue];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            __strong typeof(weakSelf) strongSelf = weakSelf;
+            if (!strongSelf) return;
+            [strongSelf stepDecelerateWithLayer:layer currentPos:targetPosIndex stepIndex:stepIndex + 1 delays:delays targetPosIndex:targetPosIndex completion:completion];
+        });
+    } else if (stepIndex == 5) {
+        // 定格脉冲 (350ms, 放大至 1.22x)
+        [self setCardHighlightWithLayer:layer highlightPosIndex:targetPosIndex scale:1.22];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.35 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            __strong typeof(weakSelf) strongSelf = weakSelf;
+            if (!strongSelf) return;
+            [strongSelf resetAllCardHighlights];
+            if (completion) {
+                completion();
+            }
+        });
+    }
+}
+
+- (void)stopMarqueeAndResetRecastState {
+    self.isMarqueeRunning = NO;
+    [self stopMarqueeTimer];
+    [self resetAllCardHighlights];
+    self.isRecasting = NO;
+}
+
+- (void)stopMarqueeTimer {
+    if (self.marqueeTimer) {
+        [self.marqueeTimer invalidate];
+        self.marqueeTimer = nil;
+    }
+}
+
 - (void)renderTowerLayersGifts:(NSArray<MLTowerLayerInfoModel *> *)layers {
     if (!layers || ![layers isKindOfClass:[NSArray class]] || layers.count == 0) return;
     
     for (MLTowerLayerInfoModel *layerBean in layers) {
         if (![layerBean isKindOfClass:[MLTowerLayerInfoModel class]]) continue;
-        NSInteger layerIndex = layerBean.layer - 1; // 1~7 转 0~6
+        NSInteger layerIndex = 7 - layerBean.layer; // 1~7 映射为 6~0 (从下到上: 1层对应最底部r=6, 7层对应最顶部r=0)
         if (layerIndex < 0 || layerIndex >= 7 || !layerBean.gifts) continue;
         
         for (MLTowerGiftModel *gift in layerBean.gifts) {

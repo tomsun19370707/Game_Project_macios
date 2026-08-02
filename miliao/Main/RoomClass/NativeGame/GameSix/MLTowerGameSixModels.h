@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MLCandidateItemModel : NSObject
+@property (nonatomic, assign) NSInteger position; // 1~5
 @property (nonatomic, assign) long long inventory_id;
 @property (nonatomic, assign) NSInteger gift_id;
 @property (nonatomic, copy) NSString *name;
@@ -67,6 +68,7 @@ typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
 @end
 
 @interface MLTowerGameSixRecastResultModel : NSObject
+@property (nonatomic, assign) NSInteger position; // 1~5
 @property (nonatomic, assign) NSInteger to_layer;
 @property (nonatomic, assign) long long inventory_id;
 @property (nonatomic, strong) MLCandidateItemModel *gift;
