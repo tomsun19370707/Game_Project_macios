@@ -679,7 +679,7 @@
 }
 
 - (void)ruleClick {
-    [MLChatRoomThemeGameThreeRuleView showInView:self.superview];
+    [MLChatRoomThemeGameThreeRuleView showInView:self.superview ruleContent:self.infoModel.content];
 }
 
 - (void)recordClick {

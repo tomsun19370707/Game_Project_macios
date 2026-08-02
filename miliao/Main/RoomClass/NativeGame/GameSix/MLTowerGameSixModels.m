@@ -36,6 +36,9 @@
 
 @end
 
+@implementation MLTowerGameSixGameDetailModel
+@end
+
 @implementation MLTowerGameSixBootstrapModel
 
 + (NSDictionary *)mj_objectClassInArray {

@@ -16,7 +16,11 @@
 
 @implementation MLChatRoomThemeGameFourRuleView
 
-+ (void)showInView:(UIView *)parentView ruleContent:(NSString *)content {
++ (void)showInView:(UIView *)parentView {
+    [self showInView:parentView ruleContent:nil];
+}
+
++ (void)showInView:(UIView *)parentView ruleContent:(nullable NSString *)content {
     MLChatRoomThemeGameFourRuleView *ruleView = [[MLChatRoomThemeGameFourRuleView alloc] initWithFrame:parentView.bounds ruleContent:content];
     [parentView addSubview:ruleView];
     [ruleView animateShow];

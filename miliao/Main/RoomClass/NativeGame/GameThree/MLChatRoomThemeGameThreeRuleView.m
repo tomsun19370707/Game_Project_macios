@@ -7,19 +7,30 @@
 @property (nonatomic, strong) UIView *maskView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIButton *closeButton;
+@property (nonatomic, strong) UITextView *textView;
+@property (nonatomic, copy) NSString *ruleContent;
 
 @end
 
 @implementation MLChatRoomThemeGameThreeRuleView
 
 + (void)showInView:(UIView *)parentView {
-    MLChatRoomThemeGameThreeRuleView *ruleView = [[MLChatRoomThemeGameThreeRuleView alloc] initWithFrame:parentView.bounds];
+    [self showInView:parentView ruleContent:nil];
+}
+
++ (void)showInView:(UIView *)parentView ruleContent:(nullable NSString *)ruleContent {
+    MLChatRoomThemeGameThreeRuleView *ruleView = [[MLChatRoomThemeGameThreeRuleView alloc] initWithFrame:parentView.bounds ruleContent:ruleContent];
     [parentView addSubview:ruleView];
     [ruleView animateShow];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
+    return [self initWithFrame:frame ruleContent:nil];
+}
+
+- (instancetype)initWithFrame:(CGRect)frame ruleContent:(nullable NSString *)ruleContent {
     if (self = [super initWithFrame:frame]) {
+        _ruleContent = ruleContent;
         [self setupUI];
     }
     return self;
@@ -71,6 +82,27 @@
         make.top.mas_equalTo(KDialogAdaptedWidth(28));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(18));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(51), KDialogAdaptedWidth(51)));
+    }];
+    
+    _textView = [[UITextView alloc] init];
+    _textView.backgroundColor = [UIColor clearColor];
+    _textView.textColor = kWhiteColor;
+    _textView.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(12)];
+    _textView.editable = NO;
+    _textView.selectable = NO;
+    
+    NSString *defaultText = @"【玩法说明】\n"
+                            "1. 魔法星盘包含不同属性星座奖池；\n"
+                            "2. 选择单抽或多抽消耗指定数量的钥匙/宝石；\n"
+                            "3. 祈愿获得专属星座礼物。";
+    _textView.text = (_ruleContent && _ruleContent.length > 0) ? _ruleContent : defaultText;
+    [_bgImageView addSubview:_textView];
+    
+    [_textView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_bgImageView.mas_top).offset(KDialogAdaptedWidth(90));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(36));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(36));
+        make.height.mas_equalTo(KDialogAdaptedWidth(440));
     }];
 }
 

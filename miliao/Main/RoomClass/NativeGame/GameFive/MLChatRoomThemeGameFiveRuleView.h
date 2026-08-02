@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MLChatRoomThemeGameFiveRuleView : UIView
 
++ (void)showInView:(UIView *)parentView;
 + (void)showInView:(UIView *)parentView ruleContent:(nullable NSString *)content;
 
 @end

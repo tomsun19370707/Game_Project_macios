@@ -63,6 +63,7 @@
 @property (nonatomic, strong) UILabel *tokenRecastLabel;
 @property (nonatomic, strong) UIButton *recastButton;
 @property (nonatomic, assign) NSInteger remainingRecasts;
+@property (nonatomic, strong) MLTowerGameSixBootstrapModel *bootstrapModel;
 // 留作后续联网功能扩展:
 // @property (nonatomic, strong) UIButton *drawOneButton;
 // @property (nonatomic, strong) UIButton *drawTenButton;
@@ -539,7 +540,8 @@
 }
 
 - (void)ruleClick {
-    [MLChatRoomThemeGameSixRuleDialog showInView:self];
+    NSString *ruleContent = (self.bootstrapModel && self.bootstrapModel.game) ? self.bootstrapModel.game.rule_content : nil;
+    [MLChatRoomThemeGameSixRuleDialog showInView:self ruleContent:ruleContent];
 }
 
 - (void)giftPackClick {
@@ -649,6 +651,7 @@
 - (void)loadBootstrapData {
     [self loadUserMoney];
     [[MLThemeGameModel sharedInstance] fetchTowerGameSixBootstrapWithRoomId:nil success:^(MLTowerGameSixBootstrapModel * _Nullable bsModel) {
+        self.bootstrapModel = bsModel;
         if (bsModel && bsModel.player) {
             NSInteger layer = bsModel.player.current_layer > 0 ? bsModel.player.current_layer : 1;
             [self selectLayer:layer animated:YES];

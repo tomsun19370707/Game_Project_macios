@@ -7,19 +7,29 @@
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) UITextView *textView;
+@property (nonatomic, copy) NSString *ruleContent;
 
 @end
 
 @implementation MLChatRoomThemeGameOneRuleView
 
 + (void)showInView:(UIView *)parentView {
-    MLChatRoomThemeGameOneRuleView *ruleView = [[MLChatRoomThemeGameOneRuleView alloc] initWithFrame:parentView.bounds];
+    [self showInView:parentView ruleContent:nil];
+}
+
++ (void)showInView:(UIView *)parentView ruleContent:(nullable NSString *)ruleContent {
+    MLChatRoomThemeGameOneRuleView *ruleView = [[MLChatRoomThemeGameOneRuleView alloc] initWithFrame:parentView.bounds ruleContent:ruleContent];
     [parentView addSubview:ruleView];
     [ruleView animateShow];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
+    return [self initWithFrame:frame ruleContent:nil];
+}
+
+- (instancetype)initWithFrame:(CGRect)frame ruleContent:(nullable NSString *)ruleContent {
     if (self = [super initWithFrame:frame]) {
+        _ruleContent = ruleContent;
         [self setupUI];
     }
     return self;
@@ -64,28 +74,28 @@
     _textView = [[UITextView alloc] init];
     _textView.backgroundColor = [UIColor clearColor];
     _textView.textColor = kWhiteColor;
-    _textView.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(13)];
+    _textView.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(12)];
     _textView.editable = NO;
     _textView.selectable = NO;
     
-    NSString *ruleText = @"【玩法说明】\n"
-                          "1. 寻梦之旅（玩法一）每次抽奖需消耗指定数量的钥匙代币。\n"
-                          "2. 系统包含18格礼物转盘，抽奖时跑马灯将根据算法最终停靠在相应的礼物格子上。\n\n"
-                          "【寻梦保底】\n"
-                          "1. 每次抽奖均可积累寻梦值（保底值），寻梦值上限为200点。\n"
-                          "2. 当寻梦值达到200点时，下一次抽奖将在本地触发保底判定，重置寻梦值为0，且强制定格在第1格大奖。\n\n"
-                          "【高级兑换】\n"
-                          "1. 您可以使用在游戏里产出的宝石碎片与藏宝图进行高级礼物兑换。\n"
-                          "2. 投入藏宝图越多，兑换成功率越高。单张藏宝图将按配置提供固定成功率，最高可达100%。\n"
-                          "3. 若不投入任何藏宝图，成功率为0%且必定失败（仍将扣除宝石碎片）。";
-    _textView.text = ruleText;
+    NSString *defaultText = @"【玩法说明】\n"
+                            "1. 寻梦之旅（玩法一）每次抽奖需消耗指定数量的钥匙代币。\n"
+                            "2. 系统包含18格礼物转盘，抽奖时跑马灯将根据算法最终停靠在相应的礼物格子上。\n\n"
+                            "【寻梦保底】\n"
+                            "1. 每次抽奖均可积累寻梦值（保底值），寻梦值上限为200点。\n"
+                            "2. 当寻梦值达到200点时，下一次抽奖将在本地触发保底判定，重置寻梦值为0，且强制定格在第1格大奖。\n\n"
+                            "【高级兑换】\n"
+                            "1. 您可以使用在游戏里产出的宝石碎片与藏宝图进行高级礼物兑换。\n"
+                            "2. 投入藏宝图越多，兑换成功率越高。单张藏宝图将按配置提供固定成功率，最高可达100%。\n"
+                            "3. 若不投入任何藏宝图，成功率为0%且必定失败（仍将扣除宝石碎片）。";
+    _textView.text = (_ruleContent && _ruleContent.length > 0) ? _ruleContent : defaultText;
     [_bgImageView addSubview:_textView];
     
     [_textView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_bgImageView.mas_top).offset(KDialogAdaptedWidth(65));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(16));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
-        make.bottom.mas_equalTo(-KDialogAdaptedWidth(20));
+        make.top.mas_equalTo(_bgImageView.mas_top).offset(KDialogAdaptedWidth(85));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(36));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(36));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(45));
     }];
 }
 
