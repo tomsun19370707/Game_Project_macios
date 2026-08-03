@@ -60,3 +60,13 @@
 }
 
 @end
+
+@implementation MLGameDrawResponseModel
+
++ (NSDictionary *)mj_objectClassInArray {
+    return @{
+        @"list": [MLGameDrawResultModel class]
+    };
+}
+
+@end

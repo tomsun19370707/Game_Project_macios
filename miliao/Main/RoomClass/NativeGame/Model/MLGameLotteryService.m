@@ -159,6 +159,15 @@ NSString *MLFormatLargeNumber(double num) {
                  times:(NSInteger)times 
                success:(void(^)(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId))success 
                failure:(void(^)(NSError *error))failure {
+    [self drawWithTypeId:typeId times:times successResponse:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId, MLGameDrawResponseModel * _Nullable responseModel) {
+        if (success) success(list, totalValue, logId);
+    } failure:failure];
+}
+
++ (void)drawWithTypeId:(NSInteger)typeId 
+                 times:(NSInteger)times 
+       successResponse:(void(^)(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId, MLGameDrawResponseModel * _Nullable responseModel))success 
+               failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/draw", VERSION_HTTPS_SERVER];
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
         @"type_id": @(typeId),
@@ -179,10 +188,11 @@ NSString *MLFormatLargeNumber(double num) {
             if (typeId == 11 && data[@"pool_version"]) {
                 g_poolVersion = [data[@"pool_version"] integerValue];
             }
-            NSArray *list = [MLGameDrawResultModel mj_objectArrayWithKeyValuesArray:data[@"list"]];
-            NSInteger totalValue = [data[@"total_value"] integerValue];
-            NSInteger logId = [data[@"lottery_log_id"] integerValue];
-            if (success) success(list, totalValue, logId);
+            MLGameDrawResponseModel *responseModel = [MLGameDrawResponseModel mj_objectWithKeyValues:data];
+            NSArray *list = responseModel.list ?: @[];
+            NSInteger totalValue = responseModel.total_value;
+            NSInteger logId = responseModel.lottery_log_id;
+            if (success) success(list, totalValue, logId, responseModel);
         } else {
             if (failure) {
                 NSError *error = [NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" 

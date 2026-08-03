@@ -812,7 +812,23 @@
     
     // 3. 执行网络发包
     WeakSelf
-    [MLGameLotteryService drawWithTypeId:self.typeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
+    [MLGameLotteryService drawWithTypeId:self.typeId times:times successResponse:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId, MLGameDrawResponseModel * _Nullable responseModel) {
+        if (!wself) return;
+        
+        // 实时同步服务端保底与寻梦值字段
+        BOOL guaranteeTriggered = NO;
+        if (responseModel) {
+            guaranteeTriggered = (responseModel.guarantee_triggered == 1 || [responseModel.is_guarantee isEqualToString:@"1"] || [responseModel.is_guarantee.lowercaseString isEqualToString:@"true"]);
+            if (guaranteeTriggered) {
+                [SVProgressHUD showSuccessWithStatus:@"恭喜触发【寻梦保底】！"];
+            }
+            NSInteger luckyLimitVal = responseModel.lucky_limit > 0 ? responseModel.lucky_limit : 200;
+            if (responseModel.lucky_value > 0 || guaranteeTriggered) {
+                wself.dreamValue = responseModel.lucky_value;
+            }
+            wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/%ld", (long)wself.dreamValue, (long)luckyLimitVal];
+        }
+        
         MLChatRoomThemeGameOneResultView *activeResultView = nil;
         for (UIView *sub in wself.superview.subviews) {
             if ([sub isKindOfClass:[MLChatRoomThemeGameOneResultView class]]) {

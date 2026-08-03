@@ -36,6 +36,11 @@ FOUNDATION_EXPORT NSString *MLFormatLargeNumber(double num);
                success:(void(^)(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId))success 
                failure:(void(^)(NSError *error))failure;
 
++ (void)drawWithTypeId:(NSInteger)typeId 
+                 times:(NSInteger)times 
+       successResponse:(void(^)(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId, MLGameDrawResponseModel * _Nullable responseModel))success 
+               failure:(void(^)(NSError *error))failure;
+
 /**
  5. 钻石购买钥匙
  */
