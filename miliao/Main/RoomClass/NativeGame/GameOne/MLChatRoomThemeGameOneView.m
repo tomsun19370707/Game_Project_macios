@@ -246,10 +246,10 @@
         make.size.mas_equalTo(CGSizeMake(fortuneW, fortuneH));
     }];
     
-    // 原生渐变背景 (#2A6CEE -> #1044BB)
+    // 原生琥珀金渐变背景 (#FFA800 -> #E67E00 -> #C85A00)
     CAGradientLayer *fortuneGrad = [CAGradientLayer layer];
     fortuneGrad.frame = CGRectMake(0, 0, fortuneW, fortuneH);
-    fortuneGrad.colors = @[(__bridge id)mHexRGB(0x2A6CEE).CGColor, (__bridge id)mHexRGB(0x1044BB).CGColor];
+    fortuneGrad.colors = @[(__bridge id)mHexRGB(0xFFA800).CGColor, (__bridge id)mHexRGB(0xE67E00).CGColor, (__bridge id)mHexRGB(0xC85A00).CGColor];
     fortuneGrad.startPoint = CGPointMake(0.5, 0);
     fortuneGrad.endPoint = CGPointMake(0.5, 1);
     fortuneGrad.cornerRadius = KDialogAdaptedWidth(15.0f);

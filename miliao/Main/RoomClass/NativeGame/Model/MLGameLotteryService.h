@@ -91,6 +91,8 @@ FOUNDATION_EXPORT NSString *MLFormatLargeNumber(double num);
 /**
  10. 今日运势接口
  */
++ (void)getFortuneLotteryListWithSuccess:(void(^)(NSArray<MLGameLotteryInfoModel *> *list))success;
+
 + (void)getFortuneLotteryListWithSuccess:(void(^)(NSArray<MLGameLotteryInfoModel *> *list))success 
                                  failure:(void(^)(NSError *error))failure;
 

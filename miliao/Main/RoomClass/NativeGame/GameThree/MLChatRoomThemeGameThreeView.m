@@ -163,25 +163,38 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(67.146f), KDialogAdaptedWidth(30.324f)));
     }];
     
-    // 今日运势悬浮条 (挂载在大背景最右上角，飘出面板顶边缘)
+    // 今日运势悬浮条 (挂载在 self 顶层，飘出面板顶边缘)
+    CGFloat fortuneW = KDialogAdaptedWidth(70.0f);
+    CGFloat fortuneH = KDialogAdaptedWidth(30.0f);
     UIView *fortuneBar = [[UIView alloc] init];
-    fortuneBar.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
-    setViewCorner(fortuneBar, KDialogAdaptedWidth(15));
     fortuneBar.userInteractionEnabled = YES;
-    [_bgImageView addSubview:fortuneBar];
+    [self addSubview:fortuneBar];
     [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(-KDialogAdaptedWidth(38));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(70), KDialogAdaptedWidth(30)));
+        make.bottom.mas_equalTo(_bgImageView.mas_top).offset(-KDialogAdaptedWidth(6));
+        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-KDialogAdaptedWidth(12));
+        make.size.mas_equalTo(CGSizeMake(fortuneW, fortuneH));
     }];
+    
+    CAGradientLayer *fortuneGrad = [CAGradientLayer layer];
+    fortuneGrad.frame = CGRectMake(0, 0, fortuneW, fortuneH);
+    fortuneGrad.colors = @[(__bridge id)mHexRGB(0xFFA800).CGColor, (__bridge id)mHexRGB(0xE67E00).CGColor, (__bridge id)mHexRGB(0xC85A00).CGColor];
+    fortuneGrad.startPoint = CGPointMake(0.5, 0);
+    fortuneGrad.endPoint = CGPointMake(0.5, 1);
+    fortuneGrad.cornerRadius = KDialogAdaptedWidth(15.0f);
+    [fortuneBar.layer addSublayer:fortuneGrad];
+    
+    fortuneBar.layer.borderColor = mHexRGB(0xFFE57F).CGColor;
+    fortuneBar.layer.borderWidth = 1.5;
+    fortuneBar.layer.cornerRadius = KDialogAdaptedWidth(15.0f);
+    fortuneBar.clipsToBounds = YES;
     
     UITapGestureRecognizer *fortuneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(fortuneClick)];
     [fortuneBar addGestureRecognizer:fortuneTap];
     
     UILabel *fortuneLabel = [[UILabel alloc] init];
     fortuneLabel.text = @"今日运势";
-    fortuneLabel.textColor = mHexRGB(0xE1F5FE);
-    fortuneLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
+    fortuneLabel.textColor = kWhiteColor;
+    fortuneLabel.font = [UIFont boldSystemFontOfSize:11];
     fortuneLabel.textAlignment = NSTextAlignmentCenter;
     [fortuneBar addSubview:fortuneLabel];
     [fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {

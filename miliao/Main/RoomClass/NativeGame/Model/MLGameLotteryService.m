@@ -405,6 +405,10 @@ NSString *MLFormatLargeNumber(double num) {
     }];
 }
 
++ (void)getFortuneLotteryListWithSuccess:(void(^)(NSArray<MLGameLotteryInfoModel *> *list))success {
+    [self getFortuneLotteryListWithSuccess:success failure:nil];
+}
+
 + (void)getFortuneLotteryListWithSuccess:(void(^)(NSArray<MLGameLotteryInfoModel *> *list))success 
                                  failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/fortune/getLotteryList", VERSION_HTTPS_SERVER];

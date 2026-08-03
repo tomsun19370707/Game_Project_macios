@@ -13,6 +13,7 @@
 #import "MLChatRoomThemeGameFiveResultView.h"
 #import "MLChatRoomThemeGameFiveRecordView.h"
 #import "MLChatRoomThemeGameFivePurchaseView.h"
+#import "MLChatRoomThemeGameFortuneView.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD.h>
 
@@ -174,6 +175,8 @@
 // Local Balances & States
 @property (nonatomic, assign) BOOL isDrawing;
 @property (nonatomic, assign) NSInteger localKeyBalance;
+@property (nonatomic, assign) NSInteger fortuneConsume;
+@property (nonatomic, assign) NSInteger fortuneProduce;
 @property (nonatomic, strong) MLGameLotteryInfoModel *infoModel;
 
 // 全服中奖跑马灯视图与数据
@@ -256,6 +259,44 @@
     [_backgroundContainer addSubview:_bgImageView];
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(_backgroundContainer);
+    }];
+
+    // 今日运势入口 (右上角上方 70pt x 30pt 胶囊)
+    CGFloat fortuneW = KDialogAdaptedWidth(70.0f);
+    CGFloat fortuneH = KDialogAdaptedWidth(30.0f);
+    UIView *fortuneBar = [[UIView alloc] init];
+    fortuneBar.userInteractionEnabled = YES;
+    [self addSubview:fortuneBar];
+    [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_equalTo(_backgroundContainer.mas_top).offset(-KDialogAdaptedWidth(6));
+        make.trailing.mas_equalTo(_backgroundContainer.mas_trailing).offset(-KDialogAdaptedWidth(12));
+        make.size.mas_equalTo(CGSizeMake(fortuneW, fortuneH));
+    }];
+    
+    CAGradientLayer *fortuneGrad = [CAGradientLayer layer];
+    fortuneGrad.frame = CGRectMake(0, 0, fortuneW, fortuneH);
+    fortuneGrad.colors = @[(__bridge id)mHexRGB(0xFFA800).CGColor, (__bridge id)mHexRGB(0xE67E00).CGColor, (__bridge id)mHexRGB(0xC85A00).CGColor];
+    fortuneGrad.startPoint = CGPointMake(0.5, 0);
+    fortuneGrad.endPoint = CGPointMake(0.5, 1);
+    fortuneGrad.cornerRadius = KDialogAdaptedWidth(15.0f);
+    [fortuneBar.layer addSublayer:fortuneGrad];
+    
+    fortuneBar.layer.borderColor = mHexRGB(0xFFE57F).CGColor;
+    fortuneBar.layer.borderWidth = 1.5;
+    fortuneBar.layer.cornerRadius = KDialogAdaptedWidth(15.0f);
+    fortuneBar.clipsToBounds = YES;
+    
+    UITapGestureRecognizer *fortuneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(fortuneClick)];
+    [fortuneBar addGestureRecognizer:fortuneTap];
+    
+    UILabel *fortuneLabel = [[UILabel alloc] init];
+    fortuneLabel.text = @"今日运势";
+    fortuneLabel.textColor = kWhiteColor;
+    fortuneLabel.font = [UIFont boldSystemFontOfSize:11];
+    fortuneLabel.textAlignment = NSTextAlignmentCenter;
+    [fortuneBar addSubview:fortuneLabel];
+    [fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(fortuneBar);
     }];
 
     // Left Gift Button
@@ -538,6 +579,23 @@
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
+    
+    // 4. Load fortune data
+    [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf || !list || ![list isKindOfClass:[NSArray class]]) return;
+        for (MLGameLotteryInfoModel *model in list) {
+            if (model.typeId == strongSelf.typeId || [model.name containsString:@"砸蛋"]) {
+                strongSelf.fortuneConsume = (NSInteger)model.consume_diamonds;
+                strongSelf.fortuneProduce = (NSInteger)model.produce_diamonds;
+                break;
+            }
+        }
+    }];
+}
+
+- (void)fortuneClick {
+    [MLChatRoomThemeGameFortuneView showInView:self.superview consume:self.fortuneConsume produce:self.fortuneProduce];
 }
 
 
