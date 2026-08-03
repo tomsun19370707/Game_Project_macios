@@ -46,6 +46,7 @@
 @property (nonatomic, strong) UIButton *keyPlusButton;
 @property (nonatomic, strong) UILabel *luckyTextLabel;
 @property (nonatomic, strong) UIImageView *luckyProgressBar;
+@property (nonatomic, assign) NSInteger dreamValue;
 
 @property (nonatomic, strong) UILabel *diamondBalanceLabel;
 @property (nonatomic, strong) UIButton *diamondPlusButton;
@@ -618,7 +619,7 @@
 }
 
 #pragma mark - 数据请求
-- (void)loadData {
+- (void)fetchUserAssets {
     WeakSelf
     // 1. 获取个人资产
     [MLGameLotteryService getUserMoneyWithSuccess:^(MLGameUserMoneyModel *moneyModel) {
@@ -637,6 +638,11 @@
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
+}
+
+- (void)loadData {
+    [self fetchUserAssets];
+    WeakSelf
     
     // 2. 详情、消耗档位 (寻梦值背景底图为静态 ImageView，仅更新文字，无 Progress 控制)
     [MLGameLotteryService getRoomDetailWithTypeId:self.typeId success:^(MLGameLotteryInfoModel *model) {
@@ -645,7 +651,10 @@
             return;
         }
         wself.infoModel = model;
-        wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/200", (long)model.lucky];
+        if (model.lucky > 0 || wself.dreamValue == 0) {
+            wself.dreamValue = model.lucky;
+        }
+        wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/200", (long)wself.dreamValue];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
@@ -779,13 +788,20 @@
     self.lastDrawTimes = times;
     self.lastDrawCost = cost;
     
-    if (self.infoModel) {
-        self.infoModel.lucky += times;
-        if (self.infoModel.lucky > 200) {
-            self.infoModel.lucky = self.infoModel.lucky % 200;
-        }
-        self.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/200", (long)self.infoModel.lucky];
+    // 判断抽奖前是否已处于 >= 200 的保底满额状态
+    BOOL isGuarantee = (self.dreamValue >= 200);
+    if (isGuarantee) {
+        // 抽奖前已达到/超过 200，本次抽奖触发保底大奖，抽完后清零重置为 0
+        self.dreamValue = 0;
+    } else {
+        // 未达保底，正常真实累加（如 121 + 100 = 221）
+        self.dreamValue += times;
     }
+    
+    if (self.infoModel) {
+        self.infoModel.lucky = self.dreamValue;
+    }
+    self.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/200", (long)self.dreamValue];
     
     // 显示并启动 SVGA 循环播放动效
     self.svgaPlayer.hidden = NO;
@@ -814,7 +830,7 @@
             [activeResultView updateGifts:list totalValue:totalValue];
             [wself lockButtons:NO];
             wself.isDrawing = NO;
-            [wself loadData]; // 静默更新资产
+            [wself fetchUserAssets]; // 静默更新个人资产余额
         } else {
             // 请求成功：定位最高价礼物的终点落点
             NSInteger targetIndex = [wself findTargetStopIndexWithGifts:list];
@@ -968,7 +984,7 @@
     }
     
     [self realShowResult];
-    [self loadData];
+    [self fetchUserAssets];
 }
 
 - (void)realShowResult {
