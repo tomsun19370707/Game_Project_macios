@@ -93,6 +93,14 @@ NSString *MLFormatLargeNumber(double num) {
 + (void)getPrizesWithTypeId:(NSInteger)typeId 
                     success:(void(^)(NSArray<MLGameDrawResultModel *> *list))success 
                     failure:(void(^)(NSError *error))failure {
+    [self getPrizesWithTypeId:typeId successWithInfo:^(NSArray<MLGameDrawResultModel *> *list, NSInteger luckyValue, NSInteger luckyLimit) {
+        if (success) success(list);
+    } failure:failure];
+}
+
++ (void)getPrizesWithTypeId:(NSInteger)typeId 
+            successWithInfo:(void(^)(NSArray<MLGameDrawResultModel *> *list, NSInteger luckyValue, NSInteger luckyLimit))success 
+                    failure:(void(^)(NSError *error))failure {
     if (typeId == 11) {
         NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/current_pool", VERSION_HTTPS_SERVER];
         NSDictionary *params = @{@"type_id": @(typeId)};
@@ -104,7 +112,13 @@ NSString *MLFormatLargeNumber(double num) {
             if ([responseObject[@"code"] integerValue] == 1) {
                 id rawData = responseObject[@"data"];
                 NSArray *itemsArray = nil;
+                NSInteger luckyVal = -1;
+                NSInteger luckyLim = 200;
                 if ([rawData isKindOfClass:[NSDictionary class]]) {
+                    if (rawData[@"lucky_value"]) luckyVal = [rawData[@"lucky_value"] integerValue];
+                    if (rawData[@"lucky_limit"]) luckyLim = [rawData[@"lucky_limit"] integerValue];
+                    else if (rawData[@"lucky_max"]) luckyLim = [rawData[@"lucky_max"] integerValue];
+                    
                     NSDictionary *poolDict = rawData[@"pool"];
                     if (poolDict && [poolDict isKindOfClass:[NSDictionary class]]) {
                         g_poolId = [poolDict[@"pool_id"] integerValue];
@@ -117,7 +131,7 @@ NSString *MLFormatLargeNumber(double num) {
                     itemsArray = rawData;
                 }
                 NSArray *list = [MLGameDrawResultModel mj_objectArrayWithKeyValuesArray:itemsArray];
-                if (success) success(list);
+                if (success) success(list, luckyVal, luckyLim);
             } else {
                 if (failure) {
                     NSError *error = [NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" 
@@ -141,7 +155,7 @@ NSString *MLFormatLargeNumber(double num) {
         }
         if ([responseObject[@"code"] integerValue] == 1) {
             NSArray *list = [MLGameDrawResultModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
-            if (success) success(list);
+            if (success) success(list, -1, 200);
         } else {
             if (failure) {
                 NSError *error = [NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" 
@@ -234,6 +248,14 @@ NSString *MLFormatLargeNumber(double num) {
 + (void)refreshPoolWithTypeId:(NSInteger)typeId 
                       success:(void(^)(NSArray<MLGameDrawResultModel *> *list, NSInteger diamondCost, NSString *newDiamondBalance))success 
                       failure:(void(^)(NSError *error))failure {
+    [self refreshPoolWithTypeId:typeId successWithInfo:^(NSArray<MLGameDrawResultModel *> *list, NSInteger diamondCost, NSString *newDiamondBalance, NSInteger luckyValue, NSInteger luckyLimit) {
+        if (success) success(list, diamondCost, newDiamondBalance);
+    } failure:failure];
+}
+
++ (void)refreshPoolWithTypeId:(NSInteger)typeId 
+              successWithInfo:(void(^)(NSArray<MLGameDrawResultModel *> *list, NSInteger diamondCost, NSString *newDiamondBalance, NSInteger luckyValue, NSInteger luckyLimit))success 
+                      failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/refresh_pool", VERSION_HTTPS_SERVER];
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
         @"type_id": @(typeId),
@@ -251,6 +273,13 @@ NSString *MLFormatLargeNumber(double num) {
         if ([responseObject[@"code"] integerValue] == 1) {
             NSDictionary *data = responseObject[@"data"];
             id rawList = nil;
+            NSInteger luckyVal = -1;
+            NSInteger luckyLim = 200;
+            if ([data isKindOfClass:[NSDictionary class]]) {
+                if (data[@"lucky_value"]) luckyVal = [data[@"lucky_value"] integerValue];
+                if (data[@"lucky_limit"]) luckyLim = [data[@"lucky_limit"] integerValue];
+                else if (data[@"lucky_max"]) luckyLim = [data[@"lucky_max"] integerValue];
+            }
             if (data[@"pool"] && [data[@"pool"] isKindOfClass:[NSDictionary class]]) {
                 NSDictionary *poolDict = data[@"pool"];
                 g_poolId = [poolDict[@"pool_id"] integerValue];
@@ -262,7 +291,7 @@ NSString *MLFormatLargeNumber(double num) {
             NSArray *list = [MLGameDrawResultModel mj_objectArrayWithKeyValuesArray:rawList];
             NSInteger cost = [data[@"charged_cost"] integerValue] ?: [data[@"diamond_cost"] integerValue];
             NSString *balance = [NSString stringWithFormat:@"%@", data[@"lottery_coin"] ?: (data[@"diamond"] ?: @"0")];
-            if (success) success(list, cost, balance);
+            if (success) success(list, cost, balance, luckyVal, luckyLim);
         } else {
             if (failure) {
                 NSError *error = [NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" 

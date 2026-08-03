@@ -659,14 +659,18 @@
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
     
-    // 3. 18 格奖池礼物列表
-    [MLGameLotteryService getPrizesWithTypeId:self.typeId success:^(NSArray<MLGameDrawResultModel *> *list) {
+    // 3. 18 格奖池礼物列表与寻梦值初始化
+    [MLGameLotteryService getPrizesWithTypeId:self.typeId successWithInfo:^(NSArray<MLGameDrawResultModel *> *list, NSInteger luckyValue, NSInteger luckyLimit) {
         if (!wself) return;
-        if (!list || ![list isKindOfClass:[NSArray class]]) {
-            return;
+        if (luckyValue >= 0) {
+            wself.dreamValue = luckyValue;
+            NSInteger limit = luckyLimit > 0 ? luckyLimit : 200;
+            wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/%ld", (long)wself.dreamValue, (long)limit];
         }
-        wself.prizesInPool = list;
-        [wself renderGiftBoard];
+        if (list && [list isKindOfClass:[NSArray class]]) {
+            wself.prizesInPool = list;
+            [wself renderGiftBoard];
+        }
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
@@ -1051,13 +1055,21 @@
 
 - (void)refreshPoolClick {
     self.refreshButton.enabled = NO;
-    [MLGameLotteryService refreshPoolWithTypeId:self.typeId success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger diamondCost, NSString *newDiamondBalance) {
-        self.refreshButton.enabled = YES;
-        self.prizesInPool = list;
-        [self renderGiftBoard];
+    WeakSelf
+    [MLGameLotteryService refreshPoolWithTypeId:self.typeId successWithInfo:^(NSArray<MLGameDrawResultModel *> *list, NSInteger diamondCost, NSString *newDiamondBalance, NSInteger luckyValue, NSInteger luckyLimit) {
+        if (!wself) return;
+        wself.refreshButton.enabled = YES;
+        if (luckyValue >= 0) {
+            wself.dreamValue = luckyValue;
+            NSInteger limit = luckyLimit > 0 ? luckyLimit : 200;
+            wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/%ld", (long)wself.dreamValue, (long)limit];
+        }
+        wself.prizesInPool = list;
+        [wself renderGiftBoard];
         [SVProgressHUD showSuccessWithStatus:@"已更新奖池"];
     } failure:^(NSError *error) {
-        self.refreshButton.enabled = YES;
+        if (!wself) return;
+        wself.refreshButton.enabled = YES;
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
 }

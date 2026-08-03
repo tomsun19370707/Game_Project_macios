@@ -28,6 +28,10 @@ FOUNDATION_EXPORT NSString *MLFormatLargeNumber(double num);
                     success:(void(^)(NSArray<MLGameDrawResultModel *> *list))success 
                     failure:(void(^)(NSError *error))failure;
 
++ (void)getPrizesWithTypeId:(NSInteger)typeId 
+            successWithInfo:(void(^)(NSArray<MLGameDrawResultModel *> *list, NSInteger luckyValue, NSInteger luckyLimit))success 
+                    failure:(void(^)(NSError *error))failure;
+
 /**
  4. 执行抽奖
  */
@@ -53,6 +57,10 @@ FOUNDATION_EXPORT NSString *MLFormatLargeNumber(double num);
  */
 + (void)refreshPoolWithTypeId:(NSInteger)typeId 
                       success:(void(^)(NSArray<MLGameDrawResultModel *> *list, NSInteger diamondCost, NSString *newDiamondBalance))success 
+                      failure:(void(^)(NSError *error))failure;
+
++ (void)refreshPoolWithTypeId:(NSInteger)typeId 
+              successWithInfo:(void(^)(NSArray<MLGameDrawResultModel *> *list, NSInteger diamondCost, NSString *newDiamondBalance, NSInteger luckyValue, NSInteger luckyLimit))success 
                       failure:(void(^)(NSError *error))failure;
 
 /**
