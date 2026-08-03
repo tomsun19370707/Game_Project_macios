@@ -93,7 +93,7 @@
     [_ruleTextView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.mas_equalTo(KDialogAdaptedWidth(22));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(22));
-        make.top.mas_equalTo(KDialogAdaptedWidth(102));
+        make.top.mas_equalTo(KDialogAdaptedWidth(70));
         make.bottom.mas_equalTo(-KDialogAdaptedWidth(42));
     }];
 
