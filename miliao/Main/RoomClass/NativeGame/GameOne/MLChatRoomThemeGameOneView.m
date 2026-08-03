@@ -46,7 +46,11 @@
 @property (nonatomic, strong) UIButton *keyPlusButton;
 @property (nonatomic, strong) UILabel *luckyTextLabel;
 @property (nonatomic, strong) UIImageView *luckyProgressBar;
+@property (nonatomic, strong) UIView *dreamProgressContainer;
+@property (nonatomic, strong) UIView *progressFillView;
+@property (nonatomic, strong) CAGradientLayer *progressGradientLayer;
 @property (nonatomic, assign) NSInteger dreamValue;
+@property (nonatomic, assign) NSInteger luckyLimit;
 
 @property (nonatomic, strong) UILabel *diamondBalanceLabel;
 @property (nonatomic, strong) UIButton *diamondPlusButton;
@@ -380,26 +384,56 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(14), KDialogAdaptedWidth(14)));
     }];
     
-    // 底部寻梦值进度条 (使用 UIImageView 完美加载背景底图，高 23 pt，解决被压扁问题)
-    _luckyProgressBar = [[UIImageView alloc] init];
-    _luckyProgressBar.image = [UIImage imageNamed:@"theme_game_one_dream_bar"];
-    _luckyProgressBar.contentMode = UIViewContentModeScaleToFill;
-    [cardsContainer addSubview:_luckyProgressBar];
-    [_luckyProgressBar mas_makeConstraints:^(MASConstraintMaker *make) {
+    // 底部寻梦值进度条容器 (高 23 pt, 宽 164 pt)
+    _dreamProgressContainer = [[UIView alloc] init];
+    [cardsContainer addSubview:_dreamProgressContainer];
+    [_dreamProgressContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(cardsContainer);
         make.bottom.mas_equalTo(cardsContainer.mas_bottom).offset(-KDialogAdaptedWidth(105));
         make.width.mas_equalTo(KDialogAdaptedWidth(164));
         make.height.mas_equalTo(KDialogAdaptedWidth(23));
     }];
     
+    // 1. 底框背景图
+    _luckyProgressBar = [[UIImageView alloc] init];
+    _luckyProgressBar.image = [UIImage imageNamed:@"theme_game_one_dream_bar"];
+    _luckyProgressBar.contentMode = UIViewContentModeScaleToFill;
+    [_dreamProgressContainer addSubview:_luckyProgressBar];
+    [_luckyProgressBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(_dreamProgressContainer);
+    }];
+    
+    // 2. 内部动效充能条 (四周留边距: left 3pt, right 3pt, top 2pt, bottom 2pt)
+    _progressFillView = [[UIView alloc] init];
+    _progressFillView.clipsToBounds = YES;
+    _progressFillView.layer.cornerRadius = KDialogAdaptedWidth(9.5);
+    [_dreamProgressContainer addSubview:_progressFillView];
+    [_progressFillView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(_dreamProgressContainer).offset(KDialogAdaptedWidth(3));
+        make.top.mas_equalTo(_dreamProgressContainer).offset(KDialogAdaptedWidth(2));
+        make.bottom.mas_equalTo(_dreamProgressContainer).offset(-KDialogAdaptedWidth(2));
+        make.width.mas_equalTo(0); // 初始充能宽度
+    }];
+    
+    _progressGradientLayer = [CAGradientLayer layer];
+    _progressGradientLayer.startPoint = CGPointMake(0, 0.5);
+    _progressGradientLayer.endPoint = CGPointMake(1, 0.5);
+    _progressGradientLayer.colors = @[(id)mHexRGB(0x00F2FE).CGColor, (id)mHexRGB(0x4FACFE).CGColor, (id)mHexRGB(0x9B51E0).CGColor];
+    [_progressFillView.layer addSublayer:_progressGradientLayer];
+    
+    // 3. 居中悬浮文字
     _luckyTextLabel = [[UILabel alloc] init];
     _luckyTextLabel.textColor = kWhiteColor;
     _luckyTextLabel.font = [UIFont boldSystemFontOfSize:10];
     _luckyTextLabel.text = @"寻梦值: 0/200";
-    [cardsContainer addSubview:_luckyTextLabel];
+    _luckyTextLabel.layer.shadowColor = [UIColor colorWithWhite:0 alpha:0.5].CGColor;
+    _luckyTextLabel.layer.shadowOffset = CGSizeMake(1, 1);
+    _luckyTextLabel.layer.shadowRadius = 2;
+    _luckyTextLabel.layer.shadowOpacity = 1.0;
+    [_dreamProgressContainer addSubview:_luckyTextLabel];
     [_luckyTextLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(_luckyProgressBar);
-        make.centerY.mas_equalTo(_luckyProgressBar);
+        make.centerX.mas_equalTo(_dreamProgressContainer);
+        make.centerY.mas_equalTo(_dreamProgressContainer);
     }];
     
     // 寻梦值提示文本
@@ -412,7 +446,7 @@
     [cardsContainer addSubview:luckyTipLabel];
     [luckyTipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(cardsContainer);
-        make.top.mas_equalTo(_luckyProgressBar.mas_bottom).offset(KDialogAdaptedWidth(4));
+        make.top.mas_equalTo(_dreamProgressContainer.mas_bottom).offset(KDialogAdaptedWidth(4));
     }];
     
     // --- 底部操作及抽奖控制布局 ---
@@ -618,6 +652,53 @@
     }
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    CGFloat maxFillWidth = KDialogAdaptedWidth(158);
+    self.progressGradientLayer.frame = CGRectMake(0, 0, maxFillWidth, KDialogAdaptedWidth(19));
+}
+
+#pragma mark - 寻梦值发光充能条 & 400ms 平滑动效驱动
+- (void)updateDreamProgressWithDreamValue:(NSInteger)dreamValue luckyLimit:(NSInteger)luckyLimit animates:(BOOL)animates {
+    self.dreamValue = dreamValue;
+    self.luckyLimit = luckyLimit > 0 ? luckyLimit : 200;
+    
+    // 边界闭环保护 [0, luckyLimit]
+    NSInteger safeDreamVal = MAX(0, MIN(dreamValue, self.luckyLimit));
+    CGFloat ratio = (CGFloat)safeDreamVal / (CGFloat)self.luckyLimit;
+    BOOL isFull = (safeDreamVal >= self.luckyLimit);
+    
+    // 充能最长填充宽度 (外框 164pt - 左右边距 6pt)
+    CGFloat maxFillWidth = KDialogAdaptedWidth(158);
+    CGFloat targetWidth = maxFillWidth * ratio;
+    
+    // 切换发光渐变样式与文字高亮
+    if (isFull) {
+        self.progressGradientLayer.colors = @[(id)mHexRGB(0xFFD700).CGColor, (id)mHexRGB(0xFFA500).CGColor, (id)mHexRGB(0xFF5E00).CGColor];
+        self.luckyTextLabel.textColor = mHexRGB(0xFFE66F);
+    } else {
+        self.progressGradientLayer.colors = @[(id)mHexRGB(0x00F2FE).CGColor, (id)mHexRGB(0x4FACFE).CGColor, (id)mHexRGB(0x9B51E0).CGColor];
+        self.luckyTextLabel.textColor = kWhiteColor;
+    }
+    self.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/%ld", (long)dreamValue, (long)self.luckyLimit];
+    
+    WeakSelf
+    void(^updateWidthBlock)(void) = ^{
+        [wself.progressFillView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.width.mas_equalTo(targetWidth);
+        }];
+        [wself.dreamProgressContainer layoutIfNeeded];
+    };
+    
+    if (animates) {
+        [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            updateWidthBlock();
+        } completion:nil];
+    } else {
+        updateWidthBlock();
+    }
+}
+
 #pragma mark - 数据请求
 - (void)fetchUserAssets {
     WeakSelf
@@ -652,9 +733,8 @@
         }
         wself.infoModel = model;
         if (model.lucky > 0 || wself.dreamValue == 0) {
-            wself.dreamValue = model.lucky;
+            [wself updateDreamProgressWithDreamValue:model.lucky luckyLimit:200 animates:YES];
         }
-        wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/200", (long)wself.dreamValue];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
@@ -663,9 +743,8 @@
     [MLGameLotteryService getPrizesWithTypeId:self.typeId successWithInfo:^(NSArray<MLGameDrawResultModel *> *list, NSInteger luckyValue, NSInteger luckyLimit) {
         if (!wself) return;
         if (luckyValue >= 0) {
-            wself.dreamValue = luckyValue;
             NSInteger limit = luckyLimit > 0 ? luckyLimit : 200;
-            wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/%ld", (long)wself.dreamValue, (long)limit];
+            [wself updateDreamProgressWithDreamValue:luckyValue luckyLimit:limit animates:YES];
         }
         if (list && [list isKindOfClass:[NSArray class]]) {
             wself.prizesInPool = list;
@@ -805,7 +884,7 @@
     if (self.infoModel) {
         self.infoModel.lucky = self.dreamValue;
     }
-    self.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/200", (long)self.dreamValue];
+    [self updateDreamProgressWithDreamValue:self.dreamValue luckyLimit:self.luckyLimit animates:YES];
     
     // 显示并启动 SVGA 循环播放动效
     self.svgaPlayer.hidden = NO;
@@ -827,10 +906,8 @@
                 [SVProgressHUD showSuccessWithStatus:@"恭喜触发【寻梦保底】！"];
             }
             NSInteger luckyLimitVal = responseModel.lucky_limit > 0 ? responseModel.lucky_limit : 200;
-            if (responseModel.lucky_value > 0 || guaranteeTriggered) {
-                wself.dreamValue = responseModel.lucky_value;
-            }
-            wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/%ld", (long)wself.dreamValue, (long)luckyLimitVal];
+            NSInteger targetLuckyVal = (responseModel.lucky_value > 0 || guaranteeTriggered) ? responseModel.lucky_value : wself.dreamValue;
+            [wself updateDreamProgressWithDreamValue:targetLuckyVal luckyLimit:luckyLimitVal animates:YES];
         }
         
         MLChatRoomThemeGameOneResultView *activeResultView = nil;
@@ -1060,9 +1137,8 @@
         if (!wself) return;
         wself.refreshButton.enabled = YES;
         if (luckyValue >= 0) {
-            wself.dreamValue = luckyValue;
             NSInteger limit = luckyLimit > 0 ? luckyLimit : 200;
-            wself.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/%ld", (long)wself.dreamValue, (long)limit];
+            [wself updateDreamProgressWithDreamValue:luckyValue luckyLimit:limit animates:YES];
         }
         wself.prizesInPool = list;
         [wself renderGiftBoard];
