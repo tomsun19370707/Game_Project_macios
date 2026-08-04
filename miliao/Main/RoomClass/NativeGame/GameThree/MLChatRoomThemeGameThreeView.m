@@ -6,7 +6,7 @@
 #import "MLChatRoomThemeGameThreeRuleView.h"
 #import "MLChatRoomThemeGameThreeRecordView.h"
 #import "MLChatRoomThemeGameThreePurchaseView.h"
-#import "MLChatRoomThemeGameFortuneView.h"
+#import "MLChatRoomThemeGameThreeFortuneView.h"
 #import "MLChatRoomMarqueeLabel.h"
 #import "Global.h"
 #import "UIViewController+CurViewController.h"
@@ -700,7 +700,7 @@
 }
 
 - (void)fortuneClick {
-    [MLChatRoomThemeGameFortuneView showInView:self.superview consume:self.consumeValue produce:self.produceValue];
+    [MLChatRoomThemeGameThreeFortuneView showInView:self.superview consume:self.consumeValue produce:self.produceValue];
 }
 
 - (void)openPurchaseDialog {
