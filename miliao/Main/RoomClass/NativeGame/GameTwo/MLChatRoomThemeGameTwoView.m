@@ -6,7 +6,7 @@
 #import "MLChatRoomThemeGameTwoRuleView.h"
 #import "MLChatRoomThemeGameTwoRecordView.h"
 #import "MLChatRoomThemeGameTwoPurchaseView.h"
-#import "MLChatRoomThemeGameFortuneView.h"
+#import "MLChatRoomThemeGameTwoFortuneView.h"
 #import "MLChatRoomMarqueeLabel.h"
 #import "Global.h"
 #import "UIViewController+CurViewController.h"
@@ -791,7 +791,7 @@
 }
 
 - (void)fortuneClick {
-    [MLChatRoomThemeGameFortuneView showInView:self.superview consume:self.consumeValue produce:self.produceValue];
+    [MLChatRoomThemeGameTwoFortuneView showInView:self.superview consume:self.consumeValue produce:self.produceValue];
 }
 
 - (void)openPurchaseDialog {

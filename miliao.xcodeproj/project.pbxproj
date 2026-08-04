@@ -472,6 +472,7 @@
 		7C70E96E2FED864D00A11B29 /* MLChatRoomThemeGameTwoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E94D2FED864D00A11B29 /* MLChatRoomThemeGameTwoView.m */; };
 		7C70E96F2FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E94E2FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.m */; };
 		7C70E9702FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9512FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.m */; };
+		7C70E98C2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E98B2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m */; };
 		7C70E9712FED864D00A11B29 /* MLChatRoomThemeGameTwoPurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9522FED864D00A11B29 /* MLChatRoomThemeGameTwoPurchaseView.m */; };
 		7C70E9722FED864E00A11B29 /* MLChatRoomThemeGameTwoRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9532FED864D00A11B29 /* MLChatRoomThemeGameTwoRecordView.m */; };
 		7C70E9732FED864E00A11B29 /* MLGameLotteryInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9592FED864D00A11B29 /* MLGameLotteryInfoModel.m */; };
@@ -2117,6 +2118,8 @@
 		7C70E9532FED864D00A11B29 /* MLChatRoomThemeGameTwoRecordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoRecordView.m; sourceTree = "<group>"; };
 		7C70E9542FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoResultView.h; sourceTree = "<group>"; };
 		7C70E9552FED864D00A11B29 /* MLChatRoomThemeGameTwoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoView.h; sourceTree = "<group>"; };
+		7C70E98A2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoFortuneView.h; sourceTree = "<group>"; };
+		7C70E98B2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoFortuneView.m; sourceTree = "<group>"; };
 		7C70E9572FED864D00A11B29 /* MLGameLotteryService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLGameLotteryService.h; sourceTree = "<group>"; };
 		7C70E9582FED864D00A11B29 /* MLGameDrawResultModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLGameDrawResultModel.h; sourceTree = "<group>"; };
 		7C70E9592FED864D00A11B29 /* MLGameLotteryInfoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLGameLotteryInfoModel.m; sourceTree = "<group>"; };
@@ -5737,6 +5740,8 @@
 				7C70E9532FED864D00A11B29 /* MLChatRoomThemeGameTwoRecordView.m */,
 				7C70E9542FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.h */,
 				7C70E9552FED864D00A11B29 /* MLChatRoomThemeGameTwoView.h */,
+				7C70E98A2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.h */,
+				7C70E98B2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m */,
 			);
 			path = GameTwo;
 			sourceTree = "<group>";
@@ -10110,6 +10115,7 @@
 				00C602EC22D9EB4C003BA50D /* TLEmojiKeyboard+DisplayView.m in Sources */,
 				18C86B592432CF19002FF72D /* NSURLRequest+SRWebSocket.m in Sources */,
 				7C70E9702FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.m in Sources */,
+				7C70E98C2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m in Sources */,
 				00C602E622D9EB4C003BA50D /* TLEmojiGroupDisplayView+CollectionView.m in Sources */,
 				003D7A6322FE959B007972B3 /* HGSegmentedPageViewController.m in Sources */,
 				00C602C722D9EB4C003BA50D /* NSString+Hash.m in Sources */,
