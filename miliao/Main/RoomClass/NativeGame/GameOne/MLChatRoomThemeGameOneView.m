@@ -993,7 +993,10 @@
 #pragma mark - 跑马灯旋转驱动
 - (void)startInfiniteRotation {
     [self stopInfiniteRotation];
-    self.rotationTimer = [NSTimer scheduledTimerWithTimeInterval:0.08 target:self selector:@selector(infiniteRotationStep) userInfo:nil repeats:YES];
+    WeakSelf
+    self.rotationTimer = [NSTimer scheduledTimerWithTimeInterval:0.08 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        [wself infiniteRotationStep];
+    }];
     [[NSRunLoop mainRunLoop] addTimer:self.rotationTimer forMode:NSRunLoopCommonModes];
 }
 
@@ -1221,14 +1224,18 @@
 }
 
 - (void)removeFromSuperview {
+    [self stopInfiniteRotation];
     [super removeFromSuperview];
     
-    // 恢复全局最小化悬浮球
     // 恢复全局最小化悬浮球
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     if (appDelegate.roomViewController && appDelegate.roomViewController.floatingWindow) {
         appDelegate.roomViewController.floatingWindow.hidden = NO;
     }
+}
+
+- (void)dealloc {
+    [self stopInfiniteRotation];
 }
 
 @end

@@ -852,6 +852,12 @@
     }];
 }
 
+- (void)removeFromSuperview {
+    [self stopMarqueeTimer];
+    [self stopSpinTimer];
+    [super removeFromSuperview];
+}
+
 - (void)dealloc {
     [self stopMarqueeTimer];
     [self stopSpinTimer];

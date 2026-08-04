@@ -727,6 +727,7 @@
 }
 
 - (void)dealloc {
+    [self stopMarqueeTimer];
     [self stopMarqueeAndResetRecastState];
 }
 
@@ -877,6 +878,11 @@
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
     }];
+}
+
+- (void)removeFromSuperview {
+    [self stopMarqueeTimer];
+    [super removeFromSuperview];
 }
 
 @end
