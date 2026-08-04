@@ -7,7 +7,7 @@
 #import "MLGameLotteryService.h"
 #import "RoomFloatingWindow.h"
 #import "AppDelegate.h"
-#import "MLChatRoomThemeGameFortuneView.h"
+#import "MLChatRoomThemeGameFourFortuneView.h"
 #import "Global.h"
 #import "UIViewController+CurViewController.h"
 #import "CFMWalletDiamondRechargeVc.h"
@@ -496,7 +496,7 @@
 }
 
 - (void)fortuneClick {
-    [MLChatRoomThemeGameFortuneView showInView:self.superview consume:self.consumeValue produce:self.produceValue];
+    [MLChatRoomThemeGameFourFortuneView showInView:self.superview consume:self.consumeValue produce:self.produceValue];
 }
 
 - (void)diamondRechargeClick {
