@@ -605,7 +605,6 @@
             if (model.typeId == wself.typeId || [model.name containsString:@"神木"]) {
                 wself.consumeValue = model.consume_diamonds;
                 wself.produceValue = model.produce_diamonds;
-                wself.fortuneLabel.text = [NSString stringWithFormat:@"今日运势: %.1f%%", model.profit_rate / 100.0f];
                 break;
             }
         }

@@ -459,8 +459,6 @@
             if (model.typeId == strongSelf.typeId) {
                 strongSelf.consumeValue = model.consume_diamonds;
                 strongSelf.produceValue = model.produce_diamonds;
-                double rate = (double)model.profit_rate;
-                strongSelf.fortuneLabel.text = [NSString stringWithFormat:@"今日运势:\n%.1f%%", rate / 100.0f];
                 break;
             }
         }
