@@ -713,7 +713,7 @@
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
         if (!wself || !list || ![list isKindOfClass:[NSArray class]]) return;
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == wself.typeId || [model.name containsString:@"宝塔"] || [model.name containsString:@"塔"]) {
+            if (model.typeId == wself.typeId || [model.name containsString:@"玲珑珍宝塔"] || [model.name containsString:@"珍宝塔"]) {
                 wself.fortuneConsume = (NSInteger)model.consume_diamonds;
                 wself.fortuneProduce = (NSInteger)model.produce_diamonds;
                 break;
@@ -723,6 +723,18 @@
 }
 
 - (void)fortuneClick {
+    // 弹窗前主动刷新最新运势数据
+    WeakSelf
+    [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
+        if (!wself || !list || ![list isKindOfClass:[NSArray class]]) return;
+        for (MLGameLotteryInfoModel *model in list) {
+            if (model.typeId == wself.typeId || [model.name containsString:@"玲珑珍宝塔"] || [model.name containsString:@"珍宝塔"]) {
+                wself.fortuneConsume = (NSInteger)model.consume_diamonds;
+                wself.fortuneProduce = (NSInteger)model.produce_diamonds;
+                break;
+            }
+        }
+    }];
     [MLChatRoomThemeGameSixFortuneView showInView:self.superview consume:self.fortuneConsume produce:self.fortuneProduce];
 }
 
