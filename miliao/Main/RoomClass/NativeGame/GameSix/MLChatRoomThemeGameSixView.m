@@ -4,7 +4,7 @@
 #import "MLChatRoomThemeGameSixPackDialog.h"
 #import "MLChatRoomThemeGameSixResultDialog.h"
 #import "MLChatRoomThemeGameSixRecordDialog.h"
-#import "MLChatRoomThemeGameFortuneView.h"
+#import "MLChatRoomThemeGameSixFortuneView.h"
 #import "MLThemeGameModel.h"
 #import "MLGameLotteryService.h"
 #import "Global.h"
@@ -723,7 +723,7 @@
 }
 
 - (void)fortuneClick {
-    [MLChatRoomThemeGameFortuneView showInView:self.superview consume:self.fortuneConsume produce:self.fortuneProduce];
+    [MLChatRoomThemeGameSixFortuneView showInView:self.superview consume:self.fortuneConsume produce:self.fortuneProduce];
 }
 
 - (void)dealloc {
