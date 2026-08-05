@@ -435,18 +435,7 @@
 }
 
 - (NSInteger)getSingleKeyCost {
-    if (self.infoModel && self.infoModel.coin_cost_opt.count > 0) {
-        for (MLGameLotteryOptModel *opt in self.infoModel.coin_cost_opt) {
-            if (opt.nums == 1) {
-                return opt.coin_cost;
-            }
-        }
-        MLGameLotteryOptModel *firstOpt = self.infoModel.coin_cost_opt.firstObject;
-        if (firstOpt.nums > 0) {
-            return firstOpt.coin_cost / firstOpt.nums;
-        }
-    }
-    return 200; // 兜底 200
+    return 10; // 标准基准：1把钥匙 = 10钻石
 }
 
 #pragma mark - 执行购买

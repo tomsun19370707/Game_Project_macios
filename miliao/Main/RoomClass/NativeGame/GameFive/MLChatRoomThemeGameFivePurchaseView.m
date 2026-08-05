@@ -56,7 +56,7 @@
 
 @implementation MLChatRoomThemeGameFivePurchaseView
 
-static const NSInteger KEY_PRICE_DIAMOND = 200; // 1 key = 200 diamonds
+static const NSInteger KEY_PRICE_DIAMOND = 10; // 1 key = 10 diamonds
 
 + (void)showInView:(UIView *)parentView 
          infoModel:(MLGameLotteryInfoModel *)info 

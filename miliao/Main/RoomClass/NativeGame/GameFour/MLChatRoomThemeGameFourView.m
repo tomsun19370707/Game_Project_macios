@@ -539,16 +539,30 @@
     }];
 }
 
+- (NSInteger)getCoinCostForCount:(NSInteger)count {
+    if (self.infoModel && self.infoModel.coin_cost_opt.count > 0) {
+        for (MLGameLotteryOptModel *opt in self.infoModel.coin_cost_opt) {
+            if (opt.nums == count) {
+                return opt.coin_cost;
+            }
+        }
+    }
+    return count; // 缺省默认：1次开销1把钥匙
+}
+
 - (void)drawOneClick {
-    [self drawWithTimes:1 cost:1];
+    NSInteger cost = [self getCoinCostForCount:1];
+    [self drawWithTimes:1 cost:cost];
 }
 
 - (void)drawTenClick {
-    [self drawWithTimes:10 cost:10];
+    NSInteger cost = [self getCoinCostForCount:10];
+    [self drawWithTimes:10 cost:cost];
 }
 
 - (void)drawHundredClick {
-    [self drawWithTimes:100 cost:100];
+    NSInteger cost = [self getCoinCostForCount:100];
+    [self drawWithTimes:100 cost:cost];
 }
 
 - (void)drawWithTimes:(NSInteger)times cost:(NSInteger)cost {

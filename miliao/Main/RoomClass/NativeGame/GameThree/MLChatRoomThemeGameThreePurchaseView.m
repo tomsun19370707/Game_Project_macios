@@ -435,7 +435,7 @@
         return;
     }
     
-    NSInteger costDiamonds = buyCount * 200;
+    NSInteger costDiamonds = buyCount * 10;
     if (self.localDiamonds < costDiamonds) {
         [SVProgressHUD showErrorWithStatus:@"钻石余额不足，请前往充值"];
         return;
