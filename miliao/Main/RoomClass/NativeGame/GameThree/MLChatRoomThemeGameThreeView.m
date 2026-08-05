@@ -49,6 +49,13 @@
 @property (nonatomic, assign) NSInteger consumeValue;
 @property (nonatomic, assign) NSInteger produceValue;
 
+@property (nonatomic, strong, nullable) NSTimer *spinTimer;
+@property (nonatomic, assign) NSInteger currentHighlightIndex;
+@property (nonatomic, assign) NSInteger targetLandingIndex;
+@property (nonatomic, assign) NSInteger currentSpinStep;
+@property (nonatomic, assign) NSInteger totalSpinSteps;
+@property (nonatomic, copy, nullable) void (^spinCompletionBlock)(void);
+
 @end
 
 @implementation MLChatRoomThemeGameThreeView
@@ -62,6 +69,7 @@
 - (instancetype)initWithFrame:(CGRect)frame typeId:(NSInteger)typeId {
     if (self = [super initWithFrame:frame]) {
         self.typeId = typeId > 0 ? typeId : 13;
+        self.currentHighlightIndex = -1;
         self.giftCardViews = [NSMutableArray array];
         self.giftImageViews = [NSMutableArray array];
         self.giftNameLabels = [NSMutableArray array];
@@ -584,13 +592,16 @@
         return;
     }
     
-    // 乐观扣钱
+    // 乐观扣钱 & 锁定按钮
     self.isDrawing = YES;
     [self lockButtons:YES];
     
     NSInteger originalBalance = self.localKeyBalance;
     self.localKeyBalance -= cost;
     [self updateBalanceUI];
+    
+    // 1. 【毫秒级响应】点击瞬间立刻开启 Phase 1 高频扫盘跑马灯，消灭等待卡顿
+    [self startPhase1UniformSpin];
     
     WeakSelf
     [MLGameLotteryService drawWithTypeId:self.typeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
@@ -615,12 +626,10 @@
             targetIndex = 0;
         }
         
-        // 执行减速旋转动画
-        [wself runDeceleratingAnimationToTargetIndex:targetIndex completion:^{
+        // 2. 网络回调成功后，从当前旋转位置平滑衔接 Phase 2 减速降落至目标大奖格
+        [wself startPhase2DecelerateSpinToTargetIndex:targetIndex completion:^{
             // 清理光圈
-            for (UIView *card in wself.giftCardViews) {
-                [card viewWithTag:999].hidden = YES;
-            }
+            [wself updateCardHighlightIndex:-1];
             
             void (^showResultBlock)(void) = ^{
                 [wself lockButtons:NO];
@@ -629,6 +638,7 @@
                 [wself loadData];
             };
             
+            // 3. 定格在目标中奖格后，播放 SVGA 专属动画
             if (wself.svgaPlayer.videoItem) {
                 wself.svgaPlayer.hidden = NO;
                 [wself.svgaPlayer startAnimation];
@@ -641,6 +651,8 @@
         
     } failure:^(NSError *error) {
         // 报错回滚
+        [wself stopSpinTimer];
+        [wself updateCardHighlightIndex:-1];
         wself.localKeyBalance = originalBalance;
         [wself updateBalanceUI];
         wself.isDrawing = NO;
@@ -649,39 +661,74 @@
     }];
 }
 
-#pragma mark - 最高价落点插值减速旋转算法
-- (void)runDeceleratingAnimationToTargetIndex:(NSInteger)targetIndex completion:(void(^)(void))completion {
-    [self runDeceleratingAnimationStep:0 target:targetIndex completion:completion];
+#pragma mark - 双阶段跑马灯动画控制器 (Phase 1 毫秒级极速扫盘 + Phase 2 平滑减速衔接)
+
+- (void)updateCardHighlightIndex:(NSInteger)highlightIndex {
+    for (NSInteger i = 0; i < self.giftCardViews.count; i++) {
+        UIView *card = self.giftCardViews[i];
+        UIView *glowView = [card viewWithTag:999];
+        if (glowView) {
+            glowView.hidden = (i != highlightIndex);
+        }
+    }
 }
 
-- (void)runDeceleratingAnimationStep:(NSInteger)currentStep target:(NSInteger)targetIndex completion:(void(^)(void))completion {
-    NSInteger minRounds = 2;
-    NSInteger totalSteps = minRounds * 8 + targetIndex;
-    
-    // 清理光圈
-    for (UIView *card in self.giftCardViews) {
-        [card viewWithTag:999].hidden = YES;
+- (void)stopSpinTimer {
+    if (self.spinTimer) {
+        [self.spinTimer invalidate];
+        self.spinTimer = nil;
     }
+}
+
+- (void)startPhase1UniformSpin {
+    [self stopSpinTimer];
+    __weak typeof(self) weakSelf = self;
+    self.spinTimer = [NSTimer scheduledTimerWithTimeInterval:0.08 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        strongSelf.currentHighlightIndex = (strongSelf.currentHighlightIndex + 1) % 8;
+        [strongSelf updateCardHighlightIndex:strongSelf.currentHighlightIndex];
+    }];
+}
+
+- (void)startPhase2DecelerateSpinToTargetIndex:(NSInteger)targetIndex completion:(void(^)(void))completion {
+    [self stopSpinTimer];
+    self.spinCompletionBlock = completion;
+    self.targetLandingIndex = targetIndex;
     
-    NSInteger currentIndex = currentStep % 8;
-    if (currentIndex < self.giftCardViews.count) {
-        UIView *currentCard = self.giftCardViews[currentIndex];
-        [currentCard viewWithTag:999].hidden = NO;
-    }
+    // 从当前高频位置计算到目标落点的步数 (多跑 2 圈 16 步，确保视觉过渡极度丝滑)
+    NSInteger extraSteps = (targetIndex - self.currentHighlightIndex + 8) % 8;
+    self.totalSpinSteps = 16 + extraSteps;
+    self.currentSpinStep = 0;
     
-    if (currentStep >= totalSteps) {
-        if (completion) {
-            completion();
+    [self scheduleNextDecelerateStep];
+}
+
+- (void)scheduleNextDecelerateStep {
+    if (self.currentSpinStep >= self.totalSpinSteps) {
+        self.currentHighlightIndex = self.targetLandingIndex;
+        [self updateCardHighlightIndex:self.targetLandingIndex];
+        if (self.spinCompletionBlock) {
+            self.spinCompletionBlock();
+            self.spinCompletionBlock = nil;
         }
         return;
     }
     
-    double progress = (double)(currentStep + 1) / (double)totalSteps;
-    double delay = 0.04 + 0.35 * pow(progress, 2.5); // 渐进阻尼减速效果
+    self.currentHighlightIndex = (self.currentHighlightIndex + 1) % 8;
+    [self updateCardHighlightIndex:self.currentHighlightIndex];
+    self.currentSpinStep++;
     
-    WeakSelf
+    // 计算渐进阻尼延迟: 0.08s -> 0.35s
+    double progress = (double)self.currentSpinStep / (double)self.totalSpinSteps;
+    double delay = 0.08 + 0.27 * pow(progress, 2.0);
+    
+    __weak typeof(self) weakSelf = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [wself runDeceleratingAnimationStep:currentStep + 1 target:targetIndex completion:completion];
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (strongSelf) {
+            [strongSelf scheduleNextDecelerateStep];
+        }
     });
 }
 
@@ -749,6 +796,7 @@
 }
 
 - (void)dismiss {
+    [self stopSpinTimer];
     if (_svgaPlayer) {
         [_svgaPlayer stopAnimation];
         _svgaPlayer.hidden = YES;
@@ -760,6 +808,10 @@
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
     }];
+}
+
+- (void)dealloc {
+    [self stopSpinTimer];
 }
 
 - (void)removeFromSuperview {
