@@ -409,24 +409,51 @@
 
     // Left Single Draw Button (236 diamonds)
     _drawOneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawOneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_draw_1"] forState:UIControlStateNormal];
+    [_drawOneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_draw_one_bg"] forState:UIControlStateNormal];
     [_drawOneButton addTarget:self action:@selector(drawOneClick) forControlEvents:UIControlEventTouchUpInside];
     _drawOneButton.adjustsImageWhenHighlighted = NO;
     [_actionContainer addSubview:_drawOneButton];
+    
+    UIImageView *drawOneTextIv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"theme_game_five_draw_one_text"]];
+    drawOneTextIv.contentMode = UIViewContentModeScaleAspectFit;
+    drawOneTextIv.userInteractionEnabled = NO;
+    [_drawOneButton addSubview:drawOneTextIv];
+    [drawOneTextIv mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.mas_equalTo(_drawOneButton);
+        make.width.mas_equalTo(KDialogAdaptedWidth(66));
+    }];
 
     // Middle Ten Draw Button (2360 diamonds)
     _drawTenButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawTenButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_draw_10"] forState:UIControlStateNormal];
+    [_drawTenButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_draw_ten_bg"] forState:UIControlStateNormal];
     [_drawTenButton addTarget:self action:@selector(drawTenClick) forControlEvents:UIControlEventTouchUpInside];
     _drawTenButton.adjustsImageWhenHighlighted = NO;
     [_actionContainer addSubview:_drawTenButton];
+    
+    UIImageView *drawTenTextIv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"theme_game_five_draw_ten_text"]];
+    drawTenTextIv.contentMode = UIViewContentModeScaleAspectFit;
+    drawTenTextIv.userInteractionEnabled = NO;
+    [_drawTenButton addSubview:drawTenTextIv];
+    [drawTenTextIv mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.mas_equalTo(_drawTenButton);
+        make.width.mas_equalTo(KDialogAdaptedWidth(66));
+    }];
 
     // Right Hundred Draw Button (23600 diamonds)
     _drawHundredButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_drawHundredButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_draw_100"] forState:UIControlStateNormal];
+    [_drawHundredButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_draw_hundred_bg"] forState:UIControlStateNormal];
     [_drawHundredButton addTarget:self action:@selector(drawHundredClick) forControlEvents:UIControlEventTouchUpInside];
     _drawHundredButton.adjustsImageWhenHighlighted = NO;
     [_actionContainer addSubview:_drawHundredButton];
+    
+    UIImageView *drawHundredTextIv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"theme_game_five_draw_hundred_text"]];
+    drawHundredTextIv.contentMode = UIViewContentModeScaleAspectFit;
+    drawHundredTextIv.userInteractionEnabled = NO;
+    [_drawHundredButton addSubview:drawHundredTextIv];
+    [drawHundredTextIv mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.mas_equalTo(_drawHundredButton);
+        make.width.mas_equalTo(KDialogAdaptedWidth(66));
+    }];
 
     [_drawOneButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(KDialogAdaptedWidth(5));
