@@ -32,6 +32,9 @@
 @property (nonatomic, strong) UIView *backgroundContainer;
 @property (nonatomic, strong) SVGAPlayer *svgaPlayer;
 @property (nonatomic, copy, nullable) void (^svgaCompletionBlock)(void);
+@property (nonatomic, assign) BOOL hasPendingDrawResult;
+@property (nonatomic, strong, nullable) NSArray<MLGameDrawResultModel *> *pendingResultList;
+@property (nonatomic, assign) NSInteger pendingTotalValue;
 
 // Containers
 @property (nonatomic, strong) UIView *hudContainer;
@@ -565,32 +568,61 @@
     self.localKeyBalance -= cost;
     [self updateBalanceUI];
     
+    // Reset pending flags
+    self.hasPendingDrawResult = NO;
+    self.pendingResultList = nil;
+    self.pendingTotalValue = 0;
+    self.svgaCompletionBlock = nil;
+    
+    // 1. 【毫秒级响应】点击 0.0s 瞬间循环播放 SVGA 开启/蓄力动画，消灭等待停顿感
+    if (self.svgaPlayer.videoItem) {
+        self.svgaPlayer.loops = 0; // 循环播放模式，等待网络 API 响应
+        self.svgaPlayer.hidden = NO;
+        [self.svgaPlayer startAnimation];
+    }
+    
+    // 2. 并发发起网络抽奖 API
     __weak typeof(self) weakSelf = self;
     [MLGameLotteryService drawWithTypeId:self.typeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (!strongSelf) return;
         
+        strongSelf.hasPendingDrawResult = YES;
+        strongSelf.pendingResultList = list;
+        strongSelf.pendingTotalValue = totalValue;
+        
         void (^showResultBlock)(void) = ^{
             [strongSelf lockButtons:NO];
             strongSelf.isDrawing = NO;
             // Show custom draw result view
-            [MLChatRoomThemeGameFourResultView showInView:strongSelf.superview gifts:list totalValue:totalValue];
+            [MLChatRoomThemeGameFourResultView showInView:strongSelf.superview gifts:strongSelf.pendingResultList totalValue:strongSelf.pendingTotalValue];
             [strongSelf loadData];
+            strongSelf.pendingResultList = nil;
+            strongSelf.pendingTotalValue = 0;
+            strongSelf.hasPendingDrawResult = NO;
         };
         
-        // Play SVGA animation if loaded
-        if (strongSelf.svgaPlayer.videoItem) {
-            strongSelf.svgaPlayer.hidden = NO;
-            [strongSelf.svgaPlayer startAnimation];
+        // 3. 网络 API 成功返回后，将 SVGA 切换为单次收尾 (loops = 1)
+        if (strongSelf.svgaPlayer.videoItem && !strongSelf.svgaPlayer.hidden) {
+            strongSelf.svgaPlayer.loops = 1;
             strongSelf.svgaCompletionBlock = showResultBlock;
         } else {
-            // Fallback immediately if SVGA parser failed or was delayed
+            // Fallback immediately if SVGA player was not active
             showResultBlock();
         }
         
     } failure:^(NSError *error) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (strongSelf) {
+            if (strongSelf.svgaPlayer) {
+                [strongSelf.svgaPlayer stopAnimation];
+                strongSelf.svgaPlayer.hidden = YES;
+            }
+            strongSelf.hasPendingDrawResult = NO;
+            strongSelf.pendingResultList = nil;
+            strongSelf.pendingTotalValue = 0;
+            strongSelf.svgaCompletionBlock = nil;
+            
             // Rollback optimistic deduction on error
             strongSelf.localKeyBalance = originalBalance;
             [strongSelf updateBalanceUI];
@@ -618,8 +650,9 @@
     [self.svgaPlayer stopAnimation];
     
     if (self.svgaCompletionBlock) {
-        self.svgaCompletionBlock();
+        void (^block)(void) = self.svgaCompletionBlock;
         self.svgaCompletionBlock = nil;
+        block();
     }
 }
 
@@ -633,10 +666,18 @@
 
 - (void)handleMaskTap:(UITapGestureRecognizer *)sender {
     if (self.isDrawing) return; // Prevent closing in the middle of drawing
-    [self close];
+    [self dismiss];
 }
 
-- (void)close {
+- (void)dismiss {
+    if (_svgaPlayer) {
+        [_svgaPlayer stopAnimation];
+        _svgaPlayer.hidden = YES;
+    }
+    _svgaCompletionBlock = nil;
+    _pendingResultList = nil;
+    _hasPendingDrawResult = NO;
+    
     [UIView animateWithDuration:0.25 animations:^{
         self.alpha = 0.0;
     } completion:^(BOOL finished) {
@@ -647,6 +688,14 @@
         }
         [self removeFromSuperview];
     }];
+}
+
+- (void)dealloc {
+    if (_svgaPlayer) {
+        [_svgaPlayer stopAnimation];
+        _svgaPlayer.hidden = YES;
+    }
+    _svgaCompletionBlock = nil;
 }
 
 @end
