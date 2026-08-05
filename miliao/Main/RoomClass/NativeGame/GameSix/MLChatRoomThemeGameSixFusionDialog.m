@@ -6,7 +6,7 @@
 //
 
 #import "MLChatRoomThemeGameSixFusionDialog.h"
-#import "MLGlobalGiftSelectorPicker.h"
+#import "MLChatRoomThemeGameSixGlobalBackpackView.h"
 #import "MLThemeGameModel.h"
 #import "Global.h"
 #import <Masonry/Masonry.h>
@@ -595,16 +595,20 @@
         return;
     }
     
-    // 1:1 还原 temp/样式.png，同行放置“清空此槽位”与“取消”
-    [MLGlobalGiftSelectorPicker showWithSlotIndex:slotIndex items:globalList selectBlock:^(MLCandidateItemModel * _Nullable selectedItem, BOOL isClear) {
-        if (isClear) {
-            self.selectedGlobalSlots[slotIndex] = [NSNull null];
-            [self refreshDataUI];
-            [SVProgressHUD showInfoWithStatus:[NSString stringWithFormat:@"已清空槽位 %ld", (long)(slotIndex + 1)]];
-        } else if (selectedItem) {
-            self.selectedGlobalSlots[slotIndex] = selectedItem;
-            [self refreshDataUI];
+    __weak typeof(self) weakSelf = self;
+    [MLChatRoomThemeGameSixGlobalBackpackView showInView:self.superview candidateGifts:globalList selectBlock:^(MLCandidateItemModel * _Nullable selectedItem) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (strongSelf && selectedItem) {
+            strongSelf.selectedGlobalSlots[slotIndex] = selectedItem;
+            [strongSelf refreshDataUI];
             [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"已将 [%@] 放入槽位 %ld", selectedItem.name ?: @"", (long)(slotIndex + 1)]];
+        }
+    } clearBlock:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (strongSelf) {
+            strongSelf.selectedGlobalSlots[slotIndex] = [NSNull null];
+            [strongSelf refreshDataUI];
+            [SVProgressHUD showInfoWithStatus:[NSString stringWithFormat:@"已清空槽位 %ld", (long)(slotIndex + 1)]];
         }
     }];
 }
