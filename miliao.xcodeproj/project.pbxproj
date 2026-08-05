@@ -475,6 +475,7 @@
 		7C70E98C2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E98B2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m */; };
 		7C70E98F2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E98E2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m */; };
 		7C70E9922FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9912FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m */; };
+		7C70E9952FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9942FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m */; };
 		7C70E9712FED864D00A11B29 /* MLChatRoomThemeGameTwoPurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9522FED864D00A11B29 /* MLChatRoomThemeGameTwoPurchaseView.m */; };
 		7C70E9722FED864E00A11B29 /* MLChatRoomThemeGameTwoRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9532FED864D00A11B29 /* MLChatRoomThemeGameTwoRecordView.m */; };
 		7C70E9732FED864E00A11B29 /* MLGameLotteryInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9592FED864D00A11B29 /* MLGameLotteryInfoModel.m */; };
@@ -2126,6 +2127,8 @@
 		7C70E98E2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeFortuneView.m; sourceTree = "<group>"; };
 		7C70E9902FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourFortuneView.h; sourceTree = "<group>"; };
 		7C70E9912FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourFortuneView.m; sourceTree = "<group>"; };
+		7C70E9932FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveFortuneView.h; sourceTree = "<group>"; };
+		7C70E9942FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveFortuneView.m; sourceTree = "<group>"; };
 		7C70E9572FED864D00A11B29 /* MLGameLotteryService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLGameLotteryService.h; sourceTree = "<group>"; };
 		7C70E9582FED864D00A11B29 /* MLGameDrawResultModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLGameDrawResultModel.h; sourceTree = "<group>"; };
 		7C70E9592FED864D00A11B29 /* MLGameLotteryInfoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLGameLotteryInfoModel.m; sourceTree = "<group>"; };
@@ -3493,6 +3496,8 @@
 				A5A555BB27E5118800005524 /* MLChatRoomThemeGameFivePurchaseView.m */,
 				34EBE39101E84B7FA78C0D47 /* MLChatRoomThemeGameFiveView.h */,
 				E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */,
+				7C70E9932FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.h */,
+				7C70E9942FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m */,
 			);
 			name = GameFive;
 			path = GameFive;
@@ -10142,6 +10147,7 @@
 				588AF04B8F714F82A7F56175 /* MLChatRoomThemeGameThreeRuleView.m in Sources */,
 				7C70E98F2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m in Sources */,
 				7C70E9922FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m in Sources */,
+				7C70E9952FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m in Sources */,
 				CC617A9359FD441AAEC8DEBA /* MLChatRoomMarqueeLabel.m in Sources */,
 				FFE315EAE2D34FCC975B6A47 /* MLChatRoomThemeGameFortuneView.m in Sources */,
 				0052FDE822F59AD800F3F54E /* MLSessionSetViewController.m in Sources */,

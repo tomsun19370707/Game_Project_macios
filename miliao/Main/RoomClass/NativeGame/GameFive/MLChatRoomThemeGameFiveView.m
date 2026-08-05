@@ -13,7 +13,7 @@
 #import "MLChatRoomThemeGameFiveResultView.h"
 #import "MLChatRoomThemeGameFiveRecordView.h"
 #import "MLChatRoomThemeGameFivePurchaseView.h"
-#import "MLChatRoomThemeGameFortuneView.h"
+#import "MLChatRoomThemeGameFiveFortuneView.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD.h>
 
@@ -595,7 +595,7 @@
 }
 
 - (void)fortuneClick {
-    [MLChatRoomThemeGameFortuneView showInView:self.superview consume:self.fortuneConsume produce:self.fortuneProduce];
+    [MLChatRoomThemeGameFiveFortuneView showInView:self.superview consume:self.fortuneConsume produce:self.fortuneProduce];
 }
 
 
