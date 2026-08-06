@@ -929,15 +929,20 @@
             wself.isDrawing = NO;
             [wself fetchUserAssets]; // 静默更新个人资产余额
         } else {
-            // 请求成功：定位最高价礼物的终点落点
-            NSInteger targetIndex = [wself findTargetStopIndexWithGifts:list];
-            wself.targetStopIndex = targetIndex;
-            
-            // 4. 接续进入插值减速旋转
-            [wself stopInfiniteRotation];
-            [wself transitionToDeceleratingRotationWithTargetIndex:targetIndex success:^{
-                [wself showResultWithGifts:list totalValue:totalValue logId:logId];
-            }];
+            // 请求成功：在 GCD 后台子线程解析与定位最高价礼物的终点落点
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSInteger targetIndex = [wself findTargetStopIndexWithGifts:list];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!wself) return;
+                    wself.targetStopIndex = targetIndex;
+                    
+                    // 4. 接续进入插值减速旋转 (传入 times 抽奖次数做微分降速)
+                    [wself stopInfiniteRotation];
+                    [wself transitionToDeceleratingRotationWithTargetIndex:targetIndex drawCount:times success:^{
+                        [wself showResultWithGifts:list totalValue:totalValue logId:logId];
+                    }];
+                });
+            });
         }
     } failure:^(NSError *error) {
         [wself stopInfiniteRotation];
@@ -1012,15 +1017,30 @@
     [self highlightGiftViewAtIndex:nextIdx];
 }
 
-- (void)transitionToDeceleratingRotationWithTargetIndex:(NSInteger)targetIndex success:(void(^)(void))completion {
+- (void)transitionToDeceleratingRotationWithTargetIndex:(NSInteger)targetIndex drawCount:(NSInteger)drawCount success:(void(^)(void))completion {
     NSInteger currentIdx = self.currentStartIndex;
-    NSInteger remainingSteps = (targetIndex - currentIdx + 18) % 18 + 36; // 跑 2 圈
+    NSInteger baseLaps = 36; // 1 抽默认跑 2 圈 (36 步)
+    NSTimeInterval minDelay = 0.03;
+    NSTimeInterval maxDelay = 0.25;
+    
+    if (drawCount >= 100) {
+        baseLaps = 9; // 100 连抽仅跑 0.5 圈 (9 步) 极速停靠
+        minDelay = 0.015;
+        maxDelay = 0.08;
+    } else if (drawCount >= 10) {
+        baseLaps = 18; // 10 连抽跑 1 圈 (18 步)
+        minDelay = 0.02;
+        maxDelay = 0.15;
+    }
+    
+    NSInteger remainingSteps = (targetIndex - currentIdx + 18) % 18 + baseLaps;
     
     [self startDeceleratingStepWithStepIndex:0 
                                   baseIndex:currentIdx
                                  totalSteps:remainingSteps 
-                               minDelayTime:0.08 
-                               maxDelayTime:0.5 
+                               minDelayTime:minDelay 
+                               maxDelayTime:maxDelay 
+                                  drawCount:drawCount
                                  completion:completion];
 }
 
@@ -1029,6 +1049,7 @@
                                 totalSteps:(NSInteger)totalSteps 
                               minDelayTime:(NSTimeInterval)minDelay 
                               maxDelayTime:(NSTimeInterval)maxDelay 
+                                 drawCount:(NSInteger)drawCount
                                 completion:(void(^)(void))completion {
     if (step >= totalSteps) {
         if (completion) completion();
@@ -1038,19 +1059,33 @@
     NSInteger highlightIndex = (baseIdx + step) % 18;
     [self highlightGiftViewAtIndex:highlightIndex];
     
-    NSTimeInterval nextDelay = minDelay;
-    NSInteger decayStartStep = totalSteps - 10; // 倒数 10 步开始指数减速
-    if (step >= decayStartStep) {
-        NSInteger progress = step - decayStartStep;
-        nextDelay = minDelay + (maxDelay - minDelay) * pow((double)progress / 10.0, 2.0);
+    // 100 连抽进入停靠尾声 (最后 3 步) 时触发 SVGA 0.15s 淡出动画
+    if (drawCount >= 100 && step == totalSteps - 3 && self.svgaPlayer && !self.svgaPlayer.hidden) {
+        WeakSelf
+        [UIView animateWithDuration:0.15 animations:^{
+            wself.svgaPlayer.alpha = 0.0;
+        } completion:^(BOOL finished) {
+            [wself.svgaPlayer stopAnimation];
+            wself.svgaPlayer.hidden = YES;
+            wself.svgaPlayer.alpha = 1.0;
+        }];
     }
     
+    NSTimeInterval nextDelay = minDelay;
+    NSInteger decayStartStep = MAX(0, totalSteps - (drawCount >= 100 ? 5 : (drawCount >= 10 ? 8 : 10)));
+    if (step >= decayStartStep && totalSteps > decayStartStep) {
+        double progress = (double)(step - decayStartStep) / (double)(totalSteps - decayStartStep);
+        nextDelay = minDelay + (maxDelay - minDelay) * pow(progress, 2.5);
+    }
+    
+    WeakSelf
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(nextDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self startDeceleratingStepWithStepIndex:step + 1 
+        [wself startDeceleratingStepWithStepIndex:step + 1 
                                      baseIndex:baseIdx
                                     totalSteps:totalSteps 
                                   minDelayTime:minDelay 
                                   maxDelayTime:maxDelay 
+                                     drawCount:drawCount
                                     completion:completion];
     });
 }
