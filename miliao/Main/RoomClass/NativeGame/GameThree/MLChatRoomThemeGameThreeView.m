@@ -54,6 +54,8 @@
 @property (nonatomic, assign) NSInteger targetLandingIndex;
 @property (nonatomic, assign) NSInteger currentSpinStep;
 @property (nonatomic, assign) NSInteger totalSpinSteps;
+@property (nonatomic, assign) NSInteger currentDrawCount;
+@property (nonatomic, strong, nullable) SVGAVideoEntity *cachedVideoItem;
 @property (nonatomic, copy, nullable) void (^spinCompletionBlock)(void);
 
 @end
@@ -76,6 +78,7 @@
         
         [self setupUI];
         [self loadData];
+        [self preloadSVGAAnimation];
         
         // 隐藏常驻最顶层的语音悬浮球
         AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
@@ -84,6 +87,19 @@
         }
     }
     return self;
+}
+
+#pragma mark - SVGA 预加载
+- (void)preloadSVGAAnimation {
+    SVGAParser *parser = [[SVGAParser alloc] init];
+    NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_three_draw" withExtension:@"svga"];
+    if (svgaURL) {
+        WeakSelf
+        [parser parseWithURL:svgaURL completionBlock:^(SVGAVideoEntity * _Nonnull videoItem) {
+            wself.cachedVideoItem = videoItem;
+            wself.svgaPlayer.videoItem = videoItem;
+        } failureBlock:nil];
+    }
 }
 
 - (void)setupUI {
@@ -594,60 +610,85 @@
     
     // 乐观扣钱 & 锁定按钮
     self.isDrawing = YES;
+    self.currentDrawCount = times;
     [self lockButtons:YES];
     
     NSInteger originalBalance = self.localKeyBalance;
     self.localKeyBalance -= cost;
     [self updateBalanceUI];
     
-    // 1. 【毫秒级响应】点击瞬间立刻开启 Phase 1 高频扫盘跑马灯，消灭等待卡顿
+    // 1. 【0ms 瞬间响应】点击瞬间立刻开启 Phase 1 高频匀速扫盘跑马灯，消灭等待卡顿
     [self startPhase1UniformSpin];
     
     WeakSelf
     [MLGameLotteryService drawWithTypeId:self.typeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
-        // 插值减速落点算法：寻找中奖奖品中价值最高的那个
-        NSInteger targetIndex = 0;
-        NSInteger maxPrice = -1;
-        for (MLGameDrawResultModel *result in list) {
-            NSInteger poolIndex = -1;
-            for (NSInteger i = 0; i < wself.prizesInPool.count; i++) {
-                if (wself.prizesInPool[i].giftId == result.giftId) {
-                    poolIndex = i;
-                    break;
+        // 2. 在 GCD 后台子线程寻找中奖奖品中价值最高的那个 targetIndex
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSInteger targetIndex = 0;
+            NSInteger maxPrice = -1;
+            for (MLGameDrawResultModel *result in list) {
+                NSInteger poolIndex = -1;
+                for (NSInteger i = 0; i < wself.prizesInPool.count; i++) {
+                    if (wself.prizesInPool[i].giftId == result.giftId) {
+                        poolIndex = i;
+                        break;
+                    }
+                }
+                if (poolIndex != -1 && result.price > maxPrice) {
+                    maxPrice = result.price;
+                    targetIndex = poolIndex;
                 }
             }
-            if (poolIndex != -1 && result.price > maxPrice) {
-                maxPrice = result.price;
-                targetIndex = poolIndex;
-            }
-        }
-        
-        if (maxPrice == -1) {
-            targetIndex = 0;
-        }
-        
-        // 2. 网络回调成功后，从当前旋转位置平滑衔接 Phase 2 减速降落至目标大奖格
-        [wself startPhase2DecelerateSpinToTargetIndex:targetIndex completion:^{
-            // 清理光圈
-            [wself updateCardHighlightIndex:-1];
+            if (maxPrice == -1) targetIndex = 0;
             
-            void (^showResultBlock)(void) = ^{
-                [wself lockButtons:NO];
-                wself.isDrawing = NO;
-                [MLChatRoomThemeGameThreeResultView showInView:wself.superview gifts:list totalValue:totalValue];
-                [wself loadData];
-            };
-            
-            // 3. 定格在目标中奖格后，播放 SVGA 专属动画
-            if (wself.svgaPlayer.videoItem) {
-                wself.svgaPlayer.hidden = NO;
-                [wself.svgaPlayer startAnimation];
-                wself.svgaCompletionBlock = showResultBlock;
-            } else {
-                // SVGAPlayer 预加载失败兜底逻辑：直接弹窗结算
-                showResultBlock();
-            }
-        }];
+            // 3. 切回主线程进行 Phase 2 微分降速与定格后 SVGA 播放
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (!wself) return;
+                
+                [wself startPhase2DecelerateSpinToTargetIndex:targetIndex drawCount:times completion:^{
+                    void (^showResultBlock)(void) = ^{
+                        [wself lockButtons:NO];
+                        wself.isDrawing = NO;
+                        [MLChatRoomThemeGameThreeResultView showInView:wself.superview gifts:list totalValue:totalValue];
+                        [wself loadData];
+                    };
+                    
+                    // 4. 定格在目标中奖格后，播放 SVGA 专属动画 (根据 drawCount 精准掌控时长)
+                    if (wself.svgaPlayer.videoItem || wself.cachedVideoItem) {
+                        if (!wself.svgaPlayer.videoItem && wself.cachedVideoItem) {
+                            wself.svgaPlayer.videoItem = wself.cachedVideoItem;
+                        }
+                        wself.svgaPlayer.alpha = 1.0;
+                        wself.svgaPlayer.hidden = NO;
+                        [wself.svgaPlayer startAnimation];
+                        
+                        if (times >= 100) {
+                            // 100 连抽：控制 SVGA 播放 1.5 秒 (1.35s 启动 0.15s alpha 淡出即切)
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.35 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                [UIView animateWithDuration:0.15 animations:^{
+                                    wself.svgaPlayer.alpha = 0.0;
+                                } completion:^(BOOL finished) {
+                                    [wself.svgaPlayer stopAnimation];
+                                    wself.svgaPlayer.hidden = YES;
+                                    wself.svgaPlayer.alpha = 1.0;
+                                    showResultBlock();
+                                }];
+                            });
+                        } else {
+                            // 10 连抽 / 1 抽：控制 SVGA 播放 2.0 秒后顺畅拉起弹窗
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                [wself.svgaPlayer stopAnimation];
+                                wself.svgaPlayer.hidden = YES;
+                                showResultBlock();
+                            });
+                        }
+                    } else {
+                        // SVGAPlayer 异常兜底逻辑：直接弹窗结算
+                        showResultBlock();
+                    }
+                }];
+            });
+        });
         
     } failure:^(NSError *error) {
         // 报错回滚
@@ -691,14 +732,16 @@
     }];
 }
 
-- (void)startPhase2DecelerateSpinToTargetIndex:(NSInteger)targetIndex completion:(void(^)(void))completion {
+- (void)startPhase2DecelerateSpinToTargetIndex:(NSInteger)targetIndex drawCount:(NSInteger)drawCount completion:(void(^)(void))completion {
     [self stopSpinTimer];
     self.spinCompletionBlock = completion;
     self.targetLandingIndex = targetIndex;
+    self.currentDrawCount = drawCount;
     
-    // 从当前高频位置计算到目标落点的步数 (多跑 2 圈 16 步，确保视觉过渡极度丝滑)
+    // 依据 drawCount 动态差异化 baseSteps 圈数 (100抽: 4步 / 10抽: 8步 / 1抽: 16步)
+    NSInteger baseSteps = (drawCount >= 100) ? 4 : ((drawCount >= 10) ? 8 : 16);
     NSInteger extraSteps = (targetIndex - self.currentHighlightIndex + 8) % 8;
-    self.totalSpinSteps = 16 + extraSteps;
+    self.totalSpinSteps = baseSteps + extraSteps;
     self.currentSpinStep = 0;
     
     [self scheduleNextDecelerateStep];
@@ -719,9 +762,11 @@
     [self updateCardHighlightIndex:self.currentHighlightIndex];
     self.currentSpinStep++;
     
-    // 计算渐进阻尼延迟: 0.08s -> 0.35s
+    // 依据 drawCount 计算渐进阻尼延迟 (100连抽: 15ms->80ms; 10连抽: 20ms->150ms; 1抽: 30ms->250ms)
     double progress = (double)self.currentSpinStep / (double)self.totalSpinSteps;
-    double delay = 0.08 + 0.27 * pow(progress, 2.0);
+    double startDelay = (self.currentDrawCount >= 100) ? 0.015 : ((self.currentDrawCount >= 10) ? 0.020 : 0.030);
+    double endDelayDelta = (self.currentDrawCount >= 100) ? 0.065 : ((self.currentDrawCount >= 10) ? 0.130 : 0.220);
+    double delay = startDelay + endDelayDelta * pow(progress, 2.0);
     
     __weak typeof(self) weakSelf = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
