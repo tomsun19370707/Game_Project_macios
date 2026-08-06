@@ -56,6 +56,7 @@
 
 // SVGA 播放器与临时存储
 @property (nonatomic, strong) SVGAPlayer *svgaPlayer;
+@property (nonatomic, strong) SVGAVideoEntity *cachedVideoItem;
 @property (nonatomic, strong) NSArray<MLGameDrawResultModel *> *pendingGifts;
 @property (nonatomic, assign) NSInteger pendingTotalValue;
 @property (nonatomic, assign) NSInteger consumeValue;
@@ -83,14 +84,17 @@
     if (self = [super initWithFrame:frame]) {
         self.typeId = typeId > 0 ? typeId : 12;
         self.isDrawing = NO;
+        self.localKeyBalance = 0;
+        self.consumeValue = 0;
+        self.produceValue = 0;
         self.peachCardViews = [NSMutableArray array];
         self.peachFrameImageViews = [NSMutableArray array];
         self.peachGlowImageViews = [NSMutableArray array];
         self.peachImageViews = [NSMutableArray array];
         [self setupUI];
         [self loadData];
+        [self preloadSVGAAnimation];
         
-        // 隐藏语音悬浮窗
         // 隐藏语音悬浮窗
         AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
         if (appDelegate.roomViewController && appDelegate.roomViewController.floatingWindow) {
@@ -98,6 +102,21 @@
         }
     }
     return self;
+}
+
+#pragma mark - SVGA 预加载
+- (void)preloadSVGAAnimation {
+    SVGAParser *parser = [[SVGAParser alloc] init];
+    NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_harvest" withExtension:@"svga"];
+    if (!svgaURL) {
+        svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_draw" withExtension:@"svga"];
+    }
+    if (svgaURL) {
+        WeakSelf
+        [parser parseWithURL:svgaURL completionBlock:^(SVGAVideoEntity * _Nonnull videoItem) {
+            wself.cachedVideoItem = videoItem;
+        } failureBlock:nil];
+    }
 }
 
 - (void)setupUI {
@@ -655,36 +674,43 @@
     self.lastDrawTimes = times;
     self.lastDrawCost = cost;
     
-    // 3. 伴随 9 个果实交替 Alpha 闪烁
-    [self startFruitFlashingAnimation];
+    // 3. 0ms 瞬间提取内存缓存预加载 SVGA 动效 (果实保持自然优雅浮动)
+    [self startSVGAAnimationInstantWithTimes:times];
     
-    // 4. 调用接口发包
+    // 4. 并发调用接口发包
     WeakSelf
     NSInteger queryTypeId = (self.typeId == 6 || self.typeId == 8) ? 7 : self.typeId;
     [MLGameLotteryService drawWithTypeId:queryTypeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
-        MLChatRoomThemeGameTwoResultView *activeResultView = nil;
-        for (UIView *sub in wself.superview.subviews) {
-            if ([sub isKindOfClass:[MLChatRoomThemeGameTwoResultView class]]) {
-                activeResultView = (MLChatRoomThemeGameTwoResultView *)sub;
-                break;
-            }
-        }
-        
-        if (activeResultView) {
-            [wself stopFruitFlashingAnimation];
-            [activeResultView updateGifts:list totalValue:totalValue times:times];
-            [wself lockButtons:NO];
-            wself.isDrawing = NO;
-            [wself loadData]; // 静默更新资产
-        } else {
-            [wself playDrawAnimationWithGifts:list totalValue:totalValue logId:logId];
-        }
+        // 5. 在 GCD 后台子线程解包与解析列表数据
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (!wself) return;
+                
+                MLChatRoomThemeGameTwoResultView *activeResultView = nil;
+                for (UIView *sub in wself.superview.subviews) {
+                    if ([sub isKindOfClass:[MLChatRoomThemeGameTwoResultView class]]) {
+                        activeResultView = (MLChatRoomThemeGameTwoResultView *)sub;
+                        break;
+                    }
+                }
+                
+                if (activeResultView) {
+                    [wself stopSVGAAnimationImmediately];
+                    [activeResultView updateGifts:list totalValue:totalValue times:times];
+                    [wself lockButtons:NO];
+                    wself.isDrawing = NO;
+                    [wself loadData]; // 静默更新资产
+                } else {
+                    [wself handleDrawSuccessWithGifts:list totalValue:totalValue logId:logId times:times];
+                }
+            });
+        });
     } failure:^(NSError *error) {
         [wself lockButtons:NO];
         wself.isDrawing = NO;
-        [wself stopFruitFlashingAnimation];
+        [wself stopSVGAAnimationImmediately];
         
-        // 5. 计费安全防御：若超时(NSURLErrorTimedOut)绝不回滚钥匙；若断网/报错，立刻把钥匙加回并重置UI
+        // 6. 计费安全防御：若超时(NSURLErrorTimedOut)绝不回滚钥匙；若断网/报错，立刻把钥匙加回并重置UI
         if (error.code == NSURLErrorTimedOut) {
             [SVProgressHUD showInfoWithStatus:@"服务器繁忙，结果可能稍后到账，请去记录或背包查看"];
         } else {
@@ -695,6 +721,77 @@
     }];
 }
 
+- (void)startSVGAAnimationInstantWithTimes:(NSInteger)times {
+    if (self.svgaPlayer == nil) {
+        self.svgaPlayer = [[SVGAPlayer alloc] init];
+        self.svgaPlayer.delegate = self;
+        self.svgaPlayer.contentMode = UIViewContentModeScaleAspectFit;
+        [self addSubview:self.svgaPlayer];
+        [self.svgaPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.mas_equalTo(_bgImageView);
+        }];
+    }
+    
+    self.svgaPlayer.alpha = 1.0;
+    self.svgaPlayer.hidden = NO;
+    
+    // 100 连抽配置无限循环 (由 API 响应控制 0.15s 淡出即切)
+    if (times >= 100) {
+        self.svgaPlayer.loops = 0;
+    } else {
+        self.svgaPlayer.loops = 1;
+    }
+    
+    if (self.cachedVideoItem) {
+        self.svgaPlayer.videoItem = self.cachedVideoItem;
+        [self.svgaPlayer startAnimation];
+    } else {
+        // 缓存不可用时兜底在线异步加载
+        SVGAParser *parser = [[SVGAParser alloc] init];
+        NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_harvest" withExtension:@"svga"];
+        if (!svgaURL) {
+            svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_draw" withExtension:@"svga"];
+        }
+        if (svgaURL) {
+            WeakSelf
+            [parser parseWithURL:svgaURL completionBlock:^(SVGAVideoEntity * _Nonnull videoItem) {
+                wself.cachedVideoItem = videoItem;
+                wself.svgaPlayer.videoItem = videoItem;
+                [wself.svgaPlayer startAnimation];
+            } failureBlock:nil];
+        }
+    }
+}
+
+- (void)stopSVGAAnimationImmediately {
+    if (self.svgaPlayer) {
+        [self.svgaPlayer stopAnimation];
+        self.svgaPlayer.hidden = YES;
+        self.svgaPlayer.alpha = 1.0;
+    }
+}
+
+- (void)handleDrawSuccessWithGifts:(NSArray<MLGameDrawResultModel *> *)gifts totalValue:(NSInteger)totalValue logId:(NSInteger)logId times:(NSInteger)times {
+    self.pendingGifts = gifts;
+    self.pendingTotalValue = totalValue;
+    
+    if (times >= 100 && self.svgaPlayer && !self.svgaPlayer.hidden) {
+        // 100 连抽触发 0.15s alpha 渐隐淡出无缝唤起弹窗
+        WeakSelf
+        [UIView animateWithDuration:0.15 animations:^{
+            wself.svgaPlayer.alpha = 0.0;
+        } completion:^(BOOL finished) {
+            [wself stopSVGAAnimationImmediately];
+            [wself showResultWithGifts:gifts totalValue:totalValue];
+        }];
+    } else {
+        // 1 抽 / 10 抽兜底或等待动画自然播完
+        if (!self.svgaPlayer || self.svgaPlayer.hidden) {
+            [self showResultWithGifts:gifts totalValue:totalValue];
+        }
+    }
+}
+
 - (void)lockButtons:(BOOL)lock {
     self.drawOneButton.enabled = !lock;
     self.drawTenButton.enabled = !lock;
@@ -703,51 +800,9 @@
     self.recordButton.enabled = !lock;
 }
 
-- (void)playDrawAnimationWithGifts:(NSArray<MLGameDrawResultModel *> *)gifts totalValue:(NSInteger)totalValue logId:(NSInteger)logId {
-    self.pendingGifts = gifts;
-    self.pendingTotalValue = totalValue;
-    
-    if (self.svgaPlayer == nil) {
-        self.svgaPlayer = [[SVGAPlayer alloc] init];
-        self.svgaPlayer.loops = 1;
-        self.svgaPlayer.delegate = self;
-        self.svgaPlayer.contentMode = UIViewContentModeScaleAspectFit;
-        [self addSubview:self.svgaPlayer];
-        [self.svgaPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(_bgImageView);
-        }];
-    }
-    self.svgaPlayer.hidden = NO;
-    
-    SVGAParser *parser = [[SVGAParser alloc] init];
-    NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_harvest" withExtension:@"svga"];
-    if (!svgaURL) {
-        svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_draw" withExtension:@"svga"];
-    }
-    
-    if (svgaURL) {
-        WeakSelf
-        [parser parseWithURL:svgaURL completionBlock:^(SVGAVideoEntity * _Nonnull videoItem) {
-            wself.svgaPlayer.videoItem = videoItem;
-            [wself.svgaPlayer startAnimation];
-        } failureBlock:^(NSError * _Nonnull error) {
-            // 解析失败时，兜底直接展示结果
-            wself.svgaPlayer.hidden = YES;
-            [wself stopFruitFlashingAnimation];
-            [wself showResultWithGifts:gifts totalValue:totalValue];
-        }];
-    } else {
-        // 如果没有找到文件，兜底直接展示结果
-        self.svgaPlayer.hidden = YES;
-        [self stopFruitFlashingAnimation];
-        [self showResultWithGifts:gifts totalValue:totalValue];
-    }
-}
-
 #pragma mark - SVGAPlayerDelegate
 - (void)svgaPlayerDidFinishedAnimation:(SVGAPlayer *)player {
     player.hidden = YES;
-    [self stopFruitFlashingAnimation];
     [self showResultWithGifts:self.pendingGifts totalValue:self.pendingTotalValue];
 }
 
@@ -801,7 +856,7 @@
     }];
 }
 
-#pragma mark - Float & Flash Animations
+#pragma mark - Float Animations
 - (void)startPeachFloatingAnimations {
     for (int i = 0; i < self.peachCardViews.count; i++) {
         UIView *card = self.peachCardViews[i];
@@ -820,30 +875,6 @@
         animation.beginTime = CACurrentMediaTime() + delay;
         [card.layer addAnimation:animation forKey:@"peach_float"];
     }
-}
-
-- (void)startFruitFlashingAnimation {
-    for (int i = 0; i < self.peachCardViews.count; i++) {
-        UIView *card = self.peachCardViews[i];
-        [card.layer removeAnimationForKey:@"peach_float"];
-        
-        CABasicAnimation *flash = [CABasicAnimation animationWithKeyPath:@"opacity"];
-        flash.fromValue = @(1.0);
-        flash.toValue = @(0.3);
-        flash.duration = 0.2 + (i % 3) * 0.1;
-        flash.repeatCount = HUGE_VALF;
-        flash.autoreverses = YES;
-        [card.layer addAnimation:flash forKey:@"peach_flash"];
-    }
-}
-
-- (void)stopFruitFlashingAnimation {
-    for (int i = 0; i < self.peachCardViews.count; i++) {
-        UIView *card = self.peachCardViews[i];
-        [card.layer removeAnimationForKey:@"peach_flash"];
-        card.layer.opacity = 1.0;
-    }
-    [self startPeachFloatingAnimations];
 }
 
 - (void)plusClick {
