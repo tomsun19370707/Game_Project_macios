@@ -32,6 +32,7 @@
 @property (nonatomic, strong) UIView *backgroundContainer;
 @property (nonatomic, strong) SVGAPlayer *svgaPlayer;
 @property (nonatomic, copy, nullable) void (^svgaCompletionBlock)(void);
+@property (nonatomic, assign) CFTimeInterval drawStartTime;
 @property (nonatomic, assign) BOOL hasPendingDrawResult;
 @property (nonatomic, strong, nullable) NSArray<MLGameDrawResultModel *> *pendingResultList;
 @property (nonatomic, assign) NSInteger pendingTotalValue;
@@ -582,14 +583,16 @@
     self.localKeyBalance -= cost;
     [self updateBalanceUI];
     
-    // Reset pending flags
+    // Reset pending flags & record startTime
+    self.drawStartTime = CACurrentMediaTime();
     self.hasPendingDrawResult = NO;
     self.pendingResultList = nil;
     self.pendingTotalValue = 0;
     self.svgaCompletionBlock = nil;
     
-    // 1. 【毫秒级响应】点击 0.0s 瞬间循环播放 SVGA 开启/蓄力动画，消灭等待停顿感
+    // 1. 【0ms 瞬间响应】点击 0ms 瞬间循环播放 SVGA 开启/蓄力动画，消灭等待停顿感
     if (self.svgaPlayer.videoItem) {
+        self.svgaPlayer.alpha = 1.0;
         self.svgaPlayer.loops = 0; // 循环播放模式，等待网络 API 响应
         self.svgaPlayer.hidden = NO;
         [self.svgaPlayer startAnimation];
@@ -598,32 +601,49 @@
     // 2. 并发发起网络抽奖 API
     __weak typeof(self) weakSelf = self;
     [MLGameLotteryService drawWithTypeId:self.typeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        if (!strongSelf) return;
-        
-        strongSelf.hasPendingDrawResult = YES;
-        strongSelf.pendingResultList = list;
-        strongSelf.pendingTotalValue = totalValue;
-        
-        void (^showResultBlock)(void) = ^{
-            [strongSelf lockButtons:NO];
-            strongSelf.isDrawing = NO;
-            // Show custom draw result view
-            [MLChatRoomThemeGameFourResultView showInView:strongSelf.superview gifts:strongSelf.pendingResultList totalValue:strongSelf.pendingTotalValue];
-            [strongSelf loadData];
-            strongSelf.pendingResultList = nil;
-            strongSelf.pendingTotalValue = 0;
-            strongSelf.hasPendingDrawResult = NO;
-        };
-        
-        // 3. 网络 API 成功返回后，将 SVGA 切换为单次收尾 (loops = 1)
-        if (strongSelf.svgaPlayer.videoItem && !strongSelf.svgaPlayer.hidden) {
-            strongSelf.svgaPlayer.loops = 1;
-            strongSelf.svgaCompletionBlock = showResultBlock;
-        } else {
-            // Fallback immediately if SVGA player was not active
-            showResultBlock();
-        }
+        // 3. 在 GCD 后台子线程解析与组装中奖数据模型
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(weakSelf) strongSelf = weakSelf;
+                if (!strongSelf) return;
+                
+                strongSelf.hasPendingDrawResult = YES;
+                strongSelf.pendingResultList = list;
+                strongSelf.pendingTotalValue = totalValue;
+                
+                void (^showResultBlock)(void) = ^{
+                    [strongSelf lockButtons:NO];
+                    strongSelf.isDrawing = NO;
+                    [MLChatRoomThemeGameFourResultView showInView:strongSelf.superview gifts:strongSelf.pendingResultList totalValue:strongSelf.pendingTotalValue];
+                    [strongSelf loadData];
+                    strongSelf.pendingResultList = nil;
+                    strongSelf.pendingTotalValue = 0;
+                    strongSelf.hasPendingDrawResult = NO;
+                };
+                
+                // 4. 引入与 Android 端一致的 minAnimationDuration (100抽: 600ms / 10抽: 1000ms / 1抽: 1500ms) 防闪烁保护
+                if (strongSelf.svgaPlayer.videoItem && !strongSelf.svgaPlayer.hidden) {
+                    CFTimeInterval elapsed = CACurrentMediaTime() - strongSelf.drawStartTime;
+                    CFTimeInterval minDuration = (times >= 100) ? 0.6 : ((times >= 10) ? 1.0 : 1.5);
+                    CFTimeInterval remaining = MAX(0.0, minDuration - elapsed);
+                    
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        // 保护时长到达后，启动 0.15s alpha 渐隐淡出无缝唤起结果弹窗
+                        [UIView animateWithDuration:0.15 animations:^{
+                            strongSelf.svgaPlayer.alpha = 0.0;
+                        } completion:^(BOOL finished) {
+                            [strongSelf.svgaPlayer stopAnimation];
+                            strongSelf.svgaPlayer.hidden = YES;
+                            strongSelf.svgaPlayer.alpha = 1.0;
+                            showResultBlock();
+                        }];
+                    });
+                } else {
+                    // Fallback immediately if SVGA player was not active
+                    showResultBlock();
+                }
+            });
+        });
         
     } failure:^(NSError *error) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
@@ -631,6 +651,7 @@
             if (strongSelf.svgaPlayer) {
                 [strongSelf.svgaPlayer stopAnimation];
                 strongSelf.svgaPlayer.hidden = YES;
+                strongSelf.svgaPlayer.alpha = 1.0;
             }
             strongSelf.hasPendingDrawResult = NO;
             strongSelf.pendingResultList = nil;
