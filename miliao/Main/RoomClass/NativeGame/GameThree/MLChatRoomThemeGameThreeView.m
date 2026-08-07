@@ -3,6 +3,7 @@
 #import "RoomFloatingWindow.h"
 #import "AppDelegate.h"
 #import "MLChatRoomThemeGameThreeResultView.h"
+#import "MLChatRoomThemeGameThreeGiftView.h"
 #import "MLChatRoomThemeGameThreeRuleView.h"
 #import "MLChatRoomThemeGameThreeRecordView.h"
 #import "MLChatRoomThemeGameThreePurchaseView.h"
@@ -837,7 +838,7 @@
             totalVal += m.price;
         }
     }
-    [MLChatRoomThemeGameThreeResultView showInView:self.superview gifts:self.prizesInPool totalValue:totalVal];
+    [MLChatRoomThemeGameThreeGiftView showInView:self.superview gifts:self.prizesInPool totalValue:totalVal];
 }
 
 - (void)fortuneClick {

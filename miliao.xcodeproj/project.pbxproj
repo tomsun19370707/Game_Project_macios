@@ -384,6 +384,7 @@
 		00C904A022E6DFB70045C5C2 /* detailTrendTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 00C9049E22E6DFB70045C5C2 /* detailTrendTableViewCell.m */; };
 		00C904A122E6DFB70045C5C2 /* detailTrendTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00C9049F22E6DFB70045C5C2 /* detailTrendTableViewCell.xib */; };
 		00E0FACF562E41C48D249CD9 /* MLChatRoomThemeGameThreeResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33146C9237E7408D8C4A805C /* MLChatRoomThemeGameThreeResultView.m */; };
+		A1B2C3D4E5F6010203040501 /* MLChatRoomThemeGameThreeGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6010203040502 /* MLChatRoomThemeGameThreeGiftView.m */; };
 		00E2DAED22F3C0E9004DA965 /* MLSessionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E2DAEC22F3C0E9004DA965 /* MLSessionViewController.m */; };
 		03EE9084C879815EA3D20E48 /* CFMExDiamondAndBagPackageCollCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43CE96DFD35619F17D8AA608 /* CFMExDiamondAndBagPackageCollCell.m */; };
 		05FCCB18FDA25BFE2CEB541E /* CFMRewardHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AEC52E7FB68FBAE3F30B2468 /* CFMRewardHistoryCell.m */; };
@@ -2031,6 +2032,7 @@
 		2AA776A89F629F6189D7DBC3 /* CFMExRewardRuleAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMExRewardRuleAlert.xib; sourceTree = "<group>"; };
 		2D77DBABFD79248BD7EBCE70 /* CFMutiplierGamesResultView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMutiplierGamesResultView.h; sourceTree = "<group>"; };
 		33146C9237E7408D8C4A805C /* MLChatRoomThemeGameThreeResultView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeResultView.m; sourceTree = "<group>"; };
+		A1B2C3D4E5F6010203040502 /* MLChatRoomThemeGameThreeGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeGiftView.m; sourceTree = "<group>"; };
 		38F989B517474841EB97D705 /* CFMCFMRewardHistoryJoinRate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMCFMRewardHistoryJoinRate.h; sourceTree = "<group>"; };
 		391FA2B62F91FAAB0074A737 /* CurrentRunGamaViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrentRunGamaViewController.h; sourceTree = "<group>"; };
 		391FA2B72F91FAAB0074A737 /* CurrentRunGamaViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurrentRunGamaViewController.m; sourceTree = "<group>"; };
@@ -2866,6 +2868,7 @@
 		85ED6AC9283F97A00092C3FA /* DSAlertChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DSAlertChange.m; sourceTree = "<group>"; };
 		85ED6ACA283F97A00092C3FA /* DSAlertChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DSAlertChange.h; sourceTree = "<group>"; };
 		88681BC985BA490FBDEEC872 /* MLChatRoomThemeGameThreeResultView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeResultView.h; sourceTree = "<group>"; };
+		A1B2C3D4E5F6010203040503 /* MLChatRoomThemeGameThreeGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeGiftView.h; sourceTree = "<group>"; };
 		89835480FEB1813D317D42F4 /* CFMRewardPriseAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMRewardPriseAlert.xib; sourceTree = "<group>"; };
 		8EC2129577581C12F3B37069 /* CFMRewardHistoryAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMRewardHistoryAlert.h; sourceTree = "<group>"; };
 		8F260294248A25F4008114B5 /* EMO_RoomSetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMO_RoomSetViewController.m; sourceTree = "<group>"; };
@@ -8956,6 +8959,8 @@
 				02B0ECBE3CCA4F14A21F20A9 /* MLChatRoomThemeGameThreeView.m */,
 				88681BC985BA490FBDEEC872 /* MLChatRoomThemeGameThreeResultView.h */,
 				33146C9237E7408D8C4A805C /* MLChatRoomThemeGameThreeResultView.m */,
+				A1B2C3D4E5F6010203040503 /* MLChatRoomThemeGameThreeGiftView.h */,
+				A1B2C3D4E5F6010203040502 /* MLChatRoomThemeGameThreeGiftView.m */,
 				DE9C9B331C8D4315839465CF /* MLChatRoomThemeGameThreePurchaseView.h */,
 				F0A756065E2E400CBEED7E04 /* MLChatRoomThemeGameThreePurchaseView.m */,
 				5794455D125F45D1950DF7FB /* MLChatRoomThemeGameThreeRecordView.h */,
@@ -10153,6 +10158,7 @@
 				7C70E97A2FED864E00A11B29 /* MLChatRoomThemeGameOneView.m in Sources */,
 				C11E5170878340C99C8DD788 /* MLChatRoomThemeGameThreeView.m in Sources */,
 				00E0FACF562E41C48D249CD9 /* MLChatRoomThemeGameThreeResultView.m in Sources */,
+				A1B2C3D4E5F6010203040501 /* MLChatRoomThemeGameThreeGiftView.m in Sources */,
 				6C7A71E5C0584E55BC8523B8 /* MLChatRoomThemeGameThreePurchaseView.m in Sources */,
 				C53AADE1432047C4B18C121B /* MLChatRoomThemeGameThreeRecordView.m in Sources */,
 				588AF04B8F714F82A7F56175 /* MLChatRoomThemeGameThreeRuleView.m in Sources */,
