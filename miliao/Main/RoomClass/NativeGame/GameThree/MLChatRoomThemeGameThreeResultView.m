@@ -219,16 +219,18 @@
             make.edges.mas_equalTo(badgeBg);
         }];
         
-        UILabel *numLabel = [[UILabel alloc] init];
-        numLabel.textColor = kWhiteColor;
-        numLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(10)];
-        numLabel.textAlignment = NSTextAlignmentCenter;
-        numLabel.text = [NSString stringWithFormat:@"x%ld", (long)gift.num];
-        [itemBg addSubview:numLabel];
-        [numLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(cardImg.mas_bottom).offset(KDialogAdaptedWidth(4));
-            make.centerX.mas_equalTo(itemBg);
-        }];
+        if (gift.num > 0) {
+            UILabel *numLabel = [[UILabel alloc] init];
+            numLabel.textColor = kWhiteColor;
+            numLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(10)];
+            numLabel.textAlignment = NSTextAlignmentCenter;
+            numLabel.text = [NSString stringWithFormat:@"x%ld", (long)gift.num];
+            [itemBg addSubview:numLabel];
+            [numLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.top.mas_equalTo(cardImg.mas_bottom).offset(KDialogAdaptedWidth(4));
+                make.centerX.mas_equalTo(itemBg);
+            }];
+        }
     }
     
     NSInteger totalRows = (self.mergedGifts.count + colCount - 1) / colCount;
