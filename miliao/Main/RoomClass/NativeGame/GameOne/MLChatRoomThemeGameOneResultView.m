@@ -102,8 +102,8 @@
     CGFloat itemW = KDialogAdaptedWidth(67.5f);
     CGFloat itemH = KDialogAdaptedWidth(82.0f);
     CGFloat rowGap = KDialogAdaptedWidth(12.0f);
-    CGFloat sideMargin = KDialogAdaptedWidth(18.0f);
-    CGFloat colGap = KDialogAdaptedWidth(21.3f);
+    CGFloat colGap = KDialogAdaptedWidth(10.0f); // 缩小列间距 (21.3 -> 10.0)
+    CGFloat sideMargin = KDialogAdaptedWidth(35.0f); // 重新计算居中边距
     NSInteger colCount = 4;
     
     for (int i = 0; i < self.mergedGifts.count; i++) {
