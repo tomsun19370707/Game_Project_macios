@@ -71,6 +71,7 @@
 // State properties
 @property (nonatomic, assign) BOOL isDrawing;
 @property (nonatomic, strong) MLGameLotteryInfoModel *infoModel;
+@property (nonatomic, strong) NSArray<MLGameDrawResultModel *> *prizesInPool;
 @property (nonatomic, assign) NSInteger localKeyBalance;
 @property (nonatomic, assign) NSInteger consumeValue;
 @property (nonatomic, assign) NSInteger produceValue;
@@ -193,6 +194,44 @@
         make.height.mas_equalTo(_backgroundContainer.mas_width);
     }];
     
+    // 1. 容器外正上方左侧【奖品池】悬浮条 (宽 70, 高 30. 悬浮在左上角外侧，与右侧今日运势 100% 对称)
+    CGFloat poolW = KDialogAdaptedWidth(70.0f);
+    CGFloat poolH = KDialogAdaptedWidth(30.0f);
+    UIView *giftPoolBar = [[UIView alloc] init];
+    giftPoolBar.userInteractionEnabled = YES;
+    [self addSubview:giftPoolBar];
+    [giftPoolBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_equalTo(_backgroundContainer.mas_top).offset(-KDialogAdaptedWidth(6));
+        make.leading.mas_equalTo(_backgroundContainer.mas_leading).offset(KDialogAdaptedWidth(12));
+        make.size.mas_equalTo(CGSizeMake(poolW, poolH));
+    }];
+    
+    CAGradientLayer *poolGrad = [CAGradientLayer layer];
+    poolGrad.frame = CGRectMake(0, 0, poolW, poolH);
+    poolGrad.colors = @[(__bridge id)mHexRGB(0xFFA800).CGColor, (__bridge id)mHexRGB(0xE67E00).CGColor, (__bridge id)mHexRGB(0xC85A00).CGColor];
+    poolGrad.startPoint = CGPointMake(0.5, 0);
+    poolGrad.endPoint = CGPointMake(0.5, 1);
+    poolGrad.cornerRadius = KDialogAdaptedWidth(15.0f);
+    [giftPoolBar.layer addSublayer:poolGrad];
+    
+    giftPoolBar.layer.borderColor = mHexRGB(0xFFE57F).CGColor;
+    giftPoolBar.layer.borderWidth = 1.5;
+    giftPoolBar.layer.cornerRadius = KDialogAdaptedWidth(15.0f);
+    giftPoolBar.clipsToBounds = YES;
+    
+    UITapGestureRecognizer *poolTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(giftPoolClick)];
+    [giftPoolBar addGestureRecognizer:poolTap];
+    
+    UILabel *poolLabel = [[UILabel alloc] init];
+    poolLabel.text = @"奖品池";
+    poolLabel.textColor = kWhiteColor;
+    poolLabel.font = [UIFont boldSystemFontOfSize:11];
+    poolLabel.textAlignment = NSTextAlignmentCenter;
+    [giftPoolBar addSubview:poolLabel];
+    [poolLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(giftPoolBar);
+    }];
+
     // 5. Today's Fortune entrance (floating outside top right)
     CGFloat fortuneW = KDialogAdaptedWidth(70.0f);
     CGFloat fortuneH = KDialogAdaptedWidth(30.0f);
@@ -469,6 +508,14 @@
     } failure:^(NSError *error) {
         // Silent fail for today's fortune
     }];
+    
+    // 4. Load prize pool
+    [MLGameLotteryService getPrizesWithTypeId:self.typeId success:^(NSArray<MLGameDrawResultModel *> *prizes) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (strongSelf) {
+            strongSelf.prizesInPool = prizes;
+        }
+    } failure:nil];
 }
 
 - (void)updateBalanceUI {
@@ -495,6 +542,17 @@
 
 - (void)recordClick {
     [MLChatRoomThemeGameFourRecordView showInView:self.superview typeId:self.typeId];
+}
+
+- (void)giftPoolClick {
+    if (self.isDrawing) return;
+    NSInteger totalVal = 0;
+    if (self.prizesInPool) {
+        for (MLGameDrawResultModel *m in self.prizesInPool) {
+            totalVal += m.price;
+        }
+    }
+    [MLChatRoomThemeGameFourResultView showInView:self.superview gifts:self.prizesInPool totalValue:totalVal];
 }
 
 - (void)fortuneClick {
