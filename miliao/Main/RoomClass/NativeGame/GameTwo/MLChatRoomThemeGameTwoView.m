@@ -3,6 +3,7 @@
 #import "RoomFloatingWindow.h"
 #import "AppDelegate.h"
 #import "MLChatRoomThemeGameTwoResultView.h"
+#import "MLChatRoomThemeGameOneResultView.h"
 #import "MLChatRoomThemeGameTwoRuleView.h"
 #import "MLChatRoomThemeGameTwoRecordView.h"
 #import "MLChatRoomThemeGameTwoPurchaseView.h"
@@ -196,6 +197,44 @@
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(55), KDialogAdaptedWidth(50)));
     }];
     
+    // 1. 容器外正上方左侧【奖品池】悬浮条 (放置于 _hudContainer，宽 70, 高 30. 与右侧今日运势 100% 对称)
+    CGFloat poolW = KDialogAdaptedWidth(70.0f);
+    CGFloat poolH = KDialogAdaptedWidth(30.0f);
+    UIView *giftPoolBar = [[UIView alloc] init];
+    giftPoolBar.userInteractionEnabled = YES;
+    [_hudContainer addSubview:giftPoolBar];
+    [giftPoolBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(KDialogAdaptedWidth(16));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(16));
+        make.size.mas_equalTo(CGSizeMake(poolW, poolH));
+    }];
+    
+    CAGradientLayer *poolGrad = [CAGradientLayer layer];
+    poolGrad.frame = CGRectMake(0, 0, poolW, poolH);
+    poolGrad.colors = @[(__bridge id)mHexRGB(0xFFA800).CGColor, (__bridge id)mHexRGB(0xE67E00).CGColor, (__bridge id)mHexRGB(0xC85A00).CGColor];
+    poolGrad.startPoint = CGPointMake(0.5, 0);
+    poolGrad.endPoint = CGPointMake(0.5, 1);
+    poolGrad.cornerRadius = KDialogAdaptedWidth(15.0f);
+    [giftPoolBar.layer addSublayer:poolGrad];
+    
+    giftPoolBar.layer.borderColor = mHexRGB(0xFFE57F).CGColor;
+    giftPoolBar.layer.borderWidth = 1.5;
+    giftPoolBar.layer.cornerRadius = KDialogAdaptedWidth(15.0f);
+    giftPoolBar.clipsToBounds = YES;
+    
+    UITapGestureRecognizer *poolTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(giftPoolClick)];
+    [giftPoolBar addGestureRecognizer:poolTap];
+    
+    UILabel *poolLabel = [[UILabel alloc] init];
+    poolLabel.text = @"奖品池";
+    poolLabel.textColor = kWhiteColor;
+    poolLabel.font = [UIFont boldSystemFontOfSize:11];
+    poolLabel.textAlignment = NSTextAlignmentCenter;
+    [giftPoolBar addSubview:poolLabel];
+    [poolLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(giftPoolBar);
+    }];
+
     // 今日运势悬浮条 (放置于 _hudContainer，宽 70, 高 30)
     CGFloat fortuneW = KDialogAdaptedWidth(70.0f);
     CGFloat fortuneH = KDialogAdaptedWidth(30.0f);
@@ -842,6 +881,17 @@
 
 - (void)recordClick {
     [MLChatRoomThemeGameTwoRecordView showInView:self.superview typeId:self.typeId];
+}
+
+- (void)giftPoolClick {
+    if (self.isDrawing) return;
+    NSInteger totalVal = 0;
+    if (self.prizeList) {
+        for (MLGameDrawResultModel *m in self.prizeList) {
+            totalVal += m.price;
+        }
+    }
+    [MLChatRoomThemeGameTwoResultView showInView:self.superview gifts:self.prizeList totalValue:totalVal times:self.prizeList.count retryBlock:nil];
 }
 
 - (void)fortuneClick {
