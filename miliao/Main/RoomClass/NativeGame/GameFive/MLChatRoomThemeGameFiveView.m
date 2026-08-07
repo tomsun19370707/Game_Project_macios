@@ -193,6 +193,7 @@
 @property (nonatomic, assign) NSInteger totalSpinSteps;
 @property (nonatomic, assign) NSInteger currentSpinStep;
 @property (nonatomic, assign) NSInteger targetLandingIndex;
+@property (nonatomic, assign) NSInteger currentDrawCount;
 @property (nonatomic, copy) void(^spinCompletionBlock)(void);
 
 @end
@@ -669,14 +670,16 @@
     }];
 }
 
-- (void)startPhase2DecelerateSpinToTargetIndex:(NSInteger)targetIndex completion:(void(^)(void))completion {
+- (void)startPhase2DecelerateSpinToTargetIndex:(NSInteger)targetIndex drawCount:(NSInteger)drawCount completion:(void(^)(void))completion {
     [self stopSpinTimer];
     self.spinCompletionBlock = completion;
     self.targetLandingIndex = targetIndex;
+    self.currentDrawCount = drawCount;
     
-    // Calculate total steps: 2 full rounds (32 steps) + target offset
+    // 依据 drawCount 动态差异化 baseSteps 圈数 (100抽: 4步 / 10抽: 8步 / 1抽: 16步)
+    NSInteger baseSteps = (drawCount >= 100) ? 4 : ((drawCount >= 10) ? 8 : 16);
     NSInteger extraSteps = (targetIndex - self.currentHighlightIndex + 16) % 16;
-    self.totalSpinSteps = 32 + extraSteps;
+    self.totalSpinSteps = baseSteps + extraSteps;
     self.currentSpinStep = 0;
     
     [self scheduleNextDecelerateStep];
@@ -697,12 +700,14 @@
     [self updateCardHighlightIndex:self.currentHighlightIndex];
     self.currentSpinStep++;
     
-    // Calculate decelerated interval: 0.08s -> 0.35s
+    // 依据 drawCount 计算渐进阻尼延迟 (100连抽: 15ms->80ms; 10连抽: 20ms->150ms; 1抽: 30ms->250ms)
     double progress = (double)self.currentSpinStep / (double)self.totalSpinSteps;
-    double interval = 0.08 + (0.35 - 0.08) * (progress * progress); // quadratic decelerate
+    double startDelay = (self.currentDrawCount >= 100) ? 0.015 : ((self.currentDrawCount >= 10) ? 0.020 : 0.030);
+    double endDelayDelta = (self.currentDrawCount >= 100) ? 0.065 : ((self.currentDrawCount >= 10) ? 0.130 : 0.220);
+    double delay = startDelay + endDelayDelta * (progress * progress);
     
     __weak typeof(self) weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (strongSelf && strongSelf.isDrawing) {
             [strongSelf scheduleNextDecelerateStep];
@@ -796,45 +801,50 @@
     }
     
     self.isDrawing = YES;
+    self.currentDrawCount = times;
     
     // Optimistic local key balance deduction
     self.localKeyBalance -= requiredKeys;
     [self updateBalanceUI];
     
-    // Start Phase 1 uniform card spin (0 -> 1 -> ... -> 15)
+    // 1. 【0ms 瞬间响应】Start Phase 1 uniform card spin (0 -> 1 -> ... -> 15)
     [self startPhase1UniformSpin];
     
-    // Perform lottery request
+    // 2. Perform lottery request
     __weak typeof(self) weakSelf = self;
     [MLGameLotteryService drawWithTypeId:self.typeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        if (!strongSelf) return;
-        
-        // Find highest price prize in result list to land on
-        NSInteger targetIndex = 0;
-        if (list && list.count > 0 && strongSelf.prizesInPool && strongSelf.prizesInPool.count > 0) {
-            MLGameDrawResultModel *highestPrize = nil;
-            for (MLGameDrawResultModel *prize in list) {
-                if (!highestPrize || prize.price > highestPrize.price) {
-                    highestPrize = prize;
+        // 3. 在 GCD 后台子线程寻找最高价奖品 targetIndex 落点
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSInteger targetIndex = 0;
+            if (list && list.count > 0 && weakSelf.prizesInPool && weakSelf.prizesInPool.count > 0) {
+                MLGameDrawResultModel *highestPrize = nil;
+                for (MLGameDrawResultModel *prize in list) {
+                    if (!highestPrize || prize.price > highestPrize.price) {
+                        highestPrize = prize;
+                    }
                 }
-            }
-            if (highestPrize) {
-                for (NSInteger i = 0; i < strongSelf.prizesInPool.count; i++) {
-                    if (strongSelf.prizesInPool[i].price == highestPrize.price || [strongSelf.prizesInPool[i].name isEqualToString:highestPrize.name]) {
-                        targetIndex = i;
-                        break;
+                if (highestPrize) {
+                    for (NSInteger i = 0; i < weakSelf.prizesInPool.count; i++) {
+                        if (weakSelf.prizesInPool[i].price == highestPrize.price || [weakSelf.prizesInPool[i].name isEqualToString:highestPrize.name]) {
+                            targetIndex = i;
+                            break;
+                        }
                     }
                 }
             }
-        }
-        
-        // Start Phase 2 decelerated spin to target card index
-        [strongSelf startPhase2DecelerateSpinToTargetIndex:targetIndex completion:^{
-            strongSelf.isDrawing = NO;
-            [MLChatRoomThemeGameFiveResultView showInView:strongSelf.superview gifts:list totalValue:totalValue];
-            [strongSelf loadData];
-        }];
+            
+            // 4. 切回主线程启动 Phase 2 微分降速并拉起结果弹窗
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(weakSelf) strongSelf = weakSelf;
+                if (!strongSelf) return;
+                
+                [strongSelf startPhase2DecelerateSpinToTargetIndex:targetIndex drawCount:times completion:^{
+                    strongSelf.isDrawing = NO;
+                    [MLChatRoomThemeGameFiveResultView showInView:strongSelf.superview gifts:list totalValue:totalValue];
+                    [strongSelf loadData];
+                }];
+            });
+        });
     } failure:^(NSError *error) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (strongSelf) {
