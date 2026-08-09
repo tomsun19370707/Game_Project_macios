@@ -313,20 +313,22 @@
             make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(size.width), KDialogAdaptedWidth(size.height)));
         }];
         
-        // 最底层发光光圈
+        // 最底层发光光圈 (方案A: 隐藏外围半透明发光背景)
         UIImageView *glowView = [[UIImageView alloc] init];
         glowView.image = [UIImage imageNamed:@"theme_game_two_center_fruit"];
         glowView.contentMode = UIViewContentModeScaleToFill;
+        glowView.hidden = YES;
         [card addSubview:glowView];
         [glowView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.mas_equalTo(card);
         }];
         [self.peachGlowImageViews addObject:glowView];
         
-        // 中层底盘
+        // 中层底盘 (隐藏半透明矩形框)
         UIImageView *frameView = [[UIImageView alloc] init];
         frameView.image = [UIImage imageNamed:@"theme_game_two_center_frame"];
         frameView.contentMode = UIViewContentModeScaleToFill;
+        frameView.hidden = YES;
         [card addSubview:frameView];
         [frameView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.mas_equalTo(card);
@@ -903,22 +905,8 @@
 
 #pragma mark - Float Animations
 - (void)startPeachFloatingAnimations {
-    for (int i = 0; i < self.peachCardViews.count; i++) {
-        UIView *card = self.peachCardViews[i];
+    for (UIView *card in self.peachCardViews) {
         [card.layer removeAllAnimations];
-        
-        NSTimeInterval delay = i * 0.15;
-        NSTimeInterval duration = 1.8 + (i % 5) * 0.1;
-        
-        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.translation.y"];
-        animation.fromValue = @(0.0);
-        animation.toValue = @(-2.5);
-        animation.duration = duration;
-        animation.repeatCount = HUGE_VALF;
-        animation.autoreverses = YES;
-        animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        animation.beginTime = CACurrentMediaTime() + delay;
-        [card.layer addAnimation:animation forKey:@"peach_float"];
     }
 }
 
