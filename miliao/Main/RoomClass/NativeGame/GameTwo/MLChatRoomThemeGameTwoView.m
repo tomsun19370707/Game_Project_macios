@@ -182,7 +182,7 @@
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_hudContainer addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(105));
+        make.top.mas_equalTo(KDialogAdaptedWidth(16));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(30));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(48), KDialogAdaptedWidth(50)));
     }];
@@ -193,20 +193,20 @@
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [_hudContainer addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(105));
+        make.top.mas_equalTo(KDialogAdaptedWidth(16));
         make.leading.mas_equalTo(KDialogAdaptedWidth(30));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(55), KDialogAdaptedWidth(50)));
     }];
     
-    // 1. 容器外正上方左侧【奖品池】悬浮条 (放置于 _hudContainer，宽 70, 高 30. 与右侧今日运势 100% 对称)
+    // 1. 容器外正上方左侧【奖品池】悬浮条 (放置于 self 最外层，宽 70, 高 30，悬浮于 _bgImageView 外部正上方)
     CGFloat poolW = KDialogAdaptedWidth(70.0f);
     CGFloat poolH = KDialogAdaptedWidth(30.0f);
     UIView *giftPoolBar = [[UIView alloc] init];
     giftPoolBar.userInteractionEnabled = YES;
-    [_hudContainer addSubview:giftPoolBar];
+    [self addSubview:giftPoolBar];
     [giftPoolBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(16));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(16));
+        make.bottom.mas_equalTo(_bgImageView.mas_top).offset(-KDialogAdaptedWidth(6));
+        make.leading.mas_equalTo(_bgImageView.mas_leading).offset(KDialogAdaptedWidth(12));
         make.size.mas_equalTo(CGSizeMake(poolW, poolH));
     }];
     
@@ -236,15 +236,15 @@
         make.edges.mas_equalTo(giftPoolBar);
     }];
 
-    // 今日运势悬浮条 (放置于 _hudContainer，宽 70, 高 30)
+    // 2. 容器外正上方右侧【今日运势】悬浮条 (放置于 self 最外层，宽 70, 高 30，悬浮于 _bgImageView 外部正上方)
     CGFloat fortuneW = KDialogAdaptedWidth(70.0f);
     CGFloat fortuneH = KDialogAdaptedWidth(30.0f);
     UIView *fortuneBar = [[UIView alloc] init];
     fortuneBar.userInteractionEnabled = YES;
-    [_hudContainer addSubview:fortuneBar];
+    [self addSubview:fortuneBar];
     [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(16));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
+        make.bottom.mas_equalTo(_bgImageView.mas_top).offset(-KDialogAdaptedWidth(6));
+        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-KDialogAdaptedWidth(12));
         make.size.mas_equalTo(CGSizeMake(fortuneW, fortuneH));
     }];
     
