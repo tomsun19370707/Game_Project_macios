@@ -69,6 +69,9 @@
 @property (nonatomic, strong) UIView *actionContainer;
 @property (nonatomic, strong) UILabel *fortuneLabel;
 
+// CADisplayLink 单摆驱动
+@property (nonatomic, strong) CADisplayLink *displayLink;
+
 @end
 
 @interface MLChatRoomThemeGameTwoView () <SVGAPlayerDelegate>
@@ -314,6 +317,19 @@
         {48.0f, 48.0f}  // 灵果 9
     };
     
+    // 对标 Android 提交 27 的 9 个灵果挂钩点 Y 轴百分比比例 PEACH_PIVOT_Y_RATIOS
+    static const CGFloat PEACH_PIVOT_Y_RATIOS[] = {
+        -0.1143f, // 灵果 1 (#1)
+        -0.1250f, // 灵果 2 (#2)
+        -0.1250f, // 灵果 3 (#3)
+        -0.1667f, // 灵果 4 (#4)
+        -0.1538f, // 灵果 5 (#5)
+        -0.1429f, // 灵果 6 (#6)
+        -0.1667f, // 灵果 7 (#7)
+         0.0000f, // 灵果 8 (#8)
+        -0.1250f  // 灵果 9 (#9)
+    };
+    
     for (int i = 0; i < 9; i++) {
         UIView *card = [[UIView alloc] init];
         [_gameplayContainer addSubview:card];
@@ -321,11 +337,19 @@
         
         CGPoint center = PEACH_CENTERS[i];
         CGSize size = PEACH_SIZES[i];
+        CGFloat ratio = PEACH_PIVOT_Y_RATIOS[i];
+        
+        // 精确抵消 iOS 设置 anchorPoint (0.5, 0.0 + ratio) 引起的 Y 轴整体下移位移
+        CGFloat anchorYShift = (0.0f + ratio - 0.5f) * size.height;
+        
         [card mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(_bgImageView.mas_leading).offset(KDialogAdaptedWidth(center.x));
-            make.centerY.mas_equalTo(_bgImageView.mas_top).offset(KDialogAdaptedWidth(center.y));
+            make.centerY.mas_equalTo(_bgImageView.mas_top).offset(KDialogAdaptedWidth(center.y + anchorYShift));
             make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(size.width), KDialogAdaptedWidth(size.height)));
         }];
+        
+        // 设置挂钩点 anchorPoint (X为中点 0.5，Y为 0.0 + 比率)
+        card.layer.anchorPoint = CGPointMake(0.5f, 0.0f + ratio);
         
         // 最底层发光光圈 (方案A: 隐藏外围半透明发光背景)
         UIImageView *glowView = [[UIImageView alloc] init];
@@ -359,8 +383,8 @@
         [self.peachImageViews addObject:giftImg];
     }
     
-    // 启动错峰浮游缓动
-    [self startPeachFloatingAnimations];
+    // 启动 2D 物理单摆摇摆微动效引擎
+    [self startSwingAnimationEngine];
     
     // 三档抽奖按钮包装容器 (放置于 _actionContainer)
     UIView *btnGroupContainer = [[UIView alloc] init];
@@ -899,11 +923,44 @@
     }];
 }
 
-#pragma mark - Float Animations
-- (void)startPeachFloatingAnimations {
-    for (UIView *card in self.peachCardViews) {
-        [card.layer removeAllAnimations];
+#pragma mark - CADisplayLink 2D Physical Pendulum Swing Engine
+- (void)startSwingAnimationEngine {
+    [self stopSwingAnimationEngine];
+    self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onSwingUpdate:)];
+    [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+}
+
+- (void)stopSwingAnimationEngine {
+    if (self.displayLink) {
+        [self.displayLink invalidate];
+        self.displayLink = nil;
     }
+}
+
+- (void)onSwingUpdate:(CADisplayLink *)link {
+    CFTimeInterval currentTime = CACurrentMediaTime();
+    static const CGFloat MAX_SWING_ANGLE_RAD = 6.0f * M_PI / 180.0f; // 最大摆角 6.0 度
+    static const CGFloat SWING_FREQUENCY = 0.3f; // 摆动频率 0.3 Hz
+    
+    for (int i = 0; i < self.peachCardViews.count; i++) {
+        UIView *card = self.peachCardViews[i];
+        CGFloat phase = i * 0.35f; // 从左至右错峰相角
+        CGFloat angleRad = MAX_SWING_ANGLE_RAD * sin(currentTime * 2.0 * M_PI * SWING_FREQUENCY + phase);
+        card.transform = CGAffineTransformMakeRotation(angleRad);
+    }
+}
+
+- (void)willMoveToWindow:(UIWindow *)newWindow {
+    [super willMoveToWindow:newWindow];
+    if (newWindow) {
+        [self startSwingAnimationEngine];
+    } else {
+        [self stopSwingAnimationEngine];
+    }
+}
+
+- (void)dealloc {
+    [self stopSwingAnimationEngine];
 }
 
 - (void)plusClick {
