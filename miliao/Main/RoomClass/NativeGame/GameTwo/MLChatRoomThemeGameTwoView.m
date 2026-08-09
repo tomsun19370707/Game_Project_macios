@@ -3,6 +3,7 @@
 #import "RoomFloatingWindow.h"
 #import "AppDelegate.h"
 #import "MLChatRoomThemeGameTwoResultView.h"
+#import "MLChatRoomThemeGameTwoGiftView.h"
 #import "MLChatRoomThemeGameOneResultView.h"
 #import "MLChatRoomThemeGameTwoRuleView.h"
 #import "MLChatRoomThemeGameTwoRecordView.h"
@@ -885,13 +886,7 @@
 
 - (void)giftPoolClick {
     if (self.isDrawing) return;
-    NSInteger totalVal = 0;
-    if (self.prizeList) {
-        for (MLGameDrawResultModel *m in self.prizeList) {
-            totalVal += m.price;
-        }
-    }
-    [MLChatRoomThemeGameTwoResultView showInView:self.superview gifts:self.prizeList totalValue:totalVal times:self.prizeList.count retryBlock:nil];
+    [MLChatRoomThemeGameTwoGiftView showInView:self.superview gifts:self.prizeList];
 }
 
 - (void)fortuneClick {

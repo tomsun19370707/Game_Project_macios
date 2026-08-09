@@ -473,6 +473,7 @@
 		7C70E96D2FED864D00A11B29 /* MLChatRoomNativeGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E94A2FED864D00A11B29 /* MLChatRoomNativeGameView.m */; };
 		7C70E96E2FED864D00A11B29 /* MLChatRoomThemeGameTwoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E94D2FED864D00A11B29 /* MLChatRoomThemeGameTwoView.m */; };
 		7C70E96F2FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E94E2FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.m */; };
+		7C70E99C2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E99B2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m */; };
 		7C70E9702FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9512FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.m */; };
 		7C70E98C2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E98B2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m */; };
 		7C70E98F2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E98E2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m */; };
@@ -2121,6 +2122,8 @@
 		7C70E94C2FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoRuleView.h; sourceTree = "<group>"; };
 		7C70E94D2FED864D00A11B29 /* MLChatRoomThemeGameTwoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoView.m; sourceTree = "<group>"; };
 		7C70E94E2FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoResultView.m; sourceTree = "<group>"; };
+		7C70E99A2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoGiftView.h; sourceTree = "<group>"; };
+		7C70E99B2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoGiftView.m; sourceTree = "<group>"; };
 		7C70E94F2FED864D00A11B29 /* MLChatRoomThemeGameTwoRecordView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoRecordView.h; sourceTree = "<group>"; };
 		7C70E9502FED864D00A11B29 /* MLChatRoomThemeGameTwoPurchaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoPurchaseView.h; sourceTree = "<group>"; };
 		7C70E9512FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoRuleView.m; sourceTree = "<group>"; };
@@ -5762,6 +5765,8 @@
 				7C70E94C2FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.h */,
 				7C70E94D2FED864D00A11B29 /* MLChatRoomThemeGameTwoView.m */,
 				7C70E94E2FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.m */,
+				7C70E99A2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.h */,
+				7C70E99B2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m */,
 				7C70E94F2FED864D00A11B29 /* MLChatRoomThemeGameTwoRecordView.h */,
 				7C70E9502FED864D00A11B29 /* MLChatRoomThemeGameTwoPurchaseView.h */,
 				7C70E9512FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.m */,
@@ -9504,6 +9509,7 @@
 				8529E18F2959AFB20070AAFB /* EMO_DressingCollectionViewCell.m in Sources */,
 				85D3653F2A42D56300589A7F /* FLAnimatedImage.m in Sources */,
 				7C70E96F2FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.m in Sources */,
+				7C70E99C2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m in Sources */,
 				85A3054A2A7B9F0300BD9B14 /* EMO_APPCustomRoomMessage.m in Sources */,
 				85C13CBF2A71248B0077E895 /* EMO_WinningRecordView.m in Sources */,
 				184077E92425A4C800D42E75 /* HttpTool.m in Sources */,
