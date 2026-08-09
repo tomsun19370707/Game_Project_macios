@@ -19,6 +19,7 @@
 // Forward declarations for placeholders to be implemented next
 #import "MLChatRoomThemeGameFourPurchaseView.h"
 #import "MLChatRoomThemeGameFourResultView.h"
+#import "MLChatRoomThemeGameFourGiftView.h"
 #import "MLChatRoomThemeGameFourRecordView.h"
 #import "MLChatRoomThemeGameFourRuleView.h"
 #import "MLChatRoomThemeGameFourRankView.h"
@@ -552,7 +553,7 @@
             totalVal += m.price;
         }
     }
-    [MLChatRoomThemeGameFourResultView showInView:self.superview gifts:self.prizesInPool totalValue:totalVal];
+    [MLChatRoomThemeGameFourGiftView showInView:self.superview gifts:self.prizesInPool totalValue:totalVal];
 }
 
 - (void)fortuneClick {

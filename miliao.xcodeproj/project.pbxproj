@@ -27,6 +27,7 @@
 		4AB3CB01B19E4E87B04773C2 /* theme_game_four_yellow_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = E910B19BDD7E4BB29730EBF7 /* theme_game_four_yellow_draw.svga */; };
 		4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAF2AA681F0F401D90401B17 /* MLChatRoomThemeGameFourPurchaseView.m */; };
 		89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D86EE673042019BDE397E /* MLChatRoomThemeGameFourResultView.m */; };
+		A1B2C3D4E5F6010203040504 /* MLChatRoomThemeGameFourGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6010203040505 /* MLChatRoomThemeGameFourGiftView.m */; };
 		33221FD9883A474BAA4579B4 /* MLChatRoomThemeGameFourRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */; };
 		B8F8986484E3483BBBB71C37 /* MLChatRoomThemeGameFourRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */; };
 		5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */ = {isa = PBXBuildFile; fileRef = 09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */; };
@@ -1243,6 +1244,8 @@
 		FAF2AA681F0F401D90401B17 /* MLChatRoomThemeGameFourPurchaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourPurchaseView.m; sourceTree = "<group>"; };
 		2319AD4B79A6402E802C2C7F /* MLChatRoomThemeGameFourResultView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourResultView.h; sourceTree = "<group>"; };
 		259D86EE673042019BDE397E /* MLChatRoomThemeGameFourResultView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourResultView.m; sourceTree = "<group>"; };
+		A1B2C3D4E5F6010203040506 /* MLChatRoomThemeGameFourGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourGiftView.h; sourceTree = "<group>"; };
+		A1B2C3D4E5F6010203040505 /* MLChatRoomThemeGameFourGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourGiftView.m; sourceTree = "<group>"; };
 		266638B691F44AB5B01775ED /* MLChatRoomThemeGameFourRecordView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourRecordView.h; sourceTree = "<group>"; };
 		7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourRecordView.m; sourceTree = "<group>"; };
 		371F211E4A4D4D8BBD81DCB7 /* MLChatRoomThemeGameFourRuleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourRuleView.h; sourceTree = "<group>"; };
@@ -3519,6 +3522,8 @@
 				FAF2AA681F0F401D90401B17 /* MLChatRoomThemeGameFourPurchaseView.m */,
 				2319AD4B79A6402E802C2C7F /* MLChatRoomThemeGameFourResultView.h */,
 				259D86EE673042019BDE397E /* MLChatRoomThemeGameFourResultView.m */,
+				A1B2C3D4E5F6010203040506 /* MLChatRoomThemeGameFourGiftView.h */,
+				A1B2C3D4E5F6010203040505 /* MLChatRoomThemeGameFourGiftView.m */,
 				266638B691F44AB5B01775ED /* MLChatRoomThemeGameFourRecordView.h */,
 				7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */,
 				371F211E4A4D4D8BBD81DCB7 /* MLChatRoomThemeGameFourRuleView.h */,
@@ -9392,6 +9397,7 @@
 				E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */,
 				4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */,
 				89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */,
+				A1B2C3D4E5F6010203040504 /* MLChatRoomThemeGameFourGiftView.m in Sources */,
 				33221FD9883A474BAA4579B4 /* MLChatRoomThemeGameFourRecordView.m in Sources */,
 				B8F8986484E3483BBBB71C37 /* MLChatRoomThemeGameFourRuleView.m in Sources */,
 				FA85CE392A7A21A000CDC75E /* CSVisitorSDKStub.m in Sources */,
