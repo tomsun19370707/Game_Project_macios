@@ -106,17 +106,21 @@
     return self;
 }
 
-#pragma mark - SVGA 预加载
+#pragma mark - SVGA 预加载与常驻背景播放
 - (void)preloadSVGAAnimation {
     SVGAParser *parser = [[SVGAParser alloc] init];
-    NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_harvest" withExtension:@"svga"];
+    NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_draw" withExtension:@"svga"];
     if (!svgaURL) {
-        svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_draw" withExtension:@"svga"];
+        svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_two_harvest" withExtension:@"svga"];
     }
     if (svgaURL) {
         WeakSelf
         [parser parseWithURL:svgaURL completionBlock:^(SVGAVideoEntity * _Nonnull videoItem) {
             wself.cachedVideoItem = videoItem;
+            if (wself.svgaPlayer) {
+                wself.svgaPlayer.videoItem = videoItem;
+                [wself.svgaPlayer startAnimation];
+            }
         } failureBlock:nil];
     }
 }
@@ -146,6 +150,16 @@
         make.center.mas_equalTo(self);
         make.width.mas_equalTo(KDialogAdaptedWidth(375));
         make.height.mas_equalTo(KDialogAdaptedWidth(655.5));
+    }];
+    
+    // 实例化 SVGA 常驻背景流光 (CVCS Index 0 最底层堆叠，置于 _bgImageView 正上方、各功能容器正下方)
+    self.svgaPlayer = [[SVGAPlayer alloc] init];
+    self.svgaPlayer.contentMode = UIViewContentModeScaleToFill;
+    self.svgaPlayer.userInteractionEnabled = NO;
+    self.svgaPlayer.loops = 0; // 无限常驻背景流光循环
+    [_bgImageView addSubview:self.svgaPlayer];
+    [self.svgaPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(_bgImageView);
     }];
     
     // 实例化 CVCS 语义容器树
@@ -182,7 +196,7 @@
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_hudContainer addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(16));
+        make.top.mas_equalTo(KDialogAdaptedWidth(105));
         make.trailing.mas_equalTo(-KDialogAdaptedWidth(30));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(48), KDialogAdaptedWidth(50)));
     }];
@@ -193,7 +207,7 @@
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [_hudContainer addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(16));
+        make.top.mas_equalTo(KDialogAdaptedWidth(105));
         make.leading.mas_equalTo(KDialogAdaptedWidth(30));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(55), KDialogAdaptedWidth(50)));
     }];
@@ -716,14 +730,11 @@
     self.lastDrawTimes = times;
     self.lastDrawCost = cost;
     
-    // 3. 0ms 瞬间提取内存缓存预加载 SVGA 动效 (果实保持自然优雅浮动)
-    [self startSVGAAnimationInstantWithTimes:times];
-    
-    // 4. 并发调用接口发包
+    // 3. 并发调用接口发包 (0ms 极速响应)
     WeakSelf
     NSInteger queryTypeId = (self.typeId == 6 || self.typeId == 8) ? 7 : self.typeId;
     [MLGameLotteryService drawWithTypeId:queryTypeId times:times success:^(NSArray<MLGameDrawResultModel *> *list, NSInteger totalValue, NSInteger logId) {
-        // 5. 在 GCD 后台子线程解包与解析列表数据
+        // 4. 在 GCD 后台子线程解包与解析列表数据
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (!wself) return;
@@ -737,7 +748,6 @@
                 }
                 
                 if (activeResultView) {
-                    [wself stopSVGAAnimationImmediately];
                     [activeResultView updateGifts:list totalValue:totalValue times:times];
                     [wself lockButtons:NO];
                     wself.isDrawing = NO;
@@ -750,9 +760,8 @@
     } failure:^(NSError *error) {
         [wself lockButtons:NO];
         wself.isDrawing = NO;
-        [wself stopSVGAAnimationImmediately];
         
-        // 6. 计费安全防御：若超时(NSURLErrorTimedOut)绝不回滚钥匙；若断网/报错，立刻把钥匙加回并重置UI
+        // 5. 计费安全防御：若超时(NSURLErrorTimedOut)绝不回滚钥匙；若断网/报错，立刻把钥匙加回并重置UI
         if (error.code == NSURLErrorTimedOut) {
             [SVProgressHUD showInfoWithStatus:@"服务器繁忙，结果可能稍后到账，请去记录或背包查看"];
         } else {
@@ -817,21 +826,8 @@
     self.pendingGifts = gifts;
     self.pendingTotalValue = totalValue;
     
-    if (times >= 100 && self.svgaPlayer && !self.svgaPlayer.hidden) {
-        // 100 连抽触发 0.15s alpha 渐隐淡出无缝唤起弹窗
-        WeakSelf
-        [UIView animateWithDuration:0.15 animations:^{
-            wself.svgaPlayer.alpha = 0.0;
-        } completion:^(BOOL finished) {
-            [wself stopSVGAAnimationImmediately];
-            [wself showResultWithGifts:gifts totalValue:totalValue];
-        }];
-    } else {
-        // 1 抽 / 10 抽兜底或等待动画自然播完
-        if (!self.svgaPlayer || self.svgaPlayer.hidden) {
-            [self showResultWithGifts:gifts totalValue:totalValue];
-        }
-    }
+    // 收到 HTTP 响应成功回调，瞬间极速唤起战报弹窗，彻底移除死等等待
+    [self showResultWithGifts:gifts totalValue:totalValue];
 }
 
 - (void)lockButtons:(BOOL)lock {
