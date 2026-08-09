@@ -1238,13 +1238,7 @@
 
 - (void)giftPoolClick {
     if (self.isDrawing) return;
-    NSInteger totalVal = 0;
-    if (self.prizesInPool) {
-        for (MLGameDrawResultModel *m in self.prizesInPool) {
-            totalVal += m.price;
-        }
-    }
-    [MLChatRoomThemeGameOneResultView showInView:self.superview gifts:self.prizesInPool totalValue:totalVal retryBlock:nil];
+    [MLChatRoomThemeGameOneGiftView showInView:self.superview prizes:self.prizesInPool];
 }
 
 - (void)fortuneClick {
