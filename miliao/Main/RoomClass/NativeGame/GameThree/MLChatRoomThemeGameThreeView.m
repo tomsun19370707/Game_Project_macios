@@ -134,18 +134,30 @@
         make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(1267.0 / 750.0);
     }];
     
-    // SVGAPlayer 动效图层 (重合整个大背景，放置在最顶层)
+    // 静态人物角色兜底图 (处于 svgaPlayer 下方底层，不遮挡 SVGA 动效里的人物元素)
+    UIImageView *characterView = [[UIImageView alloc] init];
+    characterView.image = [UIImage imageNamed:@"theme_game_three_character"];
+    characterView.contentMode = UIViewContentModeScaleAspectFit;
+    [_bgImageView addSubview:characterView];
+    [characterView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(_bgImageView.mas_leading).offset(KDialogAdaptedWidth(187.5f));
+        make.centerY.mas_equalTo(_bgImageView.mas_top).offset(KDialogAdaptedWidth(298.0f));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(220.5), KDialogAdaptedWidth(259.5)));
+    }];
+    
+    // SVGAPlayer 动效图层 (盖在静态人物兜底图上方，完整呈现 SVGA 内部自带的动态人物)
     self.svgaPlayer = [[SVGAPlayer alloc] init];
-    self.svgaPlayer.loops = 1;
+    self.svgaPlayer.loops = 0; // 无限常驻背景流光循环
     self.svgaPlayer.delegate = self;
-    self.svgaPlayer.contentMode = UIViewContentModeScaleAspectFit;
-    self.svgaPlayer.hidden = YES;
-    [self addSubview:self.svgaPlayer];
+    self.svgaPlayer.contentMode = UIViewContentModeScaleToFill;
+    self.svgaPlayer.userInteractionEnabled = NO;
+    self.svgaPlayer.hidden = NO;
+    [_bgImageView addSubview:self.svgaPlayer];
     [self.svgaPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(_bgImageView);
     }];
     
-    // 异步预解析 SVGA 动画数据，避免点击抽奖时延迟
+    // 异步预解析 SVGA 动画数据，并在解析完成后启动常驻全屏氛围播放
     SVGAParser *parser = [[SVGAParser alloc] init];
     NSURL *svgaURL = [[NSBundle mainBundle] URLForResource:@"theme_game_three_draw" withExtension:@"svga"];
     if (svgaURL) {
@@ -153,6 +165,7 @@
         [parser parseWithURL:svgaURL completionBlock:^(SVGAVideoEntity * _Nonnull videoItem) {
             if (wself) {
                 wself.svgaPlayer.videoItem = videoItem;
+                [wself.svgaPlayer startAnimation];
             }
         } failureBlock:nil];
     }
@@ -264,24 +277,15 @@
         make.edges.mas_equalTo(fortuneBar);
     }];
     
-    // 圆环背景底座 (置于转盘后层，对齐大背景)
+    // 圆环背景底座 (按照 Android 提交 28 彻底隐藏旧底座，呈现纯净太空背景与 SVGA 光影)
     _ringImageView = [[UIImageView alloc] init];
     _ringImageView.image = [UIImage imageNamed:@"theme_game_three_ring_bg"];
+    _ringImageView.hidden = YES;
     [_bgImageView addSubview:_ringImageView];
     [_ringImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(_bgImageView.mas_leading).offset(KDialogAdaptedWidth(187.5f));
         make.centerY.mas_equalTo(_bgImageView.mas_top).offset(KDialogAdaptedWidth(298.0f));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(371.8f), KDialogAdaptedWidth(371.8f)));
-    }];
-    
-    // 吉祥物角色 (同心对齐圆环底板，完全防漂移)
-    UIImageView *characterView = [[UIImageView alloc] init];
-    characterView.image = [UIImage imageNamed:@"theme_game_three_character"];
-    characterView.contentMode = UIViewContentModeScaleAspectFit;
-    [_bgImageView addSubview:characterView];
-    [characterView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_equalTo(_ringImageView);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(220.5), KDialogAdaptedWidth(259.5)));
     }];
     
     // 8宫格转盘底框容器 (全屏等比对齐背景图)
@@ -448,7 +452,7 @@
     }];
 }
 
-#pragma mark - 8宫格转盘底框容器 (圆形排布布局)
+#pragma mark - 8宫格转盘底框容器 (极坐标 17% 外层/50% 内层同心自适应布局)
 - (void)layout8GiftCardsInContainer:(UIView *)container {
     static const CGPoint SLOT_CENTERS[] = {
         {187.5f, 144.0f},   // 1 (0度)
@@ -460,77 +464,74 @@
         {33.0f, 298.0f},    // 7 (270度)
         {85.34f, 182.04f}   // 8 (315度)
     };
+    
+    // 对标 Android 提交 28: 17% 外层占比 (375 * 0.17 = 63.75 pt) 且 1:1 正方形
+    CGFloat cardSize = KDialogAdaptedWidth(375.0f * 0.17f);
+    
     for (int i = 0; i < 8; i++) {
         UIView *card = [[UIView alloc] init];
         card.backgroundColor = [UIColor clearColor];
         [container addSubview:card];
         [self.giftCardViews addObject:card];
         
-        // 格子底板背景 (正圆/正方形 62x62 pt 对齐顶边缘)
+        CGPoint center = SLOT_CENTERS[i];
+        [card mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(container.mas_leading).offset(KDialogAdaptedWidth(center.x));
+            make.centerY.mas_equalTo(container.mas_top).offset(KDialogAdaptedWidth(center.y));
+            make.size.mas_equalTo(CGSizeMake(cardSize, cardSize));
+        }];
+        
+        // 格子底板背景 (正圆/正方形 1:1 填充 card)
         UIImageView *cardBg = [[UIImageView alloc] init];
         cardBg.image = [UIImage imageNamed:@"theme_game_three_gift_board"];
         cardBg.contentMode = UIViewContentModeScaleToFill;
         [card addSubview:cardBg];
         [cardBg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.leading.trailing.mas_equalTo(card);
-            make.height.mas_equalTo(KDialogAdaptedWidth(62));
+            make.edges.mas_equalTo(card);
         }];
         
-        // 呼吸选定光圈层 (绑定于圆形 cardBg, Tag 999)
+        // 呼吸选定/彗星高亮光圈层 (绑定 Tag 999)
         UIView *overlay = [[UIView alloc] init];
         overlay.layer.borderColor = mHexRGB(0xFFE400).CGColor;
         overlay.layer.borderWidth = 2.0;
         overlay.backgroundColor = [UIColor colorWithRed:1 green:0.9 blue:0 alpha:0.25];
-        overlay.layer.cornerRadius = KDialogAdaptedWidth(31.0f);
+        overlay.layer.cornerRadius = cardSize / 2.0f;
         overlay.clipsToBounds = YES;
         overlay.hidden = YES;
         overlay.tag = 999;
         [card addSubview:overlay];
         [overlay mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(cardBg);
+            make.edges.mas_equalTo(card);
         }];
         
-        // 礼物小图 (居中嵌套在圆形 cardBg 内部，内边距 6 pt)
+        // 对标 Android 提交 28: 50% 同心内层容器 (fl_inner_gift_container)
+        UIView *innerContainer = [[UIView alloc] init];
+        innerContainer.backgroundColor = [UIColor clearColor];
+        [card addSubview:innerContainer];
+        [innerContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.mas_equalTo(card);
+            make.size.mas_equalTo(CGSizeMake(cardSize * 0.50f, cardSize * 0.50f));
+        }];
+        
+        // 礼物小图 (居中嵌套在 50% 同心容器内部)
         UIImageView *giftImg = [[UIImageView alloc] init];
         giftImg.contentMode = UIViewContentModeScaleAspectFit;
-        [card addSubview:giftImg];
+        [innerContainer addSubview:giftImg];
         [giftImg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(cardBg).insets(UIEdgeInsetsMake(KDialogAdaptedWidth(6), KDialogAdaptedWidth(6), KDialogAdaptedWidth(6), KDialogAdaptedWidth(6)));
+            make.edges.mas_equalTo(innerContainer);
         }];
         [self.giftImageViews addObject:giftImg];
         
-        // 礼物名称标签 (居中位于圆形底盘下方)
+        // 按照 Android 提交 28 规范：彻底隐藏 tv_name 与 tv_price 文字，净化视效
         UILabel *nameLabel = [[UILabel alloc] init];
-        nameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(7.5)];
-        nameLabel.textColor = mHexRGB(0xE6EAFE);
-        nameLabel.textAlignment = NSTextAlignmentCenter;
+        nameLabel.hidden = YES;
         [card addSubview:nameLabel];
-        [nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(cardBg.mas_bottom).offset(KDialogAdaptedWidth(0.5f));
-            make.leading.trailing.mas_equalTo(0);
-            make.height.mas_equalTo(KDialogAdaptedWidth(7.5));
-        }];
         [self.giftNameLabels addObject:nameLabel];
         
-        // 价格标签 (居中位于名称标签下方)
         UILabel *priceLabel = [[UILabel alloc] init];
-        priceLabel.font = [UIFont systemFontOfSize:KDialogAdaptedWidth(6.5)];
-        priceLabel.textColor = mHexRGB(0xFFE66F);
-        priceLabel.textAlignment = NSTextAlignmentCenter;
-        priceLabel.tag = 888; // tag for dynamic pricing binding
+        priceLabel.hidden = YES;
+        priceLabel.tag = 888;
         [card addSubview:priceLabel];
-        [priceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(nameLabel.mas_bottom).offset(KDialogAdaptedWidth(0.5f));
-            make.leading.trailing.mas_equalTo(0);
-            make.height.mas_equalTo(KDialogAdaptedWidth(6.5));
-        }];
-        
-        CGPoint center = SLOT_CENTERS[i];
-        [card mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(container.mas_leading).offset(KDialogAdaptedWidth(center.x));
-            make.centerY.mas_equalTo(container.mas_top).offset(KDialogAdaptedWidth(center.y));
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(74)));
-        }];
     }
 }
 
@@ -692,39 +693,8 @@
                         [wself loadData];
                     };
                     
-                    // 4. 定格在目标中奖格后，播放 SVGA 专属动画 (根据 drawCount 精准掌控时长)
-                    if (wself.svgaPlayer.videoItem || wself.cachedVideoItem) {
-                        if (!wself.svgaPlayer.videoItem && wself.cachedVideoItem) {
-                            wself.svgaPlayer.videoItem = wself.cachedVideoItem;
-                        }
-                        wself.svgaPlayer.alpha = 1.0;
-                        wself.svgaPlayer.hidden = NO;
-                        [wself.svgaPlayer startAnimation];
-                        
-                        if (times >= 100) {
-                            // 100 连抽：控制 SVGA 播放 1.5 秒 (1.35s 启动 0.15s alpha 淡出即切)
-                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.35 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                                [UIView animateWithDuration:0.15 animations:^{
-                                    wself.svgaPlayer.alpha = 0.0;
-                                } completion:^(BOOL finished) {
-                                    [wself.svgaPlayer stopAnimation];
-                                    wself.svgaPlayer.hidden = YES;
-                                    wself.svgaPlayer.alpha = 1.0;
-                                    showResultBlock();
-                                }];
-                            });
-                        } else {
-                            // 10 连抽 / 1 抽：控制 SVGA 播放 2.0 秒后顺畅拉起弹窗
-                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                                [wself.svgaPlayer stopAnimation];
-                                wself.svgaPlayer.hidden = YES;
-                                showResultBlock();
-                            });
-                        }
-                    } else {
-                        // SVGAPlayer 异常兜底逻辑：直接弹窗结算
-                        showResultBlock();
-                    }
+                    // 4. 定格在目标中奖格且 Overshoot 爆灿弹跳完成后，直接极速弹窗结算 (保持 SVGA 背景常驻流光)
+                    showResultBlock();
                 }];
             });
         });
@@ -743,12 +713,53 @@
 
 #pragma mark - 双阶段跑马灯动画控制器 (Phase 1 毫秒级极速扫盘 + Phase 2 平滑减速衔接)
 
+#pragma mark - 双阶段跑马灯动画控制器 (三阶彗星拖尾 + 450ms Overshoot 爆灿弹跳)
+
 - (void)updateCardHighlightIndex:(NSInteger)highlightIndex {
+    NSInteger tail1Index = (highlightIndex - 1 + 8) % 8;
+    NSInteger tail2Index = (highlightIndex - 2 + 8) % 8;
+    
     for (NSInteger i = 0; i < self.giftCardViews.count; i++) {
         UIView *card = self.giftCardViews[i];
         UIView *glowView = [card viewWithTag:999];
-        if (glowView) {
-            glowView.hidden = (i != highlightIndex);
+        if (!glowView) continue;
+        
+        if (highlightIndex < 0) {
+            glowView.hidden = YES;
+            glowView.alpha = 1.0f;
+            glowView.transform = CGAffineTransformIdentity;
+            continue;
+        }
+        
+        if (i == highlightIndex) {
+            // 超精致彗星主头部 (Scale: 1.02x, Alpha: 1.0 贴合边缘)
+            glowView.hidden = NO;
+            glowView.alpha = 1.0f;
+            glowView.transform = CGAffineTransformMakeScale(1.02f, 1.02f);
+        } else if (i == tail1Index) {
+            // 彗星拖尾 1 (Scale: 1.01x, Alpha: 0.75)
+            glowView.hidden = NO;
+            glowView.alpha = 0.75f;
+            glowView.transform = CGAffineTransformMakeScale(1.01f, 1.01f);
+        } else if (i == tail2Index) {
+            // 彗星拖尾 2 (Scale: 1.00x, Alpha: 0.45)
+            glowView.hidden = NO;
+            glowView.alpha = 0.45f;
+            glowView.transform = CGAffineTransformIdentity;
+        } else {
+            // 沉静卡片
+            glowView.hidden = YES;
+            glowView.alpha = 0.35f;
+            glowView.transform = CGAffineTransformIdentity;
+        }
+    }
+    
+    // 跃迁触发微触觉震动反馈
+    if (highlightIndex >= 0) {
+        if (@available(iOS 10.0, *)) {
+            UIImpactFeedbackGenerator *generator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight];
+            [generator prepare];
+            [generator impactOccurred];
         }
     }
 }
@@ -790,9 +801,50 @@
     if (self.currentSpinStep >= self.totalSpinSteps) {
         self.currentHighlightIndex = self.targetLandingIndex;
         [self updateCardHighlightIndex:self.targetLandingIndex];
-        if (self.spinCompletionBlock) {
-            self.spinCompletionBlock();
-            self.spinCompletionBlock = nil;
+        
+        // 触发停靠中震动
+        if (@available(iOS 10.0, *)) {
+            UIImpactFeedbackGenerator *heavyGen = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
+            [heavyGen prepare];
+            [heavyGen impactOccurred];
+        }
+        
+        // 对标 Android 提交 28：450ms Overshoot 脉冲爆灿弹跳动画 (1.0x -> 1.35x -> 1.18x)
+        UIView *targetCard = (self.targetLandingIndex >= 0 && self.targetLandingIndex < self.giftCardViews.count) ? self.giftCardViews[self.targetLandingIndex] : nil;
+        
+        WeakSelf
+        if (targetCard) {
+            [UIView animateWithDuration:0.2 animations:^{
+                targetCard.transform = CGAffineTransformConcat(targetCard.transform, CGAffineTransformMakeScale(1.35f, 1.35f));
+            } completion:^(BOOL finished) {
+                [UIView animateWithDuration:0.25 animations:^{
+                    targetCard.transform = CGAffineTransformConcat(targetCard.transform, CGAffineTransformMakeScale(1.18f / 1.35f, 1.18f / 1.35f));
+                } completion:^(BOOL finished) {
+                    if (wself.spinCompletionBlock) {
+                        wself.spinCompletionBlock();
+                        wself.spinCompletionBlock = nil;
+                    }
+                    
+                    // 停靠弹出战报后，1.2 秒自动柔和消退选中光晕，恢复星盘纯净公转
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        if (wself) {
+                            [UIView animateWithDuration:0.3 animations:^{
+                                [wself updateCardHighlightIndex:-1];
+                            }];
+                        }
+                    });
+                }];
+            }];
+        } else {
+            if (self.spinCompletionBlock) {
+                self.spinCompletionBlock();
+                self.spinCompletionBlock = nil;
+            }
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                if (wself) {
+                    [wself updateCardHighlightIndex:-1];
+                }
+            });
         }
         return;
     }
@@ -807,11 +859,10 @@
     double endDelayDelta = (self.currentDrawCount >= 100) ? 0.065 : ((self.currentDrawCount >= 10) ? 0.130 : 0.220);
     double delay = startDelay + endDelayDelta * pow(progress, 2.0);
     
-    __weak typeof(self) weakSelf = self;
+    WeakSelf
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        if (strongSelf) {
-            [strongSelf scheduleNextDecelerateStep];
+        if (wself) {
+            [wself scheduleNextDecelerateStep];
         }
     });
 }
@@ -905,6 +956,31 @@
     }];
 }
 
+#pragma mark - SVGAPlayerDelegate 极坐标星盘公转强同步
+- (void)svgaPlayerDidAnimatedToFrame:(NSInteger)frame {
+    if (self.svgaPlayer.videoItem == nil || self.svgaPlayer.videoItem.frames <= 0) return;
+    if (self.giftCardViews.count < 8) return;
+    
+    CGFloat percentage = (CGFloat)frame / (CGFloat)self.svgaPlayer.videoItem.frames;
+    
+    // 解析几何精确圆心 292.0pt 与半径 148.0pt (顶端 144pt / 底端 440pt 完美对齐)
+    CGFloat radius = KDialogAdaptedWidth(148.0f);
+    CGPoint orbitCenter = CGPointMake(KDialogAdaptedWidth(187.5f), KDialogAdaptedWidth(292.0f));
+    
+    for (int i = 0; i < 8; i++) {
+        UIView *card = self.giftCardViews[i];
+        
+        CGFloat slotAngleDeg = (percentage * 360.0f) + (i * 45.0f);
+        CGFloat rad = (slotAngleDeg - 90.0f) * M_PI / 180.0f;
+        
+        CGPoint cardCenter = CGPointMake(orbitCenter.x + radius * cos(rad), orbitCenter.y + radius * sin(rad));
+        card.center = cardCenter;
+        
+        // 切线姿态倾斜自转
+        card.transform = CGAffineTransformMakeRotation(slotAngleDeg * M_PI / 180.0f);
+    }
+}
+
 - (void)dealloc {
     [self stopSpinTimer];
 }
@@ -921,7 +997,6 @@
 
 #pragma mark - SVGAPlayerDelegate
 - (void)svgaPlayerDidFinishedAnimation:(SVGAPlayer *)player {
-    self.svgaPlayer.hidden = YES;
     if (self.svgaCompletionBlock) {
         void (^block)(void) = self.svgaCompletionBlock;
         self.svgaCompletionBlock = nil;
