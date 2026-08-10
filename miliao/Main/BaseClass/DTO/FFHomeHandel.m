@@ -75,17 +75,35 @@
         
         DLog(@"%@--",baseModel.data);
         
-        GoodCateInfo *model = [GoodCateInfo yy_modelWithJSON:baseModel.data];
+        NSMutableArray *resultList = [NSMutableArray array];
+        BOOL hasNext = NO;
+        NSString *pageNo = parameter[@"page"] ? [NSString stringWithFormat:@"%@", parameter[@"page"]] : @"1";
         
-        BOOL hasNext = NO ;
-        NSString *pageNo = parameter[@"page"];
-        if (model.data.count >= 10) {
-            pageNo = [NSString stringWithFormat:@"%d",pageNo.intValue + 1] ;
+        if ([baseModel.data isKindOfClass:[NSArray class]]) {
+            // 返回的 data 直接是数组列表 (明细接口场景)
+            [resultList addObjectsFromArray:(NSArray *)baseModel.data];
+        } else if ([baseModel.data isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *dictData = (NSDictionary *)baseModel.data;
+            if ([dictData[@"list"] isKindOfClass:[NSArray class]]) {
+                [resultList addObjectsFromArray:dictData[@"list"]];
+            } else if ([dictData[@"data"] isKindOfClass:[NSArray class]]) {
+                [resultList addObjectsFromArray:dictData[@"data"]];
+            } else {
+                GoodCateInfo *model = [GoodCateInfo yy_modelWithJSON:baseModel.data];
+                if ([model.data isKindOfClass:[NSArray class]]) {
+                    [resultList addObjectsFromArray:model.data];
+                }
+            }
+        }
+        
+        if (resultList.count >= 10) {
+            pageNo = [NSString stringWithFormat:@"%d", pageNo.intValue + 1];
             hasNext = YES;
-        }else{
+        } else {
             hasNext = NO;
         }
-        success(model.data,pageNo,hasNext);
+        
+        success(resultList, pageNo, hasNext);
         
     } failture:^(NSError *error) {
         failure();

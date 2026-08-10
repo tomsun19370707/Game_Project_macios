@@ -101,7 +101,7 @@
         if (cell == nil) {
             cell = [[[NSBundle mainBundle] loadNibNamed:@"CFMWalletRewardHisCell" owner:self options:nil]lastObject];
         }
-        if (self.dataArr.count != 0) {
+        if (indexPath.section - 1 < self.dataArr.count) {
             cell.model = self.dataArr[indexPath.section - 1];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone ;

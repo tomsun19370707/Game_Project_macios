@@ -90,22 +90,41 @@
 #pragma mark --- Setter
 -(void)setModel:(GoodListInfoModel *)model
 {
-    self.title.text = model.memo;
-    self.time.text = model.createtime ;
+    NSString *memoStr = @"";
+    NSString *timeStr = @"";
+    NSString *moneyStr = @"0.00";
+    NSInteger typeVal = 0;
+    
+    if ([model isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dict = (NSDictionary *)model;
+        memoStr = dict[@"memo"] ? [NSString stringWithFormat:@"%@", dict[@"memo"]] : (dict[@"name"] ? [NSString stringWithFormat:@"%@", dict[@"name"]] : @"");
+        timeStr = dict[@"createtime"] ? [NSString stringWithFormat:@"%@", dict[@"createtime"]] : (dict[@"create_time"] ? [NSString stringWithFormat:@"%@", dict[@"create_time"]] : @"");
+        moneyStr = dict[@"money"] ? [NSString stringWithFormat:@"%@", dict[@"money"]] : (dict[@"price"] ? [NSString stringWithFormat:@"%@", dict[@"price"]] : @"0.00");
+        typeVal = dict[@"type"] ? [dict[@"type"] integerValue] : 0;
+    } else if (model) {
+        memoStr = model.memo ? model.memo : @"";
+        timeStr = model.createtime ? model.createtime : @"";
+        moneyStr = model.money ? model.money : @"0.00";
+        typeVal = model.type;
+    }
+    
+    self.title.text = memoStr;
+    self.time.text = timeStr;
+    
     /** 0 增加 1 减少*/
-    switch (model.type) {
+    switch (typeVal) {
         case 0:
-            self.money.text = [NSString stringWithFormat:@"+%.2f",model.money.floatValue];
+            self.money.text = [NSString stringWithFormat:@"+%.2f", moneyStr.floatValue];
             break;
         case 1:
-            self.money.text = [NSString stringWithFormat:@"-%.2f",model.money.floatValue];
+            self.money.text = [NSString stringWithFormat:@"-%.2f", moneyStr.floatValue];
             break;   
         default:
-            self.money.text = nil ;
+            self.money.text = nil;
             break;
     }
     
-    self.moneyWid.constant = [NSString widthForContent:self.money.text font:self.money.font] + 3 ;
+    self.moneyWid.constant = [NSString widthForContent:self.money.text font:self.money.font] + 3;
 }
 #pragma mark --
 #pragma mark --- ibaction

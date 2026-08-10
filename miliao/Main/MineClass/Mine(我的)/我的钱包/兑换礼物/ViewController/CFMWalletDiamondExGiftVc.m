@@ -213,10 +213,18 @@
             [SVProgressHUD showTextHUDWithMessage:@"请选择礼物"];
             return;
         }
-        GoodListInfoModel *model = self.dataArr[self.giftIndex];
+        id rawModel = self.dataArr[self.giftIndex];
+        NSString *giftId = @"";
+        if ([rawModel isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *dict = (NSDictionary *)rawModel;
+            giftId = dict[@"id"] ? [NSString stringWithFormat:@"%@", dict[@"id"]] : (dict[@"gift_id"] ? [NSString stringWithFormat:@"%@", dict[@"gift_id"]] : @"");
+        } else if ([rawModel isKindOfClass:[GoodListInfoModel class]]) {
+            giftId = FORMAT(((GoodListInfoModel *)rawModel).ID);
+        }
+        
         /** para*/
         NSMutableDictionary *parameter =[NSMutableDictionary dictionary];
-        parameter[@"gift_id"] = FORMAT(model.ID);
+        parameter[@"gift_id"] = giftId;
         parameter[@"nums"] = self.giftNum ;
         [FFHomeHandel customeOprHandle:parameter apiStr:gift_prizeCoinChangeGift success:^(BaseModel *info) {
             @strongify(self);

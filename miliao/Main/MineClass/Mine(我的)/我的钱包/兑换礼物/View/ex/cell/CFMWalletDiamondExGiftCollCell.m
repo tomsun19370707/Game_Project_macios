@@ -88,12 +88,25 @@
 }
 -(void)setModel:(GoodListInfoModel *)model
 {
-    [self.icon sd_setImageWithURL:[NSURL URLWithString:model.image] placeholderImage:IMAGE(@"正方形")];
-    self.name.text = model.name ;
+    NSString *imageStr = @"";
+    NSString *nameStr = @"";
+    NSString *prizeCoinStr = @"0";
     
-    /** 所需要的奖评币*/
-    self.num.text = FORMAT(model.prize_coin);
-    self.bgWid.constant = [NSString widthForContent:self.num.text font:self.num.font] + 22 + 3 ;
+    if ([model isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dict = (NSDictionary *)model;
+        imageStr = dict[@"image"] ? [NSString stringWithFormat:@"%@", dict[@"image"]] : (dict[@"img"] ? [NSString stringWithFormat:@"%@", dict[@"img"]] : @"");
+        nameStr = dict[@"name"] ? [NSString stringWithFormat:@"%@", dict[@"name"]] : (dict[@"title"] ? [NSString stringWithFormat:@"%@", dict[@"title"]] : @"");
+        prizeCoinStr = dict[@"prize_coin"] ? [NSString stringWithFormat:@"%@", dict[@"prize_coin"]] : (dict[@"coin"] ? [NSString stringWithFormat:@"%@", dict[@"coin"]] : @"0");
+    } else if (model) {
+        imageStr = model.image ? model.image : @"";
+        nameStr = model.name ? model.name : @"";
+        prizeCoinStr = FORMAT(model.prize_coin);
+    }
+    
+    [self.icon sd_setImageWithURL:[NSURL URLWithString:imageStr] placeholderImage:IMAGE(@"正方形")];
+    self.name.text = nameStr;
+    self.num.text = prizeCoinStr;
+    self.bgWid.constant = [NSString widthForContent:self.num.text font:self.num.font] + 22 + 3;
 }
 #pragma mark --
 #pragma mark --- ibaction
