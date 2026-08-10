@@ -7,7 +7,6 @@
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIButton *closeButton;
-@property (nonatomic, strong) UILabel *totalValueLabel;
 
 @property (nonatomic, strong) NSArray<MLGameDrawResultModel *> *mergedGifts;
 @property (nonatomic, assign) NSInteger totalValue;
@@ -48,63 +47,73 @@
     self.backgroundColor = [UIColor clearColor];
     
     _maskView = [[UIView alloc] init];
-    _maskView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    _maskView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     [self addSubview:_maskView];
     [_maskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(self);
     }];
     
+    // 弹窗主体画框容器 (锁死 678:758 精准比例)
     _bgImageView = [[UIImageView alloc] init];
-    _bgImageView.image = [UIImage imageNamed:@"theme_game_one_new_result_bg"];
+    _bgImageView.image = [UIImage imageNamed:@"theme_game_one_result_main_bg"];
     _bgImageView.contentMode = UIViewContentModeScaleToFill;
     _bgImageView.userInteractionEnabled = YES;
     [self addSubview:_bgImageView];
     [_bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(self);
-        make.centerX.mas_equalTo(self);
-        make.width.mas_equalTo(KDialogAdaptedWidth(370));
-        make.height.mas_equalTo(KDialogAdaptedWidth(568));
+        make.center.mas_equalTo(self);
+        make.width.mas_equalTo(KDialogAdaptedWidth(300.0f));
+        make.height.mas_equalTo(_bgImageView.mas_width).multipliedBy(758.0f / 678.0f);
     }];
     
+    // 右上角返回/关闭按钮 (69 × 67 切图)
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_closeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_new_result_back"] forState:UIControlStateNormal];
+    [_closeButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_result_close_btn"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
     [_bgImageView addSubview:_closeButton];
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(15));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(15));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(31.5), KDialogAdaptedWidth(32.5)));
+        make.top.mas_equalTo(KDialogAdaptedWidth(6.0f));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16.0f));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(34.5f), KDialogAdaptedWidth(33.5f)));
     }];
     
-    _totalValueLabel = [[UILabel alloc] init];
-    _totalValueLabel.textColor = mHexRGB(0xFFEB3B);
-    _totalValueLabel.font = KFontBoldA(12);
-    _totalValueLabel.text = [NSString stringWithFormat:@"总价值：%ld钻石", (long)self.totalValue];
-    [_bgImageView addSubview:_totalValueLabel];
-    [_totalValueLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(-KDialogAdaptedWidth(15));
-        make.centerX.mas_equalTo(_bgImageView);
-    }];
-    
+    // 滚动展示区 (底部延伸至 -30dp，最大化展示卡片区域)
     _scrollView = [[UIScrollView alloc] init];
     _scrollView.showsVerticalScrollIndicator = YES;
     [_bgImageView addSubview:_scrollView];
     [_scrollView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(80));
-        make.leading.trailing.mas_equalTo(0);
-        make.bottom.mas_equalTo(_totalValueLabel.mas_top).offset(-KDialogAdaptedWidth(8));
+        make.top.mas_equalTo(KDialogAdaptedWidth(56.0f));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(20.0f));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(20.0f));
+        make.bottom.mas_equalTo(-KDialogAdaptedWidth(30.0f));
     }];
     
     [self layoutGiftsInScrollView];
 }
 
 - (void)layoutGiftsInScrollView {
-    CGFloat itemW = KDialogAdaptedWidth(67.5f);
-    CGFloat itemH = KDialogAdaptedWidth(82.0f);
-    CGFloat rowGap = KDialogAdaptedWidth(12.0f);
-    CGFloat colGap = KDialogAdaptedWidth(10.0f); // 缩小列间距 (21.3 -> 10.0)
-    CGFloat sideMargin = KDialogAdaptedWidth(35.0f); // 重新计算居中边距
-    NSInteger colCount = 4;
+    for (UIView *sub in self.scrollView.subviews) {
+        [sub removeFromSuperview];
+    }
+    
+    if (self.mergedGifts.count == 0) return;
+    
+    // 对标 Android 提交 30：仅 1 个礼物卡片时单列居中，多于 1 个礼物卡片时 3 列自适应分布
+    NSInteger colCount = (self.mergedGifts.count == 1) ? 1 : 3;
+    
+    CGFloat containerW = KDialogAdaptedWidth(300.0f - 40.0f); // 260pt 内部可用宽度
+    CGFloat itemW = KDialogAdaptedWidth(72.0f);   // 卡片宽度
+    CGFloat itemH = KDialogAdaptedWidth(82.0f);   // 卡片高度
+    CGFloat rowGap = KDialogAdaptedWidth(10.0f);
+    
+    CGFloat colGap = 0;
+    CGFloat sideMargin = 0;
+    
+    if (colCount == 1) {
+        sideMargin = (containerW - itemW) / 2.0f;
+    } else {
+        colGap = (containerW - colCount * itemW) / (colCount - 1);
+        if (colGap < 0) colGap = 0;
+    }
     
     for (int i = 0; i < self.mergedGifts.count; i++) {
         MLGameDrawResultModel *gift = self.mergedGifts[i];
@@ -116,66 +125,45 @@
         itemBg.backgroundColor = [UIColor clearColor];
         [_scrollView addSubview:itemBg];
         [itemBg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(row * (itemH + rowGap) + KDialogAdaptedWidth(10));
+            make.top.mas_equalTo(row * (itemH + rowGap));
             make.leading.mas_equalTo(sideMargin + col * (itemW + colGap));
             make.size.mas_equalTo(CGSizeMake(itemW, itemH));
         }];
         
+        // 礼物底座切图 (188:169 比例，原生 theme_game_one_result_gift_board)
         UIImageView *cardBg = [[UIImageView alloc] init];
-        cardBg.image = [UIImage imageNamed:@"theme_game_one_new_result_item_bg"];
+        cardBg.image = [UIImage imageNamed:@"theme_game_one_result_gift_board"];
         cardBg.contentMode = UIViewContentModeScaleToFill;
         [itemBg addSubview:cardBg];
         [cardBg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(itemBg);
+            make.top.leading.trailing.mas_equalTo(0);
+            make.height.mas_equalTo(itemW * (169.0f / 188.0f));
         }];
         
+        // 礼物图标
         UIImageView *giftImg = [[UIImageView alloc] init];
         giftImg.contentMode = UIViewContentModeScaleAspectFit;
-        [itemBg addSubview:giftImg];
+        [cardBg addSubview:giftImg];
         [giftImg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(KDialogAdaptedWidth(10));
-            make.centerX.mas_equalTo(itemBg);
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(48), KDialogAdaptedWidth(48)));
+            make.center.mas_equalTo(cardBg);
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(42), KDialogAdaptedWidth(42)));
         }];
         
-        NSURL *url = [NSURL URLWithString:[gift imageUrl]];
-        if ([giftImg respondsToSelector:@selector(setImageWithURL:placeholder:)]) {
-            [giftImg performSelector:@selector(setImageWithURL:placeholder:) withObject:url withObject:[UIImage imageNamed:@""]];
-        } else if ([giftImg respondsToSelector:@selector(sd_setImageWithURL:placeholderImage:)]) {
-            [giftImg performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@""]];
-        }
+        [giftImg sd_setImageWithURL:[NSURL URLWithString:[gift imageUrl]] placeholderImage:nil];
         
-        UIImageView *tagBg = [[UIImageView alloc] init];
-        tagBg.image = [UIImage imageNamed:@"theme_game_one_new_result_item_tag_bg"];
-        tagBg.contentMode = UIViewContentModeScaleToFill;
-        [itemBg addSubview:tagBg];
-        [tagBg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(-KDialogAdaptedWidth(4.5f));
-            make.trailing.mas_equalTo(KDialogAdaptedWidth(4.5f));
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(29.5f), KDialogAdaptedWidth(9.0f)));
-        }];
-        
-        UILabel *tagLabel = [[UILabel alloc] init];
-        tagLabel.text = @"98%";
-        tagLabel.textColor = kWhiteColor;
-        tagLabel.font = KFontBoldA(7);
-        tagLabel.textAlignment = NSTextAlignmentCenter;
-        [tagBg addSubview:tagLabel];
-        [tagLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(tagBg);
-        }];
-        
+        // 组合显示名称与数量: "寻梦法杖 x10"
         UILabel *nameLabel = [[UILabel alloc] init];
-        nameLabel.textColor = mHexRGB(0xE1F5FE);
+        nameLabel.textColor = mHexRGB(0xFFFFFF);
         nameLabel.font = KFontBoldA(9);
         nameLabel.textAlignment = NSTextAlignmentCenter;
-        nameLabel.text = gift.name;
+        nameLabel.text = (gift.num > 1) ? [NSString stringWithFormat:@"%@ x%ld", gift.name, (long)gift.num] : gift.name;
         [itemBg addSubview:nameLabel];
         [nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(KDialogAdaptedWidth(58));
+            make.top.mas_equalTo(cardBg.mas_bottom).offset(KDialogAdaptedWidth(2.0f));
             make.leading.trailing.mas_equalTo(itemBg);
         }];
         
+        // 售价: "200钻石"
         UILabel *priceLabel = [[UILabel alloc] init];
         priceLabel.textColor = mHexRGB(0xFFEB3B);
         priceLabel.font = KFontBoldA(8);
@@ -183,26 +171,20 @@
         priceLabel.text = [NSString stringWithFormat:@"%ld钻石", (long)gift.price];
         [itemBg addSubview:priceLabel];
         [priceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(KDialogAdaptedWidth(68));
+            make.top.mas_equalTo(nameLabel.mas_bottom).offset(KDialogAdaptedWidth(1.0f));
             make.leading.trailing.mas_equalTo(itemBg);
         }];
     }
     
     NSInteger totalRows = (self.mergedGifts.count + colCount - 1) / colCount;
-    CGFloat contentH = totalRows * (itemH + rowGap) + KDialogAdaptedWidth(20);
-    _scrollView.contentSize = CGSizeMake(KDialogAdaptedWidth(370), contentH);
+    CGFloat contentH = totalRows * (itemH + rowGap) + KDialogAdaptedWidth(10);
+    _scrollView.contentSize = CGSizeMake(containerW, contentH);
 }
 
 - (void)updateGifts:(NSArray<MLGameDrawResultModel *> *)gifts totalValue:(NSInteger)value {
     self.totalValue = value;
     self.drawCount = gifts.count;
     self.mergedGifts = [MLGameDrawResultModel mergeAndSortDrawGifts:gifts];
-    
-    for (UIView *sub in self.scrollView.subviews) {
-        [sub removeFromSuperview];
-    }
-    
-    self.totalValueLabel.text = [NSString stringWithFormat:@"总价值：%ld钻石", (long)self.totalValue];
     [self layoutGiftsInScrollView];
 }
 
