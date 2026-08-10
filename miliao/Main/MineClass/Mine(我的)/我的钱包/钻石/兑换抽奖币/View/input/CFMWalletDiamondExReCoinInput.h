@@ -12,5 +12,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *balance;
 @property (weak, nonatomic) IBOutlet UITextField *tf;
 @property (weak, nonatomic) IBOutlet UILabel *tip;
+@property (strong, nonatomic) UIButton *exchangeAllBtn;
 
 @end

@@ -259,6 +259,27 @@
         _inputVie = [[[NSBundle mainBundle] loadNibNamed:@"CFMWalletDiamondExReCoinInput" owner:self options:nil]lastObject];
         _inputVie.selectionStyle = UITableViewCellSelectionStyleNone ;
         [_inputVie setFrame:CGRectMake(0, 0, SCREEN_WIDTH, _inputVie.contentView.height)];
+        
+        // 对标 Android 提交 29：模式显隐隔离 (仅在 vcType == 3 金币兑换钻石时显示，其它模式隐藏保持原貌)
+        if (self.vcType == 3) {
+            _inputVie.exchangeAllBtn.hidden = NO;
+            @weakify(self);
+            [[_inputVie.exchangeAllBtn rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(__kindof UIControl * _Nullable x) {
+                @strongify(self);
+                NSString *money = self.balanceInfo[@"money"];
+                if (money.length > 0) {
+                    self.inputVie.tf.text = [NSString stringWithFormat:@"%.2f", money.floatValue];
+                    
+                    // 平滑光标移动至末尾
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        UITextPosition *endPos = [self.inputVie.tf endOfDocument];
+                        self.inputVie.tf.selectedTextRange = [self.inputVie.tf textRangeFromPosition:endPos toPosition:endPos];
+                    });
+                }
+            }];
+        } else {
+            _inputVie.exchangeAllBtn.hidden = YES;
+        }
     }
     return _inputVie;
 }

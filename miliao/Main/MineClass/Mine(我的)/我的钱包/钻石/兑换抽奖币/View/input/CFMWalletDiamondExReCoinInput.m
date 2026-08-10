@@ -63,7 +63,20 @@
     /** RAC*/
     [self initRacChain];
     
-    // Initialization code
+    // 创建“全部兑换”按钮 (#3092FF, 14sp bold)
+    self.exchangeAllBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.exchangeAllBtn setTitle:getLanguage(@"全部兑换") forState:UIControlStateNormal];
+    [self.exchangeAllBtn setTitleColor:mHexRGB(0x3092FF) forState:UIControlStateNormal];
+    self.exchangeAllBtn.titleLabel.font = [UIFont boldSystemFontOfSize:KAdaptedWidth(14)];
+    self.exchangeAllBtn.hidden = YES; // 默认隐藏，在 vcType == 3 模式下显示
+    
+    [self.contentView addSubview:self.exchangeAllBtn];
+    [self.exchangeAllBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.trailing.mas_equalTo(self.tf.mas_trailing).offset(-KAdaptedWidth(8));
+        make.centerY.mas_equalTo(self.tf.mas_centerY);
+        make.width.mas_equalTo(KAdaptedWidth(70));
+        make.height.mas_equalTo(KAdaptedHeight(36));
+    }];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
