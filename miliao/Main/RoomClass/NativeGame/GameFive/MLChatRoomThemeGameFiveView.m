@@ -608,12 +608,12 @@
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
     
-    // 4. Load fortune data
+    // 4. Load fortune data (typeId == 14 / 5 / 星球 / 砸蛋)
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (!strongSelf || !list || ![list isKindOfClass:[NSArray class]]) return;
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == strongSelf.typeId || [model.name containsString:@"砸蛋"]) {
+            if (model.typeId == strongSelf.typeId || model.typeId == 14 || model.typeId == 5 || [model.name containsString:@"星球"] || [model.name containsString:@"砸蛋"]) {
                 strongSelf.fortuneConsume = (NSInteger)model.consume_diamonds;
                 strongSelf.fortuneProduce = (NSInteger)model.produce_diamonds;
                 break;

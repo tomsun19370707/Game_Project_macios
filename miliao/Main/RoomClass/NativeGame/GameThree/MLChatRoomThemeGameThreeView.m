@@ -579,22 +579,20 @@
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
     
-    // 4. 今日运势 (星辰序章 typeId == 5 / lottery_id == 3)
+    // 4. 今日运势 (星辰/潮玩盲盒 typeId == 13 / 3)
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
         if (!wself) return;
         if (!list || ![list isKindOfClass:[NSArray class]]) {
             return;
         }
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == wself.typeId || [model.name containsString:@"星辰"]) {
+            if (model.typeId == wself.typeId || model.typeId == 13 || model.typeId == 3 || [model.name containsString:@"星辰"] || [model.name containsString:@"盲盒"] || [model.name containsString:@"星盘"]) {
                 wself.consumeValue = model.consume_diamonds;
                 wself.produceValue = model.produce_diamonds;
                 break;
             }
         }
-    } failure:^(NSError *error) {
-        // 静默
-    }];
+    } failure:nil];
 }
 
 - (void)renderGiftBoard {

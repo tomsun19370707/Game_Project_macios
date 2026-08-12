@@ -9,8 +9,8 @@
 + (NSDictionary *)mj_replacedKeyFromPropertyName {
     return @{
         @"typeId": @"id",
-        @"consume_diamonds": @[@"consumeDiamonds", @"consume_diamonds"],
-        @"produce_diamonds": @[@"produceDiamonds", @"produce_diamonds"]
+        @"consume_diamonds": @[@"total_cost", @"consumeDiamonds", @"consume_diamonds"],
+        @"produce_diamonds": @[@"total_income", @"produceDiamonds", @"produce_diamonds"]
     };
 }
 

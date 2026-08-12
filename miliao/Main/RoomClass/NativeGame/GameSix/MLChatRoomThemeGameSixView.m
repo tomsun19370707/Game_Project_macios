@@ -713,7 +713,7 @@
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
         if (!wself || !list || ![list isKindOfClass:[NSArray class]]) return;
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == wself.typeId || [model.name containsString:@"玲珑珍宝塔"] || [model.name containsString:@"珍宝塔"]) {
+            if (model.typeId == wself.typeId || model.typeId == 15 || model.typeId == 6 || [model.name containsString:@"玲珑珍宝塔"] || [model.name containsString:@"珍宝塔"] || [model.name containsString:@"宝塔"]) {
                 wself.fortuneConsume = (NSInteger)model.consume_diamonds;
                 wself.fortuneProduce = (NSInteger)model.produce_diamonds;
                 break;
@@ -728,7 +728,7 @@
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
         if (!wself || !list || ![list isKindOfClass:[NSArray class]]) return;
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == wself.typeId || [model.name containsString:@"玲珑珍宝塔"] || [model.name containsString:@"珍宝塔"]) {
+            if (model.typeId == wself.typeId || model.typeId == 15 || model.typeId == 6 || [model.name containsString:@"玲珑珍宝塔"] || [model.name containsString:@"珍宝塔"] || [model.name containsString:@"宝塔"]) {
                 wself.fortuneConsume = (NSInteger)model.consume_diamonds;
                 wself.fortuneProduce = (NSInteger)model.produce_diamonds;
                 break;

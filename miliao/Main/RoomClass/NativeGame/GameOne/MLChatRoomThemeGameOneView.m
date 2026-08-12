@@ -794,22 +794,20 @@
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
     
-    // 4. 获取今日运势数据 (对接 typeId == 3 / lottery_id == 7)
+    // 4. 获取今日运势数据 (对接 typeId == 11 / 7 / 寻梦)
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
         if (!wself) return;
         if (!list || ![list isKindOfClass:[NSArray class]]) {
             return;
         }
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == wself.typeId || [model.name containsString:@"寻梦"]) {
+            if (model.typeId == wself.typeId || model.typeId == 11 || model.typeId == 7 || [model.name containsString:@"寻梦"]) {
                 wself.consumeValue = model.consume_diamonds;
                 wself.produceValue = model.produce_diamonds;
                 break;
             }
         }
-    } failure:^(NSError *error) {
-        // 静默失败
-    }];
+    } failure:nil];
     
     // 5. 获取全服中奖广播跑马灯
     [MLGameLotteryService getLotteryWinLogWithTypeId:self.typeId page:1 pageSize:20 success:^(NSArray *list, NSInteger total) {

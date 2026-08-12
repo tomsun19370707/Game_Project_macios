@@ -694,22 +694,20 @@
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
     
-    // 4. 获取今日运势数据 (对接 typeId == 4 / lottery_id == 2)
+    // 4. 获取今日运势数据 (对接 typeId == 12 / 2 / 桃源 / 仙境)
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
         if (!wself) return;
         if (!list || ![list isKindOfClass:[NSArray class]]) {
             return;
         }
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == wself.typeId || [model.name containsString:@"神木"]) {
+            if (model.typeId == wself.typeId || model.typeId == 12 || model.typeId == 2 || [model.name containsString:@"神木"] || [model.name containsString:@"桃源"] || [model.name containsString:@"转盘"]) {
                 wself.consumeValue = model.consume_diamonds;
                 wself.produceValue = model.produce_diamonds;
                 break;
             }
         }
-    } failure:^(NSError *error) {
-        // 静默失败
-    }];
+    } failure:nil];
 }
 
 - (void)renderPrizePeaches {

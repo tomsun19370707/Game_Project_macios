@@ -494,21 +494,25 @@
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
     
-    // 3. Load today's fortune
+    // 3. Load today's fortune (对应当前 typeId = 8:青玉, 9:碧海, 10:鎏金 各自独立运势)
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (!strongSelf || !list) return;
         
         for (MLGameLotteryInfoModel *model in list) {
-            if (model.typeId == strongSelf.typeId) {
+            BOOL isMatch = (model.typeId == strongSelf.typeId);
+            if (!isMatch) {
+                if (strongSelf.typeId == 8 && [model.name containsString:@"青玉"]) isMatch = YES;
+                if (strongSelf.typeId == 9 && [model.name containsString:@"碧海"]) isMatch = YES;
+                if (strongSelf.typeId == 10 && [model.name containsString:@"鎏金"]) isMatch = YES;
+            }
+            if (isMatch) {
                 strongSelf.consumeValue = model.consume_diamonds;
                 strongSelf.produceValue = model.produce_diamonds;
                 break;
             }
         }
-    } failure:^(NSError *error) {
-        // Silent fail for today's fortune
-    }];
+    } failure:nil];
     
     // 4. Load prize pool
     [MLGameLotteryService getPrizesWithTypeId:self.typeId success:^(NSArray<MLGameDrawResultModel *> *prizes) {
