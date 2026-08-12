@@ -125,6 +125,26 @@
     [self.contentView addSubview:_giftsContainerView];
 }
 
+static NSArray *MLGameExtractPrizesOrItems(NSDictionary *data) {
+    if (![data isKindOfClass:[NSDictionary class]]) return @[];
+    id rawObj = data[@"prizes"];
+    if (!rawObj || rawObj == [NSNull null]) {
+        rawObj = data[@"items"];
+    }
+    if ([rawObj isKindOfClass:[NSArray class]]) {
+        return (NSArray *)rawObj;
+    } else if ([rawObj isKindOfClass:[NSString class]]) {
+        NSData *jsonData = [(NSString *)rawObj dataUsingEncoding:NSUTF8StringEncoding];
+        if (jsonData) {
+            id parsed = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:nil];
+            if ([parsed isKindOfClass:[NSArray class]]) {
+                return (NSArray *)parsed;
+            }
+        }
+    }
+    return @[];
+}
+
 - (void)configureWithData:(NSDictionary *)data isMine:(BOOL)isMine isExpanded:(BOOL)expanded {
     _recordData = data;
     _isMine = isMine;
@@ -133,7 +153,7 @@
     _timeLabel.text = data[@"create_time"];
     _summaryLabel.text = [NSString stringWithFormat:@"%@祝灵 (%@钻石)", data[@"draw_times"], data[@"total_value"]];
     
-    NSArray *items = data[@"items"];
+    NSArray *items = MLGameExtractPrizesOrItems(data);
     // Sort items by price descending (from highest to lowest value)
     items = [items sortedArrayUsingComparator:^NSComparisonResult(NSDictionary *obj1, NSDictionary *obj2) {
         NSInteger p1 = [obj1[@"price"] integerValue];
@@ -488,7 +508,7 @@
         NSMutableArray *filteredList = [NSMutableArray array];
         for (id logItem in list) {
             if ([logItem isKindOfClass:[NSDictionary class]]) {
-                NSArray *items = logItem[@"items"];
+                NSArray *items = MLGameExtractPrizesOrItems(logItem);
                 NSMutableArray *filteredLogItems = [NSMutableArray array];
                 for (NSDictionary *gift in items) {
                     NSInteger gId = [gift[@"gift_id"] integerValue];
@@ -559,7 +579,7 @@
     if (expanded) {
         if (indexPath.row < self.recordList.count) {
             NSDictionary *data = self.recordList[indexPath.row];
-            NSArray *items = data[@"items"];
+            NSArray *items = MLGameExtractPrizesOrItems(data);
             NSInteger count = items.count;
             CGFloat detailsH = count * KDialogAdaptedWidth(28.0f) + (count - 1) * KDialogAdaptedWidth(4.0f) + KDialogAdaptedWidth(8.0f) + KDialogAdaptedWidth(30.0f) + KDialogAdaptedWidth(16.0f);
             CGFloat finalHeight = KDialogAdaptedWidth(70.0f) + detailsH;

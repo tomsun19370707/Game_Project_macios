@@ -186,8 +186,12 @@
 - (void)configureWithData:(NSDictionary *)data {
     NSInteger drawTimes = [data[@"draw_times"] integerValue];
     
-    // Parse items array
-    id itemsObj = data[@"items"];
+    // Parse items array (优先读取 prizes 节点，为空降级读取 items 节点)
+    id itemsObj = data[@"prizes"];
+    if (!itemsObj || itemsObj == [NSNull null]) {
+        itemsObj = data[@"items"];
+    }
+    
     NSArray *items = nil;
     if ([itemsObj isKindOfClass:[NSArray class]]) {
         items = (NSArray *)itemsObj;

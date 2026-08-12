@@ -106,11 +106,32 @@
     [self.contentView addSubview:_giftsContainerView];
 }
 
-- (void)configureWithData:(NSDictionary *)data isMine:(BOOL)isMine isExpanded:(BOOL)expanded {
+static NSArray *MLGameExtractPrizesOrItems(NSDictionary *data) {
+    if (![data isKindOfClass:[NSDictionary class]]) return @[];
+    id rawObj = data[@"prizes"];
+    if (!rawObj || rawObj == [NSNull null]) {
+        rawObj = data[@"items"];
+    }
+    if ([rawObj isKindOfClass:[NSArray class]]) {
+        return (NSArray *)rawObj;
+    } else if ([rawObj isKindOfClass:[NSString class]]) {
+        NSData *jsonData = [(NSString *)rawObj dataUsingEncoding:NSUTF8StringEncoding];
+        if (jsonData) {
+            id parsed = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:nil];
+            if ([parsed isKindOfClass:[NSArray class]]) {
+                return (NSArray *)parsed;
+            }
+        }
+    }
+    return @[];
+}
+
+- (void)setData:(NSDictionary *)data isMine:(BOOL)isMine expanded:(BOOL)expanded {
+    _recordData = data;
     _isMine = isMine;
     _isExpanded = expanded;
     
-    NSArray *items = data[@"items"];
+    NSArray *items = MLGameExtractPrizesOrItems(data);
     
     // 按 gift_id 合并去重相同礼物并累加数量
     NSMutableArray *mergedList = [NSMutableArray array];
@@ -337,7 +358,7 @@
 + (CGFloat)cellHeightWithData:(NSDictionary *)data isMine:(BOOL)isMine isExpanded:(BOOL)expanded {
     CGFloat baseH = KDialogAdaptedWidth(31) + KDialogAdaptedWidth(12); // 从 54 变 31，baseH = 43
     
-    NSArray *items = data[@"items"];
+    NSArray *items = MLGameExtractPrizesOrItems(data);
     // 算合并后的礼物种类数
     NSMutableSet *idSet = [NSMutableSet set];
     for (NSDictionary *item in items) {

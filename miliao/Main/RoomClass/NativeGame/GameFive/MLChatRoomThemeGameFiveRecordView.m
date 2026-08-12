@@ -187,7 +187,12 @@
                     [dateKeysOrder addObject:dateKey];
                 }
 
-                id itemsObj = dict[@"items"];
+                // 优先读取 prizes 节点，为空降级读取 items 节点
+                id itemsObj = dict[@"prizes"];
+                if (!itemsObj || itemsObj == [NSNull null]) {
+                    itemsObj = dict[@"items"];
+                }
+                
                 NSArray *items = nil;
                 if ([itemsObj isKindOfClass:[NSArray class]]) {
                     items = (NSArray *)itemsObj;
