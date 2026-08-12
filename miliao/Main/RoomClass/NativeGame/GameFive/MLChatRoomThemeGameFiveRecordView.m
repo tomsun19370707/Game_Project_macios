@@ -138,6 +138,51 @@
     }];
 }
 
+static NSArray *MLGameMergeAndSortGifts(NSArray *rawGifts) {
+    if (![rawGifts isKindOfClass:[NSArray class]] || rawGifts.count == 0) return @[];
+    
+    NSMutableArray *mergedList = [NSMutableArray array];
+    NSMutableDictionary *mergedMap = [NSMutableDictionary dictionary];
+    
+    for (NSDictionary *gift in rawGifts) {
+        if (![gift isKindOfClass:[NSDictionary class]]) continue;
+        
+        NSInteger giftId = [gift[@"gift_id"] integerValue];
+        if (giftId <= 0) giftId = [gift[@"giftId"] integerValue];
+        
+        NSString *name = gift[@"name"] ?: (gift[@"gift_name"] ?: @"");
+        NSInteger logId = [gift[@"id"] integerValue];
+        
+        NSString *key = nil;
+        if (giftId > 0) {
+            key = [NSString stringWithFormat:@"gid_%ld", (long)giftId];
+        } else if (name.length > 0) {
+            key = [NSString stringWithFormat:@"name_%@", name];
+        } else {
+            key = [NSString stringWithFormat:@"id_%ld", (long)logId];
+        }
+        
+        NSInteger count = [gift[@"gift_num"] integerValue];
+        if (count <= 0) count = [gift[@"num"] integerValue];
+        if (count <= 0) count = 1;
+        
+        if (mergedMap[key]) {
+            NSMutableDictionary *existing = mergedMap[key];
+            NSInteger currentCount = [existing[@"num"] integerValue];
+            existing[@"num"] = @(currentCount + count);
+            existing[@"gift_num"] = @(currentCount + count);
+        } else {
+            NSMutableDictionary *newGift = [gift mutableCopy];
+            newGift[@"num"] = @(count);
+            newGift[@"gift_num"] = @(count);
+            mergedMap[key] = newGift;
+            [mergedList addObject:newGift];
+        }
+    }
+    
+    return [mergedList copy];
+}
+
 - (void)loadData {
     __weak typeof(self) weakSelf = self;
     [MLGameLotteryService getDrawLogWithTypeId:self.typeId userType:@"my" page:1 pageSize:50 success:^(NSArray *list, NSInteger total) {
@@ -202,6 +247,8 @@
                         items = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:nil];
                     }
                 }
+                
+                items = MLGameMergeAndSortGifts(items);
                 if (items.count > 0) {
                     [section.gifts addObjectsFromArray:items];
                 }

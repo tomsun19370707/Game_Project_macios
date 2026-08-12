@@ -183,6 +183,51 @@
     }];
 }
 
+static NSArray *MLGameMergeAndSortGifts(NSArray *rawGifts) {
+    if (![rawGifts isKindOfClass:[NSArray class]] || rawGifts.count == 0) return @[];
+    
+    NSMutableArray *mergedList = [NSMutableArray array];
+    NSMutableDictionary *mergedMap = [NSMutableDictionary dictionary];
+    
+    for (NSDictionary *gift in rawGifts) {
+        if (![gift isKindOfClass:[NSDictionary class]]) continue;
+        
+        NSInteger giftId = [gift[@"gift_id"] integerValue];
+        if (giftId <= 0) giftId = [gift[@"giftId"] integerValue];
+        
+        NSString *name = gift[@"name"] ?: (gift[@"gift_name"] ?: @"");
+        NSInteger logId = [gift[@"id"] integerValue];
+        
+        NSString *key = nil;
+        if (giftId > 0) {
+            key = [NSString stringWithFormat:@"gid_%ld", (long)giftId];
+        } else if (name.length > 0) {
+            key = [NSString stringWithFormat:@"name_%@", name];
+        } else {
+            key = [NSString stringWithFormat:@"id_%ld", (long)logId];
+        }
+        
+        NSInteger count = [gift[@"gift_num"] integerValue];
+        if (count <= 0) count = [gift[@"num"] integerValue];
+        if (count <= 0) count = 1;
+        
+        if (mergedMap[key]) {
+            NSMutableDictionary *existing = mergedMap[key];
+            NSInteger currentCount = [existing[@"num"] integerValue];
+            existing[@"num"] = @(currentCount + count);
+            existing[@"gift_num"] = @(currentCount + count);
+        } else {
+            NSMutableDictionary *newGift = [gift mutableCopy];
+            newGift[@"num"] = @(count);
+            newGift[@"gift_num"] = @(count);
+            mergedMap[key] = newGift;
+            [mergedList addObject:newGift];
+        }
+    }
+    
+    return [mergedList copy];
+}
+
 - (void)configureWithData:(NSDictionary *)data {
     NSInteger drawTimes = [data[@"draw_times"] integerValue];
     
@@ -196,12 +241,12 @@
     if ([itemsObj isKindOfClass:[NSArray class]]) {
         items = (NSArray *)itemsObj;
     } else if ([itemsObj isKindOfClass:[NSString class]]) {
-        // Handle JSON string case if present
         NSData *jsonData = [(NSString *)itemsObj dataUsingEncoding:NSUTF8StringEncoding];
         if (jsonData) {
             items = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:nil];
         }
     }
+    items = MLGameMergeAndSortGifts(items);
     
     if (drawTimes <= 0 && items.count > 0) {
         drawTimes = items.count;

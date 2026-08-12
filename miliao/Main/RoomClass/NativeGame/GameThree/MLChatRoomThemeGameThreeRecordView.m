@@ -123,6 +123,59 @@ static NSArray *MLGameExtractPrizesOrItems(NSDictionary *data) {
     return @[];
 }
 
+static NSArray *MLGameMergeAndSortGifts(NSArray *rawGifts) {
+    if (![rawGifts isKindOfClass:[NSArray class]] || rawGifts.count == 0) return @[];
+    
+    NSMutableArray *mergedList = [NSMutableArray array];
+    NSMutableDictionary *mergedMap = [NSMutableDictionary dictionary];
+    
+    for (NSDictionary *gift in rawGifts) {
+        if (![gift isKindOfClass:[NSDictionary class]]) continue;
+        
+        NSInteger giftId = [gift[@"gift_id"] integerValue];
+        if (giftId <= 0) giftId = [gift[@"giftId"] integerValue];
+        
+        NSString *name = gift[@"name"] ?: (gift[@"gift_name"] ?: @"");
+        NSInteger logId = [gift[@"id"] integerValue];
+        
+        NSString *key = nil;
+        if (giftId > 0) {
+            key = [NSString stringWithFormat:@"gid_%ld", (long)giftId];
+        } else if (name.length > 0) {
+            key = [NSString stringWithFormat:@"name_%@", name];
+        } else {
+            key = [NSString stringWithFormat:@"id_%ld", (long)logId];
+        }
+        
+        NSInteger count = [gift[@"gift_num"] integerValue];
+        if (count <= 0) count = [gift[@"num"] integerValue];
+        if (count <= 0) count = 1;
+        
+        if (mergedMap[key]) {
+            NSMutableDictionary *existing = mergedMap[key];
+            NSInteger currentCount = [existing[@"num"] integerValue];
+            existing[@"num"] = @(currentCount + count);
+            existing[@"gift_num"] = @(currentCount + count);
+        } else {
+            NSMutableDictionary *newGift = [gift mutableCopy];
+            newGift[@"num"] = @(count);
+            newGift[@"gift_num"] = @(count);
+            mergedMap[key] = newGift;
+            [mergedList addObject:newGift];
+        }
+    }
+    
+    [mergedList sortUsingComparator:^NSComparisonResult(NSDictionary *obj1, NSDictionary *obj2) {
+        NSInteger p1 = [obj1[@"gift_price"] ?: obj1[@"price"] integerValue];
+        NSInteger p2 = [obj2[@"gift_price"] ?: obj2[@"price"] integerValue];
+        if (p1 > p2) return NSOrderedAscending;
+        if (p1 < p2) return NSOrderedDescending;
+        return NSOrderedSame;
+    }];
+    
+    return [mergedList copy];
+}
+
 - (void)configureWithData:(NSDictionary *)data isMine:(BOOL)isMine isExpanded:(BOOL)expanded {
     _recordData = data;
     _isMine = isMine;
@@ -134,15 +187,7 @@ static NSArray *MLGameExtractPrizesOrItems(NSDictionary *data) {
     }
     _timeLabel.text = createTime;
     
-    NSArray *items = MLGameExtractPrizesOrItems(data);
-    // Sort items by price descending
-    items = [items sortedArrayUsingComparator:^NSComparisonResult(NSDictionary *obj1, NSDictionary *obj2) {
-        NSInteger p1 = [obj1[@"gift_price"] ?: obj1[@"price"] integerValue];
-        NSInteger p2 = [obj2[@"gift_price"] ?: obj2[@"price"] integerValue];
-        if (p1 < p2) return NSOrderedDescending;
-        if (p1 > p2) return NSOrderedAscending;
-        return NSOrderedSame;
-    }];
+    NSArray *items = MLGameMergeAndSortGifts(MLGameExtractPrizesOrItems(data));
     
     NSDictionary *firstGift = items.firstObject;
     if (firstGift) {
@@ -327,10 +372,24 @@ static NSArray *MLGameExtractPrizesOrItems(NSDictionary *data) {
             }];
         }
         
+        NSInteger totalVal = [data[@"total_value"] integerValue];
+        if (totalVal <= 0) totalVal = [data[@"total_price"] integerValue];
+        if (totalVal <= 0) {
+            NSArray *rawItems = MLGameExtractPrizesOrItems(data);
+            for (NSDictionary *g in rawItems) {
+                NSInteger p = [g[@"gift_price"] integerValue];
+                if (p <= 0) p = [g[@"price"] integerValue];
+                NSInteger num = [g[@"gift_num"] integerValue];
+                if (num <= 0) num = [g[@"num"] integerValue];
+                if (num <= 0) num = 1;
+                totalVal += p * num;
+            }
+        }
+        
         UILabel *totalLabel = [[UILabel alloc] init];
         totalLabel.textColor = kWhiteColor;
         totalLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(13)];
-        totalLabel.text = [NSString stringWithFormat:@"总价值：%@钻石", data[@"total_value"] ?: @"0"];
+        totalLabel.text = [NSString stringWithFormat:@"总价值：%ld钻石", (long)totalVal];
         [_giftsContainerView addSubview:totalLabel];
         [totalLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(startY + items.count * (rowH + gap) + KDialogAdaptedWidth(4.0f));
@@ -569,7 +628,7 @@ static NSArray *MLGameExtractPrizesOrItems(NSDictionary *data) {
     if (expanded) {
         if (indexPath.row < self.recordList.count) {
             NSDictionary *data = self.recordList[indexPath.row];
-            NSArray *items = MLGameExtractPrizesOrItems(data);
+            NSArray *items = MLGameMergeAndSortGifts(MLGameExtractPrizesOrItems(data));
             NSInteger count = items.count;
             CGFloat detailsH = count * KDialogAdaptedWidth(28.0f) + (count - 1) * KDialogAdaptedWidth(4.0f) + KDialogAdaptedWidth(8.0f) + KDialogAdaptedWidth(30.0f) + KDialogAdaptedWidth(16.0f);
             CGFloat finalHeight = KDialogAdaptedWidth(80.0f) + detailsH;

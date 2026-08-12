@@ -126,42 +126,45 @@ static NSArray *MLGameExtractPrizesOrItems(NSDictionary *data) {
     return @[];
 }
 
-- (void)setData:(NSDictionary *)data isMine:(BOOL)isMine expanded:(BOOL)expanded {
-    _recordData = data;
-    _isMine = isMine;
-    _isExpanded = expanded;
+static NSArray *MLGameMergeAndSortGifts(NSArray *rawGifts) {
+    if (![rawGifts isKindOfClass:[NSArray class]] || rawGifts.count == 0) return @[];
     
-    NSArray *items = MLGameExtractPrizesOrItems(data);
-    
-    // 按 gift_id 合并去重相同礼物并累加数量
     NSMutableArray *mergedList = [NSMutableArray array];
-    NSMutableDictionary *mergedDict = [NSMutableDictionary dictionary];
-    for (NSDictionary *gift in items) {
-        NSInteger gId = [gift[@"gift_id"] integerValue];
-        if (gId == 0) {
-            gId = [gift[@"id"] integerValue];
-        }
-        NSString *key = [NSString stringWithFormat:@"%ld", (long)gId];
-        if (mergedDict[key]) {
-            NSMutableDictionary *existing = mergedDict[key];
-            NSInteger count = [existing[@"gift_num"] integerValue];
-            if (count <= 0) count = [existing[@"num"] integerValue];
-            
-            NSInteger addCount = [gift[@"gift_num"] integerValue];
-            if (addCount <= 0) addCount = [gift[@"num"] integerValue];
-            if (addCount <= 0) addCount = 1;
-            
-            existing[@"gift_num"] = @(count + addCount);
-            existing[@"num"] = @(count + addCount);
+    NSMutableDictionary *mergedMap = [NSMutableDictionary dictionary];
+    
+    for (NSDictionary *gift in rawGifts) {
+        if (![gift isKindOfClass:[NSDictionary class]]) continue;
+        
+        NSInteger giftId = [gift[@"gift_id"] integerValue];
+        if (giftId <= 0) giftId = [gift[@"giftId"] integerValue];
+        
+        NSString *name = gift[@"name"] ?: (gift[@"gift_name"] ?: @"");
+        NSInteger logId = [gift[@"id"] integerValue];
+        
+        NSString *key = nil;
+        if (giftId > 0) {
+            key = [NSString stringWithFormat:@"gid_%ld", (long)giftId];
+        } else if (name.length > 0) {
+            key = [NSString stringWithFormat:@"name_%@", name];
         } else {
-            NSMutableDictionary *clone = [gift mutableCopy];
-            NSInteger numVal = [clone[@"gift_num"] integerValue];
-            if (numVal <= 0) numVal = [clone[@"num"] integerValue];
-            if (numVal <= 0) numVal = 1;
-            clone[@"gift_num"] = @(numVal);
-            clone[@"num"] = @(numVal);
-            mergedDict[key] = clone;
-            [mergedList addObject:clone];
+            key = [NSString stringWithFormat:@"id_%ld", (long)logId];
+        }
+        
+        NSInteger count = [gift[@"gift_num"] integerValue];
+        if (count <= 0) count = [gift[@"num"] integerValue];
+        if (count <= 0) count = 1;
+        
+        if (mergedMap[key]) {
+            NSMutableDictionary *existing = mergedMap[key];
+            NSInteger currentCount = [existing[@"num"] integerValue];
+            existing[@"num"] = @(currentCount + count);
+            existing[@"gift_num"] = @(currentCount + count);
+        } else {
+            NSMutableDictionary *newGift = [gift mutableCopy];
+            newGift[@"num"] = @(count);
+            newGift[@"gift_num"] = @(count);
+            mergedMap[key] = newGift;
+            [mergedList addObject:newGift];
         }
     }
     
@@ -172,16 +175,21 @@ static NSArray *MLGameExtractPrizesOrItems(NSDictionary *data) {
         NSInteger price2 = [obj2[@"gift_price"] integerValue];
         if (price2 <= 0) price2 = [obj2[@"price"] integerValue];
         
-        if (price1 > price2) {
-            return NSOrderedAscending;
-        } else if (price1 < price2) {
-            return NSOrderedDescending;
-        } else {
-            return NSOrderedSame;
-        }
+        if (price1 > price2) return NSOrderedAscending;
+        if (price1 < price2) return NSOrderedDescending;
+        return NSOrderedSame;
     }];
     
-    _mergedItems = [mergedList copy];
+    return [mergedList copy];
+}
+
+- (void)configureWithData:(NSDictionary *)data isMine:(BOOL)isMine isExpanded:(BOOL)expanded {
+    _recordData = data;
+    _isMine = isMine;
+    _isExpanded = expanded;
+    
+    NSArray *items = MLGameExtractPrizesOrItems(data);
+    _mergedItems = MLGameMergeAndSortGifts(items);
     
     // 头部排版
     _drawTimesLabel.text = [NSString stringWithFormat:@"寻%@次", data[@"draw_times"] ?: @"1"];
@@ -359,16 +367,8 @@ static NSArray *MLGameExtractPrizesOrItems(NSDictionary *data) {
     CGFloat baseH = KDialogAdaptedWidth(31) + KDialogAdaptedWidth(12); // 从 54 变 31，baseH = 43
     
     NSArray *items = MLGameExtractPrizesOrItems(data);
-    // 算合并后的礼物种类数
-    NSMutableSet *idSet = [NSMutableSet set];
-    for (NSDictionary *item in items) {
-        NSInteger gId = [item[@"gift_id"] integerValue];
-        if (gId == 0) {
-            gId = [item[@"id"] integerValue];
-        }
-        [idSet addObject:@(gId)];
-    }
-    NSInteger count = idSet.count;
+    NSArray *merged = MLGameMergeAndSortGifts(items);
+    NSInteger count = merged.count;
     
     if (isMine || expanded) {
         if (count > 0) {
