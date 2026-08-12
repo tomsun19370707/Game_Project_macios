@@ -71,10 +71,11 @@ FOUNDATION_EXPORT NSString *MLFormatLargeNumber(double num);
                          failure:(void(^)(NSError *error))failure;
 
 /**
- 8. 玩法1特有：执行高级兑换
+ 8. 玩法1特有：执行高级兑换 (支持 type_id=11 精准4字段与 requestId 防重放)
  */
 + (void)exchangeGiftWithExchangeId:(NSInteger)exchangeId 
                          cardCount:(NSInteger)cardCount 
+                         requestId:(NSString *)requestId
                            success:(void(^)(BOOL isSuccess, MLGameDrawResultModel *gift, NSInteger remainCard, NSInteger remainGem, NSString *msg))success 
                            failure:(void(^)(NSError *error))failure;
 

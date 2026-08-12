@@ -309,7 +309,8 @@ NSString *MLFormatLargeNumber(double num) {
                           success:(void(^)(id responseObject))success 
                           failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/exchange_config", VERSION_HTTPS_SERVER];
-    NSDictionary *params = @{@"type_id": @(typeId)};
+    NSInteger targetTypeId = (typeId <= 0 || typeId == 7) ? 11 : typeId;
+    NSDictionary *params = @{@"type_id": @(targetTypeId)};
     [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
         if (![responseObject isKindOfClass:[NSDictionary class]]) {
             if (success) success(responseObject); // 保持原行为，兼容非Dict
@@ -332,13 +333,18 @@ NSString *MLFormatLargeNumber(double num) {
 
 + (void)exchangeGiftWithExchangeId:(NSInteger)exchangeId 
                          cardCount:(NSInteger)cardCount 
+                         requestId:(NSString *)requestId
                            success:(void(^)(BOOL isSuccess, MLGameDrawResultModel *gift, NSInteger remainCard, NSInteger remainGem, NSString *msg))success 
                            failure:(void(^)(NSError *error))failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/exchange_gift", VERSION_HTTPS_SERVER];
-    NSDictionary *params = @{
-        @"exchange_id": @(exchangeId),
-        @"card_count": @(cardCount)
-    };
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"type_id"] = @(11);
+    params[@"exchange_id"] = @(exchangeId);
+    params[@"card_count"] = @(cardCount);
+    if (requestId.length > 0) {
+        params[@"request_id"] = requestId;
+    }
+    
     [MLNetWorkHelper POST:url parameters:[self buildParams:params] success:^(id responseObject) {
         if (![responseObject isKindOfClass:[NSDictionary class]]) {
             if (success) success(NO, nil, 0, 0, @"数据格式错误");
@@ -353,8 +359,12 @@ NSString *MLFormatLargeNumber(double num) {
         NSString *msg = responseObject[@"msg"] ?: @"";
         
         if (data && data != [NSNull null] && [data isKindOfClass:[NSDictionary class]]) {
-            isOK = [responseObject[@"code"] integerValue] == 1 && [data[@"success"] boolValue];
-            if (data[@"gift"] && data[@"gift"] != [NSNull null]) {
+            NSInteger codeVal = [responseObject[@"code"] integerValue];
+            NSInteger succVal = [data[@"success"] integerValue];
+            if (succVal <= 0) succVal = [data[@"success"] boolValue] ? 1 : 0;
+            
+            isOK = (codeVal == 1 && succVal == 1);
+            if (data[@"gift"] && data[@"gift"] != [NSNull null] && [data[@"gift"] isKindOfClass:[NSDictionary class]]) {
                 gift = [MLGameDrawResultModel mj_objectWithKeyValues:data[@"gift"]];
             }
             rCard = [data[@"remain_card_count"] integerValue];

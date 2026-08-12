@@ -39,6 +39,7 @@
 @property (nonatomic, strong) UILabel *successRateLabel;
 @property (nonatomic, strong) UIButton *confirmExchangeButton; // 244 * 49 pt
 
+@property (nonatomic, copy) NSString *currentRequestId;
 @property (nonatomic, assign) NSInteger selectedCardCount; // 投入的藏宝图数量
 @property (nonatomic, assign) NSInteger maxOwnedCards; // 用户拥有的最大藏宝图数
 @property (nonatomic, assign) NSInteger ownedGemCount; // 拥有的宝石碎片数
@@ -48,18 +49,19 @@
 @implementation MLChatRoomThemeGameOneExchangeView
 
 + (void)showInView:(UIView *)parentView typeId:(NSInteger)typeId {
-    MLChatRoomThemeGameOneExchangeView *exchangeView = [[MLChatRoomThemeGameOneExchangeView alloc] initWithFrame:parentView.bounds typeId:typeId];
+    MLChatRoomThemeGameOneExchangeView *exchangeView = [[MLChatRoomThemeGameOneExchangeView alloc] initWithFrame:parentView.bounds typeId:11];
     [parentView addSubview:exchangeView];
     [exchangeView animateShow];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame typeId:(NSInteger)typeId {
     if (self = [super initWithFrame:frame]) {
-        self.typeId = typeId;
+        self.typeId = 11; // 适配新后端规范：固定传 type_id = 11
         self.activeConfigIndex = 0;
         self.selectedCardCount = 0;
-        self.maxOwnedCards = 5; // 默认兜底 5 张
+        self.maxOwnedCards = 5;
         self.ownedGemCount = 0;
+        self.currentRequestId = @"";
         self.tabButtons = [NSMutableArray array];
         
         [self setupUI];
@@ -291,113 +293,35 @@
     }];
 }
 
-- (void)initMockConfigs {
-    self.exchangeConfigs = @[
-        @{
-            @"exchange_id": @(3000244),
-            @"type_id": @(self.typeId),
-            @"tab_name": @"星辰",
-            @"gift_id": @(244),
-            @"gift": @{
-                @"id": @(244),
-                @"name": @"星辰礼物",
-                @"pic": @"",
-                @"price": @(52000000)
-            },
-            @"gem_gift_id": @(107),
-            @"gem_cost": @(10),
-            @"card_gift_id": @(107),
-            @"success_rate": @(10),
-            @"is_virtual": @(1)
-        },
-        @{
-            @"exchange_id": @(3000245),
-            @"type_id": @(self.typeId),
-            @"tab_name": @"皓月",
-            @"gift_id": @(245),
-            @"gift": @{
-                @"id": @(245),
-                @"name": @"皓月礼物",
-                @"pic": @"",
-                @"price": @(52000000)
-            },
-            @"gem_gift_id": @(107),
-            @"gem_cost": @(20),
-            @"card_gift_id": @(107),
-            @"success_rate": @(20),
-            @"is_virtual": @(1)
-        }
-    ];
-}
+#pragma mark - 数据请求
 
 #pragma mark - 数据请求
 
 - (void)loadExchangeData {
-    // 1. 获取个人钻石碎片/藏宝图资产
-    // 静默加载，拉取最新配置后再读取对应 gift_id 匹配
     WeakSelf
-    [MLGameLotteryService exchangeConfigWithTypeId:self.typeId success:^(id responseObject) {
+    [MLGameLotteryService exchangeConfigWithTypeId:11 success:^(id responseObject) {
         if (responseObject && responseObject != [NSNull null] && [responseObject isKindOfClass:[NSArray class]] && [(NSArray *)responseObject count] > 0) {
             wself.exchangeConfigs = responseObject;
+            [wself renderTabs];
+            [wself selectActiveTab];
         } else {
-            [wself initMockConfigs];
-        }
-        [wself renderTabs];
-        [wself selectActiveTab];
-        
-        if (wself.exchangeConfigs.count > 0) {
-            id config = wself.exchangeConfigs.firstObject;
-            if (config && config != [NSNull null] && [config isKindOfClass:[NSDictionary class]]) {
-                NSInteger gemId = [config[@"gem_gift_id"] integerValue];
-                NSInteger cardId = [config[@"card_gift_id"] integerValue];
-                
-                NSMutableDictionary *params = [NSMutableDictionary dictionary];
-                params[@"page"] = @"1";
-                params[@"size"] = @"100";
-                params[@"is_send"] = @"1";
-                
-                NSString *bagUrl = [NSString stringWithFormat:@"%@api/user/getMyKnapsack", VERSION_HTTPS_SERVER];
-                [MLNetWorkHelper POST:bagUrl parameters:[MLGameLotteryService buildParams:params] success:^(id bagResponse) {
-                    if (bagResponse && [bagResponse[@"code"] integerValue] == 1) {
-                        NSArray *dataArr = bagResponse[@"data"];
-                        NSInteger foundGem = 0;
-                        NSInteger foundCard = 0;
-                        for (id item in dataArr) {
-                            if ([item isKindOfClass:[NSDictionary class]]) {
-                                NSInteger gId = [item[@"gift_id"] integerValue];
-                                NSInteger num = [item[@"nums"] integerValue];
-                                if (gId == gemId) {
-                                    foundGem = num;
-                                }
-                                if (gId == cardId) {
-                                    foundCard = num;
-                                }
-                            }
-                        }
-                        wself.ownedGemCount = foundGem;
-                        wself.maxOwnedCards = foundCard;
-                        [wself selectActiveTab];
-                    }
-                } failure:nil];
-            }
+            // 后端配置未就绪/接口失败：禁止渲染伪造假数据，原样 Toast 提示
+            [wself renderTabs];
+            _confirmExchangeButton.enabled = NO;
+            [SVProgressHUD showInfoWithStatus:@"藏宝图兑换配置不完整，请联系管理员"];
         }
     } failure:^(NSError *error) {
-        [wself initMockConfigs];
         [wself renderTabs];
-        [wself selectActiveTab];
+        _confirmExchangeButton.enabled = NO;
+        [SVProgressHUD showInfoWithStatus:error.localizedDescription ?: @"获取藏宝图兑换配置失败"];
     }];
 }
 
 - (void)renderTabs {
     for (int i = 0; i < self.tabButtons.count; i++) {
         UIButton *btn = self.tabButtons[i];
-        if (i < self.exchangeConfigs.count) {
-            btn.hidden = NO;
-        } else {
-            btn.hidden = YES;
-        }
+        btn.hidden = NO; // 5 个页签按钮全量常驻显示
     }
-    [self selectActiveTab];
 }
 
 - (void)selectActiveTab {
@@ -424,10 +348,7 @@
     
     _targetGiftNameLabel.text = gift ? (gift[@"name"] ?: @"高级礼物") : @"高级礼物";
     
-    NSString *giftPic = gift ? (gift[@"pic"] ?: @"") : @"";
-    if (giftPic.length == 0 && gift) {
-        giftPic = gift[@"image"] ?: @"";
-    }
+    NSString *giftPic = gift ? (gift[@"image"] ?: (gift[@"pic"] ?: @"")) : @"";
     NSURL *url = [NSURL URLWithString:giftPic];
     if ([_targetGiftImageView respondsToSelector:@selector(setImageWithURL:placeholder:)]) {
         [_targetGiftImageView performSelector:@selector(setImageWithURL:placeholder:) withObject:url withObject:[UIImage imageNamed:@""]];
@@ -435,17 +356,21 @@
         [_targetGiftImageView performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@""]];
     }
     
-    // 钻石碎片消耗 (gem_cost / gem_owned)
+    // 刷新宝石碎片持有数 (gem_owned / gem_cost)
     NSInteger gemCost = [activeConfig[@"gem_cost"] integerValue];
-    _leftCostLabel.text = [NSString stringWithFormat:@"%ld/%ld", (long)gemCost, (long)self.ownedGemCount];
+    NSInteger gemOwned = [activeConfig[@"gem_owned"] integerValue];
+    if (gemOwned <= 0) gemOwned = self.ownedGemCount;
+    _leftCostLabel.text = [NSString stringWithFormat:@"%ld/%ld", (long)gemCost, (long)gemOwned];
     
-    // 投入的藏宝图置零
+    // 切换页签：藏宝图投入量归零，且重置幂等 UUID
     self.selectedCardCount = 0;
+    self.currentRequestId = @"";
+    _confirmExchangeButton.enabled = YES;
     [self updateSuccessRateUI];
 }
 
 - (void)tabClick:(UIButton *)sender {
-    if (sender.tag < self.exchangeConfigs.count) {
+    if (sender.tag < self.tabButtons.count) {
         self.activeConfigIndex = sender.tag;
         [self selectActiveTab];
     }
@@ -454,30 +379,45 @@
 #pragma mark - 循环点击藏宝图 (0 -> 1 -> 2 -> ... -> max -> 0)
 
 - (void)cardSelectClick {
-    if (self.exchangeConfigs.count == 0) return;
+    if (self.exchangeConfigs.count == 0 || self.activeConfigIndex >= self.exchangeConfigs.count) return;
     
-    self.selectedCardCount += 1;
-    if (self.selectedCardCount > self.maxOwnedCards) {
+    NSDictionary *activeConfig = self.exchangeConfigs[self.activeConfigIndex];
+    NSInteger cardOwned = [activeConfig[@"card_owned"] integerValue];
+    if (cardOwned <= 0) cardOwned = self.maxOwnedCards;
+    
+    NSInteger maxCardCount = [activeConfig[@"max_card_count"] integerValue];
+    if (maxCardCount <= 0) maxCardCount = 10;
+    
+    NSInteger upperLimit = MIN(cardOwned, maxCardCount);
+    
+    if (upperLimit > 0) {
+        self.selectedCardCount = (self.selectedCardCount + 1) % (upperLimit + 1);
+    } else {
         self.selectedCardCount = 0;
     }
     
+    // 手动调整投入数量：重置生成新的 UUID
+    self.currentRequestId = @"";
     [self updateSuccessRateUI];
 }
 
 - (void)updateSuccessRateUI {
-    // 藏宝图投入 (card_invested / card_owned)
-    _rightCostLabel.text = [NSString stringWithFormat:@"%ld/%ld", (long)self.selectedCardCount, (long)self.maxOwnedCards];
-    
-    if (self.exchangeConfigs.count == 0) {
+    if (self.exchangeConfigs.count == 0 || self.activeConfigIndex >= self.exchangeConfigs.count) {
+        _rightCostLabel.text = @"0/0";
         _successRateLabel.text = @"兑换成功率: 0%";
         return;
     }
-    NSDictionary *activeConfig = self.exchangeConfigs[self.activeConfigIndex];
-    NSInteger baseRate = [activeConfig[@"success_rate"] integerValue];
     
+    NSDictionary *activeConfig = self.exchangeConfigs[self.activeConfigIndex];
+    NSInteger cardOwned = [activeConfig[@"card_owned"] integerValue];
+    if (cardOwned <= 0) cardOwned = self.maxOwnedCards;
+    
+    _rightCostLabel.text = [NSString stringWithFormat:@"%ld/%ld", (long)self.selectedCardCount, (long)cardOwned];
+    
+    NSInteger baseRate = [activeConfig[@"success_rate"] integerValue];
     NSInteger finalRate = 0;
     if (self.selectedCardCount == 0) {
-        finalRate = 0;
+        finalRate = 0; // 0 张图：必失败 0%
     } else {
         finalRate = MIN(100, baseRate * self.selectedCardCount);
     }
@@ -487,34 +427,53 @@
 #pragma mark - 执行兑换
 
 - (void)confirmExchangeClick {
-    if (self.exchangeConfigs.count == 0) return;
+    if (self.exchangeConfigs.count == 0 || self.activeConfigIndex >= self.exchangeConfigs.count) return;
     
     NSDictionary *activeConfig = self.exchangeConfigs[self.activeConfigIndex];
     NSInteger configId = [activeConfig[@"exchange_id"] integerValue];
+    NSInteger gemCost = [activeConfig[@"gem_cost"] integerValue];
+    NSInteger gemOwned = [activeConfig[@"gem_owned"] integerValue];
+    if (gemOwned <= 0) gemOwned = self.ownedGemCount;
+    
+    if (gemOwned < gemCost) {
+        [SVProgressHUD showInfoWithStatus:[NSString stringWithFormat:@"宝石碎片不足，兑换需要%ld个碎片", (long)gemCost]];
+        return;
+    }
+    
+    // 首次点击提交生成 UUID；超时/重试时复用 currentRequestId
+    if (self.currentRequestId.length == 0) {
+        self.currentRequestId = [NSString stringWithFormat:@"treasure-%@", [[NSUUID UUID] UUIDString]];
+    }
     
     _confirmExchangeButton.enabled = NO;
     WeakSelf
     [MLGameLotteryService exchangeGiftWithExchangeId:configId 
                                            cardCount:self.selectedCardCount 
+                                           requestId:self.currentRequestId
                                              success:^(BOOL isSuccess, MLGameDrawResultModel *gift, NSInteger remainCard, NSInteger remainGem, NSString *msg) {
         wself.confirmExchangeButton.enabled = YES;
+        wself.currentRequestId = @""; // 得到响应后清空
         
         wself.maxOwnedCards = remainCard;
         wself.ownedGemCount = remainGem;
         
-        if (wself.selectedCardCount > remainCard) {
-            wself.selectedCardCount = remainCard;
-        }
-        [wself selectActiveTab]; // 重新加载数据渲染
-        
+        // 成功率计算与余额同步
         if (isSuccess) {
-            [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"兑换成功！已获得: %@", gift.name]];
+            NSString *gName = gift.name.length > 0 ? gift.name : @"高级礼物";
+            [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"兑换成功！恭喜获得：%@", gName]];
         } else {
-            [SVProgressHUD showInfoWithStatus:msg.length > 0 ? msg : @"兑换失败了，再试一次吧"];
+            NSString *tipMsg = msg;
+            if (tipMsg.length == 0 || [tipMsg isEqualToString:@"兑换完成"] || [tipMsg isEqualToString:@"操作成功"] || [tipMsg isEqualToString:@"请求成功"]) {
+                tipMsg = @"兑换失败，本次消耗了宝石碎片与藏宝图";
+            }
+            [SVProgressHUD showInfoWithStatus:tipMsg];
         }
+        
+        // 兑换后静默重新刷新全量余额与资产配置
+        [wself loadExchangeData];
     } failure:^(NSError *error) {
         wself.confirmExchangeButton.enabled = YES;
-        [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+        [SVProgressHUD showErrorWithStatus:error.localizedDescription ?: @"网络连接失败，请重试"];
     }];
 }
 
