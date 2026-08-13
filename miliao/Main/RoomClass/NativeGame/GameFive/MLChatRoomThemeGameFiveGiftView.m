@@ -90,6 +90,8 @@
     _probabilityLabel.textColor = kWhiteColor;
     _probabilityLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(6.5)];
     _probabilityLabel.textAlignment = NSTextAlignmentCenter;
+    _probabilityLabel.adjustsFontSizeToFitWidth = YES;
+    _probabilityLabel.minimumScaleFactor = 0.6;
     [_badgeBgView addSubview:_probabilityLabel];
     [_probabilityLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(_badgeBgView);

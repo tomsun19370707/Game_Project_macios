@@ -162,7 +162,7 @@
             [giftImg performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@""]];
         }
         
-        // 98% 概率角标 (放大至 36x12 pt, 8.5pt Bold)
+        // 真实概率角标 (放大至 36x12 pt, 8.5pt Bold)
         UIImageView *tagBg = [[UIImageView alloc] init];
         tagBg.image = [UIImage imageNamed:@"theme_game_one_gift_item_tag_bg"];
         tagBg.contentMode = UIViewContentModeScaleToFill;
@@ -174,14 +174,23 @@
         }];
         
         UILabel *tagLabel = [[UILabel alloc] init];
-        tagLabel.text = @"98%";
         tagLabel.textColor = kWhiteColor;
         tagLabel.font = KFontBoldA(8.5);
         tagLabel.textAlignment = NSTextAlignmentCenter;
+        tagLabel.adjustsFontSizeToFitWidth = YES;
+        tagLabel.minimumScaleFactor = 0.6;
         [tagBg addSubview:tagLabel];
         [tagLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.mas_equalTo(tagBg);
         }];
+        
+        NSString *probStr = [gift displayProbability];
+        if (probStr && probStr.length > 0) {
+            tagBg.hidden = NO;
+            tagLabel.text = probStr;
+        } else {
+            tagBg.hidden = YES;
+        }
         
         // 礼物名称 (智能缩放防截断，往下移动至 top 65pt)
         UILabel *nameLabel = [[UILabel alloc] init];

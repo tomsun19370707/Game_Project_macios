@@ -200,24 +200,34 @@
             make.leading.trailing.mas_equalTo(cardImg);
         }];
         
+        // 真实概率角标 (拓宽至 36x13 pt，开启智能微缩防截断)
         UIImageView *badgeBg = [[UIImageView alloc] init];
         badgeBg.image = [UIImage imageNamed:@"theme_game_three_result_item_badge"];
         [cardImg addSubview:badgeBg];
         [badgeBg mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(cardImg);
             make.trailing.mas_equalTo(cardImg);
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(28.5f), KDialogAdaptedWidth(19.5f)));
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36.0f), KDialogAdaptedWidth(13.0f)));
         }];
         
         UILabel *badgeLabel = [[UILabel alloc] init];
-        badgeLabel.text = @"98%";
-        badgeLabel.textColor = kWhiteColor;
+        badgeLabel.textColor = kBlackColor;
         badgeLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(8)];
         badgeLabel.textAlignment = NSTextAlignmentCenter;
+        badgeLabel.adjustsFontSizeToFitWidth = YES;
+        badgeLabel.minimumScaleFactor = 0.6;
         [badgeBg addSubview:badgeLabel];
         [badgeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.mas_equalTo(badgeBg);
         }];
+        
+        NSString *probStr = [gift displayProbability];
+        if (probStr && probStr.length > 0) {
+            badgeBg.hidden = NO;
+            badgeLabel.text = probStr;
+        } else {
+            badgeBg.hidden = YES;
+        }
         
         // 预览【奖品池】图鉴清单时隐藏卡片下方的数量数字 xN
         if (gift.num > 0) {

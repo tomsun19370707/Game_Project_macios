@@ -179,25 +179,34 @@
             make.leading.trailing.mas_equalTo(cardImg);
         }];
         
-        // 98% 概率角标 (绑定专属重命名资源: theme_game_two_gift_item_badge)
+        // 真实概率角标 (拓宽至 36x12 pt，开启智能微缩防截断)
         UIImageView *badgeBg = [[UIImageView alloc] init];
         badgeBg.image = [UIImage imageNamed:@"theme_game_two_gift_item_badge"];
         [cardImg addSubview:badgeBg];
         [badgeBg mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(cardImg);
             make.trailing.mas_equalTo(cardImg);
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(31), KDialogAdaptedWidth(11)));
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(36), KDialogAdaptedWidth(12)));
         }];
         
         UILabel *badgeLabel = [[UILabel alloc] init];
-        badgeLabel.text = @"98%";
         badgeLabel.textColor = kWhiteColor;
         badgeLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(8)];
         badgeLabel.textAlignment = NSTextAlignmentCenter;
+        badgeLabel.adjustsFontSizeToFitWidth = YES;
+        badgeLabel.minimumScaleFactor = 0.6;
         [badgeBg addSubview:badgeLabel];
         [badgeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.mas_equalTo(badgeBg);
         }];
+        
+        NSString *probStr = [gift displayProbability];
+        if (probStr && probStr.length > 0) {
+            badgeBg.hidden = NO;
+            badgeLabel.text = probStr;
+        } else {
+            badgeBg.hidden = YES;
+        }
     }
     
     NSInteger totalRows = (self.mergedGifts.count + colCount - 1) / colCount;

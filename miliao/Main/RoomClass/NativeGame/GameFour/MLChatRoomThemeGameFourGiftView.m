@@ -217,14 +217,23 @@
         }];
         
         UILabel *badgeLabel = [[UILabel alloc] init];
-        badgeLabel.text = @"98%";
         badgeLabel.textColor = kWhiteColor;
         badgeLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(9)];
         badgeLabel.textAlignment = NSTextAlignmentCenter;
+        badgeLabel.adjustsFontSizeToFitWidth = YES;
+        badgeLabel.minimumScaleFactor = 0.6;
         [badgeBg addSubview:badgeLabel];
         [badgeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.center.mas_equalTo(badgeBg);
+            make.edges.mas_equalTo(badgeBg);
         }];
+        
+        NSString *probStr = [gift displayProbability];
+        if (probStr && probStr.length > 0) {
+            badgeBg.hidden = NO;
+            badgeLabel.text = probStr;
+        } else {
+            badgeBg.hidden = YES;
+        }
     }
     
     _scrollView.contentSize = CGSizeMake(totalW, totalH);
