@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "MLGameLotteryInfoModel.h"
 #import "MLGameDrawResultModel.h"
+#import "MLGameFourRankingUserModel.h"
 
 FOUNDATION_EXPORT NSString *MLFormatLargeNumber(double num);
 
@@ -105,5 +106,12 @@ FOUNDATION_EXPORT NSString *MLFormatLargeNumber(double num);
                           pageSize:(NSInteger)pageSize 
                            success:(void(^)(NSArray *list, NSInteger total))success 
                            failure:(void(^)(NSError *error))failure;
+
+/**
+ 12. 玩法 4 (三生福袋) 自然周排行榜接口
+ */
++ (void)getGameFourRankingWithLimit:(NSInteger)limit
+                            success:(void(^)(NSArray<MLGameFourRankingUserModel *> *list))success
+                            failure:(void(^)(NSError *error))failure;
 
 @end

@@ -479,4 +479,32 @@ NSString *MLFormatLargeNumber(double num) {
     }];
 }
 
++ (void)getGameFourRankingWithLimit:(NSInteger)limit
+                            success:(void(^)(NSArray<MLGameFourRankingUserModel *> *list))success
+                            failure:(void(^)(NSError *error))failure {
+    NSString *url = [NSString stringWithFormat:@"%@api/emo/lottery/get_ranking", VERSION_HTTPS_SERVER];
+    NSDictionary *params = @{
+        @"limit": @(limit > 0 ? limit : 100)
+    };
+    [MLNetWorkHelper GET:url parameters:[self buildParams:params] success:^(id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            if (failure) failure([NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"数据格式错误"}]);
+            return;
+        }
+        if ([responseObject[@"code"] integerValue] == 1) {
+            NSArray *list = [MLGameFourRankingUserModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            if (success) success(list);
+        } else {
+            if (failure) {
+                NSError *error = [NSError errorWithDomain:@"MLGameLotteryServiceErrorDomain" 
+                                                      code:[responseObject[@"code"] integerValue] 
+                                                  userInfo:@{NSLocalizedDescriptionKey: responseObject[@"msg"] ?: @"请求失败"}];
+                failure(error);
+            }
+        }
+    } failure:^(NSError *error) {
+        if (failure) failure(error);
+    }];
+}
+
 @end

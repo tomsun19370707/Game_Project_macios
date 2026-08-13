@@ -42,3 +42,18 @@
 @property (nonatomic, copy) NSString *guarantee_min_price;
 
 @end
+
+#pragma mark - MLGameFourRankingUserModel (玩法 4 自然周排行榜实体模型)
+@interface MLGameFourRankingUserModel : NSObject
+
+@property (nonatomic, assign) NSInteger rank;
+@property (nonatomic, assign) int64_t uid;
+@property (nonatomic, copy) NSString *nickname;
+@property (nonatomic, copy) NSString *uuid;
+@property (nonatomic, copy) NSString *avatar;
+@property (nonatomic, assign) NSInteger type8_count;  // 青玉福袋 (type_id=8)
+@property (nonatomic, assign) NSInteger type9_count;  // 碧海福袋 (type_id=9)
+@property (nonatomic, assign) NSInteger type10_count; // 鎏金福袋 (type_id=10)
+@property (nonatomic, assign) NSInteger total_count;
+
+@end

@@ -74,6 +74,20 @@
 
 @end
 
+#pragma mark - MLGameFourRankingUserModel
+@implementation MLGameFourRankingUserModel
+
++ (NSDictionary *)mj_replacedKeyFromPropertyName {
+    return @{
+        @"type8_count": @[@"type8_count", @"type8Count"],
+        @"type9_count": @[@"type9_count", @"type9Count"],
+        @"type10_count": @[@"type10_count", @"type10Count"],
+        @"total_count": @[@"total_count", @"totalCount"]
+    };
+}
+
+@end
+
 @implementation MLGameDrawResponseModel
 
 + (NSDictionary *)mj_objectClassInArray {

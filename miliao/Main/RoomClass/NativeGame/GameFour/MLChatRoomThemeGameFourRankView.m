@@ -1,6 +1,8 @@
 #import "MLChatRoomThemeGameFourRankView.h"
 #import "Global.h"
+#import "MLGameLotteryService.h"
 #import <Masonry/Masonry.h>
+#import <UIImageView+WebCache.h>
 
 // ==========================================
 // MLChatRoomThemeGameFourRankCell
@@ -24,7 +26,7 @@
 @property (nonatomic, strong) NSMutableArray<UIImageView *> *giftIconViews;
 @property (nonatomic, strong) NSMutableArray<UILabel *> *giftCountLabels;
 
-- (void)configureWithData:(NSDictionary *)data;
+- (void)configureWithModel:(MLGameFourRankingUserModel *)model;
 
 @end
 
@@ -173,17 +175,21 @@
     }
 }
 
-- (void)configureWithData:(NSDictionary *)data {
-    NSInteger rank = [data[@"rank"] integerValue];
-    _nicknameLabel.text = data[@"nickname"] ?: @"";
+- (void)configureWithModel:(MLGameFourRankingUserModel *)model {
+    if (!model) return;
     
-    // Default avatar placeholder image
-    _avatarImageView.image = [UIImage imageNamed:@"theme_game_one_record_head"];
-    if (data[@"avatar_url"]) {
-        // Load image here if needed, keeping placeholder default
+    NSInteger rank = model.rank;
+    _nicknameLabel.text = model.nickname ?: @"";
+    
+    // SDWebImage 加载用户真实头像
+    NSURL *url = [NSURL URLWithString:model.avatar ?: @""];
+    if ([_avatarImageView respondsToSelector:@selector(sd_setImageWithURL:placeholderImage:)]) {
+        [_avatarImageView performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@"theme_game_one_record_head"]];
+    } else {
+        _avatarImageView.image = [UIImage imageNamed:@"theme_game_one_record_head"];
     }
 
-    // Rank badges config
+    // 前 3 名专属勋章与 4 名以后的数字排名
     if (rank == 1) {
         _rankBadgeView.hidden = NO;
         _rankNumberLabel.hidden = YES;
@@ -202,14 +208,11 @@
         _rankNumberLabel.text = [NSString stringWithFormat:@"%ld", (long)rank];
     }
 
-    // Gift counts config
-    NSArray *counts = data[@"bag_counts"] ?: @[@(0), @(0), @(0)];
-    for (int i = 0; i < 3; i++) {
-        NSInteger count = 0;
-        if (i < counts.count) {
-            count = [counts[i] integerValue];
-        }
-        _giftCountLabels[i].text = [NSString stringWithFormat:@"x%ld", (long)count];
+    // 绑定右侧 3 种福袋抽奖次数 (青玉/碧海/鎏金)
+    if (_giftCountLabels.count >= 3) {
+        _giftCountLabels[0].text = [NSString stringWithFormat:@"x%ld", (long)model.type8_count];
+        _giftCountLabels[1].text = [NSString stringWithFormat:@"x%ld", (long)model.type9_count];
+        _giftCountLabels[2].text = [NSString stringWithFormat:@"x%ld", (long)model.type10_count];
     }
 }
 
@@ -231,7 +234,7 @@
 @property (nonatomic, strong) UILabel *bottomTipsLabel;
 @property (nonatomic, strong) UIButton *closeBtn;
 
-@property (nonatomic, strong) NSArray *rankList;
+@property (nonatomic, strong) NSArray<MLGameFourRankingUserModel *> *rankList;
 
 @end
 
@@ -246,10 +249,21 @@
 - (instancetype)initWithFrame:(CGRect)frame typeId:(NSInteger)typeId {
     if (self = [super initWithFrame:frame]) {
         self.typeId = typeId;
-        self.rankList = [self generateMockData];
         [self setupUI];
+        [self loadRankingData];
     }
     return self;
+}
+
+- (void)loadRankingData {
+    WeakSelf
+    [MLGameLotteryService getGameFourRankingWithLimit:100 success:^(NSArray<MLGameFourRankingUserModel *> *list) {
+        if (!wself) return;
+        if (list && [list isKindOfClass:[NSArray class]]) {
+            wself.rankList = list;
+            [wself.tableView reloadData];
+        }
+    } failure:nil];
 }
 
 - (void)setupUI {
@@ -364,28 +378,6 @@
     }];
 }
 
-#pragma mark - Mock Data
-
-- (NSArray *)generateMockData {
-    NSArray *nicknames = @[
-        @"折纸小飞船", @"捕梦守护者", @"星愿精灵", @"极光旅人", @"时空穿梭机",
-        @"月相观测员", @"彗星追随者", @"梦境编织师", @"星河漫步", @"时空使者"
-    ];
-    NSArray *goldCounts = @[@(1390), @(1120), @(890), @(650), @(520), @(480), @(310), @(220), @(110), @(80)];
-    NSArray *greenCounts = @[@(850), @(710), @(520), @(430), @(310), @(280), @(190), @(120), @(60), @(40)];
-    NSArray *blueCounts = @[@(420), @(330), @(210), @(180), @(150), @(110), @(80), @(50), @(30), @(10)];
-
-    NSMutableArray *temp = [NSMutableArray array];
-    for (int i = 0; i < nicknames.count; i++) {
-        [temp addObject:@{
-            @"rank": @(i + 1),
-            @"nickname": nicknames[i],
-            @"bag_counts": @[goldCounts[i], greenCounts[i], blueCounts[i]]
-        }];
-    }
-    return temp;
-}
-
 #pragma mark - UITableViewDataSource / Delegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -395,7 +387,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MLChatRoomThemeGameFourRankCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MLChatRoomThemeGameFourRankCell" forIndexPath:indexPath];
     if (indexPath.row < self.rankList.count) {
-        [cell configureWithData:self.rankList[indexPath.row]];
+        [cell configureWithModel:self.rankList[indexPath.row]];
     }
     return cell;
 }
