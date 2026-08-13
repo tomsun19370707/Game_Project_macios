@@ -46,6 +46,9 @@
 @property (nonatomic, strong) NSMutableSet<MLCandidateItemModel *> *selectedTempSet;
 @property (nonatomic, strong) NSMutableArray<UIImageView *> *checkMarkImageViews;
 @property (nonatomic, assign) NSInteger tempPageIndex;
+@property (nonatomic, strong) UIView *ticketTabsContainer;
+@property (nonatomic, strong) NSMutableArray<UIButton *> *ticketButtons;
+@property (nonatomic, strong) NSMutableArray<MLTowerGameSixTicketTypeModel *> *ticketTypes;
 @property (nonatomic, assign) NSInteger selectedTicketTypeId;
 
 @end
@@ -96,33 +99,134 @@
 
 - (void)loadCandidatesData {
     [SVProgressHUD show];
+    WeakSelf
     [[MLThemeGameModel sharedInstance] fetchTowerGameSixFusionCandidatesWithSuccess:^(MLTowerGameSixFusionCandidateModel * _Nullable model) {
         [SVProgressHUD dismiss];
         if (model) {
-            self.candidateModel = model;
-            if (model.ticket_types && model.ticket_types.count > 0 && self.selectedTicketTypeId == 0) {
-                MLTowerGameSixTicketTypeModel *firstTicket = model.ticket_types.firstObject;
-                self.selectedTicketTypeId = firstTicket.id;
+            wself.candidateModel = model;
+            NSMutableArray *typesList = [NSMutableArray array];
+            if (model.ticket_types && model.ticket_types.count > 0) {
+                for (MLTowerGameSixTicketTypeModel *t in model.ticket_types) {
+                    t.is_from_backend = YES;
+                    [typesList addObject:t];
+                }
             }
-            [self refreshDataUI];
+            wself.ticketTypes = typesList;
+            [wself checkOrCreateDefaultTicketTypes];
+            
+            if (wself.selectedTicketTypeId == 0 && wself.ticketTypes.count > 0) {
+                MLTowerGameSixTicketTypeModel *firstTicket = wself.ticketTypes.firstObject;
+                wself.selectedTicketTypeId = firstTicket.id;
+            }
+            [wself refreshDataUI];
+            [wself renderTicketTabs];
         }
     } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
         [SVProgressHUD dismiss];
         [SVProgressHUD showInfoWithStatus:msg ?: @"未登录或网络异常，已展示试用面板"];
+        [wself checkOrCreateDefaultTicketTypes];
+        [wself renderTicketTabs];
     }];
+}
+
+- (void)checkOrCreateDefaultTicketTypes {
+    if (!self.ticketTypes) {
+        self.ticketTypes = [NSMutableArray array];
+    }
+    if (self.ticketTypes.count < 5) {
+        NSArray *names = @[@"一层", @"二层", @"三层", @"四层", @"五层"];
+        NSArray *values = @[@"5000.00", @"10000.00", @"20000.00", @"50000.00", @"100000.00"];
+        
+        NSMutableSet *existingLayers = [NSMutableSet set];
+        for (MLTowerGameSixTicketTypeModel *item in self.ticketTypes) {
+            NSInteger layer = item.start_layer > 0 ? item.start_layer : item.ticket_layer;
+            if (layer > 0) [existingLayers addObject:@(layer)];
+        }
+        
+        for (int i = 0; i < 5; i++) {
+            NSInteger layer = i + 1;
+            if (![existingLayers containsObject:@(layer)]) {
+                MLTowerGameSixTicketTypeModel *bean = [[MLTowerGameSixTicketTypeModel alloc] init];
+                bean.id = layer;
+                bean.name = names[i];
+                bean.start_layer = layer;
+                bean.ticket_layer = layer;
+                bean.ticket_value = values[i];
+                bean.is_from_backend = NO;
+                [self.ticketTypes addObject:bean];
+            }
+        }
+        [self.ticketTypes sortUsingComparator:^NSComparisonResult(MLTowerGameSixTicketTypeModel *a, MLTowerGameSixTicketTypeModel *b) {
+            return [@(a.start_layer) compare:@(b.start_layer)];
+        }];
+        
+        if (self.selectedTicketTypeId == 0 && self.ticketTypes.count > 0) {
+            self.selectedTicketTypeId = self.ticketTypes.firstObject.id;
+        }
+    }
+}
+
+- (BOOL)isSelectedTicketTypeFromBackend {
+    if (!self.ticketTypes) return NO;
+    for (MLTowerGameSixTicketTypeModel *item in self.ticketTypes) {
+        if (item.id == self.selectedTicketTypeId) {
+            return item.is_from_backend;
+        }
+    }
+    return NO;
+}
+
+- (NSInteger)getEffectiveTicketTypeIdForSubmit {
+    return [self isSelectedTicketTypeFromBackend] ? self.selectedTicketTypeId : 0;
+}
+
+- (void)renderTicketTabs {
+    if (!self.ticketButtons || self.ticketButtons.count == 0) return;
+    if (!self.ticketTypes || self.ticketTypes.count == 0) return;
+    
+    for (int i = 0; i < self.ticketButtons.count; i++) {
+        UIButton *btn = self.ticketButtons[i];
+        if (i < self.ticketTypes.count) {
+            MLTowerGameSixTicketTypeModel *item = self.ticketTypes[i];
+            btn.hidden = NO;
+            NSInteger layerNum = item.start_layer > 0 ? item.start_layer : (i + 1);
+            NSString *imgName = [NSString stringWithFormat:@"theme_game_six_tab_%ld", (long)layerNum];
+            [btn setImage:[UIImage imageNamed:imgName] forState:UIControlStateNormal];
+            
+            BOOL isSelected = (item.id == self.selectedTicketTypeId);
+            btn.alpha = isSelected ? 1.0f : 0.55f;
+        } else {
+            btn.hidden = YES;
+        }
+    }
+}
+
+- (void)ticketTabClick:(UIButton *)btn {
+    NSInteger idx = btn.tag - 1;
+    if (self.ticketTypes && idx < self.ticketTypes.count) {
+        MLTowerGameSixTicketTypeModel *item = self.ticketTypes[idx];
+        self.selectedTicketTypeId = item.id;
+        [self renderTicketTabs];
+        [self refreshDataUI];
+    }
 }
 
 - (void)refreshDataUI {
     if (!self.candidateModel) return;
     
-    if (_candidateModel.ticket_types && _candidateModel.ticket_types.count > 0) {
-        for (MLTowerGameSixTicketTypeModel *tBean in _candidateModel.ticket_types) {
-            if (tBean.id == self.selectedTicketTypeId && tBean.ticket_value.length > 0) {
-                _tvFusionThresholdTop.text = [NSString stringWithFormat:@"融合门槛: 💎 %@", tBean.ticket_value];
+    MLTowerGameSixTicketTypeModel *selectedBean = nil;
+    if (self.ticketTypes && self.ticketTypes.count > 0) {
+        for (MLTowerGameSixTicketTypeModel *tBean in self.ticketTypes) {
+            if (tBean.id == self.selectedTicketTypeId) {
+                selectedBean = tBean;
+                if (tBean.ticket_value.length > 0) {
+                    _tvFusionThresholdTop.text = [NSString stringWithFormat:@"融合门槛: 💎 %@", tBean.ticket_value];
+                }
                 break;
             }
         }
-    } else if (_candidateModel.threshold_value) {
+    }
+    if (!selectedBean && _candidateModel.threshold_value) {
         _tvFusionThresholdTop.text = [NSString stringWithFormat:@"融合门槛: 💎 %@", _candidateModel.threshold_value];
     }
     
@@ -155,8 +259,14 @@
         }
     }
     
-    // 2. 实时刷新底部选中总价值提示 (100% 服务端接口权威驱动)
-    double threshold = [_candidateModel.threshold_value doubleValue];
+    // 2. 实时刷新底部选中总价值提示 (动态联动当前选中门票层级门槛)
+    double threshold = 0.0;
+    if (selectedBean && selectedBean.ticket_value.length > 0) {
+        threshold = [selectedBean.ticket_value doubleValue];
+    } else if (_candidateModel.threshold_value) {
+        threshold = [_candidateModel.threshold_value doubleValue];
+    }
+    
     if (threshold > 0 && totalVal >= threshold) {
         _tvFusionSelectedBottom.text = [NSString stringWithFormat:@"当前选中: 💎 %.2f (已达标)", totalVal];
         _tvFusionSelectedBottom.textColor = [UIColor colorWithRed:0x88/255.0 green:0xFF/255.0 blue:0x88/255.0 alpha:1.0];
@@ -323,6 +433,44 @@
     if (lastSlotView) {
         [_topSlotsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
             make.trailing.mas_equalTo(lastSlotView.mas_trailing);
+        }];
+    }
+    
+    // 2.5 5 级门票横向页签选单容器 (处于槽位区与融合按钮正中间)
+    _ticketTabsContainer = [[UIView alloc] init];
+    [_boardContainer addSubview:_ticketTabsContainer];
+    [_ticketTabsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_topSlotsContainer.mas_bottom).offset(KDialogAdaptedWidth(2));
+        make.bottom.mas_equalTo(_boardContainer.mas_top).offset(boardHeight * 0.36 - KDialogAdaptedWidth(2));
+        make.centerX.mas_equalTo(_boardContainer);
+    }];
+    
+    _ticketButtons = [NSMutableArray array];
+    UIView *lastTabBtn = nil;
+    for (int i = 0; i < 5; i++) {
+        UIButton *tabBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        tabBtn.tag = i + 1;
+        tabBtn.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        NSString *imgName = [NSString stringWithFormat:@"theme_game_six_tab_%d", i + 1];
+        [tabBtn setImage:[UIImage imageNamed:imgName] forState:UIControlStateNormal];
+        [tabBtn addTarget:self action:@selector(ticketTabClick:) forControlEvents:UIControlEventTouchUpInside];
+        [_ticketTabsContainer addSubview:tabBtn];
+        [_ticketButtons addObject:tabBtn];
+        
+        [tabBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(_ticketTabsContainer);
+            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(44), KDialogAdaptedWidth(28)));
+            if (lastTabBtn) {
+                make.leading.mas_equalTo(lastTabBtn.mas_trailing).offset(KDialogAdaptedWidth(3));
+            } else {
+                make.leading.mas_equalTo(_ticketTabsContainer);
+            }
+        }];
+        lastTabBtn = tabBtn;
+    }
+    if (lastTabBtn) {
+        [_ticketTabsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.trailing.mas_equalTo(lastTabBtn.mas_trailing);
         }];
     }
     
@@ -521,7 +669,8 @@
         }
         
         [SVProgressHUD showWithStatus:@"正在提交门票合成..."];
-        [[MLThemeGameModel sharedInstance] exchangeTowerGameSixTicketWithGlobalItems:globalArr tempItems:tempArr ticketTypeId:self.selectedTicketTypeId stateVersion:freshStateVersion success:^(id _Nullable responseObj) {
+        NSInteger effectiveTicketTypeId = [self getEffectiveTicketTypeIdForSubmit];
+        [[MLThemeGameModel sharedInstance] exchangeTowerGameSixTicketWithGlobalItems:globalArr tempItems:tempArr ticketTypeId:effectiveTicketTypeId stateVersion:freshStateVersion success:^(id _Nullable responseObj) {
             [SVProgressHUD showSuccessWithStatus:@"✨ 门票融合成功！已获得 7 次重铸机会"];
             if (self.onFusionSuccessBlock) {
                 self.onFusionSuccessBlock();
@@ -556,7 +705,8 @@
     }
     if (items.count == 0) return;
     
-    [[MLThemeGameModel sharedInstance] previewTowerGameSixFusionWithItems:items ticketTypeId:self.selectedTicketTypeId success:^(id _Nullable responseObj) {
+    NSInteger effectiveTicketTypeId = [self getEffectiveTicketTypeIdForSubmit];
+    [[MLThemeGameModel sharedInstance] previewTowerGameSixFusionWithItems:items ticketTypeId:effectiveTicketTypeId success:^(id _Nullable responseObj) {
         if ([responseObj isKindOfClass:[NSDictionary class]]) {
             NSString *serverTotalVal = responseObj[@"total_value"];
             BOOL isEligible = [responseObj[@"is_eligible"] boolValue];
