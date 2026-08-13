@@ -10,7 +10,8 @@
     return @{
         @"typeId": @"id",
         @"consume_diamonds": @[@"total_cost", @"consumeDiamonds", @"consume_diamonds"],
-        @"produce_diamonds": @[@"total_income", @"produceDiamonds", @"produce_diamonds"]
+        @"produce_diamonds": @[@"total_income", @"produceDiamonds", @"produce_diamonds"],
+        @"internal_game_id": @[@"internal_game_id", @"internalGameId"]
     };
 }
 

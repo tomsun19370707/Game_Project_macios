@@ -20,6 +20,8 @@
 @property (nonatomic, assign) NSInteger consume_diamonds; // 今日消耗钻石数
 @property (nonatomic, assign) NSInteger produce_diamonds; // 今日产出钻石数
 @property (nonatomic, assign) NSInteger coin_cost; // 对应钥匙消耗数
+@property (nonatomic, assign) NSInteger internal_game_id; // 内部玩法 ID (如 6)
+@property (nonatomic, copy) NSString *source; // 玩法数据源标示 (如 "tower")
 - (NSString *)imageUrl;
 @end
 
