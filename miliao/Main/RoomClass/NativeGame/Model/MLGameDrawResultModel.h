@@ -9,11 +9,18 @@
 @property (nonatomic, assign) NSInteger price;
 @property (nonatomic, assign) NSInteger num;
 @property (nonatomic, assign) BOOL is_guaranteed;
+@property (nonatomic, copy) NSString *probability_text;
+@property (nonatomic, assign) double probability;
 
 /**
  兼容性的图片加载地址 (内部自动处理 pic 与 image 兜底)
  */
 - (NSString *)imageUrl;
+
+/**
+ 格式化显示概率字符串 (例如 "28.86%")
+ */
+- (NSString *)displayProbability;
 
 /**
  有序去重合并中奖结果

@@ -5,7 +5,8 @@
 
 + (NSDictionary *)mj_replacedKeyFromPropertyName {
     return @{
-        @"giftId": @"id"
+        @"giftId": @"id",
+        @"probability_text": @[@"probability_text", @"probabilityText"]
     };
 }
 
@@ -14,6 +15,16 @@
         return self.pic;
     }
     return self.image ?: @"";
+}
+
+- (NSString *)displayProbability {
+    if (self.probability_text && [self.probability_text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length > 0) {
+        return self.probability_text;
+    }
+    if (self.probability > 0) {
+        return [NSString stringWithFormat:@"%.2f%%", self.probability];
+    }
+    return @"";
 }
 
 #pragma mark - NSCopying
@@ -26,6 +37,8 @@
         copy.image = [self.image copyWithZone:zone];
         copy.price = self.price;
         copy.num = self.num;
+        copy.probability_text = [self.probability_text copyWithZone:zone];
+        copy.probability = self.probability;
     }
     return copy;
 }

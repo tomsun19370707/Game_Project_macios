@@ -16,6 +16,8 @@
 @property (nonatomic, strong) UIImageView *giftImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UILabel *priceLabel;
+@property (nonatomic, strong) UIImageView *badgeBgView;
+@property (nonatomic, strong) UILabel *probabilityLabel;
 
 - (void)configureWithModel:(MLGameDrawResultModel *)model;
 
@@ -71,6 +73,27 @@
         make.top.mas_equalTo(_nameLabel.mas_bottom).offset(KDialogAdaptedWidth(3));
         make.leading.trailing.mas_equalTo(self.contentView);
     }];
+
+    // 右上角概率角标挂载 (SUAS 375pt Masonry 布局)
+    _badgeBgView = [[UIImageView alloc] init];
+    _badgeBgView.image = [UIImage imageNamed:@"theme_game_five_gift_badge_bg"];
+    _badgeBgView.contentMode = UIViewContentModeScaleToFill;
+    _badgeBgView.hidden = YES;
+    [self.contentView addSubview:_badgeBgView];
+    [_badgeBgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.contentView);
+        make.trailing.mas_equalTo(self.contentView);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(32), KDialogAdaptedWidth(12)));
+    }];
+
+    _probabilityLabel = [[UILabel alloc] init];
+    _probabilityLabel.textColor = kWhiteColor;
+    _probabilityLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(6.5)];
+    _probabilityLabel.textAlignment = NSTextAlignmentCenter;
+    [_badgeBgView addSubview:_probabilityLabel];
+    [_probabilityLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(_badgeBgView);
+    }];
 }
 
 - (void)configureWithModel:(MLGameDrawResultModel *)model {
@@ -82,6 +105,14 @@
         [_giftImageView performSelector:@selector(sd_setImageWithURL:placeholderImage:) withObject:url withObject:[UIImage imageNamed:@"theme_game_five_placeholder"]];
     } else {
         _giftImageView.image = [UIImage imageNamed:@"theme_game_five_placeholder"];
+    }
+
+    NSString *probStr = [model displayProbability];
+    if (probStr && probStr.length > 0) {
+        _badgeBgView.hidden = NO;
+        _probabilityLabel.text = probStr;
+    } else {
+        _badgeBgView.hidden = YES;
     }
 }
 
