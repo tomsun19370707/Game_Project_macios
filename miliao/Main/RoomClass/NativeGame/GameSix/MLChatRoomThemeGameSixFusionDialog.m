@@ -46,6 +46,7 @@
 @property (nonatomic, strong) NSMutableSet<MLCandidateItemModel *> *selectedTempSet;
 @property (nonatomic, strong) NSMutableArray<UIImageView *> *checkMarkImageViews;
 @property (nonatomic, assign) NSInteger tempPageIndex;
+@property (nonatomic, assign) NSInteger selectedTicketTypeId;
 
 @end
 
@@ -99,6 +100,10 @@
         [SVProgressHUD dismiss];
         if (model) {
             self.candidateModel = model;
+            if (model.ticket_types && model.ticket_types.count > 0 && self.selectedTicketTypeId == 0) {
+                MLTowerGameSixTicketTypeModel *firstTicket = model.ticket_types.firstObject;
+                self.selectedTicketTypeId = firstTicket.id;
+            }
             [self refreshDataUI];
         }
     } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
@@ -110,7 +115,14 @@
 - (void)refreshDataUI {
     if (!self.candidateModel) return;
     
-    if (_candidateModel.threshold_value) {
+    if (_candidateModel.ticket_types && _candidateModel.ticket_types.count > 0) {
+        for (MLTowerGameSixTicketTypeModel *tBean in _candidateModel.ticket_types) {
+            if (tBean.id == self.selectedTicketTypeId && tBean.ticket_value.length > 0) {
+                _tvFusionThresholdTop.text = [NSString stringWithFormat:@"融合门槛: 💎 %@", tBean.ticket_value];
+                break;
+            }
+        }
+    } else if (_candidateModel.threshold_value) {
         _tvFusionThresholdTop.text = [NSString stringWithFormat:@"融合门槛: 💎 %@", _candidateModel.threshold_value];
     }
     
@@ -509,7 +521,7 @@
         }
         
         [SVProgressHUD showWithStatus:@"正在提交门票合成..."];
-        [[MLThemeGameModel sharedInstance] exchangeTowerGameSixTicketWithGlobalItems:globalArr tempItems:tempArr stateVersion:freshStateVersion success:^(id _Nullable responseObj) {
+        [[MLThemeGameModel sharedInstance] exchangeTowerGameSixTicketWithGlobalItems:globalArr tempItems:tempArr ticketTypeId:self.selectedTicketTypeId stateVersion:freshStateVersion success:^(id _Nullable responseObj) {
             [SVProgressHUD showSuccessWithStatus:@"✨ 门票融合成功！已获得 7 次重铸机会"];
             if (self.onFusionSuccessBlock) {
                 self.onFusionSuccessBlock();
@@ -544,7 +556,7 @@
     }
     if (items.count == 0) return;
     
-    [[MLThemeGameModel sharedInstance] previewTowerGameSixFusionWithItems:items success:^(id _Nullable responseObj) {
+    [[MLThemeGameModel sharedInstance] previewTowerGameSixFusionWithItems:items ticketTypeId:self.selectedTicketTypeId success:^(id _Nullable responseObj) {
         if ([responseObj isKindOfClass:[NSDictionary class]]) {
             NSString *serverTotalVal = responseObj[@"total_value"];
             BOOL isEligible = [responseObj[@"is_eligible"] boolValue];

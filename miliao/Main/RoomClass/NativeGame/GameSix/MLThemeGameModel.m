@@ -128,8 +128,19 @@
 - (void)previewTowerGameSixFusionWithItems:(NSArray<NSDictionary *> *)items
                                    success:(MLGameSixSuccessBlock)success
                                    failure:(MLGameSixFailureBlock)failure {
+    [self previewTowerGameSixFusionWithItems:items ticketTypeId:0 success:success failure:failure];
+}
+
+- (void)previewTowerGameSixFusionWithItems:(NSArray<NSDictionary *> *)items
+                              ticketTypeId:(NSInteger)ticketTypeId
+                                   success:(MLGameSixSuccessBlock)success
+                                   failure:(MLGameSixFailureBlock)failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/tower_game_six/fusion_preview", VERSION_HTTPS_SERVER];
-    NSDictionary *params = @{@"items": items ?: @[]};
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"items"] = items ?: @[];
+    if (ticketTypeId > 0) {
+        params[@"ticket_type_id"] = @(ticketTypeId);
+    }
     
     [self postJSONWithURL:url parameters:params success:success failure:failure];
 }
@@ -139,14 +150,25 @@
                                      stateVersion:(NSInteger)stateVersion
                                           success:(MLGameSixSuccessBlock)success
                                           failure:(MLGameSixFailureBlock)failure {
+    [self exchangeTowerGameSixTicketWithGlobalItems:globalItems tempItems:tempItems ticketTypeId:0 stateVersion:stateVersion success:success failure:failure];
+}
+
+- (void)exchangeTowerGameSixTicketWithGlobalItems:(NSArray<NSDictionary *> *)globalItems
+                                        tempItems:(NSArray<NSDictionary *> *)tempItems
+                                     ticketTypeId:(NSInteger)ticketTypeId
+                                     stateVersion:(NSInteger)stateVersion
+                                          success:(MLGameSixSuccessBlock)success
+                                          failure:(MLGameSixFailureBlock)failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/tower_game_six/exchange_ticket", VERSION_HTTPS_SERVER];
     NSString *requestId = [[NSUUID UUID] UUIDString];
-    NSDictionary *params = @{
-        @"global_items": globalItems ?: @[],
-        @"temp_items": tempItems ?: @[],
-        @"state_version": @(stateVersion),
-        @"request_id": requestId
-    };
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"global_items"] = globalItems ?: @[];
+    params[@"temp_items"] = tempItems ?: @[];
+    params[@"state_version"] = @(stateVersion);
+    params[@"request_id"] = requestId;
+    if (ticketTypeId > 0) {
+        params[@"ticket_type_id"] = @(ticketTypeId);
+    }
     
     [self postJSONWithURL:url parameters:params success:success failure:failure];
 }

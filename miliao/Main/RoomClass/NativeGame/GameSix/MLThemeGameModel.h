@@ -32,9 +32,21 @@ typedef void(^MLGameSixFailureBlock)(NSError *error, NSString * _Nullable msg);
                                    success:(MLGameSixSuccessBlock)success
                                    failure:(MLGameSixFailureBlock)failure;
 
+- (void)previewTowerGameSixFusionWithItems:(NSArray<NSDictionary *> *)items
+                              ticketTypeId:(NSInteger)ticketTypeId
+                                   success:(MLGameSixSuccessBlock)success
+                                   failure:(MLGameSixFailureBlock)failure;
+
 /// 4. 提交门票合成 (/api/emo/tower_game_six/exchange_ticket)
 - (void)exchangeTowerGameSixTicketWithGlobalItems:(NSArray<NSDictionary *> *)globalItems
                                         tempItems:(NSArray<NSDictionary *> *)tempItems
+                                     stateVersion:(NSInteger)stateVersion
+                                          success:(MLGameSixSuccessBlock)success
+                                          failure:(MLGameSixFailureBlock)failure;
+
+- (void)exchangeTowerGameSixTicketWithGlobalItems:(NSArray<NSDictionary *> *)globalItems
+                                        tempItems:(NSArray<NSDictionary *> *)tempItems
+                                     ticketTypeId:(NSInteger)ticketTypeId
                                      stateVersion:(NSInteger)stateVersion
                                           success:(MLGameSixSuccessBlock)success
                                           failure:(MLGameSixFailureBlock)failure;

@@ -17,6 +17,9 @@
 
 @end
 
+@implementation MLTowerGameSixTicketTypeModel
+@end
+
 @implementation MLTowerPlayerModel
 @end
 
@@ -43,6 +46,7 @@
 
 + (NSDictionary *)mj_objectClassInArray {
     return @{
+        @"ticket_types": [MLTowerGameSixTicketTypeModel class],
         @"layers": [MLTowerLayerInfoModel class],
         @"temp_inventory": [MLCandidateItemModel class]
     };
@@ -54,6 +58,7 @@
 
 + (NSDictionary *)mj_objectClassInArray {
     return @{
+        @"ticket_types": [MLTowerGameSixTicketTypeModel class],
         @"global_inventory": [MLCandidateItemModel class],
         @"temp_inventory": [MLCandidateItemModel class]
     };

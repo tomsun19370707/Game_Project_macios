@@ -29,12 +29,27 @@ typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
 @property (nonatomic, assign) NSInteger state_version;
 @end
 
+@interface MLTowerGameSixTicketTypeModel : NSObject
+@property (nonatomic, assign) NSInteger id;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, assign) NSInteger ticket_layer;
+@property (nonatomic, assign) NSInteger start_layer;
+@property (nonatomic, copy) NSString *ticket_value;
+@property (nonatomic, assign) NSInteger total_recasts;
+@property (nonatomic, assign) BOOL is_from_backend;
+@end
+
 @interface MLTowerTicketModel : NSObject
 @property (nonatomic, assign) NSInteger id;
 @property (nonatomic, copy) NSString *ticket_no;
 @property (nonatomic, copy) NSString *status;
+@property (nonatomic, assign) NSInteger ticket_type_id;
+@property (nonatomic, copy) NSString *ticket_value;
+@property (nonatomic, assign) NSInteger ticket_layer;
+@property (nonatomic, assign) NSInteger start_layer;
 @property (nonatomic, assign) NSInteger total_recasts;
 @property (nonatomic, assign) NSInteger remaining_recasts;
+@property (nonatomic, assign) NSInteger recast_terminated;
 @property (nonatomic, assign) NSInteger config_version;
 @property (nonatomic, assign) long long created_at;
 @end
@@ -62,12 +77,14 @@ typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
 @property (nonatomic, strong) MLTowerTicketModel *ticket;
 @property (nonatomic, strong) MLTowerGameSixGameDetailModel *game;
 @property (nonatomic, assign) NSInteger token_count;
+@property (nonatomic, strong) NSArray<MLTowerGameSixTicketTypeModel *> *ticket_types;
 @property (nonatomic, strong) NSArray<MLTowerLayerInfoModel *> *layers;
 @property (nonatomic, strong) NSArray<MLCandidateItemModel *> *temp_inventory;
 @end
 
 @interface MLTowerGameSixFusionCandidateModel : NSObject
 @property (nonatomic, copy) NSString *threshold_value;
+@property (nonatomic, strong) NSArray<MLTowerGameSixTicketTypeModel *> *ticket_types;
 @property (nonatomic, strong) NSArray<MLCandidateItemModel *> *global_inventory;
 @property (nonatomic, strong) NSArray<MLCandidateItemModel *> *temp_inventory;
 @end
