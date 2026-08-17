@@ -19,6 +19,7 @@
 
 @property (nonatomic, strong) NSArray<MLGameDrawResultModel *> *mergedGifts;
 @property (nonatomic, assign) NSInteger totalValue;
+@property (nonatomic, copy) void(^retryBlock)(void);
 
 @end
 
@@ -26,18 +27,22 @@
 
 + (void)showInView:(UIView *)parentView 
              gifts:(NSArray<MLGameDrawResultModel *> *)gifts 
-        totalValue:(NSInteger)value {
+        totalValue:(NSInteger)value 
+        retryBlock:(void(^ _Nullable)(void))retry {
     MLChatRoomThemeGameFiveResultView *resultView = [[MLChatRoomThemeGameFiveResultView alloc] initWithFrame:parentView.bounds 
                                                                                                     gifts:gifts 
-                                                                                               totalValue:value];
+                                                                                               totalValue:value 
+                                                                                               retryBlock:retry];
     [parentView addSubview:resultView];
     [resultView animateShow];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame 
                         gifts:(NSArray<MLGameDrawResultModel *> *)gifts 
-                   totalValue:(NSInteger)value {
+                   totalValue:(NSInteger)value 
+                   retryBlock:(void(^ _Nullable)(void))retry {
     if (self = [super initWithFrame:frame]) {
+        self.retryBlock = retry;
         self.totalValue = value;
         self.mergedGifts = [MLGameDrawResultModel mergeAndSortDrawGifts:gifts];
         
@@ -108,7 +113,18 @@
     [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(_contentClippingContainer).offset(KDialogAdaptedWidth(10));
         make.trailing.mas_equalTo(_contentClippingContainer).offset(-KDialogAdaptedWidth(10));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(24), KDialogAdaptedWidth(24)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(28), KDialogAdaptedWidth(28)));
+    }];
+    
+    UIButton *retryButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [retryButton setImage:[UIImage imageNamed:@"theme_game_five_result_retry_btn"] forState:UIControlStateNormal];
+    retryButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    [retryButton addTarget:self action:@selector(retryClick) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:retryButton];
+    [retryButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_backgroundContainer.mas_bottom).offset(KDialogAdaptedWidth(12.0f));
+        make.centerX.mas_equalTo(self);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(140.0f), KDialogAdaptedWidth(58.0f)));
     }];
 }
 
@@ -213,12 +229,28 @@
     } completion:nil];
 }
 
+- (void)retryClick {
+    void(^block)(void) = self.retryBlock;
+    [self dismissWithCompletion:^{
+        if (block) {
+            block();
+        }
+    }];
+}
+
 - (void)closeClick {
+    [self dismissWithCompletion:nil];
+}
+
+- (void)dismissWithCompletion:(void(^)(void))completion {
     [UIView animateWithDuration:0.20 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
         self.alpha = 0.0;
         self.backgroundContainer.transform = CGAffineTransformMakeScale(0.85, 0.85);
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
+        if (completion) {
+            completion();
+        }
     }];
 }
 

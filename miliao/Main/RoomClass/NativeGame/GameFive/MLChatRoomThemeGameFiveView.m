@@ -840,7 +840,9 @@
                 
                 [strongSelf startPhase2DecelerateSpinToTargetIndex:targetIndex drawCount:times completion:^{
                     strongSelf.isDrawing = NO;
-                    [MLChatRoomThemeGameFiveResultView showInView:strongSelf.superview gifts:list totalValue:totalValue];
+                    [MLChatRoomThemeGameFiveResultView showInView:strongSelf.superview gifts:list totalValue:totalValue retryBlock:^{
+                        [strongSelf performDrawWithTimes:times];
+                    }];
                     [strongSelf loadData];
                 }];
             });

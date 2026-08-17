@@ -88,6 +88,17 @@
     }];
     
     [self layoutGiftsInScrollView];
+    
+    UIButton *retryButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [retryButton setImage:[UIImage imageNamed:@"theme_game_one_result_retry_btn"] forState:UIControlStateNormal];
+    retryButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    [retryButton addTarget:self action:@selector(retryClick) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:retryButton];
+    [retryButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_bgImageView.mas_bottom).offset(KDialogAdaptedWidth(12.0f));
+        make.centerX.mas_equalTo(self);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(140.0f), KDialogAdaptedWidth(68.0f)));
+    }];
 }
 
 - (void)layoutGiftsInScrollView {
@@ -190,6 +201,15 @@
 
 
 
+- (void)retryClick {
+    void(^block)(void) = self.retryBlock;
+    [self dismissWithCompletion:^{
+        if (block) {
+            block();
+        }
+    }];
+}
+
 - (void)closeClick {
     [self dismiss];
 }
@@ -202,6 +222,10 @@
 }
 
 - (void)dismiss {
+    [self dismissWithCompletion:nil];
+}
+
+- (void)dismissWithCompletion:(void(^)(void))completion {
     [UIView animateWithDuration:0.2 animations:^{
         self.alpha = 0.0;
     } completion:^(BOOL finished) {
@@ -211,6 +235,9 @@
             }
         }
         [self removeFromSuperview];
+        if (completion) {
+            completion();
+        }
     }];
 }
 

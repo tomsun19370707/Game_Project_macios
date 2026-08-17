@@ -8,6 +8,7 @@
  */
 + (void)showInView:(UIView *)parentView 
              gifts:(NSArray<MLGameDrawResultModel *> *)gifts 
-        totalValue:(NSInteger)value;
+        totalValue:(NSInteger)value 
+        retryBlock:(void(^)(void))retry;
 
 @end

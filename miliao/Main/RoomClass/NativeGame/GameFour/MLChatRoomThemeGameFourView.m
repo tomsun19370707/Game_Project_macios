@@ -677,7 +677,10 @@
                 void (^showResultBlock)(void) = ^{
                     [strongSelf lockButtons:NO];
                     strongSelf.isDrawing = NO;
-                    [MLChatRoomThemeGameFourResultView showInView:strongSelf.superview gifts:strongSelf.pendingResultList totalValue:strongSelf.pendingTotalValue];
+                    [MLChatRoomThemeGameFourResultView showInView:strongSelf.superview gifts:strongSelf.pendingResultList totalValue:strongSelf.pendingTotalValue retryBlock:^{
+                        NSInteger cost = [strongSelf getCoinCostForCount:times];
+                        [strongSelf drawWithTimes:times cost:cost];
+                    }];
                     [strongSelf loadData];
                     strongSelf.pendingResultList = nil;
                     strongSelf.pendingTotalValue = 0;

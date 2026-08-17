@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)showInView:(UIView *)parentView
              gifts:(NSArray<MLGameDrawResultModel *> *)gifts
-        totalValue:(NSInteger)value;
+        totalValue:(NSInteger)value
+        retryBlock:(void(^ _Nullable)(void))retry;
 
 @end
 

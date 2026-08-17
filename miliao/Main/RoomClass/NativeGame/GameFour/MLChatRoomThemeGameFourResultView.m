@@ -14,6 +14,7 @@
 
 @property (nonatomic, strong) NSArray<MLGameDrawResultModel *> *mergedGifts;
 @property (nonatomic, assign) NSInteger totalValue;
+@property (nonatomic, copy) void(^retryBlock)(void);
 
 @end
 
@@ -21,18 +22,22 @@
 
 + (void)showInView:(UIView *)parentView 
              gifts:(NSArray<MLGameDrawResultModel *> *)gifts 
-        totalValue:(NSInteger)value {
+        totalValue:(NSInteger)value 
+        retryBlock:(void(^ _Nullable)(void))retry {
     MLChatRoomThemeGameFourResultView *resultView = [[MLChatRoomThemeGameFourResultView alloc] initWithFrame:parentView.bounds 
                                                                                                     gifts:gifts 
-                                                                                               totalValue:value];
+                                                                                               totalValue:value 
+                                                                                               retryBlock:retry];
     [parentView addSubview:resultView];
     [resultView animateShow];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame 
                         gifts:(NSArray<MLGameDrawResultModel *> *)gifts 
-                   totalValue:(NSInteger)value {
+                   totalValue:(NSInteger)value 
+                   retryBlock:(void(^ _Nullable)(void))retry {
     if (self = [super initWithFrame:frame]) {
+        self.retryBlock = retry;
         self.totalValue = value;
         // 1. 合并相同礼物的数量并按价值降序排列
         self.mergedGifts = [MLGameDrawResultModel mergeAndSortDrawGifts:gifts];
@@ -109,6 +114,17 @@
     }];
     
     [self layoutResultGifts];
+    
+    UIButton *retryButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [retryButton setImage:[UIImage imageNamed:@"theme_game_four_result_retry_btn"] forState:UIControlStateNormal];
+    retryButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    [retryButton addTarget:self action:@selector(retryClick) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:retryButton];
+    [retryButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_panelContainer.mas_bottom).offset(KDialogAdaptedWidth(12.0f));
+        make.centerX.mas_equalTo(self);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(130.0f), KDialogAdaptedWidth(72.0f)));
+    }];
 }
 
 - (void)layoutResultGifts {
@@ -228,12 +244,28 @@
     } completion:nil];
 }
 
+- (void)retryClick {
+    void(^block)(void) = self.retryBlock;
+    [self dismissWithCompletion:^{
+        if (block) {
+            block();
+        }
+    }];
+}
+
 - (void)closeClick {
+    [self dismissWithCompletion:nil];
+}
+
+- (void)dismissWithCompletion:(void(^)(void))completion {
     [UIView animateWithDuration:0.20 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
         self.alpha = 0.0;
         self.panelContainer.transform = CGAffineTransformMakeScale(0.85, 0.85);
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
+        if (completion) {
+            completion();
+        }
     }];
 }
 
