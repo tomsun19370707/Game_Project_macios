@@ -43,47 +43,95 @@
         make.centerY.mas_equalTo(self.contentView.mas_centerY).offset(-10);
         make.height.mas_equalTo(contentImageView.mas_width).multipliedBy(690.0/712.0);
     }];
-    UIImageView *leftBgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:self.infoDic.count>0?@"礼物框框":@"元宝"]];
-    leftBgImageView.contentMode=UIViewContentModeScaleAspectFill;
+
+    // 统计总中奖金额
+    NSInteger winSum = 0;
+    if (self.infoDic && [self.infoDic isKindOfClass:[NSArray class]]) {
+        for (NSDictionary *dict in self.infoDic) {
+            if ([dict isKindOfClass:[NSDictionary class]]) {
+                if ([dict valueForKey:@"win_amount"] != nil) {
+                    winSum += [[dict valueForKey:@"win_amount"] integerValue];
+                } else if ([dict valueForKey:@"amount"] != nil) {
+                    winSum += [[dict valueForKey:@"amount"] integerValue];
+                }
+            }
+        }
+    }
+
+    BOOL hasWinningBet = (self.infoDic.count > 0);
+    BOOL hasWinAmount = (winSum > 0);
+
+    // 1. 第一个容器（获胜动物框）
+    UIImageView *leftBgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:hasWinningBet ? @"礼物框框" : @"元宝"]];
+    leftBgImageView.contentMode = UIViewContentModeScaleAspectFill;
     [contentImageView addSubview:leftBgImageView];
     [leftBgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(contentImageView.mas_centerY).offset(5);
-        make.width.height.mas_equalTo(80);
-        make.centerX.mas_equalTo(contentImageView.mas_centerX).offset(-50);
+        make.width.mas_equalTo(72);
+        make.height.mas_equalTo(71);
+        if (hasWinAmount) {
+            make.centerX.mas_equalTo(contentImageView.mas_centerX).offset(-50);
+        } else {
+            make.centerX.mas_equalTo(contentImageView.mas_centerX);
+        }
     }];
-    
-    UIImageView *rightBgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:self.infoDic.count>1?@"礼物框框":@"元宝"]];
-    rightBgImageView.contentMode=UIViewContentModeScaleAspectFill;
-    [contentImageView addSubview:rightBgImageView];
-    [rightBgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(contentImageView.mas_centerY).offset(5);
-        make.width.height.mas_equalTo(80);
-        make.centerX.mas_equalTo(contentImageView.mas_centerX).offset(50);
-    }];
-    
-    if (self.infoDic.count>0) {
-        UIImageView *leftImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[self getInconName:[NSString stringWithFormat:@"%@",[self.infoDic[0] valueForKey:@"winner_name"]]]]];
-        leftImageView.contentMode=UIViewContentModeScaleAspectFit;
+
+    if (hasWinningBet) {
+        UIImageView *leftImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[self getInconName:[NSString stringWithFormat:@"%@", [self.infoDic[0] valueForKey:@"winner_name"]]]]];
+        leftImageView.contentMode = UIViewContentModeScaleAspectFit;
         [leftBgImageView addSubview:leftImageView];
         [leftImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.center.mas_equalTo(leftBgImageView);
-            make.width.height.mas_equalTo(50);
+            make.width.height.mas_equalTo(40);
         }];
     }
-    if (self.infoDic.count>1) {
-        UIImageView *rightImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[self getInconName:[NSString stringWithFormat:@"%@",[self.infoDic[1] valueForKey:@"winner_name"]]]]];
-        rightImageView.contentMode=UIViewContentModeScaleAspectFit;
-        [rightBgImageView addSubview:rightImageView];
-        [rightImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.center.mas_equalTo(rightBgImageView);
-            make.width.height.mas_equalTo(50);
-        }];
-    }
-    
-  
-    UIButton *closeButton=[UIButton buttonWithType:UIButtonTypeCustom];
+
+    // 2. 第二个容器（元宝中奖框 + 内部 img_syyb 40x40 + 左上角 "数量" 角标）
+    UIImageView *rightBgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"元宝"]];
+    rightBgImageView.contentMode = UIViewContentModeScaleAspectFill;
+    rightBgImageView.hidden = !hasWinAmount;
+    [contentImageView addSubview:rightBgImageView];
+    [rightBgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(contentImageView.mas_centerY).offset(5);
+        make.width.mas_equalTo(71);
+        make.height.mas_equalTo(71);
+        make.centerX.mas_equalTo(contentImageView.mas_centerX).offset(50);
+    }];
+
+    // 2.1 容器内部中央嵌套 img_syyb 元宝图标 (40x40 pt)
+    UIImageView *ingotImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"img_syyb"]];
+    ingotImageView.contentMode = UIViewContentModeScaleAspectFit;
+    [rightBgImageView addSubview:ingotImageView];
+    [ingotImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.mas_equalTo(rightBgImageView);
+        make.width.height.mas_equalTo(40);
+    }];
+
+    // 2.2 左上角挂载 "数量" 图片角标及其数值 Label (22x22 pt)
+    UIImageView *numberBgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"数量"]];
+    numberBgView.contentMode = UIViewContentModeScaleAspectFit;
+    [rightBgImageView addSubview:numberBgView];
+    [numberBgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(rightBgImageView.mas_top).offset(-2);
+        make.left.mas_equalTo(rightBgImageView.mas_left).offset(-2);
+        make.width.height.mas_equalTo(22);
+    }];
+
+    UILabel *numberLabel = [[UILabel alloc] init];
+    numberLabel.textColor = [UIColor whiteColor];
+    numberLabel.font = [UIFont boldSystemFontOfSize:11];
+    numberLabel.textAlignment = NSTextAlignmentCenter;
+    numberLabel.text = [NSString stringWithFormat:@"%ld", (long)winSum];
+    [numberBgView addSubview:numberLabel];
+    [numberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(numberBgView);
+    }];
+
+    // 3. 底部关闭按钮（根据中奖金额动态切换 "开心收下" 与 "再接再厉"）
+    UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [closeButton addTarget:self action:@selector(closeVc) forControlEvents:UIControlEventTouchUpInside];
-    [closeButton setBackgroundImage:[UIImage imageNamed:@"开心收下"] forState:UIControlStateNormal];
+    NSString *buttonImgName = hasWinAmount ? @"开心收下" : @"再接再厉";
+    [closeButton setBackgroundImage:[UIImage imageNamed:buttonImgName] forState:UIControlStateNormal];
     [contentImageView addSubview:closeButton];
     [closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(-40);
@@ -91,7 +139,6 @@
         make.width.mas_equalTo(160);
         make.centerX.mas_equalTo(0);
     }];
-  
 }
 -(void)closeVc{
     [self dismissViewControllerAnimated:NO completion:^{

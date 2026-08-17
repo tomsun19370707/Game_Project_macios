@@ -7,31 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FA6000032970000000000006 /* MLChatRoomThemeGameSixView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000022970000000000006 /* MLChatRoomThemeGameSixView.m */; };
-		FA6000062970000000000006 /* MLChatRoomThemeGameSixRuleDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000052970000000000006 /* MLChatRoomThemeGameSixRuleDialog.m */; };
-		FA6000092970000000000006 /* MLChatRoomThemeGameSixFusionDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000082970000000000006 /* MLChatRoomThemeGameSixFusionDialog.m */; };
-		FA60000C2970000000000006 /* MLTowerGameSixModels.m in Sources */ = {isa = PBXBuildFile; fileRef = FA60000B2970000000000006 /* MLTowerGameSixModels.m */; };
-		FA60000F2970000000000006 /* MLThemeGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = FA60000E2970000000000006 /* MLThemeGameModel.m */; };
-		FA6000222970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000212970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m */; };
-		FA6000152970000000000007 /* MLThemeGameSixPackGiftCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000142970000000000007 /* MLThemeGameSixPackGiftCell.m */; };
-		FA6000182970000000000008 /* MLChatRoomThemeGameSixPackDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */; };
-		FA60001B2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */; };
-		A5A555CC27E5118800005525 /* MLChatRoomThemeGameFivePurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A555BB27E5118800005524 /* MLChatRoomThemeGameFivePurchaseView.m */; };
-		A5A5559927E5118800005522 /* MLChatRoomThemeGameFiveRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5558827E5118800005521 /* MLChatRoomThemeGameFiveRecordView.m */; };
-		A5A5556627E511880000551F /* MLChatRoomThemeGameFiveResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5555527E511880000551E /* MLChatRoomThemeGameFiveResultView.m */; };
-		A5A5553327E511880000551C /* MLChatRoomThemeGameFiveRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5552227E511880000551B /* MLChatRoomThemeGameFiveRuleView.m */; };
-		2D57223BC7A9436B89F257B9 /* MLChatRoomThemeGameFiveGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0C8089ED964013A0332E16 /* MLChatRoomThemeGameFiveGiftView.m */; };
-		1970F86AA1154E0C8C0C9375 /* MLChatRoomThemeGameFiveView.m in Sources */ = {isa = PBXBuildFile; fileRef = E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */; };
-		04136C8868494FCDBD839778 /* theme_game_four_green_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = A4A5B0D9D044423EA3A37F7C /* theme_game_four_green_draw.svga */; };
-		3374BD94BA504808A3AB0C8A /* theme_game_four_blue_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = 1963B5DE13A94E07BBD5F201 /* theme_game_four_blue_draw.svga */; };
-		4AB3CB01B19E4E87B04773C2 /* theme_game_four_yellow_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = E910B19BDD7E4BB29730EBF7 /* theme_game_four_yellow_draw.svga */; };
-		4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAF2AA681F0F401D90401B17 /* MLChatRoomThemeGameFourPurchaseView.m */; };
-		89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D86EE673042019BDE397E /* MLChatRoomThemeGameFourResultView.m */; };
-		A1B2C3D4E5F6010203040504 /* MLChatRoomThemeGameFourGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6010203040505 /* MLChatRoomThemeGameFourGiftView.m */; };
-		33221FD9883A474BAA4579B4 /* MLChatRoomThemeGameFourRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */; };
-		B8F8986484E3483BBBB71C37 /* MLChatRoomThemeGameFourRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */; };
-		5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */ = {isa = PBXBuildFile; fileRef = 09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */; };
-		E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */; };
 		00030BA222CDAF18003896EE /* EMO_RoomAnnouncementVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 00030BA122CDAF18003896EE /* EMO_RoomAnnouncementVC.m */; };
 		00030BAF22CE0388003896EE /* RoomSearchView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00030BAE22CE0388003896EE /* RoomSearchView.m */; };
 		000716F422BB213D00E5F8DC /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 000716F322BB213D00E5F8DC /* libc++.tbd */; };
@@ -385,9 +360,9 @@
 		00C904A022E6DFB70045C5C2 /* detailTrendTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 00C9049E22E6DFB70045C5C2 /* detailTrendTableViewCell.m */; };
 		00C904A122E6DFB70045C5C2 /* detailTrendTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00C9049F22E6DFB70045C5C2 /* detailTrendTableViewCell.xib */; };
 		00E0FACF562E41C48D249CD9 /* MLChatRoomThemeGameThreeResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33146C9237E7408D8C4A805C /* MLChatRoomThemeGameThreeResultView.m */; };
-		A1B2C3D4E5F6010203040501 /* MLChatRoomThemeGameThreeGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6010203040502 /* MLChatRoomThemeGameThreeGiftView.m */; };
 		00E2DAED22F3C0E9004DA965 /* MLSessionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E2DAEC22F3C0E9004DA965 /* MLSessionViewController.m */; };
 		03EE9084C879815EA3D20E48 /* CFMExDiamondAndBagPackageCollCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43CE96DFD35619F17D8AA608 /* CFMExDiamondAndBagPackageCollCell.m */; };
+		04136C8868494FCDBD839778 /* theme_game_four_green_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = A4A5B0D9D044423EA3A37F7C /* theme_game_four_green_draw.svga */; };
 		05FCCB18FDA25BFE2CEB541E /* CFMRewardHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AEC52E7FB68FBAE3F30B2468 /* CFMRewardHistoryCell.m */; };
 		0697579D4893878717CA2565 /* CFMExDiamondAndBagDiamond.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6C1DA6A2034183E4BA156D9C /* CFMExDiamondAndBagDiamond.xib */; };
 		069A455CCD8DD9494AC09677 /* CFMRewardHistoryJoin.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7598C94C52CAA706C4F5A98 /* CFMRewardHistoryJoin.xib */; };
@@ -419,12 +394,17 @@
 		18C86B582432CF19002FF72D /* SRConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C86B402432CF19002FF72D /* SRConstants.m */; };
 		18C86B592432CF19002FF72D /* NSURLRequest+SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C86B452432CF19002FF72D /* NSURLRequest+SRWebSocket.m */; };
 		18C86B5C2432CF40002FF72D /* WebsocketManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C86B5A2432CF40002FF72D /* WebsocketManager.m */; };
+		1970F86AA1154E0C8C0C9375 /* MLChatRoomThemeGameFiveView.m in Sources */ = {isa = PBXBuildFile; fileRef = E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */; };
 		1A8D7BF7A82F47D31A3BCCDE /* CFMRewardHistoryRate.xib in Resources */ = {isa = PBXBuildFile; fileRef = 83556612FDA7E2F9BCDADB3E /* CFMRewardHistoryRate.xib */; };
 		1CF6B271BA54D861BD0EABE3 /* CFMMyGiftCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BD220E216346F45072B5F300 /* CFMMyGiftCell.m */; };
 		22413DBA046012FA3E27A903 /* CFMExDiamondAndBagDiamond.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E84E03C47B1912AC6D96671 /* CFMExDiamondAndBagDiamond.m */; };
 		23082397165354A0DE46D951 /* STAccountPhoneSms.xib in Resources */ = {isa = PBXBuildFile; fileRef = F3800511817131FE9FCE90B2 /* STAccountPhoneSms.xib */; };
 		286F99ED2398CE3100B3639F /* EMO_RoomHostUserView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 286F99EC2398CE3100B3639F /* EMO_RoomHostUserView.xib */; };
 		28EB9F5923A0E9AD00C5B714 /* BJGiftViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EB9F5823A0E9AD00C5B714 /* BJGiftViewCell.m */; };
+		2D57223BC7A9436B89F257B9 /* MLChatRoomThemeGameFiveGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0C8089ED964013A0332E16 /* MLChatRoomThemeGameFiveGiftView.m */; };
+		2E669F5CDF425F78B83EC324 /* MLThemeGameSixRecordDateHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1729EDB1375A08BF32D804 /* MLThemeGameSixRecordDateHeader.m */; };
+		33221FD9883A474BAA4579B4 /* MLChatRoomThemeGameFourRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */; };
+		3374BD94BA504808A3AB0C8A /* theme_game_four_blue_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = 1963B5DE13A94E07BBD5F201 /* theme_game_four_blue_draw.svga */; };
 		391FA2B82F91FAAB0074A737 /* CurrentRunGamaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 391FA2B72F91FAAB0074A737 /* CurrentRunGamaViewController.m */; };
 		391FBC892F920CF70074A737 /* RunGamaRecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 391FBC882F920CF70074A737 /* RunGamaRecordViewController.m */; };
 		392033F22F868F6B006D0208 /* 乌龟和老虎胜利.svga in Resources */ = {isa = PBXBuildFile; fileRef = 392033E82F868F6B006D0208 /* 乌龟和老虎胜利.svga */; };
@@ -443,12 +423,15 @@
 		3C01592ABD268C096FE1493E /* STAccountPhoneSms.m in Sources */ = {isa = PBXBuildFile; fileRef = C9F432B0AF3A6275C3B51F69 /* STAccountPhoneSms.m */; };
 		442C501CF82B40768E1C382C /* CFMRewardPriseTitle.xib in Resources */ = {isa = PBXBuildFile; fileRef = 769EBAEDECBCAFA1FB21FA37 /* CFMRewardPriseTitle.xib */; };
 		4871A1FF71D4DB6551EC9B10 /* CFMMyGiftCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B8DD434873D8C2A0070A1C5D /* CFMMyGiftCell.xib */; };
+		4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAF2AA681F0F401D90401B17 /* MLChatRoomThemeGameFourPurchaseView.m */; };
+		4AB3CB01B19E4E87B04773C2 /* theme_game_four_yellow_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = E910B19BDD7E4BB29730EBF7 /* theme_game_four_yellow_draw.svga */; };
 		4C4D272EF1F76EA51B6EAE1E /* CFMExDiamondAndBagPackage.m in Sources */ = {isa = PBXBuildFile; fileRef = E99C87C9331E15758C71F959 /* CFMExDiamondAndBagPackage.m */; };
 		57FFC1C51F1A7DA447437A33 /* Pods_miliao.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6817A53A96D76D1EB49D1CDA /* Pods_miliao.framework */; };
 		588AF04B8F714F82A7F56175 /* MLChatRoomThemeGameThreeRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 911A928BAE024EE7BEE8D741 /* MLChatRoomThemeGameThreeRuleView.m */; };
 		5BBC5438FE7C3D47A3A9B144 /* CFMExRewardCoinAlert.xib in Resources */ = {isa = PBXBuildFile; fileRef = BE0072708242645FA8847CB1 /* CFMExRewardCoinAlert.xib */; };
 		5C019EC07B4A129560596D8F /* SRWKWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F70A05B733AB59C92A4912B /* SRWKWebViewController.m */; };
 		5C78229F9C544A40DD6708E2 /* CFMRewardHistoryAlert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8194F4AC49A2CF33B3D29DBA /* CFMRewardHistoryAlert.xib */; };
+		5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */ = {isa = PBXBuildFile; fileRef = 09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */; };
 		612BC2B312F192C3EC5223D1 /* CFMExRewardRuleAlert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2AA776A89F629F6189D7DBC3 /* CFMExRewardRuleAlert.xib */; };
 		6420A79D51B489DA79161CE6 /* CFMExRewardCoinAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 679662FC33EC11DE51963EE2 /* CFMExRewardCoinAlert.m */; };
 		6C7A71E5C0584E55BC8523B8 /* MLChatRoomThemeGameThreePurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A756065E2E400CBEED7E04 /* MLChatRoomThemeGameThreePurchaseView.m */; };
@@ -461,6 +444,7 @@
 		6F995FB2241C7C1A005FC284 /* UIViewController+AlertViewAndActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F995FAF241C7C1A005FC284 /* UIViewController+AlertViewAndActionSheet.m */; };
 		6FE2412D241F687B007295C6 /* RoomUsersCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FE2412C241F687B007295C6 /* RoomUsersCollectionViewCell.m */; };
 		6FE24130241F8E9F007295C6 /* UserFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FE2412F241F8E9F007295C6 /* UserFlowLayout.m */; };
+		73CB338BEBEB545096AF3C97 /* MLChatRoomThemeGameSixRecordDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 5813CEC352BD5616900D36C0 /* MLChatRoomThemeGameSixRecordDialog.m */; };
 		75DE227037649C52B57C1E95 /* SRCookieManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0098849042C9FE68FF4EE3E1 /* SRCookieManager.m */; };
 		7721DD2222F7D9F2004DF05D /* EMO_UserReportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7721DD2122F7D9F2004DF05D /* EMO_UserReportViewController.m */; };
 		7721DD2922F7F717004DF05D /* MLUserReporTypeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7721DD2822F7F717004DF05D /* MLUserReporTypeCell.m */; };
@@ -473,13 +457,7 @@
 		7C70E96D2FED864D00A11B29 /* MLChatRoomNativeGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E94A2FED864D00A11B29 /* MLChatRoomNativeGameView.m */; };
 		7C70E96E2FED864D00A11B29 /* MLChatRoomThemeGameTwoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E94D2FED864D00A11B29 /* MLChatRoomThemeGameTwoView.m */; };
 		7C70E96F2FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E94E2FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.m */; };
-		7C70E99C2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E99B2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m */; };
 		7C70E9702FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9512FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.m */; };
-		7C70E98C2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E98B2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m */; };
-		7C70E98F2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E98E2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m */; };
-		7C70E9922FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9912FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m */; };
-		7C70E9952FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9942FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m */; };
-		7C70E9982FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9972FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.m */; };
 		7C70E9712FED864D00A11B29 /* MLChatRoomThemeGameTwoPurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9522FED864D00A11B29 /* MLChatRoomThemeGameTwoPurchaseView.m */; };
 		7C70E9722FED864E00A11B29 /* MLChatRoomThemeGameTwoRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9532FED864D00A11B29 /* MLChatRoomThemeGameTwoRecordView.m */; };
 		7C70E9732FED864E00A11B29 /* MLGameLotteryInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9592FED864D00A11B29 /* MLGameLotteryInfoModel.m */; };
@@ -489,13 +467,33 @@
 		7C70E9772FED864E00A11B29 /* MLChatRoomThemeGameOneRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9602FED864D00A11B29 /* MLChatRoomThemeGameOneRuleView.m */; };
 		7C70E9782FED864E00A11B29 /* MLChatRoomThemeGameOnePurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9632FED864D00A11B29 /* MLChatRoomThemeGameOnePurchaseView.m */; };
 		7C70E9792FED864E00A11B29 /* MLChatRoomThemeGameOneResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9642FED864D00A11B29 /* MLChatRoomThemeGameOneResultView.m */; };
-		7C70E9952FED864E00A11B29 /* MLChatRoomThemeGameOneGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9892FED864D00A11B29 /* MLChatRoomThemeGameOneGiftView.m */; };
 		7C70E97A2FED864E00A11B29 /* MLChatRoomThemeGameOneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9662FED864D00A11B29 /* MLChatRoomThemeGameOneView.m */; };
 		7C70E97B2FED864E00A11B29 /* MLChatRoomThemeGameOneExchangeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9692FED864D00A11B29 /* MLChatRoomThemeGameOneExchangeView.m */; };
 		7C70E97C2FED864E00A11B29 /* MLChatRoomThemeGameOneRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E96A2FED864D00A11B29 /* MLChatRoomThemeGameOneRecordView.m */; };
 		7C70E9802FED86A900A11B29 /* theme_game_one_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = 7C70E97E2FED86A900A11B29 /* theme_game_one_draw.svga */; };
 		7C70E9812FED86A900A11B29 /* theme_game_two_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = 7C70E97F2FED86A900A11B29 /* theme_game_two_draw.svga */; };
 		7C70E9822FED86A900A11B29 /* theme_game_three_draw.svga in Resources */ = {isa = PBXBuildFile; fileRef = 7C70E9832FED86A900A11B29 /* theme_game_three_draw.svga */; };
+		7C70E98C2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E98B2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m */; };
+		7C70E98F2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E98E2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m */; };
+		7C70E9922FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9912FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m */; };
+		7C70E9952FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9942FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m */; };
+		7C70E9952FED864E00A11B29 /* MLChatRoomThemeGameOneGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9892FED864D00A11B29 /* MLChatRoomThemeGameOneGiftView.m */; };
+		7C70E9982FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9972FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.m */; };
+		7C70E99C2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E99B2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m */; };
+		7CDE463A3028A9B6007D2467 /* MLChatRoomThemeGameFourView.m in Sources */ = {isa = PBXBuildFile; fileRef = 09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */; };
+		7CDE463B3028A9B6007D2467 /* MLChatRoomThemeGameFiveView.m in Sources */ = {isa = PBXBuildFile; fileRef = E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */; };
+		7CDE463C3028A9B6007D2467 /* MLChatRoomThemeGameFourRankView.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */; };
+		7CDE463D3028A9B6007D2467 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAF2AA681F0F401D90401B17 /* MLChatRoomThemeGameFourPurchaseView.m */; };
+		7CDE463E3028A9B6007D2467 /* MLChatRoomThemeGameFourResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D86EE673042019BDE397E /* MLChatRoomThemeGameFourResultView.m */; };
+		7CDE463F3028A9B6007D2467 /* MLChatRoomThemeGameFourRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */; };
+		7CDE46403028A9B6007D2467 /* MLChatRoomThemeGameFourRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */; };
+		7CDE46413028A9B6007D2467 /* MLChatRoomThemeGameFourView.m in Sources */ = {isa = PBXBuildFile; fileRef = 09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */; };
+		7CDE46423028A9B6007D2467 /* MLChatRoomThemeGameFiveView.m in Sources */ = {isa = PBXBuildFile; fileRef = E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */; };
+		7CDE46433028A9B6007D2467 /* MLChatRoomThemeGameFourRankView.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */; };
+		7CDE46443028A9B6007D2467 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAF2AA681F0F401D90401B17 /* MLChatRoomThemeGameFourPurchaseView.m */; };
+		7CDE46453028A9B6007D2467 /* MLChatRoomThemeGameFourResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D86EE673042019BDE397E /* MLChatRoomThemeGameFourResultView.m */; };
+		7CDE46463028A9B6007D2467 /* MLChatRoomThemeGameFourRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */; };
+		7CDE46473028A9B6007D2467 /* MLChatRoomThemeGameFourRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */; };
 		8500721C2A52B31D00D7D380 /* EMO_MySkillsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8500721B2A52B31D00D7D380 /* EMO_MySkillsViewController.m */; };
 		8500721F2A52B38900D7D380 /* EMO_MyRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8500721E2A52B38900D7D380 /* EMO_MyRoomViewController.m */; };
 		850072222A52B3C900D7D380 /* EMO_FaminlCenterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 850072212A52B3C900D7D380 /* EMO_FaminlCenterViewController.m */; };
@@ -854,6 +852,7 @@
 		85ED6ACF283F97A00092C3FA /* DSActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 85ED6AC4283F97A00092C3FA /* DSActionSheet.m */; };
 		85ED6AD0283F97A00092C3FA /* DSAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 85ED6AC7283F97A00092C3FA /* DSAlert.m */; };
 		85ED6AD1283F97A00092C3FA /* DSAlertChange.m in Sources */ = {isa = PBXBuildFile; fileRef = 85ED6AC9283F97A00092C3FA /* DSAlertChange.m */; };
+		89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D86EE673042019BDE397E /* MLChatRoomThemeGameFourResultView.m */; };
 		8A83FD094A7D49F973E537E2 /* CFMCFMRewardHistoryJoinRate.m in Sources */ = {isa = PBXBuildFile; fileRef = 64ABAEC1848B7D813009616D /* CFMCFMRewardHistoryJoinRate.m */; };
 		8F260296248A25F4008114B5 /* EMO_RoomSetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F260294248A25F4008114B5 /* EMO_RoomSetViewController.m */; };
 		8F2602A3248A263E008114B5 /* RoomSetRoomAnnouncementCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F260298248A263C008114B5 /* RoomSetRoomAnnouncementCell.m */; };
@@ -864,7 +863,13 @@
 		8F2602A8248A263E008114B5 /* RoomSetRoomTypeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F2602A2248A263E008114B5 /* RoomSetRoomTypeCell.m */; };
 		938EB1C964AAC22E0953E20A /* CFMRewardPriseTitle.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D5770ED250E561E3B9F1F1 /* CFMRewardPriseTitle.m */; };
 		96C8C64979410F3E05B812E5 /* CFMRewardHistoryJoin.m in Sources */ = {isa = PBXBuildFile; fileRef = A02673313454DC5C1DFCF058 /* CFMRewardHistoryJoin.m */; };
+		A1B2C3D4E5F6010203040501 /* MLChatRoomThemeGameThreeGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6010203040502 /* MLChatRoomThemeGameThreeGiftView.m */; };
+		A1B2C3D4E5F6010203040504 /* MLChatRoomThemeGameFourGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6010203040505 /* MLChatRoomThemeGameFourGiftView.m */; };
 		A256DFFE4C5B394D578E7702 /* CFMExDiamondAndBagAlert.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB193879263D4C6590402BDD /* CFMExDiamondAndBagAlert.xib */; };
+		A5A5553327E511880000551C /* MLChatRoomThemeGameFiveRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5552227E511880000551B /* MLChatRoomThemeGameFiveRuleView.m */; };
+		A5A5556627E511880000551F /* MLChatRoomThemeGameFiveResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5555527E511880000551E /* MLChatRoomThemeGameFiveResultView.m */; };
+		A5A5559927E5118800005522 /* MLChatRoomThemeGameFiveRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A5558827E5118800005521 /* MLChatRoomThemeGameFiveRecordView.m */; };
+		A5A555CC27E5118800005525 /* MLChatRoomThemeGameFivePurchaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A555BB27E5118800005524 /* MLChatRoomThemeGameFivePurchaseView.m */; };
 		AA71104223C4CB0E007E990F /* SVGAContentLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = AA71102323C4CB0D007E990F /* SVGAContentLayer.m */; };
 		AA71104323C4CB0E007E990F /* SVGAVideoEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AA71102723C4CB0D007E990F /* SVGAVideoEntity.m */; };
 		AA71104523C4CB0E007E990F /* SVGAPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = AA71102E23C4CB0D007E990F /* SVGAPlayer.m */; };
@@ -883,6 +888,7 @@
 		AA71105723C4D0F8007E990F /* UIViewController+CurViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA71105623C4D0F8007E990F /* UIViewController+CurViewController.m */; };
 		AA9C6F328FCF5FE92360B502 /* CFMRewardPriseAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = B88B247C932325DDCB1E4116 /* CFMRewardPriseAlert.m */; };
 		B7C74BCD027BAB6A4B592591 /* CFMExRewardRuleAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 1191A51F6DF383E2DA7DADDA /* CFMExRewardRuleAlert.m */; };
+		B8F8986484E3483BBBB71C37 /* MLChatRoomThemeGameFourRuleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */; };
 		C11E5170878340C99C8DD788 /* MLChatRoomThemeGameThreeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B0ECBE3CCA4F14A21F20A9 /* MLChatRoomThemeGameThreeView.m */; };
 		C342162B06D1FA28C1561D13 /* CFMHomeSignAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = AA8514C3E54D8DD295AD028F /* CFMHomeSignAlert.m */; };
 		C49C18865891EEB035E56FF4 /* CFMRewardPriseAlert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89835480FEB1813D317D42F4 /* CFMRewardPriseAlert.xib */; };
@@ -1069,6 +1075,7 @@
 		DBDD50222476A45400FE708B /* FSSegmentTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = DBDD501D2476A45400FE708B /* FSSegmentTitleView.m */; };
 		DBDD50232476A45400FE708B /* FSPageContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = DBDD50202476A45400FE708B /* FSPageContentView.m */; };
 		E1A0AE582F39DDC500C6DA72 /* EMO_RoomGameAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = E1A0AE572F39DDC500C6DA72 /* EMO_RoomGameAlertView.m */; };
+		E36EA150F9AE5DA4A6ACCD59 /* MLThemeGameSixRecordCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B80314A43FC5B95BAC4F712 /* MLThemeGameSixRecordCell.m */; };
 		E40832062BCA54AD00EA7AA1 /* EMO_ViewControllerWKP.m in Sources */ = {isa = PBXBuildFile; fileRef = E40832052BCA54AD00EA7AA1 /* EMO_ViewControllerWKP.m */; };
 		E40FF5CA268B17320056BB9E /* UIView+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = E40FF5C8268B17320056BB9E /* UIView+Common.m */; };
 		E40FF5DD268CA2620056BB9E /* UILabel+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = E40FF5DC268CA2620056BB9E /* UILabel+Common.m */; };
@@ -1142,6 +1149,7 @@
 		E4C2136B27DC842A00F91894 /* MKWithdrawalView.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C2136727DC842A00F91894 /* MKWithdrawalView.m */; };
 		E4C2139727E0387800F91894 /* EMO_CollectVC.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C2139627E0387800F91894 /* EMO_CollectVC.m */; };
 		E4C2139A27E0395600F91894 /* EMO_CollectListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C2139927E0395600F91894 /* EMO_CollectListVC.m */; };
+		E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */; };
 		E4D416BE26F2D8B400BCCB22 /* FileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E4D416BD26F2D8B400BCCB22 /* FileManager.m */; };
 		E4E6CEAE269457BD000AF24C /* EMO_RoomSQSMView.m in Sources */ = {isa = PBXBuildFile; fileRef = E4E6CEAD269457BD000AF24C /* EMO_RoomSQSMView.m */; };
 		E4E6CEB2269458FB000AF24C /* EMO_RoomSQSMCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E4E6CEB0269458FB000AF24C /* EMO_RoomSQSMCell.m */; };
@@ -1152,6 +1160,15 @@
 		F49A808E1DBF0B4FE889D78B /* CFMExDiamondAndBagPackage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0C74A3E140EB91B454FB8627 /* CFMExDiamondAndBagPackage.xib */; };
 		F8386B4CE00801BE5113A149 /* CFMExDiamondAndBagPackageCollCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F435758C9D2CAD929D4F3C03 /* CFMExDiamondAndBagPackageCollCell.xib */; };
 		F989F2F77BA34E44ACC46D80 /* CFMRewardHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F8301AC0B4E3F11AF1421EB1 /* CFMRewardHistoryCell.xib */; };
+		FA6000032970000000000006 /* MLChatRoomThemeGameSixView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000022970000000000006 /* MLChatRoomThemeGameSixView.m */; };
+		FA6000062970000000000006 /* MLChatRoomThemeGameSixRuleDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000052970000000000006 /* MLChatRoomThemeGameSixRuleDialog.m */; };
+		FA6000092970000000000006 /* MLChatRoomThemeGameSixFusionDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000082970000000000006 /* MLChatRoomThemeGameSixFusionDialog.m */; };
+		FA60000C2970000000000006 /* MLTowerGameSixModels.m in Sources */ = {isa = PBXBuildFile; fileRef = FA60000B2970000000000006 /* MLTowerGameSixModels.m */; };
+		FA60000F2970000000000006 /* MLThemeGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = FA60000E2970000000000006 /* MLThemeGameModel.m */; };
+		FA6000152970000000000007 /* MLThemeGameSixPackGiftCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000142970000000000007 /* MLThemeGameSixPackGiftCell.m */; };
+		FA6000182970000000000008 /* MLChatRoomThemeGameSixPackDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */; };
+		FA60001B2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */; };
+		FA6000222970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000212970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m */; };
 		FA85CE392A7A21A000CDC75E /* CSVisitorSDKStub.m in Sources */ = {isa = PBXBuildFile; fileRef = FA85CE3C2A7A219F00CDC75E /* CSVisitorSDKStub.m */; };
 		FA9E089E2429259E000A52CF /* UITextView+Placeholder.m in Sources */ = {isa = PBXBuildFile; fileRef = FA9E088F2429259E000A52CF /* UITextView+Placeholder.m */; };
 		FA9E089F2429259E000A52CF /* UIView+Frame.m in Sources */ = {isa = PBXBuildFile; fileRef = FA9E08902429259E000A52CF /* UIView+Frame.m */; };
@@ -1169,9 +1186,6 @@
 		FA9E08B724293105000A52CF /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9E08B624293105000A52CF /* CFNetwork.framework */; };
 		FA9E08B92429310E000A52CF /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9E08B82429310E000A52CF /* CoreMotion.framework */; };
 		FFE315EAE2D34FCC975B6A47 /* MLChatRoomThemeGameFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = D99D569BD56B4F348EDC0441 /* MLChatRoomThemeGameFortuneView.m */; };
-		73CB338BEBEB545096AF3C97 /* MLChatRoomThemeGameSixRecordDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 5813CEC352BD5616900D36C0 /* MLChatRoomThemeGameSixRecordDialog.m */; };
-		E36EA150F9AE5DA4A6ACCD59 /* MLThemeGameSixRecordCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B80314A43FC5B95BAC4F712 /* MLThemeGameSixRecordCell.m */; };
-		2E669F5CDF425F78B83EC324 /* MLThemeGameSixRecordDateHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1729EDB1375A08BF32D804 /* MLThemeGameSixRecordDateHeader.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1208,53 +1222,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		FA6000012970000000000006 /* MLChatRoomThemeGameSixView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixView.h; sourceTree = "<group>"; };
-		FA6000022970000000000006 /* MLChatRoomThemeGameSixView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixView.m; sourceTree = "<group>"; };
-		FA6000042970000000000006 /* MLChatRoomThemeGameSixRuleDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixRuleDialog.h; sourceTree = "<group>"; };
-		FA6000052970000000000006 /* MLChatRoomThemeGameSixRuleDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixRuleDialog.m; sourceTree = "<group>"; };
-		FA6000072970000000000006 /* MLChatRoomThemeGameSixFusionDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixFusionDialog.h; sourceTree = "<group>"; };
-		FA6000082970000000000006 /* MLChatRoomThemeGameSixFusionDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixFusionDialog.m; sourceTree = "<group>"; };
-		FA60000A2970000000000006 /* MLTowerGameSixModels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLTowerGameSixModels.h; sourceTree = "<group>"; };
-		FA60000B2970000000000006 /* MLTowerGameSixModels.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLTowerGameSixModels.m; sourceTree = "<group>"; };
-		FA60000D2970000000000006 /* MLThemeGameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLThemeGameModel.h; sourceTree = "<group>"; };
-		FA60000E2970000000000006 /* MLThemeGameModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameModel.m; sourceTree = "<group>"; };
-		FA6000202970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixGlobalBackpackView.h; sourceTree = "<group>"; };
-		FA6000212970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixGlobalBackpackView.m; sourceTree = "<group>"; };
-		FA6000132970000000000007 /* MLThemeGameSixPackGiftCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLThemeGameSixPackGiftCell.h; sourceTree = "<group>"; };
-		FA6000142970000000000007 /* MLThemeGameSixPackGiftCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameSixPackGiftCell.m; sourceTree = "<group>"; };
-		FA6000162970000000000008 /* MLChatRoomThemeGameSixPackDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixPackDialog.h; sourceTree = "<group>"; };
-		FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixPackDialog.m; sourceTree = "<group>"; };
-		FA6000192970000000000009 /* MLChatRoomThemeGameSixResultDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixResultDialog.h; sourceTree = "<group>"; };
-		FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixResultDialog.m; sourceTree = "<group>"; };
-		A5A555AA27E5118800005523 /* MLChatRoomThemeGameFivePurchaseView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFivePurchaseView.h; sourceTree = "<group>"; };
-		A5A555BB27E5118800005524 /* MLChatRoomThemeGameFivePurchaseView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFivePurchaseView.m; sourceTree = "<group>"; };
-		A5A5557727E5118800005520 /* MLChatRoomThemeGameFiveRecordView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveRecordView.h; sourceTree = "<group>"; };
-		A5A5558827E5118800005521 /* MLChatRoomThemeGameFiveRecordView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveRecordView.m; sourceTree = "<group>"; };
-		A5A5554427E511880000551D /* MLChatRoomThemeGameFiveResultView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveResultView.h; sourceTree = "<group>"; };
-		A5A5555527E511880000551E /* MLChatRoomThemeGameFiveResultView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveResultView.m; sourceTree = "<group>"; };
-		A5A5551127E511880000551A /* MLChatRoomThemeGameFiveRuleView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveRuleView.h; sourceTree = "<group>"; };
-		A5A5552227E511880000551B /* MLChatRoomThemeGameFiveRuleView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveRuleView.m; sourceTree = "<group>"; };
-		29CC52D51AF1466394E32495 /* MLChatRoomThemeGameFiveGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MLChatRoomThemeGameFiveGiftView.h; path = MLChatRoomThemeGameFiveGiftView.h; sourceTree = "<group>"; };
-		4F0C8089ED964013A0332E16 /* MLChatRoomThemeGameFiveGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MLChatRoomThemeGameFiveGiftView.m; path = MLChatRoomThemeGameFiveGiftView.m; sourceTree = "<group>"; };
-		34EBE39101E84B7FA78C0D47 /* MLChatRoomThemeGameFiveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MLChatRoomThemeGameFiveView.h; path = MLChatRoomThemeGameFiveView.h; sourceTree = "<group>"; };
-		E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MLChatRoomThemeGameFiveView.m; path = MLChatRoomThemeGameFiveView.m; sourceTree = "<group>"; };
-		A4A5B0D9D044423EA3A37F7C /* theme_game_four_green_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_four_green_draw.svga; sourceTree = "<group>"; };
-		1963B5DE13A94E07BBD5F201 /* theme_game_four_blue_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_four_blue_draw.svga; sourceTree = "<group>"; };
-		E910B19BDD7E4BB29730EBF7 /* theme_game_four_yellow_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_four_yellow_draw.svga; sourceTree = "<group>"; };
-		DF25C7B920614EA7ADB492CA /* MLChatRoomThemeGameFourPurchaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourPurchaseView.h; sourceTree = "<group>"; };
-		FAF2AA681F0F401D90401B17 /* MLChatRoomThemeGameFourPurchaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourPurchaseView.m; sourceTree = "<group>"; };
-		2319AD4B79A6402E802C2C7F /* MLChatRoomThemeGameFourResultView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourResultView.h; sourceTree = "<group>"; };
-		259D86EE673042019BDE397E /* MLChatRoomThemeGameFourResultView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourResultView.m; sourceTree = "<group>"; };
-		A1B2C3D4E5F6010203040506 /* MLChatRoomThemeGameFourGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourGiftView.h; sourceTree = "<group>"; };
-		A1B2C3D4E5F6010203040505 /* MLChatRoomThemeGameFourGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourGiftView.m; sourceTree = "<group>"; };
-		266638B691F44AB5B01775ED /* MLChatRoomThemeGameFourRecordView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourRecordView.h; sourceTree = "<group>"; };
-		7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourRecordView.m; sourceTree = "<group>"; };
-		371F211E4A4D4D8BBD81DCB7 /* MLChatRoomThemeGameFourRuleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourRuleView.h; sourceTree = "<group>"; };
-		9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourRuleView.m; sourceTree = "<group>"; };
-		674F5B233D9A41B7AD4614A3 /* MLChatRoomThemeGameFourView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourView.h; sourceTree = "<group>"; };
-		E4C4B13B1FDF417A902A24F1 /* MLChatRoomThemeGameFourRankView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourRankView.h; sourceTree = "<group>"; };
-		E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourRankView.m; sourceTree = "<group>"; };
-		09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourView.m; sourceTree = "<group>"; };
 		00030BA022CDAF18003896EE /* EMO_RoomAnnouncementVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMO_RoomAnnouncementVC.h; sourceTree = "<group>"; };
 		00030BA122CDAF18003896EE /* EMO_RoomAnnouncementVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMO_RoomAnnouncementVC.m; sourceTree = "<group>"; };
 		00030BAD22CE0388003896EE /* RoomSearchView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomSearchView.h; sourceTree = "<group>"; };
@@ -1966,6 +1933,7 @@
 		00E2DAEB22F3C0E9004DA965 /* MLSessionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLSessionViewController.h; sourceTree = "<group>"; };
 		00E2DAEC22F3C0E9004DA965 /* MLSessionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLSessionViewController.m; sourceTree = "<group>"; };
 		02B0ECBE3CCA4F14A21F20A9 /* MLChatRoomThemeGameThreeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeView.m; sourceTree = "<group>"; };
+		09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourView.m; sourceTree = "<group>"; };
 		0B3F4F1ABB3D53E8CFD95297 /* CFMultiplierGamesVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMultiplierGamesVC.m; sourceTree = "<group>"; };
 		0C74A3E140EB91B454FB8627 /* CFMExDiamondAndBagPackage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMExDiamondAndBagPackage.xib; sourceTree = "<group>"; };
 		1191A51F6DF383E2DA7DADDA /* CFMExRewardRuleAlert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMExRewardRuleAlert.m; sourceTree = "<group>"; };
@@ -2029,14 +1997,22 @@
 		18C86B5A2432CF40002FF72D /* WebsocketManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebsocketManager.m; sourceTree = "<group>"; };
 		18C86B5B2432CF40002FF72D /* WebsocketManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebsocketManager.h; sourceTree = "<group>"; };
 		18E054FC398D41A860BE025F /* CFMExRewardRuleAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExRewardRuleAlert.h; sourceTree = "<group>"; };
+		1963B5DE13A94E07BBD5F201 /* theme_game_four_blue_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_four_blue_draw.svga; sourceTree = "<group>"; };
 		1F70A05B733AB59C92A4912B /* SRWKWebViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SRWKWebViewController.m; sourceTree = "<group>"; };
+		2319AD4B79A6402E802C2C7F /* MLChatRoomThemeGameFourResultView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourResultView.h; sourceTree = "<group>"; };
+		259D86EE673042019BDE397E /* MLChatRoomThemeGameFourResultView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourResultView.m; sourceTree = "<group>"; };
+		266638B691F44AB5B01775ED /* MLChatRoomThemeGameFourRecordView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourRecordView.h; sourceTree = "<group>"; };
+		26C1B7877AD95CBE9119792D /* MLThemeGameSixRecordDateHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLThemeGameSixRecordDateHeader.h; sourceTree = "<group>"; };
 		286F99EC2398CE3100B3639F /* EMO_RoomHostUserView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EMO_RoomHostUserView.xib; sourceTree = "<group>"; };
 		28EB9F5723A0E9AD00C5B714 /* BJGiftViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BJGiftViewCell.h; sourceTree = "<group>"; };
 		28EB9F5823A0E9AD00C5B714 /* BJGiftViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BJGiftViewCell.m; sourceTree = "<group>"; };
+		29CC52D51AF1466394E32495 /* MLChatRoomThemeGameFiveGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveGiftView.h; sourceTree = "<group>"; };
 		2AA776A89F629F6189D7DBC3 /* CFMExRewardRuleAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMExRewardRuleAlert.xib; sourceTree = "<group>"; };
+		2B1729EDB1375A08BF32D804 /* MLThemeGameSixRecordDateHeader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameSixRecordDateHeader.m; sourceTree = "<group>"; };
 		2D77DBABFD79248BD7EBCE70 /* CFMutiplierGamesResultView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMutiplierGamesResultView.h; sourceTree = "<group>"; };
 		33146C9237E7408D8C4A805C /* MLChatRoomThemeGameThreeResultView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeResultView.m; sourceTree = "<group>"; };
-		A1B2C3D4E5F6010203040502 /* MLChatRoomThemeGameThreeGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeGiftView.m; sourceTree = "<group>"; };
+		34EBE39101E84B7FA78C0D47 /* MLChatRoomThemeGameFiveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveView.h; sourceTree = "<group>"; };
+		371F211E4A4D4D8BBD81DCB7 /* MLChatRoomThemeGameFourRuleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourRuleView.h; sourceTree = "<group>"; };
 		38F989B517474841EB97D705 /* CFMCFMRewardHistoryJoinRate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMCFMRewardHistoryJoinRate.h; sourceTree = "<group>"; };
 		391FA2B62F91FAAB0074A737 /* CurrentRunGamaViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrentRunGamaViewController.h; sourceTree = "<group>"; };
 		391FA2B72F91FAAB0074A737 /* CurrentRunGamaViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurrentRunGamaViewController.m; sourceTree = "<group>"; };
@@ -2065,15 +2041,19 @@
 		4332A849B62BEC37729BE8B1 /* CFMExDiamondAndBagAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExDiamondAndBagAlert.h; sourceTree = "<group>"; };
 		43CE96DFD35619F17D8AA608 /* CFMExDiamondAndBagPackageCollCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMExDiamondAndBagPackageCollCell.m; sourceTree = "<group>"; };
 		498363D208619391C8F8B92A /* CFMExDiamondAndBagAlert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMExDiamondAndBagAlert.m; sourceTree = "<group>"; };
+		4B80314A43FC5B95BAC4F712 /* MLThemeGameSixRecordCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameSixRecordCell.m; sourceTree = "<group>"; };
 		4D68DAD1467289BDD79955A9 /* CFMRewardPriseTitle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMRewardPriseTitle.h; sourceTree = "<group>"; };
+		4F0C8089ED964013A0332E16 /* MLChatRoomThemeGameFiveGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveGiftView.m; sourceTree = "<group>"; };
 		521DA86BC2493E5BB040DE03 /* CFMRewardHistoryRate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMRewardHistoryRate.h; sourceTree = "<group>"; };
 		558874A3A72F4C249E1B5654 /* MLChatRoomMarqueeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomMarqueeLabel.m; sourceTree = "<group>"; };
 		5794455D125F45D1950DF7FB /* MLChatRoomThemeGameThreeRecordView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeRecordView.h; sourceTree = "<group>"; };
 		57D5770ED250E561E3B9F1F1 /* CFMRewardPriseTitle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMRewardPriseTitle.m; sourceTree = "<group>"; };
+		5813CEC352BD5616900D36C0 /* MLChatRoomThemeGameSixRecordDialog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixRecordDialog.m; sourceTree = "<group>"; };
 		5833CD184C37D8A9B99A5F5A /* CFMExRewardCoinAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExRewardCoinAlert.h; sourceTree = "<group>"; };
 		5A4ECE3D879A44DAC5CE08C9 /* CFMExDiamondAndBagPackage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExDiamondAndBagPackage.h; sourceTree = "<group>"; };
 		5CECB848222F2364F762558B /* CFMutiplierGamesResultView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMutiplierGamesResultView.m; sourceTree = "<group>"; };
 		64ABAEC1848B7D813009616D /* CFMCFMRewardHistoryJoinRate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMCFMRewardHistoryJoinRate.m; sourceTree = "<group>"; };
+		674F5B233D9A41B7AD4614A3 /* MLChatRoomThemeGameFourView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourView.h; sourceTree = "<group>"; };
 		679662FC33EC11DE51963EE2 /* CFMExRewardCoinAlert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMExRewardCoinAlert.m; sourceTree = "<group>"; };
 		6817A53A96D76D1EB49D1CDA /* Pods_miliao.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_miliao.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C1DA6A2034183E4BA156D9C /* CFMExDiamondAndBagDiamond.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMExDiamondAndBagDiamond.xib; sourceTree = "<group>"; };
@@ -2122,8 +2102,6 @@
 		7C70E94C2FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoRuleView.h; sourceTree = "<group>"; };
 		7C70E94D2FED864D00A11B29 /* MLChatRoomThemeGameTwoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoView.m; sourceTree = "<group>"; };
 		7C70E94E2FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoResultView.m; sourceTree = "<group>"; };
-		7C70E99A2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoGiftView.h; sourceTree = "<group>"; };
-		7C70E99B2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoGiftView.m; sourceTree = "<group>"; };
 		7C70E94F2FED864D00A11B29 /* MLChatRoomThemeGameTwoRecordView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoRecordView.h; sourceTree = "<group>"; };
 		7C70E9502FED864D00A11B29 /* MLChatRoomThemeGameTwoPurchaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoPurchaseView.h; sourceTree = "<group>"; };
 		7C70E9512FED864D00A11B29 /* MLChatRoomThemeGameTwoRuleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoRuleView.m; sourceTree = "<group>"; };
@@ -2131,16 +2109,6 @@
 		7C70E9532FED864D00A11B29 /* MLChatRoomThemeGameTwoRecordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoRecordView.m; sourceTree = "<group>"; };
 		7C70E9542FED864D00A11B29 /* MLChatRoomThemeGameTwoResultView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoResultView.h; sourceTree = "<group>"; };
 		7C70E9552FED864D00A11B29 /* MLChatRoomThemeGameTwoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoView.h; sourceTree = "<group>"; };
-		7C70E98A2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoFortuneView.h; sourceTree = "<group>"; };
-		7C70E98B2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoFortuneView.m; sourceTree = "<group>"; };
-		7C70E98D2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeFortuneView.h; sourceTree = "<group>"; };
-		7C70E98E2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeFortuneView.m; sourceTree = "<group>"; };
-		7C70E9902FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourFortuneView.h; sourceTree = "<group>"; };
-		7C70E9912FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourFortuneView.m; sourceTree = "<group>"; };
-		7C70E9932FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveFortuneView.h; sourceTree = "<group>"; };
-		7C70E9942FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveFortuneView.m; sourceTree = "<group>"; };
-		7C70E9962FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixFortuneView.h; sourceTree = "<group>"; };
-		7C70E9972FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixFortuneView.m; sourceTree = "<group>"; };
 		7C70E9572FED864D00A11B29 /* MLGameLotteryService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLGameLotteryService.h; sourceTree = "<group>"; };
 		7C70E9582FED864D00A11B29 /* MLGameDrawResultModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLGameDrawResultModel.h; sourceTree = "<group>"; };
 		7C70E9592FED864D00A11B29 /* MLGameLotteryInfoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLGameLotteryInfoModel.m; sourceTree = "<group>"; };
@@ -2161,12 +2129,26 @@
 		7C70E9692FED864D00A11B29 /* MLChatRoomThemeGameOneExchangeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameOneExchangeView.m; sourceTree = "<group>"; };
 		7C70E96A2FED864D00A11B29 /* MLChatRoomThemeGameOneRecordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameOneRecordView.m; sourceTree = "<group>"; };
 		7C70E96B2FED864D00A11B29 /* MLChatRoomThemeGameOneResultView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameOneResultView.h; sourceTree = "<group>"; };
-		7C70E9882FED864D00A11B29 /* MLChatRoomThemeGameOneGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameOneGiftView.h; sourceTree = "<group>"; };
-		7C70E9892FED864D00A11B29 /* MLChatRoomThemeGameOneGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameOneGiftView.m; sourceTree = "<group>"; };
 		7C70E97E2FED86A900A11B29 /* theme_game_one_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_one_draw.svga; sourceTree = "<group>"; };
 		7C70E97F2FED86A900A11B29 /* theme_game_two_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_two_draw.svga; sourceTree = "<group>"; };
 		7C70E9832FED86A900A11B29 /* theme_game_three_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_three_draw.svga; sourceTree = "<group>"; };
+		7C70E9882FED864D00A11B29 /* MLChatRoomThemeGameOneGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameOneGiftView.h; sourceTree = "<group>"; };
+		7C70E9892FED864D00A11B29 /* MLChatRoomThemeGameOneGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameOneGiftView.m; sourceTree = "<group>"; };
+		7C70E98A2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoFortuneView.h; sourceTree = "<group>"; };
+		7C70E98B2FED864D00A11B29 /* MLChatRoomThemeGameTwoFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoFortuneView.m; sourceTree = "<group>"; };
+		7C70E98D2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeFortuneView.h; sourceTree = "<group>"; };
+		7C70E98E2FED864D00A11B29 /* MLChatRoomThemeGameThreeFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeFortuneView.m; sourceTree = "<group>"; };
+		7C70E9902FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourFortuneView.h; sourceTree = "<group>"; };
+		7C70E9912FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourFortuneView.m; sourceTree = "<group>"; };
+		7C70E9932FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveFortuneView.h; sourceTree = "<group>"; };
+		7C70E9942FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveFortuneView.m; sourceTree = "<group>"; };
+		7C70E9962FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixFortuneView.h; sourceTree = "<group>"; };
+		7C70E9972FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixFortuneView.m; sourceTree = "<group>"; };
+		7C70E99A2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoGiftView.h; sourceTree = "<group>"; };
+		7C70E99B2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoGiftView.m; sourceTree = "<group>"; };
+		7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourRecordView.m; sourceTree = "<group>"; };
 		8194F4AC49A2CF33B3D29DBA /* CFMRewardHistoryAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMRewardHistoryAlert.xib; sourceTree = "<group>"; };
+		81BDBBC740245A649F4CADB8 /* MLThemeGameSixRecordCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLThemeGameSixRecordCell.h; sourceTree = "<group>"; };
 		83556612FDA7E2F9BCDADB3E /* CFMRewardHistoryRate.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMRewardHistoryRate.xib; sourceTree = "<group>"; };
 		836B17E7A83E3E0120BC405F /* CFMRewardHistoryCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMRewardHistoryCell.h; sourceTree = "<group>"; };
 		8500721A2A52B31D00D7D380 /* EMO_MySkillsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMO_MySkillsViewController.h; sourceTree = "<group>"; };
@@ -2874,7 +2856,6 @@
 		85ED6AC9283F97A00092C3FA /* DSAlertChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DSAlertChange.m; sourceTree = "<group>"; };
 		85ED6ACA283F97A00092C3FA /* DSAlertChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DSAlertChange.h; sourceTree = "<group>"; };
 		88681BC985BA490FBDEEC872 /* MLChatRoomThemeGameThreeResultView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeResultView.h; sourceTree = "<group>"; };
-		A1B2C3D4E5F6010203040503 /* MLChatRoomThemeGameThreeGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeGiftView.h; sourceTree = "<group>"; };
 		89835480FEB1813D317D42F4 /* CFMRewardPriseAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMRewardPriseAlert.xib; sourceTree = "<group>"; };
 		8EC2129577581C12F3B37069 /* CFMRewardHistoryAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMRewardHistoryAlert.h; sourceTree = "<group>"; };
 		8F260294248A25F4008114B5 /* EMO_RoomSetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMO_RoomSetViewController.m; sourceTree = "<group>"; };
@@ -2894,7 +2875,21 @@
 		911A928BAE024EE7BEE8D741 /* MLChatRoomThemeGameThreeRuleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeRuleView.m; sourceTree = "<group>"; };
 		98A068E699D6F45759B6F2D9 /* CFMHomeSignAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMHomeSignAlert.h; sourceTree = "<group>"; };
 		991D6CAEB48F4037BF6841D6 /* MLChatRoomMarqueeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomMarqueeLabel.h; sourceTree = "<group>"; };
+		9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourRuleView.m; sourceTree = "<group>"; };
 		A02673313454DC5C1DFCF058 /* CFMRewardHistoryJoin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMRewardHistoryJoin.m; sourceTree = "<group>"; };
+		A1B2C3D4E5F6010203040502 /* MLChatRoomThemeGameThreeGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreeGiftView.m; sourceTree = "<group>"; };
+		A1B2C3D4E5F6010203040503 /* MLChatRoomThemeGameThreeGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreeGiftView.h; sourceTree = "<group>"; };
+		A1B2C3D4E5F6010203040505 /* MLChatRoomThemeGameFourGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourGiftView.m; sourceTree = "<group>"; };
+		A1B2C3D4E5F6010203040506 /* MLChatRoomThemeGameFourGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourGiftView.h; sourceTree = "<group>"; };
+		A4A5B0D9D044423EA3A37F7C /* theme_game_four_green_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_four_green_draw.svga; sourceTree = "<group>"; };
+		A5A5551127E511880000551A /* MLChatRoomThemeGameFiveRuleView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveRuleView.h; sourceTree = "<group>"; };
+		A5A5552227E511880000551B /* MLChatRoomThemeGameFiveRuleView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveRuleView.m; sourceTree = "<group>"; };
+		A5A5554427E511880000551D /* MLChatRoomThemeGameFiveResultView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveResultView.h; sourceTree = "<group>"; };
+		A5A5555527E511880000551E /* MLChatRoomThemeGameFiveResultView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveResultView.m; sourceTree = "<group>"; };
+		A5A5557727E5118800005520 /* MLChatRoomThemeGameFiveRecordView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFiveRecordView.h; sourceTree = "<group>"; };
+		A5A5558827E5118800005521 /* MLChatRoomThemeGameFiveRecordView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveRecordView.m; sourceTree = "<group>"; };
+		A5A555AA27E5118800005523 /* MLChatRoomThemeGameFivePurchaseView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFivePurchaseView.h; sourceTree = "<group>"; };
+		A5A555BB27E5118800005524 /* MLChatRoomThemeGameFivePurchaseView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFivePurchaseView.m; sourceTree = "<group>"; };
 		AA71102323C4CB0D007E990F /* SVGAContentLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVGAContentLayer.m; sourceTree = "<group>"; };
 		AA71102423C4CB0D007E990F /* SVGAVideoSpriteFrameEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGAVideoSpriteFrameEntity.h; sourceTree = "<group>"; };
 		AA71102523C4CB0D007E990F /* SVGABezierPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGABezierPath.h; sourceTree = "<group>"; };
@@ -3244,6 +3239,7 @@
 		CED60AA4DD29F37216134036 /* CFMultiplierGamesVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMultiplierGamesVC.h; sourceTree = "<group>"; };
 		D339C8F8ECD71D85DCA7AEF6 /* STAccountPhoneSms.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STAccountPhoneSms.h; sourceTree = "<group>"; };
 		D5E81FDCECABA0FF622507F4 /* SRCookieManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SRCookieManager.h; sourceTree = "<group>"; };
+		D830C5B8D17F5458AD74DA09 /* MLChatRoomThemeGameSixRecordDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixRecordDialog.h; sourceTree = "<group>"; };
 		D962E395242CDB5A982C0A9D /* SRWKWebViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SRWKWebViewController.h; sourceTree = "<group>"; };
 		D99D569BD56B4F348EDC0441 /* MLChatRoomThemeGameFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFortuneView.m; sourceTree = "<group>"; };
 		DBDD501D2476A45400FE708B /* FSSegmentTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSSegmentTitleView.m; sourceTree = "<group>"; };
@@ -3252,6 +3248,7 @@
 		DBDD50202476A45400FE708B /* FSPageContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSPageContentView.m; sourceTree = "<group>"; };
 		DBDD50212476A45400FE708B /* FSSegmentTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSSegmentTitleView.h; sourceTree = "<group>"; };
 		DE9C9B331C8D4315839465CF /* MLChatRoomThemeGameThreePurchaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameThreePurchaseView.h; sourceTree = "<group>"; };
+		DF25C7B920614EA7ADB492CA /* MLChatRoomThemeGameFourPurchaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourPurchaseView.h; sourceTree = "<group>"; };
 		E11282AD2F3DB4FD00F59013 /* miliaoDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = miliaoDebug.entitlements; sourceTree = "<group>"; };
 		E1A0AE562F39DDC500C6DA72 /* EMO_RoomGameAlertView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMO_RoomGameAlertView.h; sourceTree = "<group>"; };
 		E1A0AE572F39DDC500C6DA72 /* EMO_RoomGameAlertView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMO_RoomGameAlertView.m; sourceTree = "<group>"; };
@@ -3364,6 +3361,8 @@
 		E4C2139627E0387800F91894 /* EMO_CollectVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMO_CollectVC.m; sourceTree = "<group>"; };
 		E4C2139827E0395600F91894 /* EMO_CollectListVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMO_CollectListVC.h; sourceTree = "<group>"; };
 		E4C2139927E0395600F91894 /* EMO_CollectListVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMO_CollectListVC.m; sourceTree = "<group>"; };
+		E4C4B13B1FDF417A902A24F1 /* MLChatRoomThemeGameFourRankView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameFourRankView.h; sourceTree = "<group>"; };
+		E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourRankView.m; sourceTree = "<group>"; };
 		E4D416BC26F2D8B300BCCB22 /* FileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileManager.h; sourceTree = "<group>"; };
 		E4D416BD26F2D8B400BCCB22 /* FileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileManager.m; sourceTree = "<group>"; };
 		E4E6CEAC269457BD000AF24C /* EMO_RoomSQSMView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMO_RoomSQSMView.h; sourceTree = "<group>"; };
@@ -3375,6 +3374,8 @@
 		E4FBA9B92B22EF3C00370438 /* EMO_RotaryAlertView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMO_RotaryAlertView.m; sourceTree = "<group>"; };
 		E4FBA9BB2B27EF9000370438 /* RouletteView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouletteView.h; sourceTree = "<group>"; };
 		E4FBA9BC2B27EF9000370438 /* RouletteView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouletteView.m; sourceTree = "<group>"; };
+		E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFiveView.m; sourceTree = "<group>"; };
+		E910B19BDD7E4BB29730EBF7 /* theme_game_four_yellow_draw.svga */ = {isa = PBXFileReference; lastKnownFileType = file; path = theme_game_four_yellow_draw.svga; sourceTree = "<group>"; };
 		E99C87C9331E15758C71F959 /* CFMExDiamondAndBagPackage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFMExDiamondAndBagPackage.m; sourceTree = "<group>"; };
 		EB193879263D4C6590402BDD /* CFMExDiamondAndBagAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMExDiamondAndBagAlert.xib; sourceTree = "<group>"; };
 		F0A756065E2E400CBEED7E04 /* MLChatRoomThemeGameThreePurchaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameThreePurchaseView.m; sourceTree = "<group>"; };
@@ -3383,6 +3384,24 @@
 		F435758C9D2CAD929D4F3C03 /* CFMExDiamondAndBagPackageCollCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMExDiamondAndBagPackageCollCell.xib; sourceTree = "<group>"; };
 		F8301AC0B4E3F11AF1421EB1 /* CFMRewardHistoryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMRewardHistoryCell.xib; sourceTree = "<group>"; };
 		F9395FEDC75B98ACEF4F8899 /* Pods-miliao.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-miliao.debug.xcconfig"; path = "Target Support Files/Pods-miliao/Pods-miliao.debug.xcconfig"; sourceTree = "<group>"; };
+		FA6000012970000000000006 /* MLChatRoomThemeGameSixView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixView.h; sourceTree = "<group>"; };
+		FA6000022970000000000006 /* MLChatRoomThemeGameSixView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixView.m; sourceTree = "<group>"; };
+		FA6000042970000000000006 /* MLChatRoomThemeGameSixRuleDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixRuleDialog.h; sourceTree = "<group>"; };
+		FA6000052970000000000006 /* MLChatRoomThemeGameSixRuleDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixRuleDialog.m; sourceTree = "<group>"; };
+		FA6000072970000000000006 /* MLChatRoomThemeGameSixFusionDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixFusionDialog.h; sourceTree = "<group>"; };
+		FA6000082970000000000006 /* MLChatRoomThemeGameSixFusionDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixFusionDialog.m; sourceTree = "<group>"; };
+		FA60000A2970000000000006 /* MLTowerGameSixModels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLTowerGameSixModels.h; sourceTree = "<group>"; };
+		FA60000B2970000000000006 /* MLTowerGameSixModels.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLTowerGameSixModels.m; sourceTree = "<group>"; };
+		FA60000D2970000000000006 /* MLThemeGameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLThemeGameModel.h; sourceTree = "<group>"; };
+		FA60000E2970000000000006 /* MLThemeGameModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameModel.m; sourceTree = "<group>"; };
+		FA6000132970000000000007 /* MLThemeGameSixPackGiftCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLThemeGameSixPackGiftCell.h; sourceTree = "<group>"; };
+		FA6000142970000000000007 /* MLThemeGameSixPackGiftCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameSixPackGiftCell.m; sourceTree = "<group>"; };
+		FA6000162970000000000008 /* MLChatRoomThemeGameSixPackDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixPackDialog.h; sourceTree = "<group>"; };
+		FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixPackDialog.m; sourceTree = "<group>"; };
+		FA6000192970000000000009 /* MLChatRoomThemeGameSixResultDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixResultDialog.h; sourceTree = "<group>"; };
+		FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixResultDialog.m; sourceTree = "<group>"; };
+		FA6000202970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixGlobalBackpackView.h; sourceTree = "<group>"; };
+		FA6000212970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixGlobalBackpackView.m; sourceTree = "<group>"; };
 		FA85CE3C2A7A219F00CDC75E /* CSVisitorSDKStub.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSVisitorSDKStub.m; sourceTree = "<group>"; };
 		FA9E088D2429259E000A52CF /* NSString+category.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+category.h"; sourceTree = "<group>"; };
 		FA9E088F2429259E000A52CF /* UITextView+Placeholder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextView+Placeholder.m"; sourceTree = "<group>"; };
@@ -3406,15 +3425,10 @@
 		FA9E08B4242930FF000A52CF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FA9E08B624293105000A52CF /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		FA9E08B82429310E000A52CF /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		FAF2AA681F0F401D90401B17 /* MLChatRoomThemeGameFourPurchaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourPurchaseView.m; sourceTree = "<group>"; };
 		FDB552DCF212294C30FB6CA4 /* CFMExDiamondAndBagPackageCollCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExDiamondAndBagPackageCollCell.h; sourceTree = "<group>"; };
 		FE00C3E6293CD22D1CE7BE8D /* CFMExDiamondAndBagDiamond.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExDiamondAndBagDiamond.h; sourceTree = "<group>"; };
 		FFFD90DD199A72D8F667EBC6 /* CFMHomeSignAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMHomeSignAlert.xib; sourceTree = "<group>"; };
-		D830C5B8D17F5458AD74DA09 /* MLChatRoomThemeGameSixRecordDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixRecordDialog.h; sourceTree = "<group>"; };
-		5813CEC352BD5616900D36C0 /* MLChatRoomThemeGameSixRecordDialog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixRecordDialog.m; sourceTree = "<group>"; };
-		81BDBBC740245A649F4CADB8 /* MLThemeGameSixRecordCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLThemeGameSixRecordCell.h; sourceTree = "<group>"; };
-		4B80314A43FC5B95BAC4F712 /* MLThemeGameSixRecordCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameSixRecordCell.m; sourceTree = "<group>"; };
-		26C1B7877AD95CBE9119792D /* MLThemeGameSixRecordDateHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLThemeGameSixRecordDateHeader.h; sourceTree = "<group>"; };
-		2B1729EDB1375A08BF32D804 /* MLThemeGameSixRecordDateHeader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameSixRecordDateHeader.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3496,51 +3510,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1BD1D3A6ADB741A48CD4561E /* GameFive */ = {
-			isa = PBXGroup;
-			children = (
-				29CC52D51AF1466394E32495 /* MLChatRoomThemeGameFiveGiftView.h */,
-				4F0C8089ED964013A0332E16 /* MLChatRoomThemeGameFiveGiftView.m */,
-				A5A5551127E511880000551A /* MLChatRoomThemeGameFiveRuleView.h */,
-				A5A5552227E511880000551B /* MLChatRoomThemeGameFiveRuleView.m */,
-				A5A5554427E511880000551D /* MLChatRoomThemeGameFiveResultView.h */,
-				A5A5555527E511880000551E /* MLChatRoomThemeGameFiveResultView.m */,
-				A5A5557727E5118800005520 /* MLChatRoomThemeGameFiveRecordView.h */,
-				A5A5558827E5118800005521 /* MLChatRoomThemeGameFiveRecordView.m */,
-				A5A555AA27E5118800005523 /* MLChatRoomThemeGameFivePurchaseView.h */,
-				A5A555BB27E5118800005524 /* MLChatRoomThemeGameFivePurchaseView.m */,
-				34EBE39101E84B7FA78C0D47 /* MLChatRoomThemeGameFiveView.h */,
-				E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */,
-				7C70E9932FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.h */,
-				7C70E9942FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m */,
-			);
-			name = GameFive;
-			path = GameFive;
-			sourceTree = "<group>";
-		};
-		ED0B8DB30C101FE22F0F4506 /* GameFour */ = {
-			isa = PBXGroup;
-			children = (
-				DF25C7B920614EA7ADB492CA /* MLChatRoomThemeGameFourPurchaseView.h */,
-				FAF2AA681F0F401D90401B17 /* MLChatRoomThemeGameFourPurchaseView.m */,
-				2319AD4B79A6402E802C2C7F /* MLChatRoomThemeGameFourResultView.h */,
-				259D86EE673042019BDE397E /* MLChatRoomThemeGameFourResultView.m */,
-				A1B2C3D4E5F6010203040506 /* MLChatRoomThemeGameFourGiftView.h */,
-				A1B2C3D4E5F6010203040505 /* MLChatRoomThemeGameFourGiftView.m */,
-				266638B691F44AB5B01775ED /* MLChatRoomThemeGameFourRecordView.h */,
-				7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */,
-				371F211E4A4D4D8BBD81DCB7 /* MLChatRoomThemeGameFourRuleView.h */,
-				9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */,
-				674F5B233D9A41B7AD4614A3 /* MLChatRoomThemeGameFourView.h */,
-				09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */,
-				E4C4B13B1FDF417A902A24F1 /* MLChatRoomThemeGameFourRankView.h */,
-				E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */,
-				7C70E9902FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.h */,
-				7C70E9912FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m */,
-			);
-			path = GameFour;
-			sourceTree = "<group>";
-		};
 		0009F61822BA0AEB0035B354 /* PopupWindowView */ = {
 			isa = PBXGroup;
 			children = (
@@ -5551,6 +5520,27 @@
 			path = IOConsumer;
 			sourceTree = "<group>";
 		};
+		1BD1D3A6ADB741A48CD4561E /* GameFive */ = {
+			isa = PBXGroup;
+			children = (
+				29CC52D51AF1466394E32495 /* MLChatRoomThemeGameFiveGiftView.h */,
+				4F0C8089ED964013A0332E16 /* MLChatRoomThemeGameFiveGiftView.m */,
+				A5A5551127E511880000551A /* MLChatRoomThemeGameFiveRuleView.h */,
+				A5A5552227E511880000551B /* MLChatRoomThemeGameFiveRuleView.m */,
+				A5A5554427E511880000551D /* MLChatRoomThemeGameFiveResultView.h */,
+				A5A5555527E511880000551E /* MLChatRoomThemeGameFiveResultView.m */,
+				A5A5557727E5118800005520 /* MLChatRoomThemeGameFiveRecordView.h */,
+				A5A5558827E5118800005521 /* MLChatRoomThemeGameFiveRecordView.m */,
+				A5A555AA27E5118800005523 /* MLChatRoomThemeGameFivePurchaseView.h */,
+				A5A555BB27E5118800005524 /* MLChatRoomThemeGameFivePurchaseView.m */,
+				34EBE39101E84B7FA78C0D47 /* MLChatRoomThemeGameFiveView.h */,
+				E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */,
+				7C70E9932FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.h */,
+				7C70E9942FED864D00A11B29 /* MLChatRoomThemeGameFiveFortuneView.m */,
+			);
+			path = GameFive;
+			sourceTree = "<group>";
+		};
 		392033E22F868F6B006D0208 /* FDFullscreenPopGesture */ = {
 			isa = PBXGroup;
 			children = (
@@ -5695,39 +5685,6 @@
 				6F995FAF241C7C1A005FC284 /* UIViewController+AlertViewAndActionSheet.m */,
 			);
 			path = "UIViewController+AlertViewAndActionSheet";
-			sourceTree = "<group>";
-		};
-				FA6000002970000000000006 /* GameSix */ = {
-			isa = PBXGroup;
-			children = (
-				FA6000012970000000000006 /* MLChatRoomThemeGameSixView.h */,
-				FA6000022970000000000006 /* MLChatRoomThemeGameSixView.m */,
-				FA6000042970000000000006 /* MLChatRoomThemeGameSixRuleDialog.h */,
-				FA6000052970000000000006 /* MLChatRoomThemeGameSixRuleDialog.m */,
-				FA6000072970000000000006 /* MLChatRoomThemeGameSixFusionDialog.h */,
-				FA6000082970000000000006 /* MLChatRoomThemeGameSixFusionDialog.m */,
-				FA60000A2970000000000006 /* MLTowerGameSixModels.h */,
-				FA60000B2970000000000006 /* MLTowerGameSixModels.m */,
-				FA60000D2970000000000006 /* MLThemeGameModel.h */,
-				FA60000E2970000000000006 /* MLThemeGameModel.m */,
-				FA6000202970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.h */,
-				FA6000212970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m */,
-				FA6000132970000000000007 /* MLThemeGameSixPackGiftCell.h */,
-				FA6000142970000000000007 /* MLThemeGameSixPackGiftCell.m */,
-				FA6000162970000000000008 /* MLChatRoomThemeGameSixPackDialog.h */,
-				FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */,
-				FA6000192970000000000009 /* MLChatRoomThemeGameSixResultDialog.h */,
-				FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */,
-				D830C5B8D17F5458AD74DA09 /* MLChatRoomThemeGameSixRecordDialog.h */,
-				5813CEC352BD5616900D36C0 /* MLChatRoomThemeGameSixRecordDialog.m */,
-				81BDBBC740245A649F4CADB8 /* MLThemeGameSixRecordCell.h */,
-				4B80314A43FC5B95BAC4F712 /* MLThemeGameSixRecordCell.m */,
-				26C1B7877AD95CBE9119792D /* MLThemeGameSixRecordDateHeader.h */,
-				2B1729EDB1375A08BF32D804 /* MLThemeGameSixRecordDateHeader.m */,
-				7C70E9962FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.h */,
-				7C70E9972FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.m */,
-			);
-			path = GameSix;
 			sourceTree = "<group>";
 		};
 		7C70E9452FED864D00A11B29 /* NativeGame */ = {
@@ -8983,6 +8940,62 @@
 			path = GameThree;
 			sourceTree = "<group>";
 		};
+		ED0B8DB30C101FE22F0F4506 /* GameFour */ = {
+			isa = PBXGroup;
+			children = (
+				DF25C7B920614EA7ADB492CA /* MLChatRoomThemeGameFourPurchaseView.h */,
+				FAF2AA681F0F401D90401B17 /* MLChatRoomThemeGameFourPurchaseView.m */,
+				2319AD4B79A6402E802C2C7F /* MLChatRoomThemeGameFourResultView.h */,
+				259D86EE673042019BDE397E /* MLChatRoomThemeGameFourResultView.m */,
+				A1B2C3D4E5F6010203040506 /* MLChatRoomThemeGameFourGiftView.h */,
+				A1B2C3D4E5F6010203040505 /* MLChatRoomThemeGameFourGiftView.m */,
+				266638B691F44AB5B01775ED /* MLChatRoomThemeGameFourRecordView.h */,
+				7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */,
+				371F211E4A4D4D8BBD81DCB7 /* MLChatRoomThemeGameFourRuleView.h */,
+				9AF74EC7B0BB4081A6C68598 /* MLChatRoomThemeGameFourRuleView.m */,
+				674F5B233D9A41B7AD4614A3 /* MLChatRoomThemeGameFourView.h */,
+				09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */,
+				E4C4B13B1FDF417A902A24F1 /* MLChatRoomThemeGameFourRankView.h */,
+				E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */,
+				7C70E9902FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.h */,
+				7C70E9912FED864D00A11B29 /* MLChatRoomThemeGameFourFortuneView.m */,
+			);
+			path = GameFour;
+			sourceTree = "<group>";
+		};
+		FA6000002970000000000006 /* GameSix */ = {
+			isa = PBXGroup;
+			children = (
+				FA6000012970000000000006 /* MLChatRoomThemeGameSixView.h */,
+				FA6000022970000000000006 /* MLChatRoomThemeGameSixView.m */,
+				FA6000042970000000000006 /* MLChatRoomThemeGameSixRuleDialog.h */,
+				FA6000052970000000000006 /* MLChatRoomThemeGameSixRuleDialog.m */,
+				FA6000072970000000000006 /* MLChatRoomThemeGameSixFusionDialog.h */,
+				FA6000082970000000000006 /* MLChatRoomThemeGameSixFusionDialog.m */,
+				FA60000A2970000000000006 /* MLTowerGameSixModels.h */,
+				FA60000B2970000000000006 /* MLTowerGameSixModels.m */,
+				FA60000D2970000000000006 /* MLThemeGameModel.h */,
+				FA60000E2970000000000006 /* MLThemeGameModel.m */,
+				FA6000202970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.h */,
+				FA6000212970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m */,
+				FA6000132970000000000007 /* MLThemeGameSixPackGiftCell.h */,
+				FA6000142970000000000007 /* MLThemeGameSixPackGiftCell.m */,
+				FA6000162970000000000008 /* MLChatRoomThemeGameSixPackDialog.h */,
+				FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */,
+				FA6000192970000000000009 /* MLChatRoomThemeGameSixResultDialog.h */,
+				FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */,
+				D830C5B8D17F5458AD74DA09 /* MLChatRoomThemeGameSixRecordDialog.h */,
+				5813CEC352BD5616900D36C0 /* MLChatRoomThemeGameSixRecordDialog.m */,
+				81BDBBC740245A649F4CADB8 /* MLThemeGameSixRecordCell.h */,
+				4B80314A43FC5B95BAC4F712 /* MLThemeGameSixRecordCell.m */,
+				26C1B7877AD95CBE9119792D /* MLThemeGameSixRecordDateHeader.h */,
+				2B1729EDB1375A08BF32D804 /* MLThemeGameSixRecordDateHeader.m */,
+				7C70E9962FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.h */,
+				7C70E9972FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.m */,
+			);
+			path = GameSix;
+			sourceTree = "<group>";
+		};
 		FA76D0B8AB834D29BF718252 /* Common */ = {
 			isa = PBXGroup;
 			children = (
@@ -10362,13 +10375,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
-				1970F86AA1154E0C8C0C9375 /* MLChatRoomThemeGameFiveView.m in Sources */,
-				E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */,
-				4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */,
-				89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */,
-				33221FD9883A474BAA4579B4 /* MLChatRoomThemeGameFourRecordView.m in Sources */,
-				B8F8986484E3483BBBB71C37 /* MLChatRoomThemeGameFourRuleView.m in Sources */,
+				7CDE463A3028A9B6007D2467 /* MLChatRoomThemeGameFourView.m in Sources */,
+				7CDE463B3028A9B6007D2467 /* MLChatRoomThemeGameFiveView.m in Sources */,
+				7CDE463C3028A9B6007D2467 /* MLChatRoomThemeGameFourRankView.m in Sources */,
+				7CDE463D3028A9B6007D2467 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */,
+				7CDE463E3028A9B6007D2467 /* MLChatRoomThemeGameFourResultView.m in Sources */,
+				7CDE463F3028A9B6007D2467 /* MLChatRoomThemeGameFourRecordView.m in Sources */,
+				7CDE46403028A9B6007D2467 /* MLChatRoomThemeGameFourRuleView.m in Sources */,
 				0076BCAC2294DED900CB58DE /* miliaoTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -10377,13 +10390,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5EEC2E4D65C934E5AB6FA6F1 /* MLChatRoomThemeGameFourView.m in Sources */,
-				1970F86AA1154E0C8C0C9375 /* MLChatRoomThemeGameFiveView.m in Sources */,
-				E4C4B13B1FDF417A902A24F3 /* MLChatRoomThemeGameFourRankView.m in Sources */,
-				4973D8742ECA4AB08E8BC528 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */,
-				89390F7CBFC847ABAC59E303 /* MLChatRoomThemeGameFourResultView.m in Sources */,
-				33221FD9883A474BAA4579B4 /* MLChatRoomThemeGameFourRecordView.m in Sources */,
-				B8F8986484E3483BBBB71C37 /* MLChatRoomThemeGameFourRuleView.m in Sources */,
+				7CDE46413028A9B6007D2467 /* MLChatRoomThemeGameFourView.m in Sources */,
+				7CDE46423028A9B6007D2467 /* MLChatRoomThemeGameFiveView.m in Sources */,
+				7CDE46433028A9B6007D2467 /* MLChatRoomThemeGameFourRankView.m in Sources */,
+				7CDE46443028A9B6007D2467 /* MLChatRoomThemeGameFourPurchaseView.m in Sources */,
+				7CDE46453028A9B6007D2467 /* MLChatRoomThemeGameFourResultView.m in Sources */,
+				7CDE46463028A9B6007D2467 /* MLChatRoomThemeGameFourRecordView.m in Sources */,
+				7CDE46473028A9B6007D2467 /* MLChatRoomThemeGameFourRuleView.m in Sources */,
 				0076BCB72294DED900CB58DE /* miliaoUITests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -10582,7 +10595,7 @@
 				CODE_SIGN_ENTITLEMENTS = miliao/miliaoDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1.0;
+				CURRENT_PROJECT_VERSION = 2.0;
 				DEVELOPMENT_TEAM = AUQ7TKS3CP;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -10620,7 +10633,7 @@
 					"$(PROJECT_DIR)/miliao/Main/Community/Publish/Other/MLAudioRecorder/amr_en_de/lib",
 					"$(PROJECT_DIR)/miliao/Expand/OpenSDK1.9.1",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -10683,7 +10696,7 @@
 				CODE_SIGN_ENTITLEMENTS = miliao/miliao.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1.0;
+				CURRENT_PROJECT_VERSION = 2.0;
 				DEVELOPMENT_TEAM = AUQ7TKS3CP;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -10715,7 +10728,7 @@
 					"$(PROJECT_DIR)/miliao/Main/Community/Publish/Other/MLAudioRecorder/amr_en_de/lib",
 					"$(PROJECT_DIR)/miliao/Expand/OpenSDK1.9.1",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

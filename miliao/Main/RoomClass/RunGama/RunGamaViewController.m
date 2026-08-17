@@ -497,11 +497,13 @@
                 if ([[self.gameInfoDic valueForKey:@"winner_top"] integerValue]==[[dic valueForKey:@"animal_no"] integerValue]) {
                     NSMutableDictionary *tmpDic=[[NSMutableDictionary alloc] initWithDictionary:dic];
                     [tmpDic setObject:[NSString stringWithFormat:@"%@",[dic valueForKey:@"winner_top_name"]] forKey:@"winner_name"];
+                    [resultArray addObject:tmpDic];
                 }
             }else{
                 if ([[self.gameInfoDic valueForKey:@"winner_bottom"] integerValue]==[[dic valueForKey:@"animal_no"] integerValue]) {
                     NSMutableDictionary *tmpDic=[[NSMutableDictionary alloc] initWithDictionary:dic];
                     [tmpDic setObject:[NSString stringWithFormat:@"%@",[dic valueForKey:@"winner_bottom_name"]] forKey:@"winner_name"];
+                    [resultArray addObject:tmpDic];
                 }
             }
         }
