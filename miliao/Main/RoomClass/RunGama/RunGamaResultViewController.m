@@ -107,24 +107,23 @@
         make.width.height.mas_equalTo(40);
     }];
 
-    // 2.2 左上角挂载 "数量" 图片角标及其数值 Label (22x22 pt)
-    UIImageView *numberBgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"数量"]];
-    numberBgView.contentMode = UIViewContentModeScaleAspectFit;
-    [rightBgImageView addSubview:numberBgView];
-    [numberBgView mas_makeConstraints:^(MASConstraintMaker *make) {
+    // 2.2 右上角悬浮挂载自适应胶囊角标 (#B96022 棕底, 18pt高度, 9pt圆角, 10pt加粗字体)
+    UILabel *numberBadgeLabel = [[UILabel alloc] init];
+    numberBadgeLabel.backgroundColor = mHexRGB(0xB96022);
+    numberBadgeLabel.textColor = [UIColor whiteColor];
+    numberBadgeLabel.font = [UIFont boldSystemFontOfSize:10];
+    numberBadgeLabel.textAlignment = NSTextAlignmentCenter;
+    numberBadgeLabel.layer.cornerRadius = 9;
+    numberBadgeLabel.layer.masksToBounds = YES;
+    numberBadgeLabel.adjustsFontSizeToFitWidth = YES;
+    numberBadgeLabel.minimumScaleFactor = 0.8;
+    numberBadgeLabel.text = [RunGamaResultViewController formatBadgeNumber:winSum];
+    [rightBgImageView addSubview:numberBadgeLabel];
+    [numberBadgeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(rightBgImageView.mas_top).offset(-2);
-        make.left.mas_equalTo(rightBgImageView.mas_left).offset(-2);
-        make.width.height.mas_equalTo(22);
-    }];
-
-    UILabel *numberLabel = [[UILabel alloc] init];
-    numberLabel.textColor = [UIColor whiteColor];
-    numberLabel.font = [UIFont boldSystemFontOfSize:11];
-    numberLabel.textAlignment = NSTextAlignmentCenter;
-    numberLabel.text = [NSString stringWithFormat:@"%ld", (long)winSum];
-    [numberBgView addSubview:numberLabel];
-    [numberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(numberBgView);
+        make.trailing.mas_equalTo(rightBgImageView.mas_trailing).offset(2);
+        make.height.mas_equalTo(18);
+        make.width.mas_greaterThanOrEqualTo(18);
     }];
 
     // 3. 底部关闭按钮（根据中奖金额动态切换 "开心收下" 与 "再接再厉"）
@@ -140,6 +139,18 @@
         make.centerX.mas_equalTo(0);
     }];
 }
+
++ (NSString *)formatBadgeNumber:(NSInteger)num {
+    if (num < 10000) {
+        return [NSString stringWithFormat:@"%ld", (long)num];
+    }
+    double w = num / 10000.0;
+    if (num % 10000 == 0) {
+        return [NSString stringWithFormat:@"%ldw", (long)w];
+    }
+    return [NSString stringWithFormat:@"%.1fw", w];
+}
+
 -(void)closeVc{
     [self dismissViewControllerAnimated:NO completion:^{
         if(self.cancel){
