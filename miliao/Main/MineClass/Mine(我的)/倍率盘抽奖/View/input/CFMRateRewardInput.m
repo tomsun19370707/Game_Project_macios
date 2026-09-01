@@ -59,6 +59,7 @@
     
     self.sureBtn.layer.masksToBounds = YES;
     self.sureBtn.layer.cornerRadius = 5 ;
+    [self.sureBtn setTitle:@"确定" forState:UIControlStateNormal];
     
     [self.exBtn makeRoundCorner];
 }
