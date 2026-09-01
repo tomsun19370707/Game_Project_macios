@@ -37,6 +37,13 @@
 @property (nonatomic, assign) NSInteger lottery_log_id;
 @property (nonatomic, assign) NSInteger lucky_value;
 @property (nonatomic, assign) NSInteger lucky_limit;
+@property (nonatomic, assign) NSInteger lucky_progress_value;
+@property (nonatomic, assign) NSInteger lucky_progress_limit;
+@property (nonatomic, copy) NSString *lucky_progress_percent;
+@property (nonatomic, assign) NSInteger next_guarantee_threshold;
+@property (nonatomic, copy) NSString *next_guarantee_min_price;
+@property (nonatomic, assign) NSInteger lucky_stage_index;
+@property (nonatomic, assign) NSInteger lucky_stage_count;
 @property (nonatomic, assign) NSInteger guarantee_triggered;
 @property (nonatomic, copy) NSString *is_guarantee;
 @property (nonatomic, copy) NSString *guarantee_min_price;

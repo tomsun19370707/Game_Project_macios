@@ -90,6 +90,20 @@
 
 @implementation MLGameDrawResponseModel
 
++ (NSDictionary *)mj_replacedKeyFromPropertyName {
+    return @{
+        @"lucky_progress_value": @[@"lucky_progress_value", @"luckyProgressValue"],
+        @"lucky_progress_limit": @[@"lucky_progress_limit", @"luckyProgressLimit"],
+        @"lucky_progress_percent": @[@"lucky_progress_percent", @"luckyProgressPercent"],
+        @"next_guarantee_threshold": @[@"next_guarantee_threshold", @"nextGuaranteeThreshold"],
+        @"next_guarantee_min_price": @[@"next_guarantee_min_price", @"nextGuaranteeMinPrice"],
+        @"lucky_stage_index": @[@"lucky_stage_index", @"luckyStageIndex"],
+        @"lucky_stage_count": @[@"lucky_stage_count", @"luckyStageCount"],
+        @"lucky_value": @[@"lucky_value", @"luckyValue", @"lucky"],
+        @"lucky_limit": @[@"lucky_limit", @"luckyLimit", @"lucky_max", @"luckyMax"]
+    };
+}
+
 + (NSDictionary *)mj_objectClassInArray {
     return @{
         @"list": [MLGameDrawResultModel class]

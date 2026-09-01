@@ -16,6 +16,14 @@
 @property (nonatomic, strong) NSArray<MLGameLotteryOptModel *> *coin_cost_opt;
 @property (nonatomic, assign) NSInteger lottery_coin; // 当前玩法的钥匙余额
 @property (nonatomic, assign) NSInteger lucky; // 玩法保底寻梦值
+@property (nonatomic, assign) NSInteger lucky_limit; // 清空上限
+@property (nonatomic, assign) NSInteger lucky_progress_value; // 当前阶梯分子
+@property (nonatomic, assign) NSInteger lucky_progress_limit; // 当前阶梯分母
+@property (nonatomic, copy) NSString *lucky_progress_percent; // 进度百分比
+@property (nonatomic, assign) NSInteger next_guarantee_threshold; // 下一保底阈值
+@property (nonatomic, copy) NSString *next_guarantee_min_price; // 下一保底最低价值
+@property (nonatomic, assign) NSInteger lucky_stage_index; // 当前阶梯序号
+@property (nonatomic, assign) NSInteger lucky_stage_count; // 总阶梯数
 @property (nonatomic, assign) NSInteger profit_rate; // 运势收益率，例如 1000 表示 1000%
 @property (nonatomic, assign) NSInteger consume_diamonds; // 今日消耗钻石数
 @property (nonatomic, assign) NSInteger produce_diamonds; // 今日产出钻石数

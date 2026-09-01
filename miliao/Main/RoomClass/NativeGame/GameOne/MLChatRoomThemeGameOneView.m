@@ -52,6 +52,8 @@
 @property (nonatomic, strong) CAGradientLayer *progressGradientLayer;
 @property (nonatomic, assign) NSInteger dreamValue;
 @property (nonatomic, assign) NSInteger luckyLimit;
+@property (nonatomic, assign) NSInteger dreamProgressValue;
+@property (nonatomic, assign) NSInteger dreamProgressLimit;
 
 @property (nonatomic, strong) UILabel *diamondBalanceLabel;
 @property (nonatomic, strong) UIButton *diamondPlusButton;
@@ -698,15 +700,42 @@
     self.progressGradientLayer.frame = CGRectMake(0, 0, maxFillWidth, KDialogAdaptedWidth(19));
 }
 
+#pragma mark - 寻梦值阶梯保底算法与分母解析
++ (NSInteger)calculateTierLimitWithLuckyValue:(NSInteger)luckyValue {
+    if (luckyValue < 200) {
+        return 200;
+    } else if (luckyValue < 2000) {
+        return 2000;
+    } else if (luckyValue < 5000) {
+        return 5000;
+    } else {
+        return 10000;
+    }
+}
+
+- (NSInteger)resolveProgressLimitWithProgressLimit:(NSInteger)progressLimit
+                                     nextThreshold:(NSInteger)nextThreshold
+                                      currentValue:(NSInteger)currentValue {
+    if (progressLimit > 0) {
+        return progressLimit;
+    }
+    if (nextThreshold > 0) {
+        return nextThreshold;
+    }
+    return [[self class] calculateTierLimitWithLuckyValue:currentValue];
+}
+
 #pragma mark - 寻梦值发光充能条 & 400ms 平滑动效驱动
 - (void)updateDreamProgressWithDreamValue:(NSInteger)dreamValue luckyLimit:(NSInteger)luckyLimit animates:(BOOL)animates {
+    self.dreamProgressValue = dreamValue;
     self.dreamValue = dreamValue;
-    self.luckyLimit = luckyLimit > 0 ? luckyLimit : 200;
+    self.dreamProgressLimit = luckyLimit > 0 ? luckyLimit : [[self class] calculateTierLimitWithLuckyValue:dreamValue];
+    self.luckyLimit = self.dreamProgressLimit;
     
-    // 边界闭环保护 [0, luckyLimit]
-    NSInteger safeDreamVal = MAX(0, MIN(dreamValue, self.luckyLimit));
-    CGFloat ratio = (CGFloat)safeDreamVal / (CGFloat)self.luckyLimit;
-    BOOL isFull = (safeDreamVal >= self.luckyLimit);
+    // 边界闭环保护 [0, dreamProgressLimit]
+    NSInteger safeDreamVal = MAX(0, MIN(self.dreamProgressValue, self.dreamProgressLimit));
+    CGFloat ratio = self.dreamProgressLimit > 0 ? ((CGFloat)safeDreamVal / (CGFloat)self.dreamProgressLimit) : 0.0;
+    BOOL isFull = (safeDreamVal >= self.dreamProgressLimit);
     
     // 充能最长填充宽度 (外框 164pt - 左右边距 6pt)
     CGFloat maxFillWidth = KDialogAdaptedWidth(158);
@@ -720,7 +749,7 @@
         self.progressGradientLayer.colors = @[(id)mHexRGB(0x00F2FE).CGColor, (id)mHexRGB(0x4FACFE).CGColor, (id)mHexRGB(0x9B51E0).CGColor];
         self.luckyTextLabel.textColor = kWhiteColor;
     }
-    self.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/%ld", (long)dreamValue, (long)self.luckyLimit];
+    self.luckyTextLabel.text = [NSString stringWithFormat:@"寻梦值: %ld/%ld", (long)self.dreamProgressValue, (long)self.dreamProgressLimit];
     
     WeakSelf
     void(^updateWidthBlock)(void) = ^{
@@ -772,19 +801,27 @@
             return;
         }
         wself.infoModel = model;
-        if (model.lucky > 0 || wself.dreamValue == 0) {
-            [wself updateDreamProgressWithDreamValue:model.lucky luckyLimit:200 animates:YES];
-        }
+        NSInteger progressVal = model.lucky_progress_value > 0 ? model.lucky_progress_value : model.lucky;
+        NSInteger progressLim = [wself resolveProgressLimitWithProgressLimit:model.lucky_progress_limit nextThreshold:model.next_guarantee_threshold currentValue:progressVal];
+        [wself updateDreamProgressWithDreamValue:progressVal luckyLimit:progressLim animates:YES];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
     
     // 3. 18 格奖池礼物列表与寻梦值初始化
-    [MLGameLotteryService getPrizesWithTypeId:self.typeId successWithInfo:^(NSArray<MLGameDrawResultModel *> *list, NSInteger luckyValue, NSInteger luckyLimit) {
+    [MLGameLotteryService getPrizesWithTypeId:self.typeId successWithInfo:^(NSArray<MLGameDrawResultModel *> *list, NSInteger luckyValue, NSInteger luckyLimit, MLGameLotteryInfoModel * _Nullable infoModel) {
         if (!wself) return;
-        if (luckyValue >= 0) {
-            NSInteger limit = luckyLimit > 0 ? luckyLimit : 200;
-            [wself updateDreamProgressWithDreamValue:luckyValue luckyLimit:limit animates:YES];
+        NSInteger progressVal = wself.dreamValue;
+        NSInteger progressLim = 0;
+        if (infoModel) {
+            progressVal = infoModel.lucky_progress_value > 0 ? infoModel.lucky_progress_value : (infoModel.lucky > 0 ? infoModel.lucky : (luckyValue >= 0 ? luckyValue : wself.dreamValue));
+            progressLim = [wself resolveProgressLimitWithProgressLimit:infoModel.lucky_progress_limit nextThreshold:infoModel.next_guarantee_threshold currentValue:progressVal];
+        } else if (luckyValue >= 0) {
+            progressVal = luckyValue;
+            progressLim = [wself resolveProgressLimitWithProgressLimit:luckyLimit nextThreshold:0 currentValue:progressVal];
+        }
+        if (progressVal >= 0) {
+            [wself updateDreamProgressWithDreamValue:progressVal luckyLimit:progressLim animates:YES];
         }
         if (list && [list isKindOfClass:[NSArray class]]) {
             wself.prizesInPool = list;
@@ -903,26 +940,11 @@
     self.isDrawing = YES;
     [self lockButtons:YES];
     
-    // 1. 乐观扣减
+    // 1. 乐观扣减钥匙余额
     self.localKeyBalance -= cost;
     [self updateBalanceUI];
     self.lastDrawTimes = times;
     self.lastDrawCost = cost;
-    
-    // 判断抽奖前是否已处于 >= 200 的保底满额状态
-    BOOL isGuarantee = (self.dreamValue >= 200);
-    if (isGuarantee) {
-        // 抽奖前已达到/超过 200，本次抽奖触发保底大奖，抽完后清零重置为 0
-        self.dreamValue = 0;
-    } else {
-        // 未达保底，正常真实累加（如 121 + 100 = 221）
-        self.dreamValue += times;
-    }
-    
-    if (self.infoModel) {
-        self.infoModel.lucky = self.dreamValue;
-    }
-    [self updateDreamProgressWithDreamValue:self.dreamValue luckyLimit:self.luckyLimit animates:YES];
     
     // 显示并启动 SVGA 循环播放动效
     self.svgaPlayer.hidden = NO;
@@ -943,9 +965,16 @@
             if (guaranteeTriggered) {
                 [SVProgressHUD showSuccessWithStatus:@"恭喜触发【寻梦保底】！"];
             }
-            NSInteger luckyLimitVal = responseModel.lucky_limit > 0 ? responseModel.lucky_limit : 200;
-            NSInteger targetLuckyVal = (responseModel.lucky_value > 0 || guaranteeTriggered) ? responseModel.lucky_value : wself.dreamValue;
-            [wself updateDreamProgressWithDreamValue:targetLuckyVal luckyLimit:luckyLimitVal animates:YES];
+            NSInteger progressVal = wself.dreamValue;
+            if (responseModel.lucky_progress_value > 0) {
+                progressVal = responseModel.lucky_progress_value;
+            } else if (responseModel.lucky_value > 0) {
+                progressVal = responseModel.lucky_value;
+            } else if (guaranteeTriggered) {
+                progressVal = 0;
+            }
+            NSInteger progressLim = [wself resolveProgressLimitWithProgressLimit:responseModel.lucky_progress_limit nextThreshold:responseModel.next_guarantee_threshold currentValue:progressVal];
+            [wself updateDreamProgressWithDreamValue:progressVal luckyLimit:progressLim animates:YES];
         }
         
         MLChatRoomThemeGameOneResultView *activeResultView = nil;
@@ -1209,12 +1238,20 @@
 - (void)refreshPoolClick {
     self.refreshButton.enabled = NO;
     WeakSelf
-    [MLGameLotteryService refreshPoolWithTypeId:self.typeId successWithInfo:^(NSArray<MLGameDrawResultModel *> *list, NSInteger diamondCost, NSString *newDiamondBalance, NSInteger luckyValue, NSInteger luckyLimit) {
+    [MLGameLotteryService refreshPoolWithTypeId:self.typeId successWithInfo:^(NSArray<MLGameDrawResultModel *> *list, NSInteger diamondCost, NSString *newDiamondBalance, NSInteger luckyValue, NSInteger luckyLimit, MLGameLotteryInfoModel * _Nullable infoModel) {
         if (!wself) return;
         wself.refreshButton.enabled = YES;
-        if (luckyValue >= 0) {
-            NSInteger limit = luckyLimit > 0 ? luckyLimit : 200;
-            [wself updateDreamProgressWithDreamValue:luckyValue luckyLimit:limit animates:YES];
+        NSInteger progressVal = wself.dreamValue;
+        NSInteger progressLim = 0;
+        if (infoModel) {
+            progressVal = infoModel.lucky_progress_value > 0 ? infoModel.lucky_progress_value : (infoModel.lucky > 0 ? infoModel.lucky : (luckyValue >= 0 ? luckyValue : wself.dreamValue));
+            progressLim = [wself resolveProgressLimitWithProgressLimit:infoModel.lucky_progress_limit nextThreshold:infoModel.next_guarantee_threshold currentValue:progressVal];
+        } else if (luckyValue >= 0) {
+            progressVal = luckyValue;
+            progressLim = [wself resolveProgressLimitWithProgressLimit:luckyLimit nextThreshold:0 currentValue:progressVal];
+        }
+        if (progressVal >= 0) {
+            [wself updateDreamProgressWithDreamValue:progressVal luckyLimit:progressLim animates:YES];
         }
         wself.prizesInPool = list;
         [wself renderGiftBoard];
