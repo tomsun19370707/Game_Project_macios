@@ -64,9 +64,11 @@
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
+    // 阻止 super 调用以防作为普通 view 挂载时触发 tableview 私有消息崩溃
+}
 
-    // Configure the view for the selected state
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+    // 阻止 super 调用
 }
 
 #pragma mark -

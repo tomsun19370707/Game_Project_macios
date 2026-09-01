@@ -7,6 +7,8 @@
 //
 
 #import "FFHomeHandel.h"
+#import <MJExtension/MJExtension.h>
+
 @implementation FFHomeHandel
 /** 获取房间列表*/
 + (void)requestChatRoomList:(NSMutableDictionary *)parameter success:(void(^)(NSMutableArray *dataArr,NSString *pageNo,BOOL hasNextPage) )success failure:(void(^)(void))failure
@@ -89,7 +91,7 @@
             } else if ([dictData[@"data"] isKindOfClass:[NSArray class]]) {
                 [resultList addObjectsFromArray:dictData[@"data"]];
             } else {
-                GoodCateInfo *model = [GoodCateInfo yy_modelWithJSON:baseModel.data];
+                GoodCateInfo *model = [GoodCateInfo mj_objectWithKeyValues:baseModel.data];
                 if ([model.data isKindOfClass:[NSArray class]]) {
                     [resultList addObjectsFromArray:model.data];
                 }
@@ -133,7 +135,7 @@
         
         DLog(@"%@",responObject);
         
-        GoodCateInfo *model = [GoodCateInfo yy_modelWithJSON:responObject];
+        GoodCateInfo *model = [GoodCateInfo mj_objectWithKeyValues:responObject];
 
         success(model.data);
         
@@ -166,17 +168,36 @@
         
         DLog(@"%@--",responObject);
         
-        GoodCateInfo *model = [GoodCateInfo yy_modelWithJSON:responObject];
+        NSMutableArray *resultArray = [NSMutableArray array];
+        if ([responObject isKindOfClass:[NSDictionary class]]) {
+            id dataObj = responObject[@"data"];
+            if ([dataObj isKindOfClass:[NSArray class]]) {
+                for (id item in (NSArray *)dataObj) {
+                    if ([item isKindOfClass:[NSDictionary class]]) {
+                        GoodListInfoModel *model = [GoodListInfoModel mj_objectWithKeyValues:item];
+                        [resultArray addObject:model ?: item];
+                    } else if (item) {
+                        [resultArray addObject:item];
+                    }
+                }
+            }
+        }
+        if (resultArray.count == 0) {
+            GoodCateInfo *cateModel = [GoodCateInfo mj_objectWithKeyValues:responObject];
+            if (cateModel && [cateModel.data isKindOfClass:[NSArray class]]) {
+                [resultArray addObjectsFromArray:cateModel.data];
+            }
+        }
         
         BOOL hasNext = NO ;
         NSString *pageNo = parameter[@"page"];
-        if (model.data.count >= 10) {
+        if (resultArray.count >= 10) {
             pageNo = [NSString stringWithFormat:@"%d",pageNo.intValue + 1] ;
             hasNext = YES;
         }else{
             hasNext = NO;
         }
-        success(model.data,pageNo,hasNext);
+        success(resultArray, pageNo, hasNext);
         
     } failture:^(NSError *error) {
         failure();
@@ -197,7 +218,7 @@
             NSArray *list = responObject[@"data"][@"list"];
             parame[@"data"] = list ;
             
-            GoodCateInfo *model = [GoodCateInfo yy_modelWithJSON:parame];
+            GoodCateInfo *model = [GoodCateInfo mj_objectWithKeyValues:parame];
             
             BOOL hasNext = NO ;
             NSString *pageNo = parameter[@"page"];
@@ -223,7 +244,7 @@
         
         DLog(@"%@--",responObject);
         
-        GoodCateInfo *model = [GoodCateInfo yy_modelWithJSON:responObject];
+        GoodCateInfo *model = [GoodCateInfo mj_objectWithKeyValues:responObject];
         
         BOOL hasNext = NO ;
         NSString *pageNo = parameter[@"page"];
@@ -249,7 +270,7 @@
         
         __block NSMutableArray *arr = [NSMutableArray array];
         
-        GoodCateInfo *model = [GoodCateInfo yy_modelWithJSON:responObject];
+        GoodCateInfo *model = [GoodCateInfo mj_objectWithKeyValues:responObject];
         [model.data enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             GoodListInfoModel *temp = obj ;
             [arr addObject:FORMAT(temp.image)];

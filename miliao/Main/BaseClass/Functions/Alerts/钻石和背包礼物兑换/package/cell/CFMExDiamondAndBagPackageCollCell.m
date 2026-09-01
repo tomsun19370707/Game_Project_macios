@@ -76,10 +76,16 @@
 }
 -(void)setModel:(GoodListInfoModel *)model
 {
-    [self.icon sd_setImageWithURL:[NSURL URLWithString:model.image] placeholderImage:IMAGE(@"正方形")];
-    self.name.text = model.name ;
-    /** 可以兑换的数量*/
-    self.num.text = [NSString stringWithFormat:@"x%d",model.exchange_num];
+    if ([model isKindOfClass:[GoodListInfoModel class]]) {
+        [self.icon sd_setImageWithURL:[NSURL URLWithString:FORMAT(model.image)] placeholderImage:IMAGE(@"正方形")];
+        self.name.text = model.name ?: @"";
+        self.num.text = [NSString stringWithFormat:@"x%d", model.exchange_num];
+    } else if ([model isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dict = (NSDictionary *)model;
+        [self.icon sd_setImageWithURL:[NSURL URLWithString:FORMAT(dict[@"image"])] placeholderImage:IMAGE(@"正方形")];
+        self.name.text = FORMAT(dict[@"name"]);
+        self.num.text = [NSString stringWithFormat:@"x%@", FORMAT(dict[@"exchange_num"] ?: dict[@"num"] ?: @"1")];
+    }
 }
 #pragma mark --
 #pragma mark --- ibaction

@@ -34,40 +34,44 @@
 
 @implementation GoodListInfo
 + (NSDictionary *)modelContainerPropertyGenericClass {
-    // value使用[YYEatModel class]或YYEatModel.class或@"YYEatModel"没有区别
-    return @{@"data" : [GoodListInfoModel class],
-             };
+    return @{@"data" : [GoodListInfoModel class]};
+}
++ (NSDictionary *)mj_objectClassInArray {
+    return @{@"data" : [GoodListInfoModel class]};
 }
 @end
 
 @implementation GoodListInfoModel
 + (NSDictionary *)modelContainerPropertyGenericClass {
-    // value使用[YYEatModel class]或YYEatModel.class或@"YYEatModel"没有区别
     return @{@"shop" : [ShopInfoModel class],
              @"ecCategories" : [GoodListInfoModel class],
              };
 }
-
++ (NSDictionary *)mj_objectClassInArray {
+    return @{@"shop" : [ShopInfoModel class],
+             @"ecCategories" : [GoodListInfoModel class],
+             };
+}
 @end
 
 @implementation GoodDetailModel
 
 + (NSDictionary *)modelContainerPropertyGenericClass {
-    // value使用[YYEatModel class]或YYEatModel.class或@"YYEatModel"没有区别
-    return @{@"data" : [GoodListInfoModel class],
-             };
+    return @{@"data" : [GoodListInfoModel class]};
 }
-
++ (NSDictionary *)mj_objectClassInArray {
+    return @{@"data" : [GoodListInfoModel class]};
+}
 @end
 
 @implementation GoodCateInfo
 
 + (NSDictionary *)modelContainerPropertyGenericClass {
-    // value使用[YYEatModel class]或YYEatModel.class或@"YYEatModel"没有区别
-    return @{@"data" : [GoodListInfoModel class],
-             };
+    return @{@"data" : [GoodListInfoModel class]};
 }
-
++ (NSDictionary *)mj_objectClassInArray {
+    return @{@"data" : [GoodListInfoModel class]};
+}
 @end
 
 @implementation NewsLookModel
