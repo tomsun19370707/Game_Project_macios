@@ -47,6 +47,8 @@
 #pragma mark --- 初始化view
 - (void)initContentview
 {
+    self.title.hidden = YES;
+
     NSString *str3 = @"请输入下注金额";
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:str3];
     [str addAttribute:NSForegroundColorAttributeName value:HexColorDy(@"eeeeee") range:NSMakeRange(0,str3.length)];
@@ -73,9 +75,11 @@
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
+    // 阻止 super 调用以防作为普通 view 挂载时触发 tableview 私有消息崩溃
+}
 
-    // Configure the view for the selected state
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+    // 阻止 super 调用
 }
 
 #pragma mark -

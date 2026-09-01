@@ -86,13 +86,13 @@
                 <constraints>
                     <constraint firstItem="jlV-ya-QPa" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="47p-jL-vBd"/>
                     <constraint firstItem="ntF-wy-4ri" firstAttribute="top" secondItem="FCb-ly-dTh" secondAttribute="bottom" constant="17" id="5pT-Bg-yMe"/>
-                    <constraint firstItem="FCb-ly-dTh" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="48" id="6kB-LS-zdA"/>
+                    <constraint firstItem="FCb-ly-dTh" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="58" id="6kB-LS-zdA"/>
                     <constraint firstItem="Azt-Ze-afT" firstAttribute="leading" secondItem="FCb-ly-dTh" secondAttribute="trailing" constant="16" id="8xI-ph-BPv"/>
                     <constraint firstItem="jlV-ya-QPa" firstAttribute="top" secondItem="FCb-ly-dTh" secondAttribute="bottom" constant="18" id="Loj-fu-txE"/>
                     <constraint firstItem="ntF-wy-4ri" firstAttribute="leading" secondItem="jlV-ya-QPa" secondAttribute="trailing" constant="9" id="O2N-12-qVj"/>
                     <constraint firstAttribute="trailing" secondItem="Azt-Ze-afT" secondAttribute="trailing" constant="15" id="p7q-YH-Zdx"/>
                     <constraint firstItem="FCb-ly-dTh" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="rZp-nX-9Zh"/>
-                    <constraint firstItem="Azt-Ze-afT" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="48" id="w8P-lN-AQb"/>
+                    <constraint firstItem="Azt-Ze-afT" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="58" id="w8P-lN-AQb"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>

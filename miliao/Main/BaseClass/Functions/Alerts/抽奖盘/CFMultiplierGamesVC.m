@@ -193,17 +193,23 @@
 -(UIImageView *)bg
 {
     if (!_bg) {
-        CGFloat height = hh(1046);
-        CGFloat top = ScreenHeight - height;
+        CGFloat height = hh(780);
+        CGFloat top = ScreenHeight - height + hh(100);
         _bg = [[UIImageView alloc]initWithFrame:CGRectMake(0, top, SCREENWIDTH, height)];
         _bg.image = IMAGE(@"mgame_bg0");
+        _bg.contentMode = UIViewContentModeScaleAspectFit;
         _bg.userInteractionEnabled = YES;
-        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(hh(64), 0, hh(622), hh(844))];
+
+        CGFloat dingW = ScreenWidth * 0.78;
+        CGFloat dingH = dingW * (844.0 / 622.0);
+        CGFloat dingX = (ScreenWidth - dingW) / 2.0;
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(dingX, hh(200), dingW, dingH)];
+        imageView.contentMode = UIViewContentModeScaleAspectFit;
         self.bg1 = imageView;
         imageView.image = IMAGE(@"mgame_bg1");
         [_bg addSubview:imageView];
 
-        UIView *tapView = [[UIView alloc] initWithFrame:CGRectMake(0, hh(120), ScreenWidth, top)];
+        UIView *tapView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, MAX(top, 0))];
         [self.view addSubview:tapView];
         UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewtap:)];
         [tapView addGestureRecognizer:tapGestureRecognizer];
