@@ -15,44 +15,61 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    self = [super initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight)];
+    self = [super initWithFrame:[UIScreen mainScreen].bounds];
     if (self) {
+        self.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
 
         UIView *tap = [[UIView alloc] initWithFrame:self.bounds];
         [self addSubview:tap];
         UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewtap:)];
         [tap addGestureRecognizer:tapGestureRecognizer];
 
-        UIImageView *view = [[UIImageView alloc] initWithFrame:CGRectMake(hh(51), (ScreenHeight - hh(582))/2, hh(648), hh(582))];
+        UIImageView *view = [[UIImageView alloc] init];
         view.image = [UIImage imageNamed:@"mgame_result_bg"];
+        view.contentMode = UIViewContentModeScaleAspectFit;
+        view.userInteractionEnabled = YES;
         [self addSubview:view];
+        [view mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.equalTo(self);
+            make.width.mas_equalTo(KDialogAdaptedWidth(324));
+            make.height.mas_equalTo(KDialogAdaptedWidth(291));
+        }];
 
-        UIImageView *pic = [[UIImageView alloc] initWithFrame:CGRectMake(hh(230), hh(160), hh(222), hh(138))];
+        UIImageView *pic = [[UIImageView alloc] init];
         pic.image = [UIImage imageNamed:@"mgame_result_pic"];
+        pic.contentMode = UIViewContentModeScaleAspectFit;
         [view addSubview:pic];
+        [pic mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(view);
+            make.top.equalTo(view).offset(KDialogAdaptedWidth(80));
+            make.width.mas_equalTo(KDialogAdaptedWidth(111));
+            make.height.mas_equalTo(KDialogAdaptedWidth(69));
+        }];
 
         self.numLabel = [[UILabel alloc] init];
-        self.numLabel.textAlignment = 1;
+        self.numLabel.textAlignment = NSTextAlignmentCenter;
         self.numLabel.font = [UIFont boldSystemFontOfSize:18];
+        self.numLabel.textColor = HexColorDy(@"#8B2A00");
         [view addSubview:self.numLabel];
         [self.numLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(0);
-            make.top.mas_equalTo(pic.bottom + hh(30));
+            make.centerX.equalTo(view);
+            make.top.equalTo(pic.mas_bottom).offset(KDialogAdaptedWidth(12));
         }];
+
         self.ratioLabel = [[UILabel alloc] init];
-        self.ratioLabel.textAlignment = 1;
-        self.ratioLabel.font = [UIFont systemFontOfSize:17];
-        self.ratioLabel.textColor = UIColor.lightGrayColor;
+        self.ratioLabel.textAlignment = NSTextAlignmentCenter;
+        self.ratioLabel.font = [UIFont systemFontOfSize:15];
+        self.ratioLabel.textColor = HexColorDy(@"#8B2A00");
         [view addSubview:self.ratioLabel];
         [self.ratioLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(0);
-            make.top.mas_equalTo(self.numLabel.mas_bottom).offset(hh(30));
+            make.centerX.equalTo(view);
+            make.top.equalTo(self.numLabel.mas_bottom).offset(KDialogAdaptedWidth(6));
         }];
 
     }
     return self;
 }
-- (void)viewtap :(UITapGestureRecognizer *)tap {
+- (void)viewtap:(UITapGestureRecognizer *)tap {
     self.hidden = YES;
     [self removeFromSuperview];
 }
