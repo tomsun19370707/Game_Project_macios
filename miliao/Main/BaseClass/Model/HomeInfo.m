@@ -42,6 +42,12 @@
 @end
 
 @implementation GoodListInfoModel
++ (NSDictionary *)modelCustomPropertyMapper {
+    return @{@"ID" : @"id"};
+}
++ (NSDictionary *)mj_replacedKeyFromPropertyName {
+    return @{@"ID" : @"id"};
+}
 + (NSDictionary *)modelContainerPropertyGenericClass {
     return @{@"shop" : [ShopInfoModel class],
              @"ecCategories" : [GoodListInfoModel class],

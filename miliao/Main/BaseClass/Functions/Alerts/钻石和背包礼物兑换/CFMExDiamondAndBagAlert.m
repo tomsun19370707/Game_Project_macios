@@ -135,8 +135,17 @@
     self.bagVie.fetchClick = ^(NSInteger selIndex) {
         @strongify(self);
         if (!self) return;
-        self.packageGiftIndex = selIndex ;
-        [self giftExchangeToCoin:YES];
+        self.packageGiftIndex = selIndex;
+        if (selIndex < self.dataArr.count) {
+            id item = self.dataArr[selIndex];
+            if ([item isKindOfClass:[GoodListInfoModel class]]) {
+                GoodListInfoModel *model = (GoodListInfoModel *)item;
+                self.bagVie.tip.text = [NSString stringWithFormat:@"可兑换黑曜石：%d", model.exchange_num];
+            } else if ([item isKindOfClass:[NSDictionary class]]) {
+                NSDictionary *dict = (NSDictionary *)item;
+                self.bagVie.tip.text = [NSString stringWithFormat:@"可兑换黑曜石：%@", FORMAT(dict[@"exchange_num"] ?: @"0")];
+            }
+        }
     };
 }
 
@@ -335,58 +344,76 @@
     parameter[@"page"] = @"1";
     parameter[@"size"] = @"100";
     parameter[@"is_send"] = @"1";
+    if ([NSString NotNull:UserDefaultsGet(kToken)]) {
+        parameter[@"token"] = UserDefaultsGet(kToken);
+    }
     [FFHomeHandel fetchPackageGiftList:parameter success:^(NSMutableArray *dataArr, NSString *pageNo, BOOL hasNextPage) {
-        wself.dataArr = dataArr ;
+        wself.dataArr = dataArr;
         dispatch_async(dispatch_get_main_queue(), ^{
             wself.bagVie.limitArr = wself.dataArr;
+            if (wself.dataArr.count > 0) {
+                wself.packageGiftIndex = 0;
+                id item = wself.dataArr[0];
+                if ([item isKindOfClass:[GoodListInfoModel class]]) {
+                    GoodListInfoModel *model = (GoodListInfoModel *)item;
+                    wself.bagVie.tip.text = [NSString stringWithFormat:@"可兑换黑曜石：%d", model.exchange_num];
+                } else if ([item isKindOfClass:[NSDictionary class]]) {
+                    NSDictionary *dict = (NSDictionary *)item;
+                    wself.bagVie.tip.text = [NSString stringWithFormat:@"可兑换黑曜石：%@", FORMAT(dict[@"exchange_num"] ?: @"0")];
+                }
+            }
         });
     } failure:^{
         
     }];
 }
 
-/** 获取礼物可兑换的 黑曜石数量  或者是  兑换黑曜石*/
+/** 兑换背包礼物为黑曜石*/
 - (void)giftExchangeToCoin:(BOOL)isGetCoin
 {
     if (self.packageGiftIndex >= self.dataArr.count) {
+        [SVProgressHUD showTextHUDWithMessage:@"请选择要兑换的礼物"];
         return;
     }
-    if (!isGetCoin) {
-        if (self.bagVie.tf.text.floatValue <= 0) {
-            [SVProgressHUD showTextHUDWithMessage:@"请输入兑换数量"];
-            return;
-        }
-    } else {
-        if (self.bagVie.tf.text.floatValue <= 0) {
-            return;
-        }
+    if (self.bagVie.tf.text.floatValue <= 0) {
+        [SVProgressHUD showTextHUDWithMessage:@"请输入兑换数量"];
+        return;
     }
     
     id giftObj = self.dataArr[self.packageGiftIndex];
     NSString *giftID = @"";
     if ([giftObj isKindOfClass:[GoodListInfoModel class]]) {
-        giftID = FORMAT(((GoodListInfoModel *)giftObj).ID);
+        GoodListInfoModel *model = (GoodListInfoModel *)giftObj;
+        if (model.gift_id > 0) {
+            giftID = [NSString stringWithFormat:@"%d", model.gift_id];
+        } else if (model.ID.length > 0) {
+            giftID = FORMAT(model.ID);
+        } else if (model.knapsack_id.length > 0) {
+            giftID = FORMAT(model.knapsack_id);
+        }
     } else if ([giftObj isKindOfClass:[NSDictionary class]]) {
-        giftID = FORMAT(giftObj[@"id"]);
+        NSDictionary *dict = (NSDictionary *)giftObj;
+        giftID = FORMAT(dict[@"gift_id"] ?: dict[@"id"] ?: dict[@"knapsack_id"]);
+    }
+    
+    if (giftID.length == 0 || [giftID isEqualToString:@"0"]) {
+        [SVProgressHUD showTextHUDWithMessage:@"请选择要兑换的礼物"];
+        return;
     }
     
     NSMutableDictionary *parameter = [NSMutableDictionary dictionary];
     parameter[@"knapsack_id"] = giftID;
     parameter[@"nums"] = self.bagVie.tf.text;
-    if (isGetCoin) {
-        parameter[@"get_ratio_coin"] = @"1";
+    if ([NSString NotNull:UserDefaultsGet(kToken)]) {
+        parameter[@"token"] = UserDefaultsGet(kToken);
     }
     WeakSelf
     [FFHomeHandel customeOprHandle:parameter apiStr:gift_bagGiftExchangeRatioCoin success:^(BaseModel *info) {
-        if (isGetCoin) {
-            wself.bagVie.tip.text = [NSString stringWithFormat:@"可兑换黑曜石 %.2f", 0.0];
-        } else {
-            [SVProgressHUD showTextHUDWithMessage:@"成功"];
-            if (wself.fetchRefresh) {
-                wself.fetchRefresh();
-            }
-            [wself hideView];
+        [SVProgressHUD showTextHUDWithMessage:@"成功"];
+        if (wself.fetchRefresh) {
+            wself.fetchRefresh();
         }
+        [wself hideView];
     } failure:^{
         
     }];
@@ -394,8 +421,5 @@
 
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
-    if (textField.text.floatValue > 0) {
-        [self giftExchangeToCoin:YES];
-    }
 }
 @end

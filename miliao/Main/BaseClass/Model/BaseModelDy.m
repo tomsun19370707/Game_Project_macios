@@ -12,18 +12,19 @@
 #pragma mark --
 #pragma mark --- 声明自定义类参数类型
 + (NSDictionary *)modelCustomPropertyMapper {
-    return @{@"ID" : @"id",
-             };
-    /**
-     声明sex字段是sexDic下的sex
-     @"sex":@"sexDic.sex"
-     */
+    return @{@"ID" : @"id"};
+}
+
++ (NSDictionary *)mj_replacedKeyFromPropertyName {
+    return @{@"ID" : @"id"};
 }
 
 + (NSDictionary *)modelContainerPropertyGenericClass {
-    // value使用[YYEatModel class]或YYEatModel.class或@"YYEatModel"没有区别
-    return @{@"page" : [PageModel class],
-             };
+    return @{@"page" : [PageModel class]};
+}
+
++ (NSDictionary *)mj_objectClassInArray {
+    return @{@"page" : [PageModel class]};
 }
 
 //#pragma mark --

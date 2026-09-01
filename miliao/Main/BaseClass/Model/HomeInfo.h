@@ -55,6 +55,8 @@
 @end
 
 @interface GoodListInfoModel : BaseModelDy
+@property (nonatomic,strong) NSString *knapsack_id;
+@property (nonatomic,assign) int gift_id;
 @property (nonatomic,strong) NSString *partition_name,*heat_text,*memo,*duration;
 @property (nonatomic,assign) int exchange_num,num,gift_num;
 @property (nonatomic,strong) NSString *charm_diff,*total_gift_charm,*gift_name,*gift_image,*contribute_diff;
