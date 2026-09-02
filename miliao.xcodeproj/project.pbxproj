@@ -170,6 +170,7 @@
 		0081A064229E63F200D4B0C9 /* CGXStringPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0081A05B229E63F100D4B0C9 /* CGXStringPickerView.m */; };
 		0081A065229E63F200D4B0C9 /* CGXPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0081A05C229E63F100D4B0C9 /* CGXPickerView.m */; };
 		0086784B22EB133200B76190 /* RoomGiftModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0086784A22EB133200B76190 /* RoomGiftModel.m */; };
+		MLGFL00122EB133200B76190 /* MLGiftLockManager.m in Sources */ = {isa = PBXBuildFile; fileRef = MLGFL00222EB133200B76190 /* MLGiftLockManager.m */; };
 		0086784E22EB134800B76190 /* RoomGiftMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0086784D22EB134800B76190 /* RoomGiftMessageCell.m */; };
 		0086785722EB1CEE00B76190 /* EMO_FriendsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0086785222EB1CEE00B76190 /* EMO_FriendsModel.m */; };
 		0086785822EB1CEE00B76190 /* EMO_SearchFriendsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0086785622EB1CEE00B76190 /* EMO_SearchFriendsTableViewCell.m */; };
@@ -1540,6 +1541,8 @@
 		0081A05C229E63F100D4B0C9 /* CGXPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CGXPickerView.m; sourceTree = "<group>"; };
 		0086784922EB133200B76190 /* RoomGiftModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoomGiftModel.h; sourceTree = "<group>"; };
 		0086784A22EB133200B76190 /* RoomGiftModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoomGiftModel.m; sourceTree = "<group>"; };
+		MLGFL00322EB133200B76190 /* MLGiftLockManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLGiftLockManager.h; sourceTree = "<group>"; };
+		MLGFL00222EB133200B76190 /* MLGiftLockManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLGiftLockManager.m; sourceTree = "<group>"; };
 		0086784C22EB134800B76190 /* RoomGiftMessageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoomGiftMessageCell.h; sourceTree = "<group>"; };
 		0086784D22EB134800B76190 /* RoomGiftMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoomGiftMessageCell.m; sourceTree = "<group>"; };
 		0086785222EB1CEE00B76190 /* EMO_FriendsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMO_FriendsModel.m; sourceTree = "<group>"; };
@@ -3991,6 +3994,8 @@
 				005589BF232103F80022DB14 /* AwardModel.m */,
 				0086784922EB133200B76190 /* RoomGiftModel.h */,
 				0086784A22EB133200B76190 /* RoomGiftModel.m */,
+				MLGFL00322EB133200B76190 /* MLGiftLockManager.h */,
+				MLGFL00222EB133200B76190 /* MLGiftLockManager.m */,
 				852161C2284896FB00DCBED5 /* RoomFuDaiModel.h */,
 				852161C3284896FB00DCBED5 /* RoomFuDaiModel.m */,
 				0080089F22E1DACF00F03E20 /* RoomMusicModel.h */,
@@ -9803,6 +9808,7 @@
 				CB785DF92EE903F100EBDEDB /* WebLoadVc.m in Sources */,
 				CB785DFA2EE903F100EBDEDB /* WebJSVc.m in Sources */,
 				0086784B22EB133200B76190 /* RoomGiftModel.m in Sources */,
+				MLGFL00122EB133200B76190 /* MLGiftLockManager.m in Sources */,
 				8F2602A4248A263E008114B5 /* RoomSetRoomBgCell.m in Sources */,
 				855580A12A3B096400C78E65 /* YostarKeychain.m in Sources */,
 				18C86B522432CF19002FF72D /* SRHash.m in Sources */,

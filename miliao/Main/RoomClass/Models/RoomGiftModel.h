@@ -28,8 +28,12 @@
 //@property (nonatomic, strong) NSString *show_img2;
 @property (nonatomic, strong) NSString *e_name;
 @property (nonatomic, strong) NSString *wares_type;/*1、宝石 2、礼物 3、卡片 */
-@property(nonatomic, copy) NSString *num;
-//@property(nonatomic, strong) NSString *is_play;//是否全服播报 1播报 0不播报
+@property (nonatomic, copy) NSString *num;
+@property (nonatomic, strong) NSString *gift_id;
+@property (nonatomic, assign) BOOL is_locked;
+@property (nonatomic, assign) BOOL isLocked;
+
+- (NSString *)realGiftId;
 
 @end
 

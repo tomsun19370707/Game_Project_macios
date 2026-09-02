@@ -1561,8 +1561,13 @@ static SVGAParser *parser;
         currentType = @"0";
     }
     
+    NSString *gid = [giftModel realGiftId];
+    if (gid.length == 0) {
+        gid = giftModel.giftID ? [NSString stringWithFormat:@"%@", giftModel.giftID] : @"";
+    }
+    
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:@{@"room_id":[MLRoomInformationModel currentAccount].room_id,
-                                                                                @"gift_id":giftModel.giftID,
+                                                                                @"gift_id":gid,
                                                                                 @"num":giftNum,
                                                                                 @"to_uids":@"",
                                                                                 @"type":currentType}];
@@ -1585,6 +1590,9 @@ static SVGAParser *parser;
         [weakSelf getRoomInfoWithParameters:2 commplete:^{
             
         }];
+        if ([currentType isEqualToString:@"1"]) {
+            [weakSelf fetchKnapsackList];
+        }
         NSMutableDictionary *dict1 = [NSMutableDictionary dictionaryWithDictionary:@{@"nickName":[UserManager userInfo].nickname,
                                                                                      @"user_id":[UserManager userInfo].user_id,
                                                                                      @"message":@"",
@@ -1808,15 +1816,7 @@ static SVGAParser *parser;
     }];
     
     //获取背包礼物
-    NSMutableDictionary *dic=[NSMutableDictionary dictionaryWithDictionary:@{@"type":@(0),@"page":@(1),@"size":@(100),@"status":@"0"}];
-    [NetworkRequest POST:Request_GetMyKnapsack parmeters:dic success:^(id responObject) {
-        BaseModel *basemodel=(BaseModel *)responObject;
-        NSMutableArray *arry = [RoomGiftModel mj_objectArrayWithKeyValuesArray:basemodel.data];
-        wself.newRoomGiftView.myArray = arry;
-        
-    } failture:^(NSError *error) {
-        
-    }];
+    [self fetchKnapsackList];
     
     
     [NetworkRequest POST:Request_GetBoxList parmeters:nil success:^(id responObject) {
@@ -1874,6 +1874,20 @@ static SVGAParser *parser;
     
     
     
+}
+
+- (void)fetchKnapsackList {
+    WeakSelf;
+    NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:@{@"type":@(0),@"page":@(1),@"size":@(100),@"status":@"0"}];
+    [NetworkRequest POST:Request_GetMyKnapsack parmeters:dic success:^(id responObject) {
+        BaseModel *basemodel = (BaseModel *)responObject;
+        NSMutableArray *arry = [RoomGiftModel mj_objectArrayWithKeyValuesArray:basemodel.data];
+        wself.newRoomGiftView.myArray = arry;
+        if (wself.newRoomGiftView.currentType == 2) {
+            [wself.newRoomGiftView uploadType:1001];
+        }
+    } failture:^(NSError *error) {
+    }];
 }
 
 #pragma mark -- 新加的房间人数
@@ -3634,7 +3648,24 @@ static SVGAParser *parser;
         };
         
         ///赠送背包礼物
-        _newRoomGiftView.senderBackPackBlock = ^(MLRoomMSequenceModel *userModel,NSArray *giftArray) {
+        _newRoomGiftView.senderBackPackBlock = ^(MLRoomMSequenceModel *userModel, NSArray *giftArray) {
+            NSArray *allBackpack = [wself.newRoomGiftView.myArray copy];
+            // 场景 2: 部分锁定分流
+            if (allBackpack && giftArray.count < allBackpack.count) {
+                for (NSInteger i = 0; i < giftArray.count; i++) {
+                    RoomGiftModel *giftModel = giftArray[i];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.06 * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [wself getGift_queueWithParameters:@[userModel] giftModel:giftModel giftNum:giftModel.num currentType:@"2"];
+                    });
+                }
+                [SVProgressHUD showSuccessWithStatus:getLanguage(@"已送出全部未锁定礼物")];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((0.06 * giftArray.count + 0.5) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [wself fetchKnapsackList];
+                });
+                return;
+            }
+            
+            // 场景 3: 无锁定全量送出
             NSDictionary *dic = @{@"to_user_id":[Common isNull:userModel.uid],@"room_id":[Common isNull:[MLRoomInformationModel currentAccount].room_id]};
             [NetworkRequest POST:Request_SendBackPackGift parmeters:dic success:^(id responObject) {
                 BaseModel *baseModel = (BaseModel *)responObject;

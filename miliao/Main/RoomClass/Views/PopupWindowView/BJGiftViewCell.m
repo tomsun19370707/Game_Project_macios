@@ -52,80 +52,85 @@ static NSString *ReuseIdentifier = @"BJGiftViewCell";
 }
 
 -(void)configWithModel:(RoomGiftModel *)giftModel Index:(NSInteger)currentInex andIndexpath:(NSIndexPath *)SelectIndexPath{
-     _giftModel = giftModel;
-    _SelectIndexPath=SelectIndexPath;
-    self.packageGiftCount.text = giftModel.price;
-//    if(currentInex == 2){
-//        self.packageGiftCount.text = giftModel.num;
-//    }else{
-//        self.packageGiftCount.text = giftModel.price;
-//    }
-    [self.giftIcon sd_setImageWithURL:[NSURL URLWithString:giftModel.image] placeholderImage:ImageNamed(@"未加载头像")];
-    NSString *str = [giftModel.name stringByReplacingOccurrencesOfString:@".00" withString:@""];
-    self.giftPrice.text = NSStringFormat(@"%@",str);
+    _giftModel = giftModel;
+    _SelectIndexPath = SelectIndexPath;
     
-//    self.packageGiftCount.hidden = NO;
-//    if (currentInex==2) {
-//        self.packageGiftCount.hidden = NO;
-//    }else{
-        self.packageGiftCount.hidden = YES;
-//    }
+    NSString *nameStr = giftModel.name ? [NSString stringWithFormat:@"%@", giftModel.name] : @"";
+    NSString *priceStr = giftModel.price ? [NSString stringWithFormat:@"%@", giftModel.price] : @"";
+    NSString *numStr = giftModel.num ? [NSString stringWithFormat:@"%@", giftModel.num] : @"1";
+    NSString *cleanName = [nameStr stringByReplacingOccurrencesOfString:@".00" withString:@""];
+    NSString *cleanPrice = [priceStr stringByReplacingOccurrencesOfString:@".00" withString:@""];
     
-    if (currentInex==2) {
-        self.giftPrice.text = NSStringFormat(@"%@x%@",giftModel.name,giftModel.num);
+    self.packageGiftCount.text = cleanPrice;
+    [self.giftIcon sd_setImageWithURL:[NSURL URLWithString:[Common isNull:giftModel.image]] placeholderImage:ImageNamed(@"未加载头像")];
+    self.giftPrice.text = cleanName;
+    self.packageGiftCount.hidden = YES;
+    
+    if (currentInex == 2) {
+        self.giftPrice.text = [NSString stringWithFormat:@"%@x%@", cleanName, numStr];
         [self.giftName setImage:ImageNamed(@"coinImg") forState:UIControlStateNormal];
-        NSString *str = [giftModel.price stringByReplacingOccurrencesOfString:@".00" withString:@""];
-        [self.giftName setTitle:[NSString stringWithFormat:@"%@",str] forState:UIControlStateNormal];
-    }else{
+        [self.giftName setTitle:cleanPrice forState:UIControlStateNormal];
+        self.lockIconImageView.hidden = !giftModel.isLocked;
+    } else {
         [self.giftName setImage:ImageNamed(@"coinImg") forState:UIControlStateNormal];
-        NSString *str = [giftModel.price stringByReplacingOccurrencesOfString:@".00" withString:@""];
-        [self.giftName setTitle:str forState:UIControlStateNormal];
+        [self.giftName setTitle:cleanPrice forState:UIControlStateNormal];
+        self.lockIconImageView.hidden = YES;
     }
 }
 
 -(void)configWithFuDaiModel:(RoomFuDaiModel *)fuDaiModel Index:(NSInteger)currentInex andIndexpath:(NSIndexPath *)SelectIndexPath{
+    _fuDaiModel = fuDaiModel;
+    _SelectIndexPath = SelectIndexPath;
     
-     _fuDaiModel = fuDaiModel;
-    _SelectIndexPath=SelectIndexPath;
-    NSString *str = [fuDaiModel.price stringByReplacingOccurrencesOfString:@".00" withString:@""];
-    self.packageGiftCount.text =[NSString stringWithFormat:@"%ld",[str integerValue]];
+    NSString *priceStr = fuDaiModel.price ? [NSString stringWithFormat:@"%@", fuDaiModel.price] : @"0";
+    NSString *cleanPrice = [priceStr stringByReplacingOccurrencesOfString:@".00" withString:@""];
+    NSString *nameStr = fuDaiModel.name ? [NSString stringWithFormat:@"%@", fuDaiModel.name] : @"";
+    
+    self.packageGiftCount.text = [NSString stringWithFormat:@"%ld", (long)[cleanPrice integerValue]];
     if ([fuDaiModel.image hasPrefix:@"http"]) {
         [self.giftIcon sd_setImageWithURL:[NSURL URLWithString:fuDaiModel.image] placeholderImage:ImageNamed(@"未加载头像")];
     } else {
-        self.giftIcon.image = ImageNamed(fuDaiModel.image);
+        self.giftIcon.image = ImageNamed([Common isNull:fuDaiModel.image]);
     }
-        [self.giftName setTitle:fuDaiModel.price forState:UIControlStateNormal];
-    self.giftPrice.text = NSStringFormat(@"%@",fuDaiModel.name);
+    [self.giftName setTitle:cleanPrice forState:UIControlStateNormal];
+    self.giftPrice.text = nameStr;
     [self.giftName setImage:ImageNamed(@"coinImg") forState:UIControlStateNormal];
-//    self.packageGiftCount.hidden = NO;
-//    if (currentInex==2) {
-//        self.packageGiftCount.hidden = NO;
-//    }else{
-        self.packageGiftCount.hidden = YES;
-//    }
+    self.packageGiftCount.hidden = YES;
+    self.lockIconImageView.hidden = YES;
 }
 
 
 -(void)BtnClick{
-    NSLog(@"点击");
+    NSLog(@"点击Cell主体 - 选中礼物");
     if(self.GiftBtnClick){
-        self.GiftBtnClick(1,self.SelectIndexPath);
+        self.GiftBtnClick(0, self.SelectIndexPath); // 0: 仅选中
     }
-    
+}
+
+-(void)sendBtnClicked{
+    NSLog(@"点击投喂按钮 - 确认赠送");
+    if(self.GiftBtnClick){
+        self.GiftBtnClick(1, self.SelectIndexPath); // 1: 确认赠送
+    }
 }
 
 -(void)showView:(BOOL)hidden{
-    
     self.clickView.hidden=hidden;
     self.giftIcon.hidden=!hidden;
     self.giftName.hidden=!hidden;
     self.giftPrice.hidden=!hidden;
     self.sendBtn.hidden=!hidden;
     self.bkImageView.hidden=!hidden;
-    
 }
 
 -(void)longPress:(UILongPressGestureRecognizer *)longPressBtn{
+    if (longPressBtn.state != UIGestureRecognizerStateBegan) return;
+    if (self.currentType == 2) {
+        if (self.giftLongPressBlock) {
+            self.giftLongPressBlock(self.giftModel, self.SelectIndexPath);
+        }
+        return;
+    }
     if(self.currentType!=3){//宝箱不执行长按
         NSLog(@"长按");
         self.selectBtn.userInteractionEnabled=NO;
@@ -147,51 +152,32 @@ static NSString *ReuseIdentifier = @"BJGiftViewCell";
         [self showView:YES];
         !self.sendGiftClick?:self.sendGiftClick(self.num);
     }
-    
 }
 
 - (void)getIsSelected:(BOOL)isSelect andIndex:(NSInteger)currentInex andShow:(BOOL)clickView{
-    self.currentType=currentInex;
+    self.currentType = currentInex;
     if (isSelect) {
-//        [self shakeToShow:self.giftIcon];//暂时取消
         self.bkImageView.hidden = NO;
-        [self.sendBtn setTitle:@"投喂" forState:UIControlStateNormal];
-        self.sendBtn.hidden=NO;
-        if(currentInex==3 || currentInex==4){
-            self.sendBtn.hidden=YES;
-            [self.giftPrice mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(self.giftIcon.mas_bottom).offset(8);
-                make.height.equalTo(@18);
-            }];
-        }else{
-            [self.giftPrice mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(self.giftIcon.mas_bottom).offset(0);
-                make.height.equalTo(@0);
-            }];
-            
+        if (currentInex == 3 || currentInex == 4) {
+            self.sendBtn.hidden = YES;
+            self.giftName.hidden = NO;
+        } else {
+            self.sendBtn.hidden = NO;
+            self.giftName.hidden = YES;
         }
-        [self.giftPrice layoutIfNeeded];
-        if(self.clickView.hidden==NO){
+        if (self.clickView.hidden == NO) {
             self.bkImageView.hidden = YES;
-            self.sendBtn.hidden=YES;
+            self.sendBtn.hidden = YES;
         }
-
-    }else{
-        if(!clickView){
-            self.clickView.num=0;
+    } else {
+        if (!clickView) {
+            self.clickView.num = 0;
             [self showView:YES];
-            self.selectBtn.userInteractionEnabled=YES;
+            self.selectBtn.userInteractionEnabled = YES;
         }
-        self.sendBtn.hidden=YES;
+        self.sendBtn.hidden = YES;
         self.bkImageView.hidden = YES;
-//        [self.giftIcon.layer removeAllAnimations];//暂时取消
-        if(currentInex==1){
-            [self.giftPrice mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(self.giftIcon.mas_bottom).offset(8);
-                make.height.equalTo(@18);
-            }];
-            [self.giftPrice layoutIfNeeded];
-        }
+        self.giftName.hidden = NO;
     }
 }
 
@@ -216,15 +202,23 @@ static NSString *ReuseIdentifier = @"BJGiftViewCell";
     [aView.layer addAnimation:animation forKey:@"iconAnimation"];
 
 }
+
 - (void)setUpUI{
-    
     [self.contentView addSubview:self.bkImageView];
     [self.contentView addSubview:self.giftIcon];
     [self.contentView addSubview:self.giftPrice];
     [self.contentView addSubview:self.giftName];
-    [self.contentView addSubview:self.sendBtn];
     [self.contentView addSubview:self.packageGiftCount];
     [self.contentView addSubview:self.selectBtn];
+    [self.contentView addSubview:self.sendBtn];
+    [self.contentView addSubview:self.lockIconImageView];
+    
+    [self.lockIconImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.contentView).offset(3);
+        make.right.mas_equalTo(self.contentView).offset(-3);
+        make.width.mas_equalTo(16);
+        make.height.mas_equalTo(16);
+    }];
     
     [self.bkImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.contentView).offset(3);
@@ -235,54 +229,31 @@ static NSString *ReuseIdentifier = @"BJGiftViewCell";
     
     [self.giftIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.contentView).offset(5);
-        make.left.mas_equalTo(self.contentView).offset(ScreenWidth/4.0/2.0-25);
-        make.width.mas_equalTo(50);
-        make.height.mas_equalTo(50);
+        make.centerX.mas_equalTo(0);
+        make.width.mas_equalTo(48);
+        make.height.mas_equalTo(48);
     }];
     
     [self.giftPrice mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.giftIcon.mas_bottom).offset(8);
-        make.left.equalTo(self.contentView).offset(5);
-        make.right.equalTo(self.contentView).offset(-5);
-        make.height.equalTo(@18);
-//        make.bottom.equalTo(self.giftName.mas_top);
+        make.top.mas_equalTo(self.giftIcon.mas_bottom).offset(3);
+        make.left.equalTo(self.contentView).offset(2);
+        make.right.equalTo(self.contentView).offset(-2);
+        make.height.equalTo(@16);
     }];
     
-    
-//    self.giftName.frame = CGRectMake(0, 0, 70, 15);
-    // 2. 关键：设置图片的目标显示尺寸【你只需要改这两个值】
-//    CGFloat targetImgW = 12; // 图片要显示的宽度
-//    CGFloat targetImgH = 12; // 图片要显示的高度
-//    // 3. 计算图片内边距 (向内压缩，让imageView的显示区域变成我们要的尺寸)
-//    CGFloat imgEdgeInsetX = (self.giftName.frame.size.width - targetImgW) / 2;
-//    CGFloat imgEdgeInsetY = (self.giftName.frame.size.height - targetImgH) / 2;
-//    self.giftName.imageEdgeInsets = UIEdgeInsetsMake(imgEdgeInsetY, imgEdgeInsetX, imgEdgeInsetY, imgEdgeInsetX);
-//    // 4. 可选：如果需要调整图文间距（必加，否则文字会被挤压）
-//    // 方案A - 图文左右排列（默认）：图片在左，文字在右，间距10
-//    self.giftName.titleEdgeInsets = UIEdgeInsetsMake(0, 10 - imgEdgeInsetX*2, 0, -imgEdgeInsetX*2- 30);
     [self.giftName mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.giftPrice.mas_bottom).offset(5);
-//        make.width.mas_equalTo(self.giftPrice.mas_width);
-//        make.left.mas_equalTo(self.giftPrice.mas_left);
-//        make.width.mas_equalTo(KAdaptedWidth(60));
-//        make.left.mas_offset(10);
-//        make.right.mas_offset(-10);
+        make.top.mas_equalTo(self.giftPrice.mas_bottom).offset(2);
         make.width.mas_equalTo(70);
         make.centerX.mas_equalTo(0);
         make.height.mas_equalTo(15);
-        
     }];
-    
     
     [self.sendBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.mas_equalTo(KAdaptedWidth(70));
-        make.height.mas_equalTo(KAdaptedHeight(25));
-        make.centerX.mas_equalTo(KAdaptedHeight(0));
-        make.bottom.mas_equalTo(KAdaptedHeight(-11));
-        
-        
+        make.width.mas_equalTo(KAdaptedWidth(68));
+        make.height.mas_equalTo(KAdaptedHeight(22));
+        make.centerX.mas_equalTo(0);
+        make.bottom.mas_equalTo(-6);
     }];
-    
     
     [self.packageGiftCount mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self.contentView).offset(-5);
@@ -291,16 +262,12 @@ static NSString *ReuseIdentifier = @"BJGiftViewCell";
         make.height.mas_equalTo(20);
     }];
     
-    
     [self.selectBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.leading.trailing.bottom.mas_equalTo(KAdaptedHeight(0));
+        make.edges.mas_equalTo(self.contentView);
     }];
-//
     
-    
-    self.sendBtn.hidden=YES;
-    self.clickView.hidden=YES;
-    
+    self.sendBtn.hidden = YES;
+    self.clickView.hidden = YES;
 }
 
 - (EMO_DoubleClickView *)clickView{
@@ -389,10 +356,10 @@ static NSString *ReuseIdentifier = @"BJGiftViewCell";
     if (!_sendBtn) {
         _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_sendBtn setBackgroundImage:KGetImage(@"giveGiftBtnImg") forState:UIControlStateNormal];
-        [_sendBtn setTitleColor:RGBA(255, 255, 255, 0.8) forState:UIControlStateNormal];
-        _sendBtn.titleLabel.font = FONT_12;
+        [_sendBtn setTitleColor:RGBA(255, 255, 255, 0.95) forState:UIControlStateNormal];
+        _sendBtn.titleLabel.font = Font(11);
         [_sendBtn setTitle:@"投喂" forState:UIControlStateNormal];
-       
+        [_sendBtn addTarget:self action:@selector(sendBtnClicked) forControlEvents:UIControlEventTouchUpInside];
     }
     return _sendBtn;
 }
@@ -402,12 +369,55 @@ static NSString *ReuseIdentifier = @"BJGiftViewCell";
         _selectBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_selectBtn addTarget:self action:@selector(BtnClick) forControlEvents:UIControlEventTouchUpInside];
         UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
-          //长按时间
-           longPress.minimumPressDuration = 1;
+          //长按时间 0.5s
+           longPress.minimumPressDuration = 0.5;
            [_selectBtn addGestureRecognizer:longPress];
   
     }
     return _selectBtn;
+}
+
+- (UIImageView *)lockIconImageView {
+    if (!_lockIconImageView) {
+        _lockIconImageView = [[UIImageView alloc] init];
+        _lockIconImageView.contentMode = UIViewContentModeScaleAspectFit;
+        _lockIconImageView.image = [[self class] giftLockedBadgeImage];
+        _lockIconImageView.hidden = YES;
+    }
+    return _lockIconImageView;
+}
+
++ (UIImage *)giftLockedBadgeImage {
+    static UIImage *badgeImg = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        CGSize size = CGSizeMake(16, 16);
+        UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
+        CGContextRef ctx = UIGraphicsGetCurrentContext();
+        if (ctx) {
+            UIColor *goldColor = [UIColor colorWithRed:255/255.0 green:230/255.0 blue:111/255.0 alpha:1.0];
+            [goldColor setFill];
+            [goldColor setStroke];
+            
+            UIBezierPath *shackle = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(4.5, 1.5, 7, 7) cornerRadius:3.5];
+            shackle.lineWidth = 1.6;
+            [shackle stroke];
+            
+            UIBezierPath *body = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(2.5, 6.0, 11, 8.5) cornerRadius:2.0];
+            [body fill];
+            
+            UIColor *holeColor = [UIColor colorWithWhite:0 alpha:0.65];
+            [holeColor setFill];
+            UIBezierPath *hole = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(7.0, 8.8, 2.0, 2.0)];
+            [hole fill];
+            UIBezierPath *stem = [UIBezierPath bezierPathWithRect:CGRectMake(7.4, 10.2, 1.2, 2.2)];
+            [stem fill];
+            
+            badgeImg = UIGraphicsGetImageFromCurrentImageContext();
+        }
+        UIGraphicsEndImageContext();
+    });
+    return badgeImg;
 }
 
 

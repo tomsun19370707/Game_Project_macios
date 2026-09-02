@@ -18,9 +18,9 @@
 #define Room_btn_mainColor MHColorFromHexString(@"#BD4AFF")
 #import "RoomFuDaiModel.h"
 #import "MLChatRoomThemeGameFourView.h"
-//#import "FuDaiXQTipView.h"
 #import "CustomAlertViewA.h"
 #import "BJGiftViewCell.h"
+#import "MLGiftLockManager.h"
 static const CGFloat kMaxRowCount = 2.f;
 static const CGFloat kItemCountPerRow = 4.f;
 
@@ -50,7 +50,6 @@ UIGestureRecognizerDelegate,XHInputViewDelagete>
 @property (nonatomic, strong) UICollectionView *collectView;//礼物
 @property(nonatomic, strong) UICollectionView *usersCollectionView;//顶部选人
 @property(nonatomic, copy) NSArray *usersArray;//麦位数组，包括空麦位
-@property(nonatomic, assign) NSInteger currentType;//1，礼物，2，钻石，3背包
 
 @property (nonatomic, strong) HorizontallyPageableFlowLayout *layout;
 //样式修改与 2020.03.16   马方圆
@@ -83,6 +82,17 @@ UIGestureRecognizerDelegate,XHInputViewDelagete>
 
 @implementation YYF_RoomGiftView
 static SVGAParser *parser;
+
+- (void)setMyArray:(NSMutableArray *)myArray {
+    _myArray = myArray;
+    NSString *currentUid = [UserManager userInfo].user_id;
+    for (RoomGiftModel *gift in _myArray) {
+        if ([gift isKindOfClass:[RoomGiftModel class]]) {
+            NSString *gid = [gift realGiftId];
+            gift.isLocked = [[MLGiftLockManager sharedManager] isGiftLockedWithUserId:currentUid giftId:gid];
+        }
+    }
+}
 
 #pragma mark -
 #pragma mark UICollectionView delegate
@@ -140,6 +150,20 @@ static SVGAParser *parser;
                 self.changeHeight=40;
                 self.numBgView.hidden=NO;
                 [self upDataView];
+            }
+        };
+        cell.giftLongPressBlock = ^(RoomGiftModel * _Nonnull giftModel, NSIndexPath * _Nonnull indexPath) {
+            if (wself.currentType != 2) return;
+            BOOL newLockState = !giftModel.isLocked;
+            giftModel.isLocked = newLockState;
+            NSString *currentUid = [UserManager userInfo].user_id;
+            NSString *gid = [giftModel realGiftId];
+            [[MLGiftLockManager sharedManager] updateLockStateWithUserId:currentUid giftId:gid isLocked:newLockState];
+            [wself.collectView reloadItemsAtIndexPaths:@[indexPath]];
+            if (newLockState) {
+                [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"已锁定【%@】，全部送出时将保留", giftModel.name ?: @"该礼物"]];
+            } else {
+                [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"已解除【%@】的锁定", giftModel.name ?: @"该礼物"]];
             }
         };
         return cell;
@@ -262,47 +286,51 @@ static SVGAParser *parser;
 #pragma mark 礼物选择 cell点击事件
 -(void)songBtnClick:(NSInteger )type andIndexPath:(NSIndexPath *)indexPath{
     self.isSelectedBeibao = YES;
-        if ([self.giftCarouseArray[0] isKindOfClass:[RoomGiftModel class]]) {
-            [self.giftCarouseArray enumerateObjectsUsingBlock:^(RoomGiftModel  *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    if (self.giftCarouseArray.count == 0 || indexPath.item >= self.giftCarouseArray.count) {
+        return;
+    }
+    id firstObj = self.giftCarouseArray.firstObject;
+    if ([firstObj isKindOfClass:[RoomGiftModel class]]) {
+        [self.giftCarouseArray enumerateObjectsUsingBlock:^(RoomGiftModel  *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([obj isKindOfClass:[RoomGiftModel class]]) {
                 obj.is_check = @"0";
-            }];
-        }
-        //上次选中的礼物cell
+            }
+        }];
+    }
+    
+    // 如果点击的是另一个cell，取消上次选中的cell状态
+    if (self.lastSeletedIndex && self.lastSeletedIndex != indexPath) {
         BJGiftViewCell *lastCell = (BJGiftViewCell *)[self.collectView cellForItemAtIndexPath:self.lastSeletedIndex];
-    if(self.lastSeletedIndex ==indexPath){
-        [lastCell getIsSelected:NO andIndex:self.currentType andShow:YES];
-    }else{
-        self.changeHeight=0;
-        self.numBgView.hidden=YES;
-        [self upDataView];
         [lastCell getIsSelected:NO andIndex:self.currentType andShow:NO];
     }
-        //当前选中的礼物cell，覆盖掉之前的
-        if ([self.giftCarouseArray[0] isKindOfClass:[RoomGiftModel class]]) {
-            RoomGiftModel *model = self.giftCarouseArray[indexPath.item];
-            BJGiftViewCell *cell = (BJGiftViewCell *)[self.collectView cellForItemAtIndexPath:indexPath];
-            [cell getIsSelected:YES andIndex:self.currentType andShow:NO];
-            self.giftModel = model;
-            self.lastSeletedIndex = indexPath;
-            if(type==1){
-                [self handselBUttonClick];
-            }
-        }else{
-            RoomFuDaiModel *model = self.giftCarouseArray[indexPath.item];
-            BJGiftViewCell *cell = (BJGiftViewCell *)[self.collectView cellForItemAtIndexPath:indexPath];
-            [cell getIsSelected:YES andIndex:self.currentType andShow:NO];
-            self.fuDaiModel = model;
-            self.lastSeletedIndex = indexPath;
-            
-            if (self.currentType == 4) {
-                UIView *parentView = self.superview;
-                [self removeFromSuperview];
-                [MLChatRoomThemeGameFourView showInView:parentView typeId:[model.fuDaiID integerValue]];
-            } else {
-                [CustomAlertViewA showAlertView_Type:AlertType_Bottom ContentType:BlessingBagCustomCententViewTag andData:@{@"data":self.fudaiArray}];
-            }
+    
+    // 当前选中的礼物cell
+    if ([firstObj isKindOfClass:[RoomGiftModel class]]) {
+        RoomGiftModel *model = self.giftCarouseArray[indexPath.item];
+        BJGiftViewCell *cell = (BJGiftViewCell *)[self.collectView cellForItemAtIndexPath:indexPath];
+        [cell getIsSelected:YES andIndex:self.currentType andShow:NO];
+        self.giftModel = model;
+        self.lastSeletedIndex = indexPath;
+        
+        // 只有点击“投喂”按钮 (type == 1) 时才真正送出
+        if (type == 1) {
+            [self handselBUttonClick];
         }
-
+    } else {
+        RoomFuDaiModel *model = self.giftCarouseArray[indexPath.item];
+        BJGiftViewCell *cell = (BJGiftViewCell *)[self.collectView cellForItemAtIndexPath:indexPath];
+        [cell getIsSelected:YES andIndex:self.currentType andShow:NO];
+        self.fuDaiModel = model;
+        self.lastSeletedIndex = indexPath;
+        
+        if (self.currentType == 4) {
+            UIView *parentView = self.superview;
+            [self removeFromSuperview];
+            [MLChatRoomThemeGameFourView showInView:parentView typeId:[model.fuDaiID integerValue]];
+        } else {
+            [CustomAlertViewA showAlertView_Type:AlertType_Bottom ContentType:BlessingBagCustomCententViewTag andData:@{@"data":self.fudaiArray}];
+        }
+    }
 }
 
 
@@ -454,8 +482,8 @@ static SVGAParser *parser;
     
     if (userCarouselArray.count != 1) {
         [userCarouselArray enumerateObjectsUsingBlock:^(MLRoomMSequenceModel  *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if ([obj.uid isEqualToString:@""] || obj.uid==nil) {
-            }else {
+            NSString *uidStr = obj.uid ? [NSString stringWithFormat:@"%@", obj.uid] : @"";
+            if (uidStr.length > 0) {
                 [self.userCarouselArray addObject:obj];
             }
         }];
@@ -736,7 +764,7 @@ static SVGAParser *parser;
     [self.usersCollectionView registerClass:[RoomUsersCollectionViewCell class] forCellWithReuseIdentifier:@"RoomUsersCollectionViewCell"];
     
     
-    self.pageControl.frame = CGRectMake(-ScreenWidth/2.0, bottomBGHeight-70+20, ScreenWidth, 20);
+    self.pageControl.frame = CGRectMake(0, bottomBGHeight-70+36, ScreenWidth, 20);
     
     [self.maskMyView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self).offset(0);
@@ -865,7 +893,7 @@ static SVGAParser *parser;
     self.bottomBgView.frame= CGRectMake(0, ScreenHeight-bottomBGHeight-SAFE_AREA_INSERTS_BOTTOM-self.changeHeight, ScreenWidth, bottomBGHeight+SAFE_AREA_INSERTS_BOTTOM+10+self.changeHeight);
     self.ButtonView.frame = CGRectMake(10, 65+self.topView.bottom+self.changeHeight, 192, 30);
     self.collectView.frame = CGRectMake(0, 95+self.topView.bottom+self.changeHeight, ScreenWidth, ScreenWidth/2.0+40);
-    self.pageControl.frame = CGRectMake(-ScreenWidth/2.0, bottomBGHeight-70+20+self.changeHeight, ScreenWidth, 20);
+    self.pageControl.frame = CGRectMake(0, bottomBGHeight-70+36+self.changeHeight, ScreenWidth, 20);
     self.chargeButton.frame = CGRectMake(kWidth-KAdaptedWidth(100+10), 65+self.topView.bottom+self.changeHeight, 100, 30);
     self.synthesizeGiftButton.frame = CGRectMake(kWidth-KAdaptedWidth(100+10), 65+self.topView.bottom+self.changeHeight, 100, 30);
 
@@ -1319,8 +1347,8 @@ static SVGAParser *parser;
     if (!_pageControl) {
         _pageControl = [[UIPageControl alloc] init];
 
-        _pageControl.pageIndicatorTintColor =RGBA(56, 61, 73, 1);
-        _pageControl.currentPageIndicatorTintColor = RGBA(117, 125, 150, 1);
+        _pageControl.pageIndicatorTintColor = [UIColor colorWithWhite:1.0 alpha:0.35];
+        _pageControl.currentPageIndicatorTintColor = [UIColor colorWithRed:255/255.0 green:230/255.0 blue:111/255.0 alpha:1.0];
         
         _pageControl.enabled = NO;
     }
@@ -1492,16 +1520,32 @@ static SVGAParser *parser;
             return;
         }
     }
-    if(self.myArray.count > 0){
-        if(self.senderBackPackBlock){
-            MLRoomMSequenceModel *model = self.hasSelectUsers[0];
-            self.senderBackPackBlock(model,self.giftCarouseArray);
+    if (self.myArray.count > 0) {
+        NSMutableArray<RoomGiftModel *> *unlockedList = [NSMutableArray array];
+        NSMutableArray<RoomGiftModel *> *lockedList = [NSMutableArray array];
+        for (RoomGiftModel *gift in self.myArray) {
+            if (gift.isLocked) {
+                [lockedList addObject:gift];
+            } else {
+                [unlockedList addObject:gift];
+            }
         }
-    }else{
+        
+        // 场景 1: 全部已锁定
+        if (unlockedList.count == 0) {
+            [SVProgressHUD showErrorWithStatus:getLanguage(@"当前背包所有礼物均已锁定，无法送出！")];
+            return;
+        }
+        
+        // 场景 2 & 场景 3: 送出未锁定的礼物列表
+        if (self.senderBackPackBlock) {
+            MLRoomMSequenceModel *model = self.hasSelectUsers[0];
+            self.senderBackPackBlock(model, unlockedList);
+        }
+    } else {
         [SVProgressHUD showImage:ImageNamed(@"") status:getLanguage(@"背包无礼物")];
         return;
     }
-   
 }
 
 @end

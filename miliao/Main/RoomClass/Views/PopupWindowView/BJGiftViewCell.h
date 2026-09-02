@@ -68,13 +68,10 @@ typedef NS_ENUM(NSUInteger, WZDLayoutButtonStyle) {
 + (instancetype)cellWithCollectionView:(UICollectionView *)collectionView forIndexPath:(NSIndexPath *)indexPath;
 
 
+@property (nonatomic, strong) UIImageView       *lockIconImageView;
 Copy void(^GiftBtnClick)(NSInteger type,NSIndexPath *indexPath);
-
 Copy void(^sendGiftClick)(NSInteger num);
-
-//Copy void(^GiftBtnClick)(RoomGiftModel *giftModel,NSInteger currentIndex,NSIndexPath *selectIndexPath,NSInteger type);
-//
-//Copy void(^FuDaiBtnClick)(RoomFuDaiModel *giftModel,NSInteger currentIndex,NSIndexPath *selectIndexPath,NSInteger type);
+Copy void(^giftLongPressBlock)(RoomGiftModel *giftModel, NSIndexPath *indexPath);
 
 @end
 

@@ -20,6 +20,7 @@
 @property (nonatomic, strong) NSMutableArray *gemArray;         ///< 宝石
 @property (nonatomic, strong) NSMutableArray *myArray;
 @property (nonatomic, strong) NSMutableArray *fudaiArray;   //福袋
+@property (nonatomic, assign) NSInteger currentType;
 @property(nonatomic, strong) UILabel *backPackPriceLabel;//背包总价值
 //@property(nonatomic, copy) NSString *meiliStr;//主播魅力值
 
