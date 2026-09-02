@@ -479,11 +479,21 @@ static NSString *ReuseIdentifier = @"BJGiftViewCell";
         rightViewFrame.size = self.imageSize;
         rightView.contentMode = UIViewContentModeScaleAspectFit;
     }
+    
+    CGFloat maxAvailableWidth = CGRectGetWidth(self.frame) - 12;
+    CGFloat maxRightWidth = maxAvailableWidth - CGRectGetWidth(leftViewFrame) - self.midSpacing;
+    if (CGRectGetWidth(rightViewFrame) > maxRightWidth) {
+        rightViewFrame.size.width = maxRightWidth;
+    }
+    
     CGFloat totalWidth = CGRectGetWidth(leftViewFrame) + self.midSpacing + CGRectGetWidth(rightViewFrame);
+    CGFloat startX = (CGRectGetWidth(self.frame) - totalWidth) / 2.0;
+    if (startX < 6.0) {
+        startX = 6.0;
+    }
     
-    leftViewFrame.origin.x = (CGRectGetWidth(self.frame) - totalWidth) / 2.0;
+    leftViewFrame.origin.x = startX;
     leftViewFrame.origin.y = (CGRectGetHeight(self.frame) - CGRectGetHeight(leftViewFrame)) / 2.0;
-    
     leftView.frame = leftViewFrame;
     
     rightViewFrame.origin.x = CGRectGetMaxX(leftViewFrame) + self.midSpacing;

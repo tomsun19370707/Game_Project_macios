@@ -436,8 +436,9 @@ static SVGAParser *parser;
 - (void)loadWalletData{
     WeakSelf;
     [NetworkRequest POST:Request_GetMyMoney parmeters:nil success:^(id responObject) {
-        BaseModel *model=(BaseModel *)responObject;
-        [wself.chargeButton setTitle:[NSString stringWithFormat:@"%ld",[model.data[@"diamond"] integerValue]] forState:UIControlStateNormal];
+        BaseModel *model = (BaseModel *)responObject;
+        id diamondVal = model.data[@"diamond"];
+        [wself.chargeButton setTitle:[NSString stringWithFormat:@"%lld", (long long)[diamondVal longLongValue]] forState:UIControlStateNormal];
     } failture:^(NSError *error) {
         
     }];
@@ -534,7 +535,7 @@ static SVGAParser *parser;
         [self.usersCollectionView reloadData];
     }
     self.giftCarouseArray = giftCarouseArray;
-    [self.chargeButton setTitle:[NSString stringWithFormat:@"%ld",[miZuan integerValue]] forState:UIControlStateNormal];
+    [self.chargeButton setTitle:[NSString stringWithFormat:@"%lld", (long long)[miZuan longLongValue]] forState:UIControlStateNormal];
     [self.collectView reloadData];
     if (self.giftCarouseArray.count > 0) {
         if (self.giftCarouseArray.count % 8 == 0) {
@@ -840,17 +841,8 @@ static SVGAParser *parser;
     
     
     
-    self.chargeButton.frame = CGRectMake(kWidth-KAdaptedWidth(100+10), 65+self.topView.bottom, 100, 30);
-    // 2. 关键：设置图片的目标显示尺寸【你只需要改这两个值】
-    CGFloat targetImgW = 17; // 图片要显示的宽度
-    CGFloat targetImgH = 17; // 图片要显示高度
-    // 3. 计算图片内边距 (向内压缩，让imageView的显示区域变成我们要的尺寸)
-    CGFloat imgEdgeInsetX = (self.chargeButton.frame.size.width - targetImgW) / 2;
-    CGFloat imgEdgeInsetY = (self.chargeButton.frame.size.height - targetImgH) / 2;
-    self.chargeButton.imageEdgeInsets = UIEdgeInsetsMake(imgEdgeInsetY, imgEdgeInsetX, imgEdgeInsetY, imgEdgeInsetX);
-    // 4. 可选：如果需要调整图文间距（必加，否则文字会被挤压）
-    // 方案A - 图文左右排列（默认）：图片在左，文字在右，间距10
-    self.chargeButton.titleEdgeInsets = UIEdgeInsetsMake(0, 10 - imgEdgeInsetX*2, 0, -imgEdgeInsetX*2- 30);
+    CGFloat chargeBtnW = KAdaptedWidth(110);
+    self.chargeButton.frame = CGRectMake(kWidth - chargeBtnW - 10, 65+self.topView.bottom, chargeBtnW, 30);
     setViewCorner(self.chargeButton, 15);
     
     
@@ -894,8 +886,9 @@ static SVGAParser *parser;
     self.ButtonView.frame = CGRectMake(10, 65+self.topView.bottom+self.changeHeight, 192, 30);
     self.collectView.frame = CGRectMake(0, 95+self.topView.bottom+self.changeHeight, ScreenWidth, ScreenWidth/2.0+40);
     self.pageControl.frame = CGRectMake(0, bottomBGHeight-70+36+self.changeHeight, ScreenWidth, 20);
-    self.chargeButton.frame = CGRectMake(kWidth-KAdaptedWidth(100+10), 65+self.topView.bottom+self.changeHeight, 100, 30);
-    self.synthesizeGiftButton.frame = CGRectMake(kWidth-KAdaptedWidth(100+10), 65+self.topView.bottom+self.changeHeight, 100, 30);
+    CGFloat chargeBtnW = KAdaptedWidth(110);
+    self.chargeButton.frame = CGRectMake(kWidth - chargeBtnW - 10, 65+self.topView.bottom+self.changeHeight, chargeBtnW, 30);
+    self.synthesizeGiftButton.frame = CGRectMake(kWidth - chargeBtnW - 10, 65+self.topView.bottom+self.changeHeight, chargeBtnW, 30);
 
 }
 
@@ -1099,20 +1092,20 @@ static SVGAParser *parser;
 - (WZDLayoutButton *)chargeButton{
     if (!_chargeButton) {
         _chargeButton = [WZDLayoutButton buttonWithType:UIButtonTypeCustom];
-//        [_giftName setTitleColor:COLOR_666666 forState:UIControlStateNormal];
-        _chargeButton.layoutStyle=WZDLayoutButtonStyleLeftImageRightTitle;
-        _chargeButton.midSpacing=5;
-        _chargeButton.backgroundColor=RGBA(227, 227, 227, 0.35);
-        _chargeButton.layer.cornerRadius=30.0/2;
-        _chargeButton.layer.masksToBounds=YES;
-        _chargeButton.imageSize=CGSizeMake(12, 12);
+        _chargeButton.layoutStyle = WZDLayoutButtonStyleLeftImageRightTitle;
+        _chargeButton.midSpacing = 4;
+        _chargeButton.backgroundColor = RGBA(227, 227, 227, 0.35);
+        _chargeButton.layer.cornerRadius = 15.0;
+        _chargeButton.layer.masksToBounds = YES;
+        _chargeButton.imageSize = CGSizeMake(14, 14);
         [_chargeButton setTitleColor:RGBA(207, 221, 248, 1) forState:UIControlStateNormal];
-        _chargeButton.titleLabel.font = FONT_13;
+        _chargeButton.titleLabel.font = Font(12);
+        _chargeButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+        _chargeButton.titleLabel.minimumScaleFactor = 0.65;
         [_chargeButton setImage:ImageNamed(@"coinImg") forState:UIControlStateNormal];
         [_chargeButton setTitle:@"0" forState:UIControlStateNormal];
         [_chargeButton addTarget:self action:@selector(topUpButtonClick:) forControlEvents:UIControlEventTouchUpInside];
         _chargeButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        
     }
     return _chargeButton;
 }
