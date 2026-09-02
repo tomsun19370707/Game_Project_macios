@@ -35,5 +35,10 @@
 
 - (NSString *)realGiftId;
 
+/**
+ 接收服务端原始背包列表，按三级主键策略 (gift_id > name > id) 进行聚合去重与数量累加
+ */
++ (NSMutableArray<RoomGiftModel *> *)mergeBackpackGiftList:(NSArray<RoomGiftModel *> *)rawList userId:(nullable NSString *)userId;
+
 @end
 

@@ -157,8 +157,7 @@ static SVGAParser *parser;
             BOOL newLockState = !giftModel.isLocked;
             giftModel.isLocked = newLockState;
             NSString *currentUid = [UserManager userInfo].user_id;
-            NSString *gid = [giftModel realGiftId];
-            [[MLGiftLockManager sharedManager] updateLockStateWithUserId:currentUid giftId:gid isLocked:newLockState];
+            [[MLGiftLockManager sharedManager] updateLockStateWithUserId:currentUid gift:giftModel isLocked:newLockState];
             [wself.collectView reloadItemsAtIndexPaths:@[indexPath]];
             if (newLockState) {
                 [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"已锁定【%@】，全部送出时将保留", giftModel.name ?: @"该礼物"]];

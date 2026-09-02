@@ -1882,7 +1882,9 @@ static SVGAParser *parser;
     [NetworkRequest POST:Request_GetMyKnapsack parmeters:dic success:^(id responObject) {
         BaseModel *basemodel = (BaseModel *)responObject;
         NSMutableArray *arry = [RoomGiftModel mj_objectArrayWithKeyValuesArray:basemodel.data];
-        wself.newRoomGiftView.myArray = arry;
+        NSString *currentUid = [UserManager userInfo].user_id;
+        NSMutableArray<RoomGiftModel *> *mergedArray = [RoomGiftModel mergeBackpackGiftList:arry userId:currentUid];
+        wself.newRoomGiftView.myArray = mergedArray;
         if (wself.newRoomGiftView.currentType == 2) {
             [wself.newRoomGiftView uploadType:1001];
         }
