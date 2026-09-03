@@ -645,6 +645,13 @@ static SVGAParser *parser;
 
 #pragma mark 游戏中心总入口
 -(void)gameCenterBtnClick{
+    static NSTimeInterval lastGameCenterClickTime = 0;
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
+    if (currentTime - lastGameCenterClickTime < 0.5) {
+        return; // 500ms 内防快速重复连击
+    }
+    lastGameCenterClickTime = currentTime;
+    
     if(self.scycleClickBlock){
         NSDictionary *dicData = [NSDictionary dictionary];
         self.scycleClickBlock(500, 0, dicData);

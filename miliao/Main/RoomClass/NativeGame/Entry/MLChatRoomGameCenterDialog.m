@@ -75,6 +75,13 @@
     }
     if (!targetView) return;
     
+    // ⭐️ 单实例守卫：如果当前视图已存在游戏中心弹窗，则不重复创建
+    for (UIView *sub in targetView.subviews) {
+        if ([sub isKindOfClass:[MLChatRoomGameCenterDialog class]]) {
+            return;
+        }
+    }
+    
     MLChatRoomGameCenterDialog *dialog = [[MLChatRoomGameCenterDialog alloc] initWithFrame:targetView.bounds];
     [targetView addSubview:dialog];
     [dialog animateShow];
@@ -373,6 +380,10 @@
     if (indexPath.item >= _displayItems.count) return;
     MLChatRoomGameCenterItem *item = _displayItems[indexPath.item];
     if (!item.isEnabled) return;
+    
+    // ⭐️ 极致防抖：首击即刻锁定交互，杜绝任何重复触发
+    collectionView.userInteractionEnabled = NO;
+    self.userInteractionEnabled = NO;
     
     UIView *parent = self.superview;
     [self animateDismissWithCompletion:^{
