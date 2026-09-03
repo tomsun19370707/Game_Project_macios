@@ -75,6 +75,7 @@
 #import "EMO_RoomGameAlertView.h"
 #import "RunGamaViewController.h"
 #import "MLChatRoomNativeGameView.h"
+#import "MLChatRoomGameCenterDialog.h"
 @interface EMO_MLRoomNewVC ()<UITableViewDelegate, UITableViewDataSource, AgoraRtcEngineDelegate, AgoraRtmDelegate, AgoraRtmChannelDelegate, UITextViewDelegate, SVGAPlayerDelegate,SRWebSocketDelegate,BarrageDataSource>
 
 
@@ -3022,39 +3023,10 @@ static SVGAParser *parser;
         }
     };
     
-#pragma mark 房间轮播点击
+#pragma mark 房间游戏中心点击
     self.roomBarrageView.scycleClickBlock = ^(NSInteger tag, NSInteger index, NSDictionary *dic) {
-        NSLog(@"上边轮播的选中%ld",index);
-        //        [CustomAlertViewA showAlertView_Type:AlertType_Bottom ContentType:BlessingBagCustomCententViewTag andData:@{@"data":arr}];
-        
-        //        [weakSelf.bgView addSubview:weakSelf.prizeView];
-        
-        
-        //            CC_VioceLuckyDrawView *lucky = LoadFromNib(@"CC_VioceLuckyDrawView");
-        /** 抽奖盘*/
-        if (tag==300) {
-            UIWindow *window = [UIApplication sharedApplication].keyWindow;
-            EMO_RoomGameAlertView *view = [[EMO_RoomGameAlertView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight)];
-            [view showInView:window];
-        }else  if (tag==400) {//赛跑游戏
-            RunGamaViewController *vc=[[RunGamaViewController alloc] initWithInfoDic:@{}];
-            vc.modalPresentationStyle =UIModalPresentationOverCurrentContext;
-            vc.finish = ^(NSDictionary * _Nonnull infoDic) {
-                
-            };
-            UIWindow *window = [UIApplication sharedApplication].keyWindow;
-            ZXNavigationController *nav=[[ZXNavigationController alloc] initWithRootViewController:vc];
-            nav.modalPresentationStyle =UIModalPresentationOverCurrentContext;
-            [window.rootViewController presentViewController:nav animated:NO completion:nil];
-        }else  if (tag==500) {//原生抽卡游戏
-            UIWindow *window = [UIApplication sharedApplication].keyWindow;
-            [MLChatRoomNativeGameView showInView:window];
-        }
-        
-        /** 抽奖盘*/
-        //        CFMRewardPriseAlert *al = [[NSBundle mainBundle] loadNibNamed:@"CFMRewardPriseAlert" owner:self options:nil][0];
-        //        [al show];
-        
+        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+        [MLChatRoomGameCenterDialog showInView:window];
     };
     
     self.roomBarrageView.sureClickBlock = ^(NSInteger index) {

@@ -25,7 +25,7 @@
 @property (nonatomic, assign) BOOL is_Sound;
 
 Strong SDCycleScrollView *CarouselView;
-Strong UIButton *chouJiangBtn,*saipaoBtn,*nativeGameBtn;
+Strong UIButton *gameCenterBtn;
 Strong NSMutableArray *cycleArr;
 
 @end
@@ -256,9 +256,7 @@ static SVGAParser *parser;
     [self scycleData];
     [self CarouselView];
 //    [self shangmaiNumBtn];
-    [self chouJiangBtn];
-    [self saipaoBtn];
-    [self nativeGameBtn];
+    [self gameCenterBtn];
     [self keyBoardBgView];
     [self EmojiBtn];
     [self lineView];
@@ -597,47 +595,19 @@ static SVGAParser *parser;
     !self.sureClickBlock ?: self.sureClickBlock(10);
 }
 
--(UIButton *)chouJiangBtn{
-    if(!_chouJiangBtn){
-        _chouJiangBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_chouJiangBtn setBackgroundImage:KGetImage(@"UY_ZhuanPan") forState:0];
-        [_chouJiangBtn addTarget:self action:@selector(chouJiangClick) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:_chouJiangBtn];
-        [_chouJiangBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(KAdaptedHeight(-180));
-                make.size.mas_equalTo(CGSizeMake(KAdaptedHeight(80), KAdaptedHeight(80)));
-                make.trailing.mas_equalTo(KAdaptedWidth(-15));
+-(UIButton *)gameCenterBtn {
+    if (!_gameCenterBtn) {
+        _gameCenterBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_gameCenterBtn setBackgroundImage:KGetImage(@"chat_room_game_center_entrance_icon") forState:0];
+        [_gameCenterBtn addTarget:self action:@selector(gameCenterBtnClick) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:_gameCenterBtn];
+        [_gameCenterBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.bottom.mas_equalTo(KAdaptedHeight(-135));
+            make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(68), KAdaptedWidth(68)));
+            make.trailing.mas_equalTo(KAdaptedWidth(-15));
         }];
     }
-    return _chouJiangBtn;
-}
--(UIButton *)saipaoBtn{
-    if(!_saipaoBtn){
-        _saipaoBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_saipaoBtn setBackgroundImage:KGetImage(@"UY_Saipao") forState:0];
-        [_saipaoBtn addTarget:self action:@selector(saipaoBtnClick) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:_saipaoBtn];
-        [_saipaoBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(self.chouJiangBtn.mas_bottom).offset(10);
-                make.size.mas_equalTo(CGSizeMake(KAdaptedHeight(80), KAdaptedHeight(80)));
-                make.trailing.mas_equalTo(KAdaptedWidth(-15));
-        }];
-    }
-    return _saipaoBtn;
-}
--(UIButton *)nativeGameBtn{
-    if(!_nativeGameBtn){
-        _nativeGameBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_nativeGameBtn setBackgroundImage:KGetImage(@"chat_room_voice_draw_circle_icon") forState:0];
-        [_nativeGameBtn addTarget:self action:@selector(nativeGameBtnClick) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:_nativeGameBtn];
-        [_nativeGameBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(self.chouJiangBtn.mas_top).offset(-10);
-                make.size.mas_equalTo(CGSizeMake(KAdaptedHeight(80), KAdaptedHeight(80)));
-                make.trailing.mas_equalTo(KAdaptedWidth(-15));
-        }];
-    }
-    return _nativeGameBtn;
+    return _gameCenterBtn;
 }
 
 -(SDCycleScrollView *)CarouselView{
@@ -673,27 +643,11 @@ static SVGAParser *parser;
     [rotaryView viewShow];
 }
 
-#pragma mark 转盘数据 游戏视图
--(void)chouJiangClick{
+#pragma mark 游戏中心总入口
+-(void)gameCenterBtnClick{
     if(self.scycleClickBlock){
-//        self.scycleClickBlock(300, 0,self.cycleArr[0]);//    数组为空会报错
-        NSDictionary *dicData=[NSDictionary dictionary];
-        self.scycleClickBlock(300, 0,dicData);
-    }
-}
-#pragma mark 赛跑游戏数据 游戏视图
--(void)saipaoBtnClick{
-    if(self.scycleClickBlock){
-//        self.scycleClickBlock(300, 0,self.cycleArr[0]);//    数组为空会报错
-        NSDictionary *dicData=[NSDictionary dictionary];
-        self.scycleClickBlock(400, 0,dicData);
-    }
-}
-#pragma mark 原生抽卡游戏入口
--(void)nativeGameBtnClick{
-    if(self.scycleClickBlock){
-        NSDictionary *dicData=[NSDictionary dictionary];
-        self.scycleClickBlock(500, 0,dicData);
+        NSDictionary *dicData = [NSDictionary dictionary];
+        self.scycleClickBlock(500, 0, dicData);
     }
 }
 

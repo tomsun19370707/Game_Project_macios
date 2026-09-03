@@ -1187,6 +1187,9 @@
 		FA9E08B724293105000A52CF /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9E08B624293105000A52CF /* CFNetwork.framework */; };
 		FA9E08B92429310E000A52CF /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9E08B82429310E000A52CF /* CoreMotion.framework */; };
 		FFE315EAE2D34FCC975B6A47 /* MLChatRoomThemeGameFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = D99D569BD56B4F348EDC0441 /* MLChatRoomThemeGameFortuneView.m */; };
+		7C3907F296112C4B238A7A61 /* MLChatRoomGameCenterItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C9938B4F830824D59BA6CB8 /* MLChatRoomGameCenterItem.m */; };
+		7C3AF2E12C90B4486FA302C6 /* MLChatRoomGameCenterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CE52688A1860D488BB2536D /* MLChatRoomGameCenterCell.m */; };
+		7C77A9FADE972848EDB66C04 /* MLChatRoomGameCenterDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C634D477974A14D4EA9F296 /* MLChatRoomGameCenterDialog.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3432,6 +3435,12 @@
 		FDB552DCF212294C30FB6CA4 /* CFMExDiamondAndBagPackageCollCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExDiamondAndBagPackageCollCell.h; sourceTree = "<group>"; };
 		FE00C3E6293CD22D1CE7BE8D /* CFMExDiamondAndBagDiamond.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExDiamondAndBagDiamond.h; sourceTree = "<group>"; };
 		FFFD90DD199A72D8F667EBC6 /* CFMHomeSignAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMHomeSignAlert.xib; sourceTree = "<group>"; };
+		7C24FBA308AE56406991D86A /* MLChatRoomGameCenterItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomGameCenterItem.h; sourceTree = "<group>"; };
+		7C9938B4F830824D59BA6CB8 /* MLChatRoomGameCenterItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomGameCenterItem.m; sourceTree = "<group>"; };
+		7CAA39CCBC9C2542BF99C63F /* MLChatRoomGameCenterCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomGameCenterCell.h; sourceTree = "<group>"; };
+		7CE52688A1860D488BB2536D /* MLChatRoomGameCenterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomGameCenterCell.m; sourceTree = "<group>"; };
+		7CF60ED8A8BC6E4E6AB47B86 /* MLChatRoomGameCenterDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomGameCenterDialog.h; sourceTree = "<group>"; };
+		7C634D477974A14D4EA9F296 /* MLChatRoomGameCenterDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomGameCenterDialog.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -5715,6 +5724,12 @@
 			children = (
 				7C70E9472FED864D00A11B29 /* MLChatRoomNativeGameCell.h */,
 				7C70E9482FED864D00A11B29 /* MLChatRoomNativeGameView.h */,
+				7C24FBA308AE56406991D86A /* MLChatRoomGameCenterItem.h */,
+				7C9938B4F830824D59BA6CB8 /* MLChatRoomGameCenterItem.m */,
+				7CAA39CCBC9C2542BF99C63F /* MLChatRoomGameCenterCell.h */,
+				7CE52688A1860D488BB2536D /* MLChatRoomGameCenterCell.m */,
+				7CF60ED8A8BC6E4E6AB47B86 /* MLChatRoomGameCenterDialog.h */,
+				7C634D477974A14D4EA9F296 /* MLChatRoomGameCenterDialog.m */,
 				7C70E9492FED864D00A11B29 /* MLChatRoomNativeGameCell.m */,
 				7C70E94A2FED864D00A11B29 /* MLChatRoomNativeGameView.m */,
 			);
@@ -9872,6 +9887,9 @@
 				00AD967322D72C4D002E4DCD /* UITableView+SDAutoTableViewCellHeight.m in Sources */,
 				85D406C72A56D47F00668A4C /* ZFVolumeBrightnessView.m in Sources */,
 				7C70E96D2FED864D00A11B29 /* MLChatRoomNativeGameView.m in Sources */,
+				7C3907F296112C4B238A7A61 /* MLChatRoomGameCenterItem.m in Sources */,
+				7C3AF2E12C90B4486FA302C6 /* MLChatRoomGameCenterCell.m in Sources */,
+				7C77A9FADE972848EDB66C04 /* MLChatRoomGameCenterDialog.m in Sources */,
 				8578C6C928FCFFD600FEE842 /* EMO_PaymentView.m in Sources */,
 				00C602E322D9EB4C003BA50D /* TLBaseKeyboard.m in Sources */,
 				85CBEEFC2A48293A0006D6DF /* EMO_LikeTableViewCell.m in Sources */,
