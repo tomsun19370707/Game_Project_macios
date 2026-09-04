@@ -2,16 +2,132 @@
 //  MLChatRoomThemeGameSixFusionDialog.m
 //  miliao
 //
-//  Created for Game 6 (玲珑珍宝塔) 门票融合说明与合成弹窗.
+//  Created for Game 6 (玲珑珍宝塔) 门票黑曜石直购与兑换弹窗.
 //
 
 #import "MLChatRoomThemeGameSixFusionDialog.h"
-#import "MLChatRoomThemeGameSixGlobalBackpackView.h"
+#import "MLChatRoomThemeGameSixObsidianExchangeDialog.h"
 #import "MLThemeGameModel.h"
+#import "MLTowerGameSixModels.h"
+#import "NetworkRequest.h"
+#import "DZCX_NetAPIPaths.h"
 #import "Global.h"
+#import "BaseModel.h"
 #import <Masonry/Masonry.h>
 #import <SVProgressHUD/SVProgressHUD.h>
-#import <SDWebImage/UIImageView+WebCache.h>
+
+@interface MLGameSixTokenCardView : UIView
+
+@property (nonatomic, strong) UIView *cardContainer;
+@property (nonatomic, strong) UIImageView *tokenImageView;
+@property (nonatomic, strong) UILabel *nameLabel;
+@property (nonatomic, strong) UIView *priceBox;
+@property (nonatomic, strong) UIImageView *obsidianIcon;
+@property (nonatomic, strong) UILabel *priceLabel;
+
+- (void)configureWithTier:(NSInteger)tier name:(NSString *)name price:(NSInteger)price isSelected:(BOOL)isSelected;
+
+@end
+
+@implementation MLGameSixTokenCardView
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    if (self = [super initWithFrame:frame]) {
+        self.userInteractionEnabled = YES;
+        self.backgroundColor = [UIColor clearColor];
+        
+        _cardContainer = [[UIView alloc] init];
+        _cardContainer.userInteractionEnabled = NO;
+        [self addSubview:_cardContainer];
+        [_cardContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.mas_equalTo(self);
+        }];
+        
+        // 1. 木质令牌修长切图
+        _tokenImageView = [[UIImageView alloc] init];
+        _tokenImageView.contentMode = UIViewContentModeScaleAspectFit;
+        [_cardContainer addSubview:_tokenImageView];
+        [_tokenImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(0);
+            make.centerX.mas_equalTo(self.cardContainer);
+            make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(52), KAdaptedWidth(88)));
+        }];
+        
+        // 2. 令牌名称
+        _nameLabel = [[UILabel alloc] init];
+        _nameLabel.font = [UIFont boldSystemFontOfSize:11];
+        _nameLabel.textAlignment = NSTextAlignmentCenter;
+        _nameLabel.textColor = mHexRGB(0xFFFFDF7C);
+        [_cardContainer addSubview:_nameLabel];
+        [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(self.tokenImageView.mas_bottom).offset(2);
+            make.left.right.mas_equalTo(self.cardContainer);
+        }];
+        
+        // 3. 价格栏
+        _priceBox = [[UIView alloc] init];
+        _priceBox.backgroundColor = [UIColor clearColor];
+        [_cardContainer addSubview:_priceBox];
+        [_priceBox mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(self.nameLabel.mas_bottom).offset(1);
+            make.centerX.mas_equalTo(self.cardContainer);
+            make.height.mas_equalTo(14);
+        }];
+        
+        _obsidianIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_game_six_obsidian"]];
+        _obsidianIcon.contentMode = UIViewContentModeScaleAspectFit;
+        [_priceBox addSubview:_obsidianIcon];
+        [_obsidianIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(0);
+            make.centerY.mas_equalTo(self.priceBox);
+            make.size.mas_equalTo(CGSizeMake(11, 11));
+        }];
+        
+        _priceLabel = [[UILabel alloc] init];
+        _priceLabel.font = [UIFont boldSystemFontOfSize:10];
+        _priceLabel.textColor = [UIColor whiteColor];
+        [_priceBox addSubview:_priceLabel];
+        [_priceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(self.obsidianIcon.mas_right).offset(2);
+            make.right.mas_equalTo(0);
+            make.centerY.mas_equalTo(self.priceBox);
+        }];
+    }
+    return self;
+}
+
+- (void)configureWithTier:(NSInteger)tier name:(NSString *)name price:(NSInteger)price isSelected:(BOOL)isSelected {
+    NSString *imageName = [NSString stringWithFormat:@"theme_game_six_token_tier_%ld", (long)tier];
+    _tokenImageView.image = [UIImage imageNamed:imageName];
+    _nameLabel.text = name;
+    _priceLabel.text = [self formatPriceNumber:price];
+    
+    if (isSelected) {
+        _cardContainer.transform = CGAffineTransformMakeScale(1.08, 1.08);
+        _cardContainer.alpha = 1.0;
+        _nameLabel.textColor = [UIColor whiteColor];
+    } else {
+        _cardContainer.transform = CGAffineTransformMakeScale(0.95, 0.95);
+        _cardContainer.alpha = 0.65;
+        _nameLabel.textColor = mHexRGB(0xFFFFDF7C);
+    }
+}
+
+- (NSString *)formatPriceNumber:(double)num {
+    if (num >= 1000000000000.0) {
+        return [NSString stringWithFormat:@"%.2f万亿", num / 1000000000000.0];
+    } else if (num >= 100000000.0) {
+        return [NSString stringWithFormat:@"%.2f亿", num / 100000000.0];
+    } else if (num >= 10000.0) {
+        return [NSString stringWithFormat:@"%.2f万", num / 10000.0];
+    } else {
+        return [NSString stringWithFormat:@"%ld", (long)num];
+    }
+}
+
+@end
+
+#pragma mark - Main Fusion Dialog Implementation
 
 @interface MLChatRoomThemeGameSixFusionDialog ()
 
@@ -19,37 +135,33 @@
 @property (nonatomic, strong) UIView *boardContainer;
 @property (nonatomic, strong) UIImageView *boardBgImageView;
 
-// 1. 顶部 3 配方槽位区
-@property (nonatomic, strong) UIView *topSlotsContainer;
-@property (nonatomic, strong) NSMutableArray<UIButton *> *slotButtons;
-@property (nonatomic, strong) UILabel *tvFusionThresholdTop;
-@property (nonatomic, strong) UILabel *tvFusionSelectedBottom;
+// 顶部资产栏
+@property (nonatomic, strong) UIView *topAssetBar;
+@property (nonatomic, strong) UILabel *tvObsidianTitle;
+@property (nonatomic, strong) UIImageView *ivObsidianIcon;
+@property (nonatomic, strong) UILabel *tvTopObsidianBalance;
+@property (nonatomic, strong) UIButton *btnExchangeObsidian;
 
-// 2. 中间融合动作按钮
+// 5 级木质令牌横排
+@property (nonatomic, strong) UIStackView *tokensStackView;
+@property (nonatomic, strong) NSMutableArray<MLGameSixTokenCardView *> *tokenCards;
+
+// 底部选中提示与融合按钮
+@property (nonatomic, strong) UILabel *tvFusionSelectedBottom;
 @property (nonatomic, strong) UIButton *fusionActionButton;
 
-// 3. 底部背包待选面板区
-@property (nonatomic, strong) UIView *bottomPackPanelContainer;
-@property (nonatomic, strong) UIImageView *packPanelBgImageView;
-@property (nonatomic, strong) UIButton *prevButton;
-@property (nonatomic, strong) UIButton *nextButton;
-@property (nonatomic, strong) NSMutableArray<UIButton *> *itemButtons;
-
-// 4. 真实 UI 节点引用数组
-@property (nonatomic, strong) NSMutableArray<UIImageView *> *slotImageViews;
-@property (nonatomic, strong) NSMutableArray<UILabel *> *slotNameLabels;
-@property (nonatomic, strong) NSMutableArray<UIImageView *> *tempImageViews;
-
-// 5. 真实数据源模型
-@property (nonatomic, strong) MLTowerGameSixFusionCandidateModel *candidateModel;
-@property (nonatomic, strong) NSMutableArray<MLCandidateItemModel *> *selectedGlobalSlots;
-@property (nonatomic, strong) NSMutableSet<MLCandidateItemModel *> *selectedTempSet;
-@property (nonatomic, strong) NSMutableArray<UIImageView *> *checkMarkImageViews;
-@property (nonatomic, assign) NSInteger tempPageIndex;
-@property (nonatomic, strong) UIView *ticketTabsContainer;
-@property (nonatomic, strong) NSMutableArray<UIButton *> *ticketButtons;
-@property (nonatomic, strong) NSMutableArray<MLTowerGameSixTicketTypeModel *> *ticketTypes;
+// 数据
+@property (nonatomic, strong) MLThemeGameModel *gameModel;
+@property (nonatomic, assign) NSInteger selectedTier; // 1~5
 @property (nonatomic, assign) NSInteger selectedTicketTypeId;
+@property (nonatomic, assign) NSInteger selectedPrice;
+@property (nonatomic, strong) NSMutableArray<NSNumber *> *defaultPrices;
+@property (nonatomic, strong) NSMutableArray<NSString *> *defaultNames;
+@property (nonatomic, copy) NSString *cachedRatioCoin;
+@property (nonatomic, assign) BOOL hasActiveTicket;
+@property (nonatomic, assign) NSInteger stateVersion;
+@property (nonatomic, assign) NSTimeInterval lastClickTime;
+@property (nonatomic, assign) BOOL isExchanging;
 
 @end
 
@@ -62,17 +174,18 @@
     }
     if (!targetView) {
         for (UIWindow *w in [UIApplication sharedApplication].windows) {
-            if (w.isKeyWindow) {
-                targetView = w;
-                break;
-            }
+            if (w.isKeyWindow) { targetView = w; break; }
         }
     }
     if (!targetView) {
         targetView = [UIApplication sharedApplication].windows.firstObject;
     }
-    if (!targetView) {
-        return nil;
+    if (!targetView) return nil;
+    
+    for (UIView *sub in targetView.subviews) {
+        if ([sub isKindOfClass:[MLChatRoomThemeGameSixFusionDialog class]]) {
+            return (MLChatRoomThemeGameSixFusionDialog *)sub;
+        }
     }
     
     MLChatRoomThemeGameSixFusionDialog *dialog = [[MLChatRoomThemeGameSixFusionDialog alloc] initWithFrame:targetView.bounds];
@@ -83,736 +196,379 @@
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
-        _slotButtons = [NSMutableArray array];
-        _itemButtons = [NSMutableArray array];
-        _slotImageViews = [NSMutableArray array];
-        _slotNameLabels = [NSMutableArray array];
-        _tempImageViews = [NSMutableArray array];
-        _checkMarkImageViews = [NSMutableArray array];
-        _selectedTempSet = [NSMutableSet set];
-        _selectedGlobalSlots = [NSMutableArray arrayWithObjects:[NSNull null], [NSNull null], [NSNull null], nil];
+        _gameModel = [[MLThemeGameModel alloc] init];
+        _tokenCards = [NSMutableArray array];
+        _selectedTier = 1;
+        _selectedPrice = 100;
+        _selectedTicketTypeId = 1;
+        _defaultPrices = [@[@100, @500, @1000, @2000, @5000] mutableCopy];
+        _defaultNames = [@[@"一层令", @"二层令", @"三层令", @"四层令", @"五层令"] mutableCopy];
+        _cachedRatioCoin = @"0";
+        _stateVersion = 1;
+        _hasActiveTicket = NO;
+        
         [self setupUI];
-        [self loadCandidatesData];
+        [self selectTier:1];
+        [self loadWalletMoney];
+        [self refreshBootstrapState];
     }
     return self;
 }
 
-- (void)loadCandidatesData {
-    [SVProgressHUD show];
-    WeakSelf
-    [[MLThemeGameModel sharedInstance] fetchTowerGameSixFusionCandidatesWithSuccess:^(MLTowerGameSixFusionCandidateModel * _Nullable model) {
-        [SVProgressHUD dismiss];
-        if (model) {
-            wself.candidateModel = model;
-            NSMutableArray *typesList = [NSMutableArray array];
-            if (model.ticket_types && model.ticket_types.count > 0) {
-                for (MLTowerGameSixTicketTypeModel *t in model.ticket_types) {
-                    t.is_from_backend = YES;
-                    [typesList addObject:t];
-                }
-            }
-            wself.ticketTypes = typesList;
-            [wself checkOrCreateDefaultTicketTypes];
-            
-            if (wself.selectedTicketTypeId == 0 && wself.ticketTypes.count > 0) {
-                MLTowerGameSixTicketTypeModel *firstTicket = wself.ticketTypes.firstObject;
-                wself.selectedTicketTypeId = firstTicket.id;
-            }
-            [wself refreshDataUI];
-            [wself renderTicketTabs];
-        }
-    } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
-        [SVProgressHUD dismiss];
-        [SVProgressHUD showInfoWithStatus:msg ?: @"未登录或网络异常，已展示试用面板"];
-        [wself checkOrCreateDefaultTicketTypes];
-        [wself renderTicketTabs];
-    }];
-}
-
-- (void)checkOrCreateDefaultTicketTypes {
-    if (!self.ticketTypes) {
-        self.ticketTypes = [NSMutableArray array];
-    }
-    if (self.ticketTypes.count < 5) {
-        NSArray *names = @[@"一层", @"二层", @"三层", @"四层", @"五层"];
-        NSArray *values = @[@"5000.00", @"10000.00", @"20000.00", @"50000.00", @"100000.00"];
-        
-        NSMutableSet *existingLayers = [NSMutableSet set];
-        for (MLTowerGameSixTicketTypeModel *item in self.ticketTypes) {
-            NSInteger layer = item.start_layer > 0 ? item.start_layer : item.ticket_layer;
-            if (layer > 0) [existingLayers addObject:@(layer)];
-        }
-        
-        for (int i = 0; i < 5; i++) {
-            NSInteger layer = i + 1;
-            if (![existingLayers containsObject:@(layer)]) {
-                MLTowerGameSixTicketTypeModel *bean = [[MLTowerGameSixTicketTypeModel alloc] init];
-                bean.id = layer;
-                bean.name = names[i];
-                bean.start_layer = layer;
-                bean.ticket_layer = layer;
-                bean.ticket_value = values[i];
-                bean.is_from_backend = NO;
-                [self.ticketTypes addObject:bean];
-            }
-        }
-        [self.ticketTypes sortUsingComparator:^NSComparisonResult(MLTowerGameSixTicketTypeModel *a, MLTowerGameSixTicketTypeModel *b) {
-            return [@(a.start_layer) compare:@(b.start_layer)];
-        }];
-        
-        if (self.selectedTicketTypeId == 0 && self.ticketTypes.count > 0) {
-            self.selectedTicketTypeId = self.ticketTypes.firstObject.id;
-        }
-    }
-}
-
-- (BOOL)isSelectedTicketTypeFromBackend {
-    if (!self.ticketTypes) return NO;
-    for (MLTowerGameSixTicketTypeModel *item in self.ticketTypes) {
-        if (item.id == self.selectedTicketTypeId) {
-            return item.is_from_backend;
-        }
-    }
-    return NO;
-}
-
-- (NSInteger)getEffectiveTicketTypeIdForSubmit {
-    return [self isSelectedTicketTypeFromBackend] ? self.selectedTicketTypeId : 0;
-}
-
-- (void)renderTicketTabs {
-    if (!self.ticketButtons || self.ticketButtons.count == 0) return;
-    if (!self.ticketTypes || self.ticketTypes.count == 0) return;
-    
-    for (int i = 0; i < self.ticketButtons.count; i++) {
-        UIButton *btn = self.ticketButtons[i];
-        if (i < self.ticketTypes.count) {
-            MLTowerGameSixTicketTypeModel *item = self.ticketTypes[i];
-            btn.hidden = NO;
-            NSInteger layerNum = item.start_layer > 0 ? item.start_layer : (i + 1);
-            NSString *imgName = [NSString stringWithFormat:@"theme_game_six_tab_%ld", (long)layerNum];
-            [btn setImage:[UIImage imageNamed:imgName] forState:UIControlStateNormal];
-            
-            BOOL isSelected = (item.id == self.selectedTicketTypeId);
-            btn.alpha = isSelected ? 1.0f : 0.55f;
-        } else {
-            btn.hidden = YES;
-        }
-    }
-}
-
-- (void)ticketTabClick:(UIButton *)btn {
-    NSInteger idx = btn.tag - 1;
-    if (self.ticketTypes && idx < self.ticketTypes.count) {
-        MLTowerGameSixTicketTypeModel *item = self.ticketTypes[idx];
-        self.selectedTicketTypeId = item.id;
-        [self renderTicketTabs];
-        [self refreshDataUI];
-    }
-}
-
-- (void)refreshDataUI {
-    if (!self.candidateModel) return;
-    
-    MLTowerGameSixTicketTypeModel *selectedBean = nil;
-    if (self.ticketTypes && self.ticketTypes.count > 0) {
-        for (MLTowerGameSixTicketTypeModel *tBean in self.ticketTypes) {
-            if (tBean.id == self.selectedTicketTypeId) {
-                selectedBean = tBean;
-                if (tBean.ticket_value.length > 0) {
-                    _tvFusionThresholdTop.text = [NSString stringWithFormat:@"融合门槛: 💎 %@", tBean.ticket_value];
-                }
-                break;
-            }
-        }
-    }
-    if (!selectedBean && _candidateModel.threshold_value) {
-        _tvFusionThresholdTop.text = [NSString stringWithFormat:@"融合门槛: 💎 %@", _candidateModel.threshold_value];
-    }
-    
-    // 1. 动态连线 3 个槽位选中的礼物
-    double totalVal = 0.0;
-    for (int i = 0; i < 3; i++) {
-        UIImageView *iconIV = _slotImageViews[i];
-        UILabel *nameLb = _slotNameLabels[i];
-        id slotObj = self.selectedGlobalSlots[i];
-        
-        if ([slotObj isKindOfClass:[MLCandidateItemModel class]]) {
-            MLCandidateItemModel *item = (MLCandidateItemModel *)slotObj;
-            nameLb.text = item.name ?: @"未选择";
-            if (item.unit_value) {
-                totalVal += [item.unit_value doubleValue];
-            }
-            if (item.image && item.image.length > 0) {
-                [iconIV sd_setImageWithURL:[NSURL URLWithString:item.image] placeholderImage:[UIImage imageNamed:@"theme_game_six_btn_gift_pack"]];
-            }
-        } else {
-            nameLb.text = @"待选择";
-            iconIV.image = nil;
-        }
-    }
-    
-    // 1.1 加上选中的暂存包礼物价值
-    for (MLCandidateItemModel *tItem in self.selectedTempSet) {
-        if (tItem.unit_value) {
-            totalVal += [tItem.unit_value doubleValue];
-        }
-    }
-    
-    // 2. 实时刷新底部选中总价值提示 (动态联动当前选中门票层级门槛)
-    double threshold = 0.0;
-    if (selectedBean && selectedBean.ticket_value.length > 0) {
-        threshold = [selectedBean.ticket_value doubleValue];
-    } else if (_candidateModel.threshold_value) {
-        threshold = [_candidateModel.threshold_value doubleValue];
-    }
-    
-    if (threshold > 0 && totalVal >= threshold) {
-        _tvFusionSelectedBottom.text = [NSString stringWithFormat:@"当前选中: 💎 %.2f (已达标)", totalVal];
-        _tvFusionSelectedBottom.textColor = [UIColor colorWithRed:0x88/255.0 green:0xFF/255.0 blue:0x88/255.0 alpha:1.0];
-    } else {
-        _tvFusionSelectedBottom.text = [NSString stringWithFormat:@"当前选中: 💎 %.2f", totalVal];
-        _tvFusionSelectedBottom.textColor = [UIColor colorWithRed:255/255.0 green:223/255.0 blue:124/255.0 alpha:1.0];
-    }
-    
-    // 向后端 POST /fusion_preview 异步拉取服务端权威判责数据并实时覆盖
-    [self requestServerFusionPreviewCheck];
-    
-    // 3. 动态连线暂存包真实候选礼物 (支持多页翻页展示与强烈高对比度选中特效)
-    NSArray *tempList = _candidateModel.temp_inventory;
-    NSInteger startIndex = self.tempPageIndex * 3;
-    for (int j = 0; j < _tempImageViews.count; j++) {
-        UIImageView *tempIV = _tempImageViews[j];
-        UIButton *itemBtn = _itemButtons[j];
-        UIImageView *checkMarkIV = _checkMarkImageViews[j];
-        NSInteger itemIdx = startIndex + j;
-        
-        if (itemIdx < tempList.count) {
-            MLCandidateItemModel *tempItem = tempList[itemIdx];
-            tempIV.hidden = NO;
-            itemBtn.hidden = NO;
-            if (tempItem.image && tempItem.image.length > 0) {
-                [tempIV sd_setImageWithURL:[NSURL URLWithString:tempItem.image] placeholderImage:[UIImage imageNamed:@"theme_game_six_ic_token"]];
-            }
-            
-            BOOL isSelected = [self.selectedTempSet containsObject:tempItem];
-            if (isSelected) {
-                // 选中状态：高亮亮绿金发光边框、放大10%、全透明度1.0、显示右角标Checkmark
-                itemBtn.alpha = 1.0f;
-                itemBtn.transform = CGAffineTransformMakeScale(1.10, 1.10);
-                itemBtn.layer.borderWidth = KDialogAdaptedWidth(2.5);
-                itemBtn.layer.borderColor = [UIColor colorWithRed:0x88/255.0 green:0xFF/255.0 blue:0x88/255.0 alpha:1.0].CGColor;
-                itemBtn.layer.cornerRadius = KDialogAdaptedWidth(8);
-                checkMarkIV.hidden = NO;
-            } else {
-                // 未选中状态：暗淡半透明alpha=0.45、原始尺寸1.0、无边框、隐藏角标
-                itemBtn.alpha = 0.45f;
-                itemBtn.transform = CGAffineTransformIdentity;
-                itemBtn.layer.borderWidth = 0.0;
-                checkMarkIV.hidden = YES;
-            }
-        } else {
-            itemBtn.hidden = NO;
-            itemBtn.alpha = 0.5f;
-            itemBtn.transform = CGAffineTransformIdentity;
-            itemBtn.layer.borderWidth = 0.0;
-            tempIV.hidden = YES;
-            tempIV.image = nil;
-            checkMarkIV.hidden = YES;
-        }
-    }
-}
-
-#pragma mark - UI Setup (SUAS 375x812pt & ALURS Constraint Contract)
-
+#pragma mark - UI Setup (SUAS / CVCS 规范：614:879 画卷容器自适应)
 - (void)setupUI {
     self.backgroundColor = [UIColor clearColor];
     
-    // 0. 全屏半透明遮罩
+    // 1. 半透明黑色遮罩
     _maskView = [[UIView alloc] init];
-    _maskView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+    _maskView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6];
     _maskView.userInteractionEnabled = YES;
     [self addSubview:_maskView];
     [_maskView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(self);
     }];
+    UITapGestureRecognizer *tapMask = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onCloseClicked)];
+    [_maskView addGestureRecognizer:tapMask];
     
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeClick)];
-    [_maskView addGestureRecognizer:tap];
-    
-    // 1. 融合卷轴主背板容器 (锁死 614:879 高宽比与 330pt 适配宽度)
+    // 2. 画卷居中容器 (614:879，大屏 iPad 限宽 360)
     _boardContainer = [[UIView alloc] init];
+    _boardContainer.backgroundColor = [UIColor clearColor];
     _boardContainer.userInteractionEnabled = YES;
     [self addSubview:_boardContainer];
     
-    CGFloat boardWidth = KDialogAdaptedWidth(330);
-    CGFloat boardHeight = boardWidth * (879.0 / 614.0);
-    
+    CGFloat panelWidth = MIN(ScreenWidth * 0.92, 360.0);
+    CGFloat panelHeight = panelWidth * (879.0 / 614.0);
     [_boardContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(self);
-        make.size.mas_equalTo(CGSizeMake(boardWidth, boardHeight));
+        make.width.mas_equalTo(panelWidth);
+        make.height.mas_equalTo(panelHeight);
     }];
     
-    // 卷轴背景图 (theme_game_six_fusion_board_bg)
+    // 3. 画卷背景
     _boardBgImageView = [[UIImageView alloc] init];
     _boardBgImageView.image = [UIImage imageNamed:@"theme_game_six_fusion_board_bg"];
     _boardBgImageView.contentMode = UIViewContentModeScaleToFill;
+    _boardBgImageView.userInteractionEnabled = YES;
     [_boardContainer addSubview:_boardBgImageView];
     [_boardBgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(_boardContainer);
+        make.edges.mas_equalTo(self.boardContainer);
     }];
     
-    // 1.1 顶部门槛提醒 (初始为 --，100% 等待服务器接口动态返回)
-    _tvFusionThresholdTop = [[UILabel alloc] init];
-    _tvFusionThresholdTop.text = @"融合门槛: 💎 --";
-    _tvFusionThresholdTop.textColor = [UIColor colorWithRed:255/255.0 green:223/255.0 blue:124/255.0 alpha:1.0];
-    _tvFusionThresholdTop.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
-    _tvFusionThresholdTop.textAlignment = NSTextAlignmentCenter;
-    [_boardContainer addSubview:_tvFusionThresholdTop];
-    [_tvFusionThresholdTop mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_boardContainer.mas_top).offset(boardHeight * 0.10 - KDialogAdaptedWidth(2));
-        make.centerX.mas_equalTo(_boardContainer);
-    }];
-
-    // 2. 顶部 3 配方槽位区 (缩小2%至92.7x94.9pt)
-    _topSlotsContainer = [[UIView alloc] init];
-    [_boardContainer addSubview:_topSlotsContainer];
-    [_topSlotsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(boardHeight * 0.10);
-        make.centerX.mas_equalTo(_boardContainer);
-        make.height.mas_equalTo(KDialogAdaptedWidth(94.9));
+    // 4. 关闭按钮
+    UIButton *closeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [closeBtn setImage:[UIImage imageNamed:@"theme_game_six_rule_close"] forState:UIControlStateNormal];
+    [closeBtn addTarget:self action:@selector(onCloseClicked) forControlEvents:UIControlEventTouchUpInside];
+    [_boardContainer addSubview:closeBtn];
+    [closeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(KAdaptedWidth(26));
+        make.right.mas_equalTo(-KAdaptedWidth(20));
+        make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(28), KAdaptedWidth(28)));
     }];
     
-    UIView *lastSlotView = nil;
-    for (int i = 0; i < 3; i++) {
-        UIButton *slotBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [slotBtn setBackgroundImage:[UIImage imageNamed:@"theme_game_six_fusion_slot_frame"] forState:UIControlStateNormal];
-        slotBtn.contentMode = UIViewContentModeScaleToFill;
-        slotBtn.imageView.contentMode = UIViewContentModeScaleToFill;
-        slotBtn.tag = i + 1;
-        [slotBtn addTarget:self action:@selector(slotClick:) forControlEvents:UIControlEventTouchUpInside];
-        [_topSlotsContainer addSubview:slotBtn];
-        [_slotButtons addObject:slotBtn];
-        
-        // 槽位中间礼物 Icon 图片 (真实状态下初始为空)
-        UIImageView *giftIconImageView = [[UIImageView alloc] init];
-        giftIconImageView.contentMode = UIViewContentModeScaleAspectFit;
-        giftIconImageView.image = nil;
-        [slotBtn addSubview:giftIconImageView];
-        [_slotImageViews addObject:giftIconImageView];
-        [giftIconImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(slotBtn);
-            make.top.mas_equalTo(KDialogAdaptedWidth(20));
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(48), KDialogAdaptedWidth(48)));
-        }];
-        
-        // 槽位底部加粗玫粉名字标签 (初始未选择状态显示 "待选择")
-        UILabel *nameLabel = [[UILabel alloc] init];
-        nameLabel.text = @"待选择";
-        nameLabel.textColor = [UIColor colorWithRed:0xE0/255.0 green:0x38/255.0 blue:0x75/255.0 alpha:1.0];
-        nameLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(8.5)];
-        nameLabel.textAlignment = NSTextAlignmentCenter;
-        [slotBtn addSubview:nameLabel];
-        [_slotNameLabels addObject:nameLabel];
-        [nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.bottom.mas_equalTo(slotBtn).offset(-KDialogAdaptedWidth(4));
-            make.centerX.mas_equalTo(slotBtn);
-        }];
-
-        [slotBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(_topSlotsContainer);
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(92.7), KDialogAdaptedWidth(94.9)));
-            if (lastSlotView) {
-                make.leading.mas_equalTo(lastSlotView.mas_trailing).offset(KDialogAdaptedWidth(6));
-            } else {
-                make.leading.mas_equalTo(_topSlotsContainer);
-            }
-        }];
-        lastSlotView = slotBtn;
-    }
-    if (lastSlotView) {
-        [_topSlotsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.trailing.mas_equalTo(lastSlotView.mas_trailing);
-        }];
-    }
-    
-    // 2.5 5 级门票横向页签选单容器 (处于槽位区与融合按钮正中间)
-    _ticketTabsContainer = [[UIView alloc] init];
-    [_boardContainer addSubview:_ticketTabsContainer];
-    [_ticketTabsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_topSlotsContainer.mas_bottom).offset(KDialogAdaptedWidth(2));
-        make.bottom.mas_equalTo(_boardContainer.mas_top).offset(boardHeight * 0.36 - KDialogAdaptedWidth(2));
-        make.centerX.mas_equalTo(_boardContainer);
+    // 5. 顶部资产栏 (位于画卷顶部 ~10.5%)
+    _topAssetBar = [[UIView alloc] init];
+    _topAssetBar.backgroundColor = [UIColor clearColor];
+    [_boardContainer addSubview:_topAssetBar];
+    [_topAssetBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.boardContainer.mas_top).offset(panelHeight * 0.105);
+        make.centerX.mas_equalTo(self.boardContainer);
+        make.height.mas_equalTo(KAdaptedWidth(26));
     }];
     
-    _ticketButtons = [NSMutableArray array];
-    UIView *lastTabBtn = nil;
-    for (int i = 0; i < 5; i++) {
-        UIButton *tabBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        tabBtn.tag = i + 1;
-        tabBtn.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        NSString *imgName = [NSString stringWithFormat:@"theme_game_six_tab_%d", i + 1];
-        [tabBtn setImage:[UIImage imageNamed:imgName] forState:UIControlStateNormal];
-        [tabBtn addTarget:self action:@selector(ticketTabClick:) forControlEvents:UIControlEventTouchUpInside];
-        [_ticketTabsContainer addSubview:tabBtn];
-        [_ticketButtons addObject:tabBtn];
-        
-        [tabBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(_ticketTabsContainer);
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(44), KDialogAdaptedWidth(28)));
-            if (lastTabBtn) {
-                make.leading.mas_equalTo(lastTabBtn.mas_trailing).offset(KDialogAdaptedWidth(3));
-            } else {
-                make.leading.mas_equalTo(_ticketTabsContainer);
-            }
-        }];
-        lastTabBtn = tabBtn;
-    }
-    if (lastTabBtn) {
-        [_ticketTabsContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.trailing.mas_equalTo(lastTabBtn.mas_trailing);
-        }];
+    _tvObsidianTitle = [[UILabel alloc] init];
+    _tvObsidianTitle.text = @"当前黑曜石:";
+    _tvObsidianTitle.textColor = mHexRGB(0xFFFFDF7C);
+    _tvObsidianTitle.font = [UIFont boldSystemFontOfSize:12];
+    [_topAssetBar addSubview:_tvObsidianTitle];
+    [_tvObsidianTitle mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(0);
+        make.centerY.mas_equalTo(self.topAssetBar);
+    }];
+    
+    _ivObsidianIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_game_six_obsidian"]];
+    _ivObsidianIcon.contentMode = UIViewContentModeScaleAspectFit;
+    [_topAssetBar addSubview:_ivObsidianIcon];
+    [_ivObsidianIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.tvObsidianTitle.mas_right).offset(4);
+        make.centerY.mas_equalTo(self.topAssetBar);
+        make.size.mas_equalTo(CGSizeMake(14, 14));
+    }];
+    
+    _tvTopObsidianBalance = [[UILabel alloc] init];
+    _tvTopObsidianBalance.text = @"0";
+    _tvTopObsidianBalance.textColor = [UIColor whiteColor];
+    _tvTopObsidianBalance.font = [UIFont boldSystemFontOfSize:13];
+    [_topAssetBar addSubview:_tvTopObsidianBalance];
+    [_tvTopObsidianBalance mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.ivObsidianIcon.mas_right).offset(4);
+        make.centerY.mas_equalTo(self.topAssetBar);
+    }];
+    
+    _btnExchangeObsidian = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_btnExchangeObsidian setTitle:@"➕ 兑换" forState:UIControlStateNormal];
+    [_btnExchangeObsidian setTitleColor:mHexRGB(0xFFFFDF7C) forState:UIControlStateNormal];
+    _btnExchangeObsidian.titleLabel.font = [UIFont boldSystemFontOfSize:11];
+    _btnExchangeObsidian.layer.borderColor = mHexRGB(0xFFFFDF7C).CGColor;
+    _btnExchangeObsidian.layer.borderWidth = 1.0;
+    _btnExchangeObsidian.layer.cornerRadius = 11;
+    _btnExchangeObsidian.layer.masksToBounds = YES;
+    [_btnExchangeObsidian addTarget:self action:@selector(onExchangeObsidianClick) forControlEvents:UIControlEventTouchUpInside];
+    [_topAssetBar addSubview:_btnExchangeObsidian];
+    [_btnExchangeObsidian mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.tvTopObsidianBalance.mas_right).offset(8);
+        make.right.mas_equalTo(0);
+        make.centerY.mas_equalTo(self.topAssetBar);
+        make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(54), KAdaptedWidth(22)));
+    }];
+    
+    // 6. 5 级木质令牌单排平铺 (位于画卷中间 ~33%)
+    _tokensStackView = [[UIStackView alloc] init];
+    _tokensStackView.axis = UILayoutConstraintAxisHorizontal;
+    _tokensStackView.distribution = UIStackViewDistributionFillEqually;
+    _tokensStackView.spacing = KAdaptedWidth(2);
+    [_boardContainer addSubview:_tokensStackView];
+    [_tokensStackView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.boardContainer.mas_top).offset(panelHeight * 0.33);
+        make.left.mas_equalTo(self.boardContainer).offset(KAdaptedWidth(14));
+        make.right.mas_equalTo(self.boardContainer).offset(-KAdaptedWidth(14));
+        make.height.mas_equalTo(KAdaptedWidth(130));
+    }];
+    
+    for (NSInteger i = 1; i <= 5; i++) {
+        MLGameSixTokenCardView *card = [[MLGameSixTokenCardView alloc] init];
+        card.tag = i;
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTokenCardTapped:)];
+        [card addGestureRecognizer:tap];
+        [_tokensStackView addArrangedSubview:card];
+        [_tokenCards addObject:card];
     }
     
-    // 3. 中间融合操作按钮 (Top 36% 区域 210x56pt)
-    _fusionActionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_fusionActionButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_fusion_btn_action"] forState:UIControlStateNormal];
-    _fusionActionButton.contentMode = UIViewContentModeScaleToFill;
-    _fusionActionButton.imageView.contentMode = UIViewContentModeScaleToFill;
-    [_fusionActionButton addTarget:self action:@selector(submitFusion) forControlEvents:UIControlEventTouchUpInside];
-    [_boardContainer addSubview:_fusionActionButton];
-    [_fusionActionButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(boardHeight * 0.36);
-        make.centerX.mas_equalTo(_boardContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(210), KDialogAdaptedWidth(56)));
-    }];
-    
-    // 3.1 底部当前选中价值提醒 (初始未选择礼物价值为 0.00)
+    // 7. 当前选中消耗文本 (位于画卷 ~63%)
     _tvFusionSelectedBottom = [[UILabel alloc] init];
-    _tvFusionSelectedBottom.text = @"当前选中: 💎 0.00";
-    _tvFusionSelectedBottom.textColor = [UIColor colorWithRed:255/255.0 green:223/255.0 blue:124/255.0 alpha:1.0];
-    _tvFusionSelectedBottom.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(10)];
+    _tvFusionSelectedBottom.textColor = mHexRGB(0xFFFFDF7C);
+    _tvFusionSelectedBottom.font = [UIFont boldSystemFontOfSize:14];
     _tvFusionSelectedBottom.textAlignment = NSTextAlignmentCenter;
+    _tvFusionSelectedBottom.text = @"当前选中: 100 黑曜石";
     [_boardContainer addSubview:_tvFusionSelectedBottom];
     [_tvFusionSelectedBottom mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_fusionActionButton.mas_bottom).offset(KDialogAdaptedWidth(4));
-        make.centerX.mas_equalTo(_boardContainer);
+        make.top.mas_equalTo(self.boardContainer.mas_top).offset(panelHeight * 0.63);
+        make.centerX.mas_equalTo(self.boardContainer);
     }];
     
-    // 4. 底部背包待选面板区 (Top 53% ~ 91% 区域)
-    _bottomPackPanelContainer = [[UIView alloc] init];
-    _bottomPackPanelContainer.clipsToBounds = NO; // 允许两侧指示箭头向外突出 -16pt
-    [_boardContainer addSubview:_bottomPackPanelContainer];
-    [_bottomPackPanelContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(boardHeight * 0.53);
-        make.height.mas_equalTo(boardHeight * (0.91 - 0.53));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(30));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(30));
-    }];
-    
-    _packPanelBgImageView = [[UIImageView alloc] init];
-    _packPanelBgImageView.image = [UIImage imageNamed:@"theme_game_six_fusion_pack_panel_bg"];
-    _packPanelBgImageView.contentMode = UIViewContentModeScaleToFill;
-    [_bottomPackPanelContainer addSubview:_packPanelBgImageView];
-    [_packPanelBgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(_bottomPackPanelContainer);
-    }];
-    
-    // 4.1 左指示箭头按钮 (放大10%至52.8x40.7pt，向外突出 -16pt)
-    _prevButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_prevButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_fusion_btn_prev"] forState:UIControlStateNormal];
-    _prevButton.contentMode = UIViewContentModeScaleToFill;
-    _prevButton.imageView.contentMode = UIViewContentModeScaleToFill;
-    [_prevButton addTarget:self action:@selector(prevClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bottomPackPanelContainer addSubview:_prevButton];
-    [_prevButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(26));
-        make.leading.mas_equalTo(-KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(52.8), KDialogAdaptedWidth(40.7)));
-    }];
-    
-    // 4.2 右指示箭头按钮 (放大10%至52.8x40.7pt，向外突出 16pt)
-    _nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_nextButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_fusion_btn_next"] forState:UIControlStateNormal];
-    _nextButton.contentMode = UIViewContentModeScaleToFill;
-    _nextButton.imageView.contentMode = UIViewContentModeScaleToFill;
-    [_nextButton addTarget:self action:@selector(nextClick) forControlEvents:UIControlEventTouchUpInside];
-    [_bottomPackPanelContainer addSubview:_nextButton];
-    [_nextButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(26));
-        make.trailing.mas_equalTo(KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(52.8), KDialogAdaptedWidth(40.7)));
-    }];
-    
-    // 4.3 底部 3 个待选背包礼物卡槽 (放大10%至79.2x81.4pt，间距 8pt，向下偏移20pt)
-    UIView *itemsRowView = [[UIView alloc] init];
-    [_bottomPackPanelContainer addSubview:itemsRowView];
-    [itemsRowView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(_bottomPackPanelContainer).offset(KDialogAdaptedWidth(20));
-        make.centerX.mas_equalTo(_bottomPackPanelContainer);
-        make.height.mas_equalTo(KDialogAdaptedWidth(81.4));
-    }];
-    
-    UIView *lastItemView = nil;
-    for (int j = 0; j < 3; j++) {
-        UIButton *itemBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [itemBtn setBackgroundImage:[UIImage imageNamed:@"theme_game_six_fusion_item_frame"] forState:UIControlStateNormal];
-        itemBtn.contentMode = UIViewContentModeScaleToFill;
-        itemBtn.imageView.contentMode = UIViewContentModeScaleToFill;
-        itemBtn.tag = j + 1;
-        [itemBtn addTarget:self action:@selector(itemClick:) forControlEvents:UIControlEventTouchUpInside];
-        [itemsRowView addSubview:itemBtn];
-        [_itemButtons addObject:itemBtn];
-        
-        UIImageView *tempIV = [[UIImageView alloc] init];
-        tempIV.contentMode = UIViewContentModeScaleAspectFit;
-        [itemBtn addSubview:tempIV];
-        [_tempImageViews addObject:tempIV];
-        [tempIV mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.center.mas_equalTo(itemBtn);
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(44), KDialogAdaptedWidth(44)));
-        }];
-        
-        // 选中右角标 Checkmark
-        UIImageView *checkMarkIV = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"theme_game_six_rule_check"] ? : [UIImage imageNamed:@"theme_game_six_ic_token"]];
-        checkMarkIV.contentMode = UIViewContentModeScaleAspectFit;
-        checkMarkIV.hidden = YES;
-        [itemBtn addSubview:checkMarkIV];
-        [_checkMarkImageViews addObject:checkMarkIV];
-        [checkMarkIV mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(KDialogAdaptedWidth(4));
-            make.trailing.mas_equalTo(-KDialogAdaptedWidth(4));
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(16), KDialogAdaptedWidth(16)));
-        }];
-        
-        [itemBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(itemsRowView);
-            make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(79.2), KDialogAdaptedWidth(81.4)));
-            if (lastItemView) {
-                make.leading.mas_equalTo(lastItemView.mas_trailing).offset(KDialogAdaptedWidth(8));
-            } else {
-                make.leading.mas_equalTo(itemsRowView);
-            }
-        }];
-        lastItemView = itemBtn;
-    }
-    if (lastItemView) {
-        [itemsRowView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.trailing.mas_equalTo(lastItemView.mas_trailing);
-        }];
-    }
-}
-
-#pragma mark - User Interaction Callbacks
-
-- (void)submitFusion {
-    NSMutableArray *allSelected = [NSMutableArray array];
-    double totalVal = 0.0;
-    
-    for (id slotObj in self.selectedGlobalSlots) {
-        if ([slotObj isKindOfClass:[MLCandidateItemModel class]]) {
-            MLCandidateItemModel *item = (MLCandidateItemModel *)slotObj;
-            [allSelected addObject:item];
-            if (item.unit_value) {
-                totalVal += [item.unit_value doubleValue];
-            }
-        }
-    }
-    
-    for (MLCandidateItemModel *tItem in self.selectedTempSet) {
-        [allSelected addObject:tItem];
-        if (tItem.unit_value) {
-            totalVal += [tItem.unit_value doubleValue];
-        }
-    }
-    
-    if (allSelected.count == 0) {
-        [SVProgressHUD showInfoWithStatus:@"请先选择需要融合的礼物"];
-        return;
-    }
-    
-    double threshold = [_candidateModel.threshold_value doubleValue];
-    if (threshold > 0 && totalVal < threshold) {
-        [SVProgressHUD showInfoWithStatus:[NSString stringWithFormat:@"所选礼物总价值(💎%.2f)未达到门槛(💎%@)，无法融合", totalVal, _candidateModel.threshold_value ?: @"--"]];
-        return;
-    }
-    
-    // 提交前先从服务器请求最新 /bootstrap，获取 100% 准确最新的 state_version (包含 0 初始版本)
-    [SVProgressHUD showWithStatus:@"正在校验最新游戏状态..."];
-    [[MLThemeGameModel sharedInstance] fetchTowerGameSixBootstrapWithRoomId:nil success:^(id _Nullable responseObj) {
-        NSInteger freshStateVersion = 0;
-        if ([responseObj isKindOfClass:[MLTowerGameSixBootstrapModel class]]) {
-            MLTowerGameSixBootstrapModel *bsModel = (MLTowerGameSixBootstrapModel *)responseObj;
-            if (bsModel.player) {
-                freshStateVersion = bsModel.player.state_version;
-            }
-        } else if ([responseObj isKindOfClass:[NSDictionary class]]) {
-            NSDictionary *playerDict = ((NSDictionary *)responseObj)[@"player"];
-            if ([playerDict isKindOfClass:[NSDictionary class]] && playerDict[@"state_version"] != nil) {
-                freshStateVersion = [playerDict[@"state_version"] integerValue];
-            }
-        }
-        
-        NSMutableArray *globalArr = [NSMutableArray array];
-        NSMutableArray *tempArr = [NSMutableArray array];
-        
-        for (MLCandidateItemModel *cItem in allSelected) {
-            NSDictionary *itemDict = @{
-                @"inventory_id": @(cItem.inventory_id),
-                @"num": @(1)
-            };
-            if ([@"temp" isEqualToString:cItem.source]) {
-                [tempArr addObject:itemDict];
-            } else {
-                [globalArr addObject:itemDict];
-            }
-        }
-        
-        [SVProgressHUD showWithStatus:@"正在提交门票合成..."];
-        NSInteger effectiveTicketTypeId = [self getEffectiveTicketTypeIdForSubmit];
-        [[MLThemeGameModel sharedInstance] exchangeTowerGameSixTicketWithGlobalItems:globalArr tempItems:tempArr ticketTypeId:effectiveTicketTypeId stateVersion:freshStateVersion success:^(id _Nullable responseObj) {
-            [SVProgressHUD showSuccessWithStatus:@"✨ 门票融合成功！已获得 7 次重铸机会"];
-            if (self.onFusionSuccessBlock) {
-                self.onFusionSuccessBlock();
-            }
-            [self dismiss];
-        } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
-            [SVProgressHUD dismiss];
-            [SVProgressHUD showInfoWithStatus:msg ?: @"门票合成失败"];
-        }];
-    } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
-        [SVProgressHUD dismiss];
-        [SVProgressHUD showInfoWithStatus:msg ?: @"校验游戏状态失败"];
+    // 8. 核心操作「融合/兑换」按钮 (位于画卷 ~70%)
+    _fusionActionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_fusionActionButton setImage:[UIImage imageNamed:@"theme_game_six_fusion_btn_action"] forState:UIControlStateNormal];
+    _fusionActionButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    [_fusionActionButton addTarget:self action:@selector(onFusionActionClick) forControlEvents:UIControlEventTouchUpInside];
+    [_boardContainer addSubview:_fusionActionButton];
+    [_fusionActionButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.boardContainer.mas_top).offset(panelHeight * 0.70);
+        make.centerX.mas_equalTo(self.boardContainer);
+        make.size.mas_equalTo(CGSizeMake(KAdaptedWidth(200), KAdaptedWidth(54)));
     }];
 }
 
-- (void)requestServerFusionPreviewCheck {
-    NSMutableArray *items = [NSMutableArray array];
-    for (id slotObj in self.selectedGlobalSlots) {
-        if ([slotObj isKindOfClass:[MLCandidateItemModel class]]) {
-            MLCandidateItemModel *item = (MLCandidateItemModel *)slotObj;
-            [items addObject:@{
-                @"inventory_id": @(item.inventory_id),
-                @"source": item.source ?: @"global"
-            }];
-        }
-    }
-    for (MLCandidateItemModel *tItem in self.selectedTempSet) {
-        [items addObject:@{
-            @"inventory_id": @(tItem.inventory_id),
-            @"source": @"temp"
-        }];
-    }
-    if (items.count == 0) return;
+#pragma mark - Token Selection
+- (void)onTokenCardTapped:(UITapGestureRecognizer *)tap {
+    NSInteger tier = tap.view.tag;
+    [self selectTier:tier];
+}
+
+- (void)selectTier:(NSInteger)tier {
+    if (tier < 1 || tier > 5) tier = 1;
+    _selectedTier = tier;
+    _selectedPrice = [_defaultPrices[tier - 1] integerValue];
+    _selectedTicketTypeId = tier;
     
-    NSInteger effectiveTicketTypeId = [self getEffectiveTicketTypeIdForSubmit];
-    [[MLThemeGameModel sharedInstance] previewTowerGameSixFusionWithItems:items ticketTypeId:effectiveTicketTypeId success:^(id _Nullable responseObj) {
-        if ([responseObj isKindOfClass:[NSDictionary class]]) {
-            NSString *serverTotalVal = responseObj[@"total_value"];
-            BOOL isEligible = [responseObj[@"is_eligible"] boolValue];
-            if (serverTotalVal) {
-                if (isEligible) {
-                    self.tvFusionSelectedBottom.text = [NSString stringWithFormat:@"当前选中: 💎 %@ (已达标)", serverTotalVal];
-                    self.tvFusionSelectedBottom.textColor = [UIColor colorWithRed:0x88/255.0 green:0xFF/255.0 blue:0x88/255.0 alpha:1.0];
-                } else {
-                    self.tvFusionSelectedBottom.text = [NSString stringWithFormat:@"当前选中: 💎 %@", serverTotalVal];
-                    self.tvFusionSelectedBottom.textColor = [UIColor colorWithRed:255/255.0 green:223/255.0 blue:124/255.0 alpha:1.0];
+    for (NSInteger i = 0; i < _tokenCards.count; i++) {
+        NSInteger curTier = i + 1;
+        NSString *name = (i < _defaultNames.count) ? _defaultNames[i] : [NSString stringWithFormat:@"%ld层令", (long)curTier];
+        NSInteger price = (i < _defaultPrices.count) ? [_defaultPrices[i] integerValue] : 100;
+        [_tokenCards[i] configureWithTier:curTier name:name price:price isSelected:(curTier == tier)];
+    }
+    
+    _tvFusionSelectedBottom.text = [NSString stringWithFormat:@"当前选中: %@ 黑曜石", [self formatLargeNumber:_selectedPrice]];
+}
+
+#pragma mark - Network Loading
+- (void)loadWalletMoney {
+    WeakSelf;
+    [NetworkRequest POST:user_getMoney parmeters:nil success:^(id responObject) {
+        NSDictionary *data = nil;
+        if ([responObject isKindOfClass:[BaseModel class]]) {
+            BaseModel *baseModel = (BaseModel *)responObject;
+            if ([baseModel.data isKindOfClass:[NSDictionary class]]) {
+                data = (NSDictionary *)baseModel.data;
+            }
+        } else if ([responObject isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *dict = (NSDictionary *)responObject;
+            if ([dict[@"data"] isKindOfClass:[NSDictionary class]]) {
+                data = dict[@"data"];
+            } else {
+                data = dict;
+            }
+        }
+        
+        if (data) {
+            wself.cachedRatioCoin = [NSString stringWithFormat:@"%@", data[@"ratio_coin"] ?: @"0"];
+            double val = [wself.cachedRatioCoin doubleValue];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                wself.tvTopObsidianBalance.text = [wself formatLargeNumber:val];
+            });
+        }
+    } failture:^(NSError *error) {}];
+}
+
+- (void)refreshBootstrapState {
+    WeakSelf;
+    [_gameModel fetchTowerGameSixBootstrapWithRoomId:nil success:^(id data) {
+        if ([data isKindOfClass:[MLTowerGameSixBootstrapModel class]]) {
+            MLTowerGameSixBootstrapModel *bootstrap = (MLTowerGameSixBootstrapModel *)data;
+            if (bootstrap.player) {
+                wself.stateVersion = bootstrap.player.state_version ?: 1;
+            }
+            if (bootstrap.ticket_types && bootstrap.ticket_types.count > 0) {
+                for (NSInteger i = 0; i < bootstrap.ticket_types.count && i < 5; i++) {
+                    MLTowerGameSixTicketTypeModel *t = bootstrap.ticket_types[i];
+                    NSInteger price = [t.ticket_value integerValue];
+                    NSString *name = t.name;
+                    if (price > 0 && i < wself.defaultPrices.count) {
+                        wself.defaultPrices[i] = @(price);
+                    }
+                    if (name.length > 0 && i < wself.defaultNames.count) {
+                        wself.defaultNames[i] = name;
+                    }
                 }
+                [wself selectTier:wself.selectedTier];
+            }
+            if (bootstrap.ticket) {
+                wself.hasActiveTicket = [@"active" isEqualToString:bootstrap.ticket.status];
+            }
+        } else if ([data isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *player = data[@"player"];
+            if ([player isKindOfClass:[NSDictionary class]]) {
+                wself.stateVersion = [player[@"state_version"] integerValue] ?: 1;
+            }
+            NSArray *ticketTypes = data[@"ticket_types"];
+            if (ticketTypes && [ticketTypes isKindOfClass:[NSArray class]] && ticketTypes.count > 0) {
+                for (NSInteger i = 0; i < ticketTypes.count && i < 5; i++) {
+                    NSDictionary *t = ticketTypes[i];
+                    if ([t isKindOfClass:[NSDictionary class]]) {
+                        NSInteger price = [t[@"ticket_value"] integerValue];
+                        NSString *name = t[@"name"];
+                        if (price > 0 && i < wself.defaultPrices.count) {
+                            wself.defaultPrices[i] = @(price);
+                        }
+                        if (name.length > 0 && i < wself.defaultNames.count) {
+                            wself.defaultNames[i] = name;
+                        }
+                    }
+                }
+                [wself selectTier:wself.selectedTier];
+            }
+            NSDictionary *ticket = data[@"ticket"];
+            if ([ticket isKindOfClass:[NSDictionary class]]) {
+                NSString *status = ticket[@"status"];
+                wself.hasActiveTicket = [@"active" isEqualToString:status];
             }
         }
-    } failure:nil];
+    } failure:^(NSError *error, NSString * _Nullable msg) {}];
 }
 
-- (void)prevClick {
-    if (self.tempPageIndex > 0) {
-        self.tempPageIndex--;
-        [self refreshDataUI];
-        [SVProgressHUD showInfoWithStatus:[NSString stringWithFormat:@"暂存包已切换至第 %ld 页", (long)(self.tempPageIndex + 1)]];
-    } else {
-        [SVProgressHUD showInfoWithStatus:@"暂存包已经是第一页了"];
-    }
+#pragma mark - Actions
+- (void)onExchangeObsidianClick {
+    WeakSelf;
+    [MLChatRoomThemeGameSixObsidianExchangeDialog showInView:self.superview success:^{
+        [wself loadWalletMoney];
+    }];
 }
 
-- (void)nextClick {
-    NSArray *tempList = _candidateModel.temp_inventory;
-    NSInteger maxPages = MAX(1, (tempList ? (tempList.count + 2) / 3 : 1));
-    if (self.tempPageIndex < maxPages - 1) {
-        self.tempPageIndex++;
-        [self refreshDataUI];
-        [SVProgressHUD showInfoWithStatus:[NSString stringWithFormat:@"暂存包已切换至第 %ld 页", (long)(self.tempPageIndex + 1)]];
-    } else {
-        [SVProgressHUD showInfoWithStatus:@"暂存包已经是最后一页了"];
-    }
-}
-
-- (void)slotClick:(UIButton *)btn {
-    NSInteger slotIndex = btn.tag - 1;
-    [self showGlobalGiftSelector:slotIndex];
-}
-
-- (void)showGlobalGiftSelector:(NSInteger)slotIndex {
-    NSArray<MLCandidateItemModel *> *globalList = _candidateModel.global_inventory;
-    if (!globalList || globalList.count == 0) {
-        [SVProgressHUD showInfoWithStatus:@"大背包中暂无可用候选礼物"];
+- (void)onFusionActionClick {
+    NSTimeInterval now = [NSDate date].timeIntervalSince1970;
+    if (_isExchanging || (now - _lastClickTime < 0.8)) return;
+    _lastClickTime = now;
+    
+    // 1. 排他校验
+    if (_hasActiveTicket) {
+        [SVProgressHUD showImage:nil status:@"⚠️ 当前已有进行中的令牌挑战，完成后方可购买"];
         return;
     }
     
-    __weak typeof(self) weakSelf = self;
-    [MLChatRoomThemeGameSixGlobalBackpackView showInView:self.superview candidateGifts:globalList selectBlock:^(MLCandidateItemModel * _Nullable selectedItem) {
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        if (strongSelf && selectedItem) {
-            strongSelf.selectedGlobalSlots[slotIndex] = selectedItem;
-            [strongSelf refreshDataUI];
-            [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"已将 [%@] 放入槽位 %ld", selectedItem.name ?: @"", (long)(slotIndex + 1)]];
+    // 2. 余额校验
+    double currentRatio = [_cachedRatioCoin doubleValue];
+    if (currentRatio < _selectedPrice) {
+        [SVProgressHUD showImage:nil status:@"黑曜石不足，请前往兑换"];
+        [self onExchangeObsidianClick];
+        return;
+    }
+    
+    // 3. 提交直购
+    _isExchanging = YES;
+    [SVProgressHUD showWithStatus:@"兑换中..."];
+    WeakSelf;
+    [_gameModel exchangeTowerGameSixTicketWithTier:_selectedTier
+                                            price:_selectedPrice
+                                     ticketTypeId:_selectedTicketTypeId
+                                     stateVersion:_stateVersion
+                                          payType:@"ratio_coin"
+                                          success:^(id data) {
+        wself.isExchanging = NO;
+        NSString *tierName = (wself.selectedTier <= wself.defaultNames.count) ? wself.defaultNames[wself.selectedTier - 1] : @"门票";
+        [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"✨ %@ 兑换成功！", tierName]];
+        if (wself.onFusionSuccessBlock) {
+            wself.onFusionSuccessBlock();
         }
-    } clearBlock:^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        if (strongSelf) {
-            strongSelf.selectedGlobalSlots[slotIndex] = [NSNull null];
-            [strongSelf refreshDataUI];
-            [SVProgressHUD showInfoWithStatus:[NSString stringWithFormat:@"已清空槽位 %ld", (long)(slotIndex + 1)]];
+        [wself animateDismissWithCompletion:nil];
+    } failure:^(NSError *error, NSString * _Nullable errMsg) {
+        wself.isExchanging = NO;
+        [SVProgressHUD showImage:nil status:errMsg ?: @"兑换失败，请稍后再试"];
+        if ([errMsg containsString:@"已有"] || [errMsg containsString:@"门票"] || [errMsg containsString:@"挑战"]) {
+            if (wself.onFusionSuccessBlock) {
+                wself.onFusionSuccessBlock();
+            }
+            [wself animateDismissWithCompletion:nil];
         }
     }];
 }
 
-- (void)itemClick:(UIButton *)btn {
-    NSInteger itemIndex = self.tempPageIndex * 3 + (btn.tag - 1);
-    NSArray *tempList = _candidateModel.temp_inventory;
-    if (tempList && itemIndex < tempList.count) {
-        MLCandidateItemModel *chosenItem = tempList[itemIndex];
-        if ([self.selectedTempSet containsObject:chosenItem]) {
-            [self.selectedTempSet removeObject:chosenItem];
-            [SVProgressHUD showInfoWithStatus:[NSString stringWithFormat:@"取消选择 [%@]", chosenItem.name ?: @"礼物"]];
-        } else {
-            [self.selectedTempSet addObject:chosenItem];
-            [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"已选中 [%@]", chosenItem.name ?: @"礼物"]];
-        }
-        [self refreshDataUI];
+#pragma mark - Large Number Format
+- (NSString *)formatLargeNumber:(double)num {
+    if (num >= 1000000000000.0) {
+        return [NSString stringWithFormat:@"%.2f万亿", num / 1000000000000.0];
+    } else if (num >= 100000000.0) {
+        return [NSString stringWithFormat:@"%.2f亿", num / 100000000.0];
+    } else if (num >= 10000.0) {
+        return [NSString stringWithFormat:@"%.2f万", num / 10000.0];
+    } else {
+        return [NSString stringWithFormat:@"%ld", (long)num];
     }
 }
 
-#pragma mark - Animations & Dismissal
-
+#pragma mark - Animation & Dismiss
 - (void)animateShow {
-    self.alpha = 0.0;
-    _boardContainer.transform = CGAffineTransformMakeScale(0.8, 0.8);
-    [UIView animateWithDuration:0.25 animations:^{
-        self.alpha = 1.0;
+    self.boardContainer.transform = CGAffineTransformMakeScale(0.85, 0.85);
+    self.boardContainer.alpha = 0.0;
+    self.maskView.alpha = 0.0;
+    [UIView animateWithDuration:0.25 delay:0 usingSpringWithDamping:0.85 initialSpringVelocity:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^{
         self.boardContainer.transform = CGAffineTransformIdentity;
-    }];
+        self.boardContainer.alpha = 1.0;
+        self.maskView.alpha = 1.0;
+    } completion:nil];
 }
 
-- (void)closeClick {
-    [self dismiss];
-}
-
-- (void)dismiss {
+- (void)animateDismissWithCompletion:(nullable void (^)(void))completion {
     [UIView animateWithDuration:0.2 animations:^{
-        self.alpha = 0.0;
-        self.boardContainer.transform = CGAffineTransformMakeScale(0.8, 0.8);
+        self.boardContainer.transform = CGAffineTransformMakeScale(0.85, 0.85);
+        self.boardContainer.alpha = 0.0;
+        self.maskView.alpha = 0.0;
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
+        if (completion) completion();
     }];
+}
+
+- (void)onCloseClicked {
+    [self animateDismissWithCompletion:nil];
 }
 
 @end

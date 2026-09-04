@@ -1190,6 +1190,7 @@
 		7C3907F296112C4B238A7A61 /* MLChatRoomGameCenterItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C9938B4F830824D59BA6CB8 /* MLChatRoomGameCenterItem.m */; };
 		7C3AF2E12C90B4486FA302C6 /* MLChatRoomGameCenterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CE52688A1860D488BB2536D /* MLChatRoomGameCenterCell.m */; };
 		7C77A9FADE972848EDB66C04 /* MLChatRoomGameCenterDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C634D477974A14D4EA9F296 /* MLChatRoomGameCenterDialog.m */; };
+		7C1249EB6D691542AE86FEEF /* MLChatRoomThemeGameSixObsidianExchangeDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B8B8EFC4FA84B8BB7E349 /* MLChatRoomThemeGameSixObsidianExchangeDialog.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3441,6 +3442,8 @@
 		7CE52688A1860D488BB2536D /* MLChatRoomGameCenterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomGameCenterCell.m; sourceTree = "<group>"; };
 		7CF60ED8A8BC6E4E6AB47B86 /* MLChatRoomGameCenterDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomGameCenterDialog.h; sourceTree = "<group>"; };
 		7C634D477974A14D4EA9F296 /* MLChatRoomGameCenterDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomGameCenterDialog.m; sourceTree = "<group>"; };
+		7C386AF953AB4B4F539741E8 /* MLChatRoomThemeGameSixObsidianExchangeDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixObsidianExchangeDialog.h; sourceTree = "<group>"; };
+		7C6B8B8EFC4FA84B8BB7E349 /* MLChatRoomThemeGameSixObsidianExchangeDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixObsidianExchangeDialog.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -8991,6 +8994,8 @@
 				FA6000042970000000000006 /* MLChatRoomThemeGameSixRuleDialog.h */,
 				FA6000052970000000000006 /* MLChatRoomThemeGameSixRuleDialog.m */,
 				FA6000072970000000000006 /* MLChatRoomThemeGameSixFusionDialog.h */,
+				7C386AF953AB4B4F539741E8 /* MLChatRoomThemeGameSixObsidianExchangeDialog.h */,
+				7C6B8B8EFC4FA84B8BB7E349 /* MLChatRoomThemeGameSixObsidianExchangeDialog.m */,
 				FA6000082970000000000006 /* MLChatRoomThemeGameSixFusionDialog.m */,
 				FA60000A2970000000000006 /* MLTowerGameSixModels.h */,
 				FA60000B2970000000000006 /* MLTowerGameSixModels.m */,
@@ -9416,6 +9421,7 @@
 				FA6000032970000000000006 /* MLChatRoomThemeGameSixView.m in Sources */,
 				FA6000062970000000000006 /* MLChatRoomThemeGameSixRuleDialog.m in Sources */,
 				FA6000092970000000000006 /* MLChatRoomThemeGameSixFusionDialog.m in Sources */,
+				7C1249EB6D691542AE86FEEF /* MLChatRoomThemeGameSixObsidianExchangeDialog.m in Sources */,
 				FA60000C2970000000000006 /* MLTowerGameSixModels.m in Sources */,
 				FA60000F2970000000000006 /* MLThemeGameModel.m in Sources */,
 				FA6000222970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m in Sources */,
