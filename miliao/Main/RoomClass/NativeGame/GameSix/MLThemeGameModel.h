@@ -52,13 +52,10 @@ typedef void(^MLGameSixFailureBlock)(NSError *error, NSString * _Nullable msg);
                                           failure:(MLGameSixFailureBlock)failure;
 
 /// 4.1 黑曜石直购门票 (/api/emo/tower_game_six/exchange_ticket)
-- (void)exchangeTowerGameSixTicketWithTier:(NSInteger)tier
-                                     price:(NSInteger)price
-                              ticketTypeId:(NSInteger)ticketTypeId
-                              stateVersion:(NSInteger)stateVersion
-                                   payType:(NSString *)payType
-                                   success:(MLGameSixSuccessBlock)success
-                                   failure:(MLGameSixFailureBlock)failure;
+- (void)exchangeTowerGameSixTicketWithTicketTypeId:(NSInteger)ticketTypeId
+                                      stateVersion:(NSInteger)stateVersion
+                                           success:(MLGameSixSuccessBlock)success
+                                           failure:(MLGameSixFailureBlock)failure;
 
 /// 5. 提交重铸开奖抽奖 (/api/emo/tower_game_six/recast)
 - (void)recastTowerGameSixWithStateVersion:(NSInteger)stateVersion

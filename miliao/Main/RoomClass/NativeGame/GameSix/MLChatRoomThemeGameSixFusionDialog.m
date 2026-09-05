@@ -158,8 +158,6 @@
 @property (nonatomic, strong) NSMutableArray<NSNumber *> *defaultPrices;
 @property (nonatomic, strong) NSMutableArray<NSString *> *defaultNames;
 @property (nonatomic, copy) NSString *cachedRatioCoin;
-@property (nonatomic, assign) BOOL hasActiveTicket;
-@property (nonatomic, assign) NSInteger stateVersion;
 @property (nonatomic, assign) NSTimeInterval lastClickTime;
 @property (nonatomic, assign) BOOL isExchanging;
 
@@ -374,16 +372,72 @@
     [self selectTier:tier];
 }
 
+- (MLTowerGameSixTicketTypeModel *)findTicketTypeByTier:(NSInteger)tier {
+    if (!_ticketTypes || _ticketTypes.count == 0) return nil;
+    for (MLTowerGameSixTicketTypeModel *model in _ticketTypes) {
+        if (model.ticket_layer == tier || model.start_layer == tier) {
+            return model;
+        }
+    }
+    return nil;
+}
+
+- (NSInteger)getPriceForTier:(NSInteger)tier {
+    MLTowerGameSixTicketTypeModel *model = [self findTicketTypeByTier:tier];
+    if (model) {
+        if (model.required_ratio_coin.length > 0 && [model.required_ratio_coin doubleValue] > 0) {
+            return (NSInteger)[model.required_ratio_coin doubleValue];
+        }
+        if (model.ratio_coin_price.length > 0 && [model.ratio_coin_price doubleValue] > 0) {
+            return (NSInteger)[model.ratio_coin_price doubleValue];
+        }
+        if (model.ticket_value.length > 0 && [model.ticket_value doubleValue] > 0) {
+            return (NSInteger)[model.ticket_value doubleValue];
+        }
+    }
+    if (tier >= 1 && tier <= _defaultPrices.count) {
+        return [_defaultPrices[tier - 1] integerValue];
+    }
+    return 100;
+}
+
+- (void)setTicketTypes:(NSArray<MLTowerGameSixTicketTypeModel *> *)ticketTypes {
+    _ticketTypes = ticketTypes;
+    if (!ticketTypes || ticketTypes.count == 0) return;
+    
+    for (NSInteger i = 0; i < ticketTypes.count && i < 5; i++) {
+        MLTowerGameSixTicketTypeModel *t = ticketTypes[i];
+        NSInteger price = [self getPriceForTier:i + 1];
+        if (price > 0 && i < _defaultPrices.count) {
+            _defaultPrices[i] = @(price);
+        }
+        if (t.name.length > 0 && i < _defaultNames.count) {
+            _defaultNames[i] = t.name;
+        }
+    }
+    [self selectTier:_selectedTier];
+}
+
 - (void)selectTier:(NSInteger)tier {
     if (tier < 1 || tier > 5) tier = 1;
     _selectedTier = tier;
-    _selectedPrice = [_defaultPrices[tier - 1] integerValue];
-    _selectedTicketTypeId = tier;
+    
+    // 动态通过 findTicketTypeByTier: 精准查找门票 ID，杜绝数组下标硬编码
+    MLTowerGameSixTicketTypeModel *matchedBean = [self findTicketTypeByTier:tier];
+    if (matchedBean && matchedBean.id > 0) {
+        _selectedTicketTypeId = matchedBean.id;
+    } else if (_ticketTypes && _ticketTypes.count >= tier) {
+        _selectedTicketTypeId = _ticketTypes[tier - 1].id;
+    } else {
+        _selectedTicketTypeId = tier;
+    }
+    
+    _selectedPrice = [self getPriceForTier:tier];
     
     for (NSInteger i = 0; i < _tokenCards.count; i++) {
         NSInteger curTier = i + 1;
         NSString *name = (i < _defaultNames.count) ? _defaultNames[i] : [NSString stringWithFormat:@"%ld层令", (long)curTier];
-        NSInteger price = (i < _defaultPrices.count) ? [_defaultPrices[i] integerValue] : 100;
+        NSInteger price = [self getPriceForTier:curTier];
         [_tokenCards[i] configureWithTier:curTier name:name price:price isSelected:(curTier == tier)];
     }
     
@@ -428,22 +482,15 @@
                 wself.stateVersion = bootstrap.player.state_version ?: 1;
             }
             if (bootstrap.ticket_types && bootstrap.ticket_types.count > 0) {
-                for (NSInteger i = 0; i < bootstrap.ticket_types.count && i < 5; i++) {
-                    MLTowerGameSixTicketTypeModel *t = bootstrap.ticket_types[i];
-                    NSInteger price = [t.ticket_value integerValue];
-                    NSString *name = t.name;
-                    if (price > 0 && i < wself.defaultPrices.count) {
-                        wself.defaultPrices[i] = @(price);
-                    }
-                    if (name.length > 0 && i < wself.defaultNames.count) {
-                        wself.defaultNames[i] = name;
-                    }
-                }
-                [wself selectTier:wself.selectedTier];
+                [wself setTicketTypes:bootstrap.ticket_types];
             }
-            if (bootstrap.ticket) {
-                wself.hasActiveTicket = [@"active" isEqualToString:bootstrap.ticket.status];
-            }
+            
+            // 四重因子严格判定与双向复位（有票置 YES，无票或次数归零立即置 NO，死锁防御关键）
+            BOOL active = (bootstrap.ticket != nil) &&
+                          ([@"active" caseInsensitiveCompare:bootstrap.ticket.status ?: @""] == NSOrderedSame) &&
+                          (bootstrap.token_count > 0) &&
+                          (bootstrap.ticket.remaining_recasts > 0);
+            wself.hasActiveTicket = active;
         } else if ([data isKindOfClass:[NSDictionary class]]) {
             NSDictionary *player = data[@"player"];
             if ([player isKindOfClass:[NSDictionary class]]) {
@@ -451,26 +498,22 @@
             }
             NSArray *ticketTypes = data[@"ticket_types"];
             if (ticketTypes && [ticketTypes isKindOfClass:[NSArray class]] && ticketTypes.count > 0) {
-                for (NSInteger i = 0; i < ticketTypes.count && i < 5; i++) {
-                    NSDictionary *t = ticketTypes[i];
-                    if ([t isKindOfClass:[NSDictionary class]]) {
-                        NSInteger price = [t[@"ticket_value"] integerValue];
-                        NSString *name = t[@"name"];
-                        if (price > 0 && i < wself.defaultPrices.count) {
-                            wself.defaultPrices[i] = @(price);
-                        }
-                        if (name.length > 0 && i < wself.defaultNames.count) {
-                            wself.defaultNames[i] = name;
-                        }
-                    }
-                }
-                [wself selectTier:wself.selectedTier];
+                NSArray *typeModels = [MLTowerGameSixTicketTypeModel mj_objectArrayWithKeyValuesArray:ticketTypes];
+                [wself setTicketTypes:typeModels];
             }
             NSDictionary *ticket = data[@"ticket"];
+            NSInteger tokenCount = [data[@"token_count"] integerValue];
+            NSInteger remaining = 0;
+            NSString *status = @"";
             if ([ticket isKindOfClass:[NSDictionary class]]) {
-                NSString *status = ticket[@"status"];
-                wself.hasActiveTicket = [@"active" isEqualToString:status];
+                status = ticket[@"status"] ?: @"";
+                remaining = [ticket[@"remaining_recasts"] integerValue];
             }
+            BOOL active = [ticket isKindOfClass:[NSDictionary class]] &&
+                          ([@"active" caseInsensitiveCompare:status] == NSOrderedSame) &&
+                          (tokenCount > 0) &&
+                          (remaining > 0);
+            wself.hasActiveTicket = active;
         }
     } failure:^(NSError *error, NSString * _Nullable msg) {}];
 }
@@ -502,16 +545,13 @@
         return;
     }
     
-    // 3. 提交直购
+    // 3. 提交纯净化直购
     _isExchanging = YES;
     [SVProgressHUD showWithStatus:@"兑换中..."];
     WeakSelf;
-    [_gameModel exchangeTowerGameSixTicketWithTier:_selectedTier
-                                            price:_selectedPrice
-                                     ticketTypeId:_selectedTicketTypeId
-                                     stateVersion:_stateVersion
-                                          payType:@"ratio_coin"
-                                          success:^(id data) {
+    [_gameModel exchangeTowerGameSixTicketWithTicketTypeId:_selectedTicketTypeId
+                                              stateVersion:_stateVersion
+                                                   success:^(id data) {
         wself.isExchanging = NO;
         NSString *tierName = (wself.selectedTier <= wself.defaultNames.count) ? wself.defaultNames[wself.selectedTier - 1] : @"门票";
         [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"✨ %@ 兑换成功！", tierName]];
@@ -522,7 +562,7 @@
     } failure:^(NSError *error, NSString * _Nullable errMsg) {
         wself.isExchanging = NO;
         [SVProgressHUD showImage:nil status:errMsg ?: @"兑换失败，请稍后再试"];
-        if ([errMsg containsString:@"已有"] || [errMsg containsString:@"门票"] || [errMsg containsString:@"挑战"]) {
+        if ([errMsg containsString:@"已有"] || [errMsg containsString:@"门票"] || [errMsg containsString:@"挑战"] || [errMsg containsString:@"已变更"]) {
             if (wself.onFusionSuccessBlock) {
                 wself.onFusionSuccessBlock();
             }

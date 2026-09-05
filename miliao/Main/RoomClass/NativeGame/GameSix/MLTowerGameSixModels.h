@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *image;
 @property (nonatomic, copy) NSString *unit_value;
+@property (nonatomic, copy, nullable) NSString *unit_ratio_coin_value;
 @property (nonatomic, copy) NSString *value;
 @property (nonatomic, assign) NSInteger num;
 @property (nonatomic, copy) NSString *source; // "global" 或 "temp"
@@ -35,6 +36,10 @@ typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
 @property (nonatomic, assign) NSInteger ticket_layer;
 @property (nonatomic, assign) NSInteger start_layer;
 @property (nonatomic, copy) NSString *ticket_value;
+@property (nonatomic, copy, nullable) NSString *required_ratio_coin;
+@property (nonatomic, copy, nullable) NSString *ratio_coin_price;
+@property (nonatomic, copy, nullable) NSString *exchange_currency;
+@property (nonatomic, copy, nullable) NSString *exchange_currency_name;
 @property (nonatomic, assign) NSInteger total_recasts;
 @property (nonatomic, assign) BOOL is_from_backend;
 @end
@@ -45,6 +50,8 @@ typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
 @property (nonatomic, copy) NSString *status;
 @property (nonatomic, assign) NSInteger ticket_type_id;
 @property (nonatomic, copy) NSString *ticket_value;
+@property (nonatomic, copy, nullable) NSString *required_ratio_coin;
+@property (nonatomic, copy, nullable) NSString *ratio_coin_price;
 @property (nonatomic, assign) NSInteger ticket_layer;
 @property (nonatomic, assign) NSInteger start_layer;
 @property (nonatomic, assign) NSInteger total_recasts;
@@ -60,6 +67,9 @@ typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *image;
 @property (nonatomic, copy) NSString *value;
+@property (nonatomic, copy, nullable) NSString *ratio_coin_value;
+@property (nonatomic, copy, nullable) NSString *value_currency;
+@property (nonatomic, copy, nullable) NSString *value_currency_name;
 @property (nonatomic, assign) NSInteger advance_step; // 0, 1, 2
 @end
 
@@ -94,6 +104,8 @@ typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
 @property (nonatomic, assign) NSInteger to_layer;
 @property (nonatomic, assign) long long inventory_id;
 @property (nonatomic, strong) MLCandidateItemModel *gift;
+@property (nonatomic, assign) NSInteger token_count;
+@property (nonatomic, copy, nullable) NSString *ticket_status;
 @property (nonatomic, assign) NSInteger remaining_recasts;
 @property (nonatomic, assign) NSInteger state_version;
 @end

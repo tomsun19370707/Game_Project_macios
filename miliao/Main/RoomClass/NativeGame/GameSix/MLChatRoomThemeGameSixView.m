@@ -595,6 +595,18 @@
 
 - (void)fusionClick {
     MLChatRoomThemeGameSixFusionDialog *dialog = [MLChatRoomThemeGameSixFusionDialog showInView:self];
+    if (self.bootstrapModel && self.bootstrapModel.player) {
+        dialog.stateVersion = self.bootstrapModel.player.state_version;
+    }
+    if (self.bootstrapModel && self.bootstrapModel.ticket_types.count > 0) {
+        [dialog setTicketTypes:self.bootstrapModel.ticket_types];
+    }
+    BOOL hasActive = (self.bootstrapModel != nil && self.bootstrapModel.ticket != nil) &&
+                     ([@"active" caseInsensitiveCompare:self.bootstrapModel.ticket.status ?: @""] == NSOrderedSame) &&
+                     (self.remainingRecasts > 0) &&
+                     (self.bootstrapModel.token_count > 0);
+    [dialog setHasActiveTicket:hasActive];
+    
     __weak typeof(self) weakSelf = self;
     dialog.onFusionSuccessBlock = ^{
         [weakSelf loadBootstrapData];
@@ -624,6 +636,10 @@
                 weakSelf.remainingRecasts = bsModel.ticket.remaining_recasts;
                 weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
                 if (weakSelf.remainingRecasts <= 0) {
+                    if (weakSelf.bootstrapModel) {
+                        weakSelf.bootstrapModel.ticket = nil;
+                        weakSelf.bootstrapModel.token_count = 0;
+                    }
                     [weakSelf stopMarqueeAndResetRecastState];
                     [SVProgressHUD showInfoWithStatus:@"暂无可用门票，请先融合门票"];
                     return;
@@ -641,6 +657,20 @@
             if (resultModel) {
                 weakSelf.remainingRecasts = resultModel.remaining_recasts;
                 weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
+                
+                // 当开奖导致门票清零、已完成/终止或剩余次数归零时，主动置空内存门票缓存与次数，防范死锁
+                if (weakSelf.remainingRecasts <= 0 || resultModel.token_count == 0 ||
+                    [@"completed" caseInsensitiveCompare:resultModel.ticket_status ?: @""] == NSOrderedSame ||
+                    [@"terminated" caseInsensitiveCompare:resultModel.ticket_status ?: @""] == NSOrderedSame) {
+                    if (weakSelf.bootstrapModel) {
+                        weakSelf.bootstrapModel.ticket = nil;
+                        weakSelf.bootstrapModel.token_count = 0;
+                    }
+                    weakSelf.remainingRecasts = 0;
+                } else if (weakSelf.bootstrapModel && weakSelf.bootstrapModel.ticket) {
+                    weakSelf.bootstrapModel.ticket.remaining_recasts = weakSelf.remainingRecasts;
+                    weakSelf.bootstrapModel.token_count = resultModel.token_count;
+                }
                 
                 NSInteger rawTargetPos = (resultModel.gift && resultModel.gift.position > 0) ? resultModel.gift.position : 1;
                 NSInteger targetPosIndex = MAX(0, MIN(4, rawTargetPos - 1));
@@ -698,8 +728,16 @@
             [self selectLayer:layer animated:YES];
         }
         if (bsModel && bsModel.ticket) {
-            self.remainingRecasts = bsModel.ticket.remaining_recasts;
-            self.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)self.remainingRecasts];
+            BOOL isActiveTicket = ([@"active" caseInsensitiveCompare:bsModel.ticket.status ?: @""] == NSOrderedSame) &&
+                                  (bsModel.ticket.remaining_recasts > 0) &&
+                                  (bsModel.token_count > 0);
+            if (isActiveTicket) {
+                self.remainingRecasts = bsModel.ticket.remaining_recasts;
+                self.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)self.remainingRecasts];
+            } else {
+                self.remainingRecasts = 0;
+                self.tokenRecastLabel.text = @"餘\n0\n次";
+            }
         } else {
             self.remainingRecasts = 0;
             self.tokenRecastLabel.text = @"餘\n0\n次";

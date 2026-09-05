@@ -173,24 +173,16 @@
     [self postJSONWithURL:url parameters:params success:success failure:failure];
 }
 
-- (void)exchangeTowerGameSixTicketWithTier:(NSInteger)tier
-                                     price:(NSInteger)price
-                              ticketTypeId:(NSInteger)ticketTypeId
-                              stateVersion:(NSInteger)stateVersion
-                                   payType:(NSString *)payType
-                                   success:(MLGameSixSuccessBlock)success
-                                   failure:(MLGameSixFailureBlock)failure {
+- (void)exchangeTowerGameSixTicketWithTicketTypeId:(NSInteger)ticketTypeId
+                                      stateVersion:(NSInteger)stateVersion
+                                           success:(MLGameSixSuccessBlock)success
+                                           failure:(MLGameSixFailureBlock)failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/tower_game_six/exchange_ticket", VERSION_HTTPS_SERVER];
     NSString *requestId = [[NSUUID UUID] UUIDString];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"request_id"] = requestId;
-    params[@"state_version"] = @(stateVersion);
     params[@"ticket_type_id"] = @(ticketTypeId);
-    params[@"tier"] = @(tier);
-    params[@"price"] = @(price);
-    params[@"pay_type"] = payType ?: @"ratio_coin";
-    params[@"global_items"] = @[];
-    params[@"temp_items"] = @[];
+    params[@"state_version"] = @(stateVersion);
     
     [self postJSONWithURL:url parameters:params success:success failure:failure];
 }
