@@ -14,7 +14,6 @@
 #import "MLChatRoomThemeGameOneView.h"
 #import "MLChatRoomThemeGameTwoView.h"
 #import "MLChatRoomThemeGameThreeView.h"
-#import "MLChatRoomThemeGameFourView.h"
 #import "MLChatRoomThemeGameFiveView.h"
 #import "MLChatRoomThemeGameSixView.h"
 #import "RunGamaViewController.h"
@@ -142,25 +141,6 @@
                                                            localIconName:@"UY_Saipao"
                                                                     type:7
                                                                bagTypeId:0
-                                                                category:MLChatRoomGameCategoryEntertainment]];
-    
-    // ⭐️ 扁平化展开三色福袋独立子项
-    [_nativeItems addObject:[MLChatRoomGameCenterItem nativeItemWithName:@"青玉福袋"
-                                                           localIconName:@"theme_game_four_bag_green"
-                                                                    type:4
-                                                               bagTypeId:8
-                                                                category:MLChatRoomGameCategoryEntertainment]];
-    
-    [_nativeItems addObject:[MLChatRoomGameCenterItem nativeItemWithName:@"碧海福袋"
-                                                           localIconName:@"theme_game_four_bag_blue"
-                                                                    type:4
-                                                               bagTypeId:9
-                                                                category:MLChatRoomGameCategoryEntertainment]];
-    
-    [_nativeItems addObject:[MLChatRoomGameCenterItem nativeItemWithName:@"鎏金福袋"
-                                                           localIconName:@"theme_game_four_bag_yellow"
-                                                                    type:4
-                                                               bagTypeId:10
                                                                 category:MLChatRoomGameCategoryEntertainment]];
     
     [self rebuildAllItems];
@@ -401,9 +381,6 @@
             break;
         case 3: // 星辰序章
             [MLChatRoomThemeGameThreeView showInView:parentView typeId:13];
-            break;
-        case 4: // 三色福袋直达 (青玉 8 / 碧海 9 / 鎏金 10)
-            [MLChatRoomThemeGameFourView showInView:parentView typeId:(item.bagTypeId > 0 ? item.bagTypeId : 8)];
             break;
         case 5: // 奇妙星球
             [MLChatRoomThemeGameFiveView showInView:parentView typeId:14];

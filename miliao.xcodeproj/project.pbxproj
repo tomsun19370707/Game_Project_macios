@@ -170,7 +170,6 @@
 		0081A064229E63F200D4B0C9 /* CGXStringPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0081A05B229E63F100D4B0C9 /* CGXStringPickerView.m */; };
 		0081A065229E63F200D4B0C9 /* CGXPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0081A05C229E63F100D4B0C9 /* CGXPickerView.m */; };
 		0086784B22EB133200B76190 /* RoomGiftModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0086784A22EB133200B76190 /* RoomGiftModel.m */; };
-		MLGFL00122EB133200B76190 /* MLGiftLockManager.m in Sources */ = {isa = PBXBuildFile; fileRef = MLGFL00222EB133200B76190 /* MLGiftLockManager.m */; };
 		0086784E22EB134800B76190 /* RoomGiftMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0086784D22EB134800B76190 /* RoomGiftMessageCell.m */; };
 		0086785722EB1CEE00B76190 /* EMO_FriendsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0086785222EB1CEE00B76190 /* EMO_FriendsModel.m */; };
 		0086785822EB1CEE00B76190 /* EMO_SearchFriendsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0086785622EB1CEE00B76190 /* EMO_SearchFriendsTableViewCell.m */; };
@@ -454,6 +453,9 @@
 		77C34DC7231CE47700B5722C /* EMO_RoomFluctuationOfWheatView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77C34DC6231CE47700B5722C /* EMO_RoomFluctuationOfWheatView.m */; };
 		77CBB4E3A3715A89434280AE /* CFMultiplierGamesVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B3F4F1ABB3D53E8CFD95297 /* CFMultiplierGamesVC.m */; };
 		77D9BFDE2339B8B000BD2F49 /* WholeBoxView.m in Sources */ = {isa = PBXBuildFile; fileRef = 77D9BFDD2339B8B000BD2F49 /* WholeBoxView.m */; };
+		7C1249EB6D691542AE86FEEF /* MLChatRoomThemeGameSixObsidianExchangeDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B8B8EFC4FA84B8BB7E349 /* MLChatRoomThemeGameSixObsidianExchangeDialog.m */; };
+		7C3907F296112C4B238A7A61 /* MLChatRoomGameCenterItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C9938B4F830824D59BA6CB8 /* MLChatRoomGameCenterItem.m */; };
+		7C3AF2E12C90B4486FA302C6 /* MLChatRoomGameCenterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CE52688A1860D488BB2536D /* MLChatRoomGameCenterCell.m */; };
 		7C70E96C2FED864D00A11B29 /* MLChatRoomNativeGameCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9492FED864D00A11B29 /* MLChatRoomNativeGameCell.m */; };
 		7C70E96D2FED864D00A11B29 /* MLChatRoomNativeGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E94A2FED864D00A11B29 /* MLChatRoomNativeGameView.m */; };
 		7C70E96E2FED864D00A11B29 /* MLChatRoomThemeGameTwoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E94D2FED864D00A11B29 /* MLChatRoomThemeGameTwoView.m */; };
@@ -481,6 +483,7 @@
 		7C70E9952FED864E00A11B29 /* MLChatRoomThemeGameOneGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9892FED864D00A11B29 /* MLChatRoomThemeGameOneGiftView.m */; };
 		7C70E9982FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E9972FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.m */; };
 		7C70E99C2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C70E99B2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m */; };
+		7C77A9FADE972848EDB66C04 /* MLChatRoomGameCenterDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C634D477974A14D4EA9F296 /* MLChatRoomGameCenterDialog.m */; };
 		7CDE463A3028A9B6007D2467 /* MLChatRoomThemeGameFourView.m in Sources */ = {isa = PBXBuildFile; fileRef = 09EF108BEE811DAB6FDC583E /* MLChatRoomThemeGameFourView.m */; };
 		7CDE463B3028A9B6007D2467 /* MLChatRoomThemeGameFiveView.m in Sources */ = {isa = PBXBuildFile; fileRef = E89D82E550B54676BCB3633C /* MLChatRoomThemeGameFiveView.m */; };
 		7CDE463C3028A9B6007D2467 /* MLChatRoomThemeGameFourRankView.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C4B13B1FDF417A902A24F2 /* MLChatRoomThemeGameFourRankView.m */; };
@@ -1187,10 +1190,7 @@
 		FA9E08B724293105000A52CF /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9E08B624293105000A52CF /* CFNetwork.framework */; };
 		FA9E08B92429310E000A52CF /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9E08B82429310E000A52CF /* CoreMotion.framework */; };
 		FFE315EAE2D34FCC975B6A47 /* MLChatRoomThemeGameFortuneView.m in Sources */ = {isa = PBXBuildFile; fileRef = D99D569BD56B4F348EDC0441 /* MLChatRoomThemeGameFortuneView.m */; };
-		7C3907F296112C4B238A7A61 /* MLChatRoomGameCenterItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C9938B4F830824D59BA6CB8 /* MLChatRoomGameCenterItem.m */; };
-		7C3AF2E12C90B4486FA302C6 /* MLChatRoomGameCenterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CE52688A1860D488BB2536D /* MLChatRoomGameCenterCell.m */; };
-		7C77A9FADE972848EDB66C04 /* MLChatRoomGameCenterDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C634D477974A14D4EA9F296 /* MLChatRoomGameCenterDialog.m */; };
-		7C1249EB6D691542AE86FEEF /* MLChatRoomThemeGameSixObsidianExchangeDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B8B8EFC4FA84B8BB7E349 /* MLChatRoomThemeGameSixObsidianExchangeDialog.m */; };
+		MLGFL00122EB133200B76190 /* MLGiftLockManager.m in Sources */ = {isa = PBXBuildFile; fileRef = MLGFL00222EB133200B76190 /* MLGiftLockManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1545,8 +1545,6 @@
 		0081A05C229E63F100D4B0C9 /* CGXPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CGXPickerView.m; sourceTree = "<group>"; };
 		0086784922EB133200B76190 /* RoomGiftModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoomGiftModel.h; sourceTree = "<group>"; };
 		0086784A22EB133200B76190 /* RoomGiftModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoomGiftModel.m; sourceTree = "<group>"; };
-		MLGFL00322EB133200B76190 /* MLGiftLockManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLGiftLockManager.h; sourceTree = "<group>"; };
-		MLGFL00222EB133200B76190 /* MLGiftLockManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLGiftLockManager.m; sourceTree = "<group>"; };
 		0086784C22EB134800B76190 /* RoomGiftMessageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoomGiftMessageCell.h; sourceTree = "<group>"; };
 		0086784D22EB134800B76190 /* RoomGiftMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoomGiftMessageCell.m; sourceTree = "<group>"; };
 		0086785222EB1CEE00B76190 /* EMO_FriendsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMO_FriendsModel.m; sourceTree = "<group>"; };
@@ -2102,6 +2100,10 @@
 		77D9BFDC2339B8B000BD2F49 /* WholeBoxView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WholeBoxView.h; sourceTree = "<group>"; };
 		77D9BFDD2339B8B000BD2F49 /* WholeBoxView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WholeBoxView.m; sourceTree = "<group>"; };
 		7A482B4AD497281A17DCBA23 /* CFMCFMRewardHistoryJoinRate.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMCFMRewardHistoryJoinRate.xib; sourceTree = "<group>"; };
+		7C24FBA308AE56406991D86A /* MLChatRoomGameCenterItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomGameCenterItem.h; sourceTree = "<group>"; };
+		7C386AF953AB4B4F539741E8 /* MLChatRoomThemeGameSixObsidianExchangeDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixObsidianExchangeDialog.h; sourceTree = "<group>"; };
+		7C634D477974A14D4EA9F296 /* MLChatRoomGameCenterDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomGameCenterDialog.m; sourceTree = "<group>"; };
+		7C6B8B8EFC4FA84B8BB7E349 /* MLChatRoomThemeGameSixObsidianExchangeDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixObsidianExchangeDialog.m; sourceTree = "<group>"; };
 		7C70E9472FED864D00A11B29 /* MLChatRoomNativeGameCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomNativeGameCell.h; sourceTree = "<group>"; };
 		7C70E9482FED864D00A11B29 /* MLChatRoomNativeGameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomNativeGameView.h; sourceTree = "<group>"; };
 		7C70E9492FED864D00A11B29 /* MLChatRoomNativeGameCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomNativeGameCell.m; sourceTree = "<group>"; };
@@ -2153,7 +2155,11 @@
 		7C70E9972FED864D00A11B29 /* MLChatRoomThemeGameSixFortuneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixFortuneView.m; sourceTree = "<group>"; };
 		7C70E99A2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameTwoGiftView.h; sourceTree = "<group>"; };
 		7C70E99B2FED864E00A11B29 /* MLChatRoomThemeGameTwoGiftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameTwoGiftView.m; sourceTree = "<group>"; };
+		7C9938B4F830824D59BA6CB8 /* MLChatRoomGameCenterItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomGameCenterItem.m; sourceTree = "<group>"; };
+		7CAA39CCBC9C2542BF99C63F /* MLChatRoomGameCenterCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomGameCenterCell.h; sourceTree = "<group>"; };
 		7CC5567E72F449EC9BBE04D6 /* MLChatRoomThemeGameFourRecordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameFourRecordView.m; sourceTree = "<group>"; };
+		7CE52688A1860D488BB2536D /* MLChatRoomGameCenterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomGameCenterCell.m; sourceTree = "<group>"; };
+		7CF60ED8A8BC6E4E6AB47B86 /* MLChatRoomGameCenterDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomGameCenterDialog.h; sourceTree = "<group>"; };
 		8194F4AC49A2CF33B3D29DBA /* CFMRewardHistoryAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMRewardHistoryAlert.xib; sourceTree = "<group>"; };
 		81BDBBC740245A649F4CADB8 /* MLThemeGameSixRecordCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MLThemeGameSixRecordCell.h; sourceTree = "<group>"; };
 		83556612FDA7E2F9BCDADB3E /* CFMRewardHistoryRate.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMRewardHistoryRate.xib; sourceTree = "<group>"; };
@@ -3436,14 +3442,8 @@
 		FDB552DCF212294C30FB6CA4 /* CFMExDiamondAndBagPackageCollCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExDiamondAndBagPackageCollCell.h; sourceTree = "<group>"; };
 		FE00C3E6293CD22D1CE7BE8D /* CFMExDiamondAndBagDiamond.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFMExDiamondAndBagDiamond.h; sourceTree = "<group>"; };
 		FFFD90DD199A72D8F667EBC6 /* CFMHomeSignAlert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CFMHomeSignAlert.xib; sourceTree = "<group>"; };
-		7C24FBA308AE56406991D86A /* MLChatRoomGameCenterItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomGameCenterItem.h; sourceTree = "<group>"; };
-		7C9938B4F830824D59BA6CB8 /* MLChatRoomGameCenterItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomGameCenterItem.m; sourceTree = "<group>"; };
-		7CAA39CCBC9C2542BF99C63F /* MLChatRoomGameCenterCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomGameCenterCell.h; sourceTree = "<group>"; };
-		7CE52688A1860D488BB2536D /* MLChatRoomGameCenterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomGameCenterCell.m; sourceTree = "<group>"; };
-		7CF60ED8A8BC6E4E6AB47B86 /* MLChatRoomGameCenterDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomGameCenterDialog.h; sourceTree = "<group>"; };
-		7C634D477974A14D4EA9F296 /* MLChatRoomGameCenterDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomGameCenterDialog.m; sourceTree = "<group>"; };
-		7C386AF953AB4B4F539741E8 /* MLChatRoomThemeGameSixObsidianExchangeDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixObsidianExchangeDialog.h; sourceTree = "<group>"; };
-		7C6B8B8EFC4FA84B8BB7E349 /* MLChatRoomThemeGameSixObsidianExchangeDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixObsidianExchangeDialog.m; sourceTree = "<group>"; };
+		MLGFL00222EB133200B76190 /* MLGiftLockManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLGiftLockManager.m; sourceTree = "<group>"; };
+		MLGFL00322EB133200B76190 /* MLGiftLockManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLGiftLockManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -10625,7 +10625,7 @@
 				CODE_SIGN_ENTITLEMENTS = miliao/miliaoDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.0;
+				CURRENT_PROJECT_VERSION = 3.0;
 				DEVELOPMENT_TEAM = AUQ7TKS3CP;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -10663,7 +10663,7 @@
 					"$(PROJECT_DIR)/miliao/Main/Community/Publish/Other/MLAudioRecorder/amr_en_de/lib",
 					"$(PROJECT_DIR)/miliao/Expand/OpenSDK1.9.1",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -10726,7 +10726,7 @@
 				CODE_SIGN_ENTITLEMENTS = miliao/miliao.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.0;
+				CURRENT_PROJECT_VERSION = 3.0;
 				DEVELOPMENT_TEAM = AUQ7TKS3CP;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -10758,7 +10758,7 @@
 					"$(PROJECT_DIR)/miliao/Main/Community/Publish/Other/MLAudioRecorder/amr_en_de/lib",
 					"$(PROJECT_DIR)/miliao/Expand/OpenSDK1.9.1",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
