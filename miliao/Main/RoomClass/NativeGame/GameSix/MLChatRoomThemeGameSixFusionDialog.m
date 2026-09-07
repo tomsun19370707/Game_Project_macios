@@ -147,6 +147,9 @@
 @property (nonatomic, strong) NSMutableArray<MLGameSixTokenCardView *> *tokenCards;
 
 // 底部选中提示与融合按钮
+@property (nonatomic, strong) UIView *selectedBottomContainer;
+@property (nonatomic, strong) UILabel *tvSelectedPrefix;
+@property (nonatomic, strong) UIImageView *ivBottomObsidianIcon;
 @property (nonatomic, strong) UILabel *tvFusionSelectedBottom;
 @property (nonatomic, strong) UIButton *fusionActionButton;
 
@@ -289,7 +292,7 @@
     [_ivObsidianIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(self.tvObsidianTitle.mas_right).offset(4);
         make.centerY.mas_equalTo(self.topAssetBar);
-        make.size.mas_equalTo(CGSizeMake(14, 14));
+        make.size.mas_equalTo(CGSizeMake(16, 16));
     }];
     
     _tvTopObsidianBalance = [[UILabel alloc] init];
@@ -341,16 +344,44 @@
         [_tokenCards addObject:card];
     }
     
-    // 7. 当前选中消耗文本 (位于画卷 ~63%)
-    _tvFusionSelectedBottom = [[UILabel alloc] init];
-    _tvFusionSelectedBottom.textColor = mHexRGB(0xFFFFDF7C);
-    _tvFusionSelectedBottom.font = [UIFont boldSystemFontOfSize:14];
-    _tvFusionSelectedBottom.textAlignment = NSTextAlignmentCenter;
-    _tvFusionSelectedBottom.text = @"当前选中: 100 黑曜石";
-    [_boardContainer addSubview:_tvFusionSelectedBottom];
-    [_tvFusionSelectedBottom mas_makeConstraints:^(MASConstraintMaker *make) {
+    // 7. 当前选中消耗栏 (位于画卷 ~63%)
+    _selectedBottomContainer = [[UIView alloc] init];
+    _selectedBottomContainer.backgroundColor = [UIColor clearColor];
+    [_boardContainer addSubview:_selectedBottomContainer];
+    [_selectedBottomContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.boardContainer.mas_top).offset(panelHeight * 0.63);
         make.centerX.mas_equalTo(self.boardContainer);
+        make.height.mas_equalTo(KAdaptedWidth(20));
+    }];
+    
+    _tvSelectedPrefix = [[UILabel alloc] init];
+    _tvSelectedPrefix.textColor = mHexRGB(0xFFFFDF7C);
+    _tvSelectedPrefix.font = [UIFont boldSystemFontOfSize:13];
+    _tvSelectedPrefix.text = @"当前选中:";
+    [_selectedBottomContainer addSubview:_tvSelectedPrefix];
+    [_tvSelectedPrefix mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(0);
+        make.centerY.mas_equalTo(self.selectedBottomContainer);
+    }];
+    
+    _ivBottomObsidianIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_game_six_obsidian"]];
+    _ivBottomObsidianIcon.contentMode = UIViewContentModeScaleAspectFit;
+    [_selectedBottomContainer addSubview:_ivBottomObsidianIcon];
+    [_ivBottomObsidianIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.tvSelectedPrefix.mas_right).offset(4);
+        make.centerY.mas_equalTo(self.selectedBottomContainer);
+        make.size.mas_equalTo(CGSizeMake(16, 16));
+    }];
+    
+    _tvFusionSelectedBottom = [[UILabel alloc] init];
+    _tvFusionSelectedBottom.textColor = [UIColor whiteColor];
+    _tvFusionSelectedBottom.font = [UIFont boldSystemFontOfSize:14];
+    _tvFusionSelectedBottom.text = @"100 黑曜石";
+    [_selectedBottomContainer addSubview:_tvFusionSelectedBottom];
+    [_tvFusionSelectedBottom mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.ivBottomObsidianIcon.mas_right).offset(4);
+        make.right.mas_equalTo(0);
+        make.centerY.mas_equalTo(self.selectedBottomContainer);
     }];
     
     // 8. 核心操作「融合/兑换」按钮 (位于画卷 ~70%)
@@ -441,7 +472,7 @@
         [_tokenCards[i] configureWithTier:curTier name:name price:price isSelected:(curTier == tier)];
     }
     
-    _tvFusionSelectedBottom.text = [NSString stringWithFormat:@"当前选中: %@ 黑曜石", [self formatLargeNumber:_selectedPrice]];
+    _tvFusionSelectedBottom.text = [NSString stringWithFormat:@"%@ 黑曜石", [self formatLargeNumber:_selectedPrice]];
 }
 
 #pragma mark - Network Loading
