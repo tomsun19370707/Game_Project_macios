@@ -82,8 +82,10 @@
      selectedImage:(NSString *)selectedImage {
     
     //设置子控制器
-    childVc.title = title;
     childVc.tabBarItem.title = title;
+    if (![childVc isKindOfClass:[CFMHomeVc class]]) {
+        childVc.title = title;
+    }
     
     [childVc.tabBarItem setImage:[[UIImage imageNamed:image]
           imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];

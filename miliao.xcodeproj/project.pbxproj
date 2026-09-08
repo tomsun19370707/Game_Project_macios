@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA7000112970000000000001 /* MLUnifiedExchangeItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FA7000022970000000000001 /* MLUnifiedExchangeItem.m */; };
+		FA7000122970000000000001 /* MLUnifiedExchangeGiftCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FA7000042970000000000001 /* MLUnifiedExchangeGiftCell.m */; };
+		FA7000132970000000000001 /* MLChatRoomUnifiedExchangeConfirmDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA7000062970000000000001 /* MLChatRoomUnifiedExchangeConfirmDialog.m */; };
+		FA7000142970000000000001 /* MLChatRoomUnifiedExchangeDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA7000082970000000000001 /* MLChatRoomUnifiedExchangeDialog.m */; };
+		FA7000152970000000000001 /* UnifiedExchange.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA7000092970000000000001 /* UnifiedExchange.xcassets */; };
 		00030BA222CDAF18003896EE /* EMO_RoomAnnouncementVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 00030BA122CDAF18003896EE /* EMO_RoomAnnouncementVC.m */; };
 		00030BAF22CE0388003896EE /* RoomSearchView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00030BAE22CE0388003896EE /* RoomSearchView.m */; };
 		000716F422BB213D00E5F8DC /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 000716F322BB213D00E5F8DC /* libc++.tbd */; };
@@ -1227,6 +1232,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FA7000012970000000000001 /* MLUnifiedExchangeItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLUnifiedExchangeItem.h; sourceTree = "<group>"; };
+		FA7000022970000000000001 /* MLUnifiedExchangeItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLUnifiedExchangeItem.m; sourceTree = "<group>"; };
+		FA7000032970000000000001 /* MLUnifiedExchangeGiftCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLUnifiedExchangeGiftCell.h; sourceTree = "<group>"; };
+		FA7000042970000000000001 /* MLUnifiedExchangeGiftCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLUnifiedExchangeGiftCell.m; sourceTree = "<group>"; };
+		FA7000052970000000000001 /* MLChatRoomUnifiedExchangeConfirmDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomUnifiedExchangeConfirmDialog.h; sourceTree = "<group>"; };
+		FA7000062970000000000001 /* MLChatRoomUnifiedExchangeConfirmDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomUnifiedExchangeConfirmDialog.m; sourceTree = "<group>"; };
+		FA7000072970000000000001 /* MLChatRoomUnifiedExchangeDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomUnifiedExchangeDialog.h; sourceTree = "<group>"; };
+		FA7000082970000000000001 /* MLChatRoomUnifiedExchangeDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomUnifiedExchangeDialog.m; sourceTree = "<group>"; };
+		FA7000092970000000000001 /* UnifiedExchange.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = UnifiedExchange.xcassets; sourceTree = "<group>"; };
 		00030BA022CDAF18003896EE /* EMO_RoomAnnouncementVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMO_RoomAnnouncementVC.h; sourceTree = "<group>"; };
 		00030BA122CDAF18003896EE /* EMO_RoomAnnouncementVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMO_RoomAnnouncementVC.m; sourceTree = "<group>"; };
 		00030BAD22CE0388003896EE /* RoomSearchView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomSearchView.h; sourceTree = "<group>"; };
@@ -3525,6 +3539,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FA7000102970000000000001 /* UnifiedExchange */ = {
+			isa = PBXGroup;
+			children = (
+				FA7000012970000000000001 /* MLUnifiedExchangeItem.h */,
+				FA7000022970000000000001 /* MLUnifiedExchangeItem.m */,
+				FA7000032970000000000001 /* MLUnifiedExchangeGiftCell.h */,
+				FA7000042970000000000001 /* MLUnifiedExchangeGiftCell.m */,
+				FA7000052970000000000001 /* MLChatRoomUnifiedExchangeConfirmDialog.h */,
+				FA7000062970000000000001 /* MLChatRoomUnifiedExchangeConfirmDialog.m */,
+				FA7000072970000000000001 /* MLChatRoomUnifiedExchangeDialog.h */,
+				FA7000082970000000000001 /* MLChatRoomUnifiedExchangeDialog.m */,
+			);
+			path = UnifiedExchange;
+			sourceTree = "<group>";
+		};
 		0009F61822BA0AEB0035B354 /* PopupWindowView */ = {
 			isa = PBXGroup;
 			children = (
@@ -4243,6 +4272,7 @@
 		00762C5822DF2E5A00BC93D2 /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				FA7000092970000000000001 /* UnifiedExchange.xcassets */,
 				CB9F7B872F1DBCAC0078F1DD /* lan_im1.png */,
 				853BA9242A39BBC900B1AA2D /* Assets.xcassets */,
 				856F0756296950A100E816AB /* logoD.gif */,
@@ -5707,6 +5737,7 @@
 		7C70E9452FED864D00A11B29 /* NativeGame */ = {
 			isa = PBXGroup;
 			children = (
+				FA7000102970000000000001 /* UnifiedExchange */,
 				FA6000002970000000000006 /* GameSix */,
 				1BD1D3A6ADB741A48CD4561E /* GameFive */,
 				ED0B8DB30C101FE22F0F4506 /* GameFour */,
@@ -9253,6 +9284,7 @@
 				E44A18FD2B5BB491009B5052 /* APBToygerFacadeSuitable.bundle in Resources */,
 				85CB74FB28F4020300A18FD4 /* Air.xcassets in Resources */,
 				853BA9252A39BBC900B1AA2D /* Assets.xcassets in Resources */,
+				FA7000152970000000000001 /* UnifiedExchange.xcassets in Resources */,
 				CB66CF8E2EE8275C006B5FD1 /* CFMHomeRoom.xib in Resources */,
 				E44A19092B5BB491009B5052 /* MultiFactorFacade.bundle in Resources */,
 				001156F822BCAD8400BE671D /* EmojiPackage.bundle in Resources */,
@@ -9418,6 +9450,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA7000112970000000000001 /* MLUnifiedExchangeItem.m in Sources */,
+				FA7000122970000000000001 /* MLUnifiedExchangeGiftCell.m in Sources */,
+				FA7000132970000000000001 /* MLChatRoomUnifiedExchangeConfirmDialog.m in Sources */,
+				FA7000142970000000000001 /* MLChatRoomUnifiedExchangeDialog.m in Sources */,
 				FA6000032970000000000006 /* MLChatRoomThemeGameSixView.m in Sources */,
 				FA6000062970000000000006 /* MLChatRoomThemeGameSixRuleDialog.m in Sources */,
 				FA6000092970000000000006 /* MLChatRoomThemeGameSixFusionDialog.m in Sources */,

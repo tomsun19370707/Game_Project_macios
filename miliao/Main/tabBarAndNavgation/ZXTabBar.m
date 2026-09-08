@@ -22,7 +22,18 @@
         
         //设置tabBar颜色背景
         self.tintColor       = [UIColor grayColor];
-        [self setBackgroundImage:[UIImage imageWithColor:[UIColor whiteColor]]];
+        if (@available(iOS 13.0, *)) {
+            UITabBarAppearance *appearance = [[UITabBarAppearance alloc] init];
+            [appearance configureWithOpaqueBackground];
+            appearance.backgroundColor = [UIColor whiteColor];
+            appearance.shadowColor = [UIColor colorWithWhite:0 alpha:0.08];
+            self.standardAppearance = appearance;
+            if (@available(iOS 15.0, *)) {
+                self.scrollEdgeAppearance = appearance;
+            }
+        } else {
+            [self setBackgroundImage:[UIImage imageWithColor:[UIColor whiteColor]]];
+        }
         
 //        //设置plusBtn
 //        UIButton *btn = [[UIButton alloc] init];

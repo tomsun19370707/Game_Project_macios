@@ -62,6 +62,7 @@
 #pragma mark --- 加载控制器
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
     /** 获取用户信息*/
     [self getUserInfoMessage];
     /** 获取我的房间列表*/
@@ -72,6 +73,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.navigationItem.title = @"";
+    self.navigationBar.title = @"";
     // NavBar
     [self initNavBar];
     // 布局视图
@@ -188,7 +191,9 @@
 #pragma mark -
 #pragma mark --- 导航初始化
 - (void)initNavBar {
-    self.navigationBar.backgroundColor = UIColor.clearColor ;
+    self.navigationBar.backgroundColor = UIColor.clearColor;
+    self.navigationBar.title = @"";
+    self.navigationBar.isShowCuttingLine = NO;
     [self.navigationBar addSubview:self.navVie];
 }
 
@@ -322,6 +327,7 @@
         if (@available(iOS 11.0, *)) {
             _listTableview.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
+        _listTableview.contentInset = UIEdgeInsetsMake(0, 0, 16, 0);
         /** 无数据默认图*/
         _listTableview.emptyDataSetSource = self ;
         _listTableview.emptyDataSetDelegate = self ;
@@ -631,11 +637,12 @@
         NSArray *array =baseModel.data;
         
         /** 我如果开过直播间的话，就不能再开了*/
-//        if (array.count > 0) {
-            wself.addBtn.hidden = YES ;
-//        }else{
-//            wself.addBtn.hidden = NO ;
-//        }
+        if (array.count > 0) {
+            wself.addBtn.hidden = YES;
+        } else {
+            wself.addBtn.hidden = NO;
+            [wself.view bringSubviewToFront:wself.addBtn];
+        }
     } failture:^(NSError *error) {
       
     }];

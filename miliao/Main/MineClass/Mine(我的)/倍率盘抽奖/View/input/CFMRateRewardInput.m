@@ -7,7 +7,7 @@
 //
 
 #import "CFMRateRewardInput.h"
-#import "CFMExDiamondAndBagAlert.h"
+#import "MLChatRoomUnifiedExchangeDialog.h"
 @interface CFMRateRewardInput ()
 /** View */
 
@@ -98,11 +98,14 @@
 #pragma mark --
 #pragma mark --- ibaction
 - (IBAction)exAc:(id)sender {
-    /** 兑换黑曜石*/
-    /** 兑换*/
-    CFMExDiamondAndBagAlert *al = [[NSBundle mainBundle] loadNibNamed:@"CFMExDiamondAndBagAlert" owner:self options:nil][0];
-    al.fetchRefresh = self.fetchRefresh;
-    [al show];
+    /** 统一兑换中心 */
+    UIView *topView = self.window ?: [UIApplication sharedApplication].keyWindow;
+    __weak typeof(self) wself = self;
+    [MLChatRoomUnifiedExchangeDialog showInView:topView defaultMode:MLUnifiedExchangeModeBackpack success:^{
+        if (wself.fetchRefresh) {
+            wself.fetchRefresh();
+        }
+    }];
 }
 #pragma mark --
 #pragma mark --- Method

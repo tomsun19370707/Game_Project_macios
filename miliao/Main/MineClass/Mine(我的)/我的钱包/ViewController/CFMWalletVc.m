@@ -18,6 +18,7 @@
 #import "CFMWalletRewardHisVc.h"
 #import "CFMWalletDiamondExReCoinVc.h"
 #import "CFMWalletDiamondExGiftVc.h"
+#import "MLChatRoomUnifiedExchangeDialog.h"
 @interface CFMWalletVc ()<UITableViewDelegate, UITableViewDataSource,DZNEmptyDataSetDelegate, DZNEmptyDataSetSource>
 /** table */
 @property (strong, nonatomic) UITableView *listTableview;
@@ -151,9 +152,11 @@
                 return;
             }
             if (indexPath.section==3) {
-                /** 兑换礼物*/
-                CFMWalletDiamondExGiftVc *re = [[CFMWalletDiamondExGiftVc alloc]init];
-                [self.navigationController pushViewController:re  animated:YES];
+                /** 统一兑换中心（默认 Mode 1 元宝商城兑换礼物）*/
+                UIView *topView = self.view.window ?: [UIApplication sharedApplication].keyWindow;
+                [MLChatRoomUnifiedExchangeDialog showInView:topView defaultMode:MLUnifiedExchangeModeMall success:^{
+                    [self fetchBalance];
+                }];
                 return;
             }
             

@@ -6,7 +6,7 @@
 //
 
 #import "MLChatRoomThemeGameSixFusionDialog.h"
-#import "MLChatRoomThemeGameSixObsidianExchangeDialog.h"
+#import "MLChatRoomUnifiedExchangeDialog.h"
 #import "MLThemeGameModel.h"
 #import "MLTowerGameSixModels.h"
 #import "NetworkRequest.h"
@@ -552,7 +552,7 @@
 #pragma mark - Actions
 - (void)onExchangeObsidianClick {
     WeakSelf;
-    [MLChatRoomThemeGameSixObsidianExchangeDialog showInView:self.superview success:^{
+    [MLChatRoomUnifiedExchangeDialog showInView:self.superview defaultMode:MLUnifiedExchangeModeBackpack success:^{
         [wself loadWalletMoney];
     }];
 }
