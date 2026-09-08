@@ -44,6 +44,40 @@
     return dialog;
 }
 
++ (MLTowerGameSixRecastResultModel *)createFromCurrentReward:(MLTowerGameSixCurrentRewardModel *)reward
+                                                   canRecast:(NSInteger)canRecast
+                                                    canClaim:(NSInteger)canClaim
+                                                stateVersion:(NSInteger)stateVersion {
+    if (!reward) return nil;
+    MLTowerGameSixRecastResultModel *model = [[MLTowerGameSixRecastResultModel alloc] init];
+    model.ticket_id = reward.ticket_id;
+    model.draw_id = reward.draw_id;
+    model.can_recast = canRecast;
+    model.can_claim = canClaim;
+    model.state_version = stateVersion;
+    model.position = reward.position;
+    model.to_layer = reward.to_layer;
+    model.current_reward = reward;
+    
+    MLCandidateItemModel *gift = [[MLCandidateItemModel alloc] init];
+    gift.gift_id = reward.gift_id;
+    gift.name = reward.name;
+    gift.image = reward.image;
+    gift.value = reward.value;
+    gift.position = reward.position;
+    model.gift = gift;
+    return model;
+}
+
++ (instancetype)showInView:(UIView *)parentView
+             currentReward:(MLTowerGameSixCurrentRewardModel *)reward
+                 canRecast:(NSInteger)canRecast
+                  canClaim:(NSInteger)canClaim
+              stateVersion:(NSInteger)stateVersion {
+    MLTowerGameSixRecastResultModel *model = [self createFromCurrentReward:reward canRecast:canRecast canClaim:canClaim stateVersion:stateVersion];
+    return [self showInView:parentView resultModel:model];
+}
+
 - (instancetype)initWithFrame:(CGRect)frame resultModel:(MLTowerGameSixRecastResultModel *)resultModel {
     self = [super initWithFrame:frame];
     if (self) {
@@ -156,24 +190,24 @@
         make.centerX.mas_equalTo(_boardContainer);
     }];
     
-    // 7. 底部双按钮：【继续重铸】(左) & 【取回礼物】(右) (138x52pt, 底距 65pt)
-    _continueActionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_continueActionButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_btn_recast_continue"] forState:UIControlStateNormal];
-    _continueActionButton.contentMode = UIViewContentModeScaleToFill;
-    [_continueActionButton addTarget:self action:@selector(continueClick) forControlEvents:UIControlEventTouchUpInside];
-    [_boardContainer addSubview:_continueActionButton];
-    [_continueActionButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_boardContainer).offset(-KDialogAdaptedWidth(65));
-        make.leading.mas_equalTo(_boardContainer).offset(KDialogAdaptedWidth(27));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(138), KDialogAdaptedWidth(52)));
-    }];
-    
+    // 7. 底部双按钮 (方案 A: 严格左右固定布局)：【获取礼物】(左) & 【继续重铸】(右) (138x52pt, 底距 65pt)
     _withdrawActionButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_withdrawActionButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_btn_withdraw"] forState:UIControlStateNormal];
     _withdrawActionButton.contentMode = UIViewContentModeScaleToFill;
     [_withdrawActionButton addTarget:self action:@selector(withdrawClick) forControlEvents:UIControlEventTouchUpInside];
     [_boardContainer addSubview:_withdrawActionButton];
     [_withdrawActionButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_equalTo(_boardContainer).offset(-KDialogAdaptedWidth(65));
+        make.leading.mas_equalTo(_boardContainer).offset(KDialogAdaptedWidth(27));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(138), KDialogAdaptedWidth(52)));
+    }];
+    
+    _continueActionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_continueActionButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_btn_recast_continue"] forState:UIControlStateNormal];
+    _continueActionButton.contentMode = UIViewContentModeScaleToFill;
+    [_continueActionButton addTarget:self action:@selector(continueClick) forControlEvents:UIControlEventTouchUpInside];
+    [_boardContainer addSubview:_continueActionButton];
+    [_continueActionButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(_boardContainer).offset(-KDialogAdaptedWidth(65));
         make.trailing.mas_equalTo(_boardContainer).offset(-KDialogAdaptedWidth(27));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(138), KDialogAdaptedWidth(52)));
@@ -184,25 +218,45 @@
     if (!_resultModel) return;
     
     // 1. 层数
-    NSInteger layer = _resultModel.to_layer > 0 ? _resultModel.to_layer : 1;
+    NSInteger layer = _resultModel.to_layer > 0 ? _resultModel.to_layer : (_resultModel.current_reward && _resultModel.current_reward.to_layer > 0 ? _resultModel.current_reward.to_layer : 1);
     _layerInfoLabel.text = [NSString stringWithFormat:@"第 %ld 层", (long)layer];
     
-    // 2. 礼物名称与图标
-    if (_resultModel.gift) {
-        _giftNameLabel.text = _resultModel.gift.name ?: @"珍宝塔礼物";
-        if (_resultModel.gift.image && _resultModel.gift.image.length > 0) {
-            [_giftIconImageView sd_setImageWithURL:[NSURL URLWithString:_resultModel.gift.image] placeholderImage:[UIImage imageNamed:@"theme_game_six_ic_token"]];
-        }
-        
-        // 3. 价值格式化 (无小数点)
-        double val = [_resultModel.gift.value doubleValue];
-        _giftValueLabel.text = [NSString stringWithFormat:@"💎 %ld", (long)val];
+    // 2. 礼物名称
+    if (_resultModel.gift && _resultModel.gift.name.length > 0) {
+        _giftNameLabel.text = _resultModel.gift.name;
+    } else if (_resultModel.current_reward && _resultModel.current_reward.name.length > 0) {
+        _giftNameLabel.text = _resultModel.current_reward.name;
+    } else {
+        _giftNameLabel.text = @"珍宝塔礼物";
     }
+    
+    // 3. 礼物图标
+    NSString *iconUrl = (_resultModel.gift && _resultModel.gift.image.length > 0) ? _resultModel.gift.image : (_resultModel.current_reward ? _resultModel.current_reward.image : nil);
+    if (iconUrl.length > 0) {
+        [_giftIconImageView sd_setImageWithURL:[NSURL URLWithString:iconUrl] placeholderImage:[UIImage imageNamed:@"theme_game_six_ic_token"]];
+    } else {
+        _giftIconImageView.image = [UIImage imageNamed:@"theme_game_six_ic_token"];
+    }
+    
+    // 4. 钻石价值 (无小数点)
+    NSString *rawVal = (_resultModel.gift && _resultModel.gift.value.length > 0) ? _resultModel.gift.value : (_resultModel.current_reward ? _resultModel.current_reward.value : nil);
+    double val = [rawVal doubleValue];
+    _giftValueLabel.text = [NSString stringWithFormat:@"💎 %ld", (long)val];
+    
+    // 5. 驱动按钮状态 (方案 A: 严格保持原位坐标不变，不可重铸时原地置灰并禁用)
+    BOOL canRecast = (_resultModel.can_recast == 1);
+    BOOL canClaim = (_resultModel.can_claim == 1 || _resultModel.current_reward != nil);
+    _continueActionButton.alpha = canRecast ? 1.0f : 0.4f;
+    _withdrawActionButton.alpha = canClaim ? 1.0f : 0.4f;
 }
 
 // MARK: - Actions
 
 - (void)continueClick {
+    if (_resultModel && _resultModel.can_recast == 0) {
+        [SVProgressHUD showInfoWithStatus:@"当前不可继续重铸，请获取礼物"];
+        return;
+    }
     [self dismiss];
     if (self.onContinueRecastBlock) {
         self.onContinueRecastBlock();
@@ -210,64 +264,20 @@
 }
 
 - (void)withdrawClick {
-    if (!_resultModel || !_resultModel.gift) {
-        [self dismiss];
-        return;
+    [self dismiss];
+    NSInteger ticketId = _resultModel ? _resultModel.ticket_id : 0;
+    long long drawId = _resultModel ? _resultModel.draw_id : 0;
+    NSInteger stateVersion = _resultModel ? _resultModel.state_version : 0;
+    if (_resultModel && _resultModel.current_reward) {
+        if (_resultModel.current_reward.ticket_id > 0) ticketId = _resultModel.current_reward.ticket_id;
+        if (_resultModel.current_reward.draw_id > 0) drawId = _resultModel.current_reward.draw_id;
     }
     
-    long long targetInventoryId = 0;
-    if (_resultModel.gift.inventory_id > 0) {
-        targetInventoryId = _resultModel.gift.inventory_id;
-    } else if (_resultModel.inventory_id > 0) {
-        targetInventoryId = _resultModel.inventory_id;
+    if (self.onClaimRewardBlock) {
+        self.onClaimRewardBlock(ticketId, drawId, stateVersion);
+    } else if (self.onWithdrawSuccessBlock) {
+        self.onWithdrawSuccessBlock();
     }
-    
-    if (targetInventoryId > 0) {
-        [self executeWithdrawApiWithInventoryId:targetInventoryId];
-    } else {
-        // 如果后端开奖接口未返回 inventory_id，自动请求暂存包检索匹配该礼物的 inventory_id 提取
-        __weak typeof(self) weakSelf = self;
-        [SVProgressHUD showWithStatus:@"取回中..."];
-        [[MLThemeGameModel new] fetchTowerGameSixTempInventoryWithSuccess:^(id _Nullable responseObj) {
-            NSArray *tempList = (NSArray *)responseObj;
-            long long matchedId = 0;
-            if ([tempList isKindOfClass:[NSArray class]] && tempList.count > 0) {
-                matchedId = ((MLCandidateItemModel *)tempList.firstObject).inventory_id;
-                for (MLCandidateItemModel *item in tempList) {
-                    if (item.gift_id == weakSelf.resultModel.gift.gift_id) {
-                        matchedId = item.inventory_id;
-                        break;
-                    }
-                }
-            }
-            if (matchedId > 0) {
-                [weakSelf executeWithdrawApiWithInventoryId:matchedId];
-            } else {
-                [SVProgressHUD showInfoWithStatus:@"暂存包暂无可提取礼物"];
-            }
-        } failure:^(NSError * _Nullable error, NSString * _Nullable msg) {
-            [SVProgressHUD showErrorWithStatus:msg ?: @"获取暂存背包失败"];
-        }];
-    }
-}
-
-- (void)executeWithdrawApiWithInventoryId:(long long)inventoryId {
-    NSArray *items = @[@{
-        @"inventory_id": @(inventoryId),
-        @"num": @(1)
-    }];
-    
-    __weak typeof(self) weakSelf = self;
-    [SVProgressHUD showWithStatus:@"取回中..."];
-    [[MLThemeGameModel new] withdrawTowerGameSixTempGiftsWithItems:items success:^(id _Nullable responseObject) {
-        [SVProgressHUD showSuccessWithStatus:@"取回成功"];
-        [weakSelf dismiss];
-        if (weakSelf.onWithdrawSuccessBlock) {
-            weakSelf.onWithdrawSuccessBlock();
-        }
-    } failure:^(NSError * _Nullable error, NSString * _Nullable msg) {
-        [SVProgressHUD showErrorWithStatus:msg ?: @"取回失败"];
-    }];
 }
 
 - (void)animateShow {

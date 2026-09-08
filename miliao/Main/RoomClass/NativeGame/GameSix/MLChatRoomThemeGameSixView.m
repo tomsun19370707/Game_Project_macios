@@ -67,6 +67,7 @@
 @property (nonatomic, strong) UIButton *recastButton;
 @property (nonatomic, assign) NSInteger remainingRecasts;
 @property (nonatomic, strong) MLTowerGameSixBootstrapModel *bootstrapModel;
+@property (nonatomic, assign) BOOL isClaimingReward;
 // 留作后续联网功能扩展:
 // @property (nonatomic, strong) UIButton *drawOneButton;
 // @property (nonatomic, strong) UIButton *drawTenButton;
@@ -483,6 +484,8 @@
     _tokenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"theme_game_six_ic_token"]];
     _tokenIcon.contentMode = UIViewContentModeScaleToFill;
     _tokenIcon.userInteractionEnabled = YES;
+    UITapGestureRecognizer *tapToken = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tokenIconClick)];
+    [_tokenIcon addGestureRecognizer:tapToken];
     [_drawPanelBg addSubview:_tokenIcon];
     [_tokenIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_drawPanelBg);
@@ -603,7 +606,6 @@
     }
     BOOL hasActive = (self.bootstrapModel != nil && self.bootstrapModel.ticket != nil) &&
                      ([@"active" caseInsensitiveCompare:self.bootstrapModel.ticket.status ?: @""] == NSOrderedSame) &&
-                     (self.remainingRecasts > 0) &&
                      (self.bootstrapModel.token_count > 0);
     [dialog setHasActiveTicket:hasActive];
     
@@ -636,12 +638,8 @@
                 weakSelf.remainingRecasts = bsModel.ticket.remaining_recasts;
                 weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
                 if (weakSelf.remainingRecasts <= 0) {
-                    if (weakSelf.bootstrapModel) {
-                        weakSelf.bootstrapModel.ticket = nil;
-                        weakSelf.bootstrapModel.token_count = 0;
-                    }
                     [weakSelf stopMarqueeAndResetRecastState];
-                    [SVProgressHUD showInfoWithStatus:@"暂无可用门票，请先融合门票"];
+                    [SVProgressHUD showInfoWithStatus:@"重铸次数已耗尽，请获取当前礼物"];
                     return;
                 }
             }
@@ -658,8 +656,23 @@
                 weakSelf.remainingRecasts = resultModel.remaining_recasts;
                 weakSelf.tokenRecastLabel.text = [NSString stringWithFormat:@"餘\n%ld\n次", (long)weakSelf.remainingRecasts];
                 
-                // 当开奖导致门票清零、已完成/终止或剩余次数归零时，主动置空内存门票缓存与次数，防范死锁
-                if (weakSelf.remainingRecasts <= 0 || resultModel.token_count == 0 ||
+                // 更新内存状态
+                if (weakSelf.bootstrapModel) {
+                    if (weakSelf.bootstrapModel.player && resultModel.state_version > 0) {
+                        weakSelf.bootstrapModel.player.state_version = resultModel.state_version;
+                    }
+                    if (weakSelf.bootstrapModel.ticket) {
+                        weakSelf.bootstrapModel.ticket.remaining_recasts = weakSelf.remainingRecasts;
+                        weakSelf.bootstrapModel.token_count = resultModel.token_count;
+                    }
+                    weakSelf.bootstrapModel.current_reward = resultModel.current_reward;
+                    weakSelf.bootstrapModel.can_recast = resultModel.can_recast;
+                    weakSelf.bootstrapModel.can_claim = resultModel.can_claim;
+                }
+                
+                // 仅当门票彻底终止/完成且没有待领奖时，才清空门票
+                // 剩余次数为0但有待领奖时属于 awaiting_claim 阶段，严禁提前清空！
+                if ((resultModel.token_count == 0 && resultModel.current_reward == nil) ||
                     [@"completed" caseInsensitiveCompare:resultModel.ticket_status ?: @""] == NSOrderedSame ||
                     [@"terminated" caseInsensitiveCompare:resultModel.ticket_status ?: @""] == NSOrderedSame) {
                     if (weakSelf.bootstrapModel) {
@@ -667,9 +680,6 @@
                         weakSelf.bootstrapModel.token_count = 0;
                     }
                     weakSelf.remainingRecasts = 0;
-                } else if (weakSelf.bootstrapModel && weakSelf.bootstrapModel.ticket) {
-                    weakSelf.bootstrapModel.ticket.remaining_recasts = weakSelf.remainingRecasts;
-                    weakSelf.bootstrapModel.token_count = resultModel.token_count;
                 }
                 
                 NSInteger rawTargetPos = (resultModel.gift && resultModel.gift.position > 0) ? resultModel.gift.position : 1;
@@ -685,11 +695,12 @@
                     resultDialog.onContinueRecastBlock = ^{
                         [weakSelf recastClick];
                     };
+                    resultDialog.onClaimRewardBlock = ^(NSInteger ticketId, long long drawId, NSInteger stateVersion) {
+                        [weakSelf claimCurrentTicketRewardWithTicketId:ticketId drawId:drawId stateVersion:stateVersion];
+                    };
                     resultDialog.onWithdrawSuccessBlock = ^{
                         [weakSelf loadBootstrapData];
                     };
-                    
-                    [weakSelf loadBootstrapData];
                 }];
             } else {
                 [weakSelf stopMarqueeAndResetRecastState];
@@ -701,6 +712,81 @@
     } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
         [weakSelf stopMarqueeAndResetRecastState];
         [SVProgressHUD showInfoWithStatus:msg ?: @"网络请求失败"];
+    }];
+}
+
+- (void)tokenIconClick {
+    // 点击令牌容器：若存在未领取的礼物，唤起结算弹窗供玩家手动获取
+    if (self.bootstrapModel && self.bootstrapModel.current_reward && self.bootstrapModel.can_claim == 1) {
+        [self showResultDialogForCurrentReward];
+    }
+}
+
+- (void)showResultDialogForCurrentReward {
+    if (!self.bootstrapModel || !self.bootstrapModel.current_reward) return;
+    
+    NSInteger stateVersion = self.bootstrapModel.player ? self.bootstrapModel.player.state_version : 0;
+    MLChatRoomThemeGameSixResultDialog *dialog = [MLChatRoomThemeGameSixResultDialog showInView:self
+                                                                                   currentReward:self.bootstrapModel.current_reward
+                                                                                       canRecast:self.bootstrapModel.can_recast
+                                                                                        canClaim:self.bootstrapModel.can_claim
+                                                                                    stateVersion:stateVersion];
+    __weak typeof(self) weakSelf = self;
+    dialog.onContinueRecastBlock = ^{
+        [weakSelf recastClick];
+    };
+    dialog.onClaimRewardBlock = ^(NSInteger ticketId, long long drawId, NSInteger sVersion) {
+        [weakSelf claimCurrentTicketRewardWithTicketId:ticketId drawId:drawId stateVersion:sVersion];
+    };
+}
+
+- (void)claimCurrentTicketRewardWithTicketId:(NSInteger)ticketId drawId:(long long)drawId stateVersion:(NSInteger)stateVersion {
+    if (self.isClaimingReward) {
+        return;
+    }
+    self.isClaimingReward = YES;
+    
+    if (ticketId <= 0 && self.bootstrapModel && self.bootstrapModel.ticket) {
+        ticketId = self.bootstrapModel.ticket.id;
+    }
+    if (ticketId <= 0 && self.bootstrapModel && self.bootstrapModel.current_reward) {
+        ticketId = self.bootstrapModel.current_reward.ticket_id;
+    }
+    if (drawId <= 0 && self.bootstrapModel && self.bootstrapModel.current_reward) {
+        drawId = self.bootstrapModel.current_reward.draw_id;
+    }
+    NSInteger effectiveVersion = stateVersion > 0 ? stateVersion : (self.bootstrapModel.player ? self.bootstrapModel.player.state_version : 0);
+    
+    __weak typeof(self) weakSelf = self;
+    [SVProgressHUD showWithStatus:@"取回中..."];
+    [[MLThemeGameModel sharedInstance] claimTowerGameSixCurrentRewardWithTicketId:ticketId
+                                                                           drawId:drawId
+                                                                     stateVersion:effectiveVersion
+                                                                          success:^(id _Nullable responseObj) {
+        weakSelf.isClaimingReward = NO;
+        [SVProgressHUD showSuccessWithStatus:@"✨ 领取成功！礼物已放入大背包"];
+        
+        if ([responseObj isKindOfClass:[MLTowerGameSixWithdrawResultModel class]]) {
+            MLTowerGameSixWithdrawResultModel *withdrawResult = (MLTowerGameSixWithdrawResultModel *)responseObj;
+            if (weakSelf.bootstrapModel && weakSelf.bootstrapModel.player && withdrawResult.state_version > 0) {
+                weakSelf.bootstrapModel.player.state_version = withdrawResult.state_version;
+            }
+        }
+        
+        // 单票单奖：领取成功后正式结束该票并清空本地门票状态
+        if (weakSelf.bootstrapModel) {
+            weakSelf.bootstrapModel.ticket = nil;
+            weakSelf.bootstrapModel.token_count = 0;
+            weakSelf.bootstrapModel.current_reward = nil;
+            weakSelf.bootstrapModel.can_claim = 0;
+            weakSelf.bootstrapModel.can_recast = 0;
+        }
+        weakSelf.remainingRecasts = 0;
+        weakSelf.tokenRecastLabel.text = @"餘\n0\n次";
+        [weakSelf loadBootstrapData];
+    } failure:^(NSError * _Nonnull error, NSString * _Nullable msg) {
+        weakSelf.isClaimingReward = NO;
+        [SVProgressHUD showErrorWithStatus:msg ?: @"网络开小差了，领取失败"];
     }];
 }
 
@@ -729,7 +815,6 @@
         }
         if (bsModel && bsModel.ticket) {
             BOOL isActiveTicket = ([@"active" caseInsensitiveCompare:bsModel.ticket.status ?: @""] == NSOrderedSame) &&
-                                  (bsModel.ticket.remaining_recasts > 0) &&
                                   (bsModel.token_count > 0);
             if (isActiveTicket) {
                 self.remainingRecasts = bsModel.ticket.remaining_recasts;

@@ -24,9 +24,17 @@
     return instance;
 }
 
+- (NSString *)currentAuthToken {
+    NSString *token = UserDefaultsGet(kToken);
+    if (!token || token.length == 0) {
+        token = [UserManager userInfo].token;
+    }
+    return token ?: @"";
+}
+
 - (NSDictionary *)buildParams:(NSDictionary *)params {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:params];
-    NSString *token = [UserManager userInfo].token;
+    NSString *token = [self currentAuthToken];
     if (token && token.length > 0) {
         [dict setObject:token forKey:@"token"];
     }
@@ -39,7 +47,7 @@
                 success:(MLGameSixSuccessBlock)success
                 failure:(MLGameSixFailureBlock)failure {
     
-    NSString *token = [UserManager userInfo].token;
+    NSString *token = [self currentAuthToken];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlStr]];
     [request setHTTPMethod:@"POST"];
@@ -88,6 +96,65 @@
     [task resume];
 }
 
+/// 专用于发送标准的 GET 请求 (Query Parameters & Header Token)
+- (void)getJSONWithURL:(NSString *)urlStr
+            parameters:(NSDictionary *)params
+               success:(MLGameSixSuccessBlock)success
+               failure:(MLGameSixFailureBlock)failure {
+    NSString *token = [self currentAuthToken];
+    
+    NSURLComponents *components = [NSURLComponents componentsWithString:urlStr];
+    NSMutableArray<NSURLQueryItem *> *queryItems = [NSMutableArray array];
+    if (params && params.count > 0) {
+        for (NSString *key in params) {
+            id val = params[key];
+            [queryItems addObject:[NSURLQueryItem queryItemWithName:key value:[NSString stringWithFormat:@"%@", val]]];
+        }
+    }
+    if (queryItems.count > 0) {
+        components.queryItems = queryItems;
+    }
+    
+    NSURL *finalURL = components.URL ?: [NSURL URLWithString:urlStr];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:finalURL];
+    [request setHTTPMethod:@"GET"];
+    if (token && token.length > 0) {
+        [request setValue:token forHTTPHeaderField:@"Token"];
+    }
+    
+#if DEBUG
+    MYLog(@"[MLThemeGameModel GET Request] URL: %@, Header Token: %@", finalURL.absoluteString, token);
+#endif
+    
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error) {
+#if DEBUG
+                MYLog(@"[MLThemeGameModel GET Response Fail] Error: %@", error);
+#endif
+                if (failure) failure(error, error.localizedDescription);
+                return;
+            }
+            if (!data) {
+                if (failure) failure(nil, @"服务端无数据返回");
+                return;
+            }
+            
+            NSDictionary *responseObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            if ([responseObject isKindOfClass:[NSDictionary class]]) {
+                if ([responseObject[@"code"] integerValue] == 1) {
+                    if (success) success(responseObject[@"data"]);
+                } else {
+                    if (failure) failure(nil, responseObject[@"msg"] ?: @"请求失败");
+                }
+            } else {
+                if (failure) failure(nil, @"数据格式错误");
+            }
+        });
+    }];
+    [task resume];
+}
+
 - (void)fetchTowerGameSixBootstrapWithRoomId:(NSString *)roomId
                                      success:(MLGameSixSuccessBlock)success
                                      failure:(MLGameSixFailureBlock)failure {
@@ -97,32 +164,20 @@
         [params setObject:roomId forKey:@"room_id"];
     }
     
-    [MLNetWorkHelper GET:url parameters:[self buildParams:params] success:^(id responseObject) {
-        if ([responseObject[@"code"] integerValue] == 1) {
-            MLTowerGameSixBootstrapModel *model = [MLTowerGameSixBootstrapModel mj_objectWithKeyValues:responseObject[@"data"]];
-            if (success) success(model);
-        } else {
-            if (failure) failure(nil, responseObject[@"msg"] ?: @"初始化失败");
-        }
-    } failure:^(NSError *error) {
-        if (failure) failure(error, error.localizedDescription);
-    }];
+    [self getJSONWithURL:url parameters:[self buildParams:params] success:^(id data) {
+        MLTowerGameSixBootstrapModel *model = [MLTowerGameSixBootstrapModel mj_objectWithKeyValues:data];
+        if (success) success(model);
+    } failure:failure];
 }
 
 - (void)fetchTowerGameSixFusionCandidatesWithSuccess:(MLGameSixSuccessBlock)success
                                              failure:(MLGameSixFailureBlock)failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/tower_game_six/fusion_candidates", VERSION_HTTPS_SERVER];
     
-    [MLNetWorkHelper GET:url parameters:[self buildParams:@{}] success:^(id responseObject) {
-        if ([responseObject[@"code"] integerValue] == 1) {
-            MLTowerGameSixFusionCandidateModel *model = [MLTowerGameSixFusionCandidateModel mj_objectWithKeyValues:responseObject[@"data"]];
-            if (success) success(model);
-        } else {
-            if (failure) failure(nil, responseObject[@"msg"] ?: @"获取融合候选列表失败");
-        }
-    } failure:^(NSError *error) {
-        if (failure) failure(error, error.localizedDescription);
-    }];
+    [self getJSONWithURL:url parameters:[self buildParams:@{}] success:^(id data) {
+        MLTowerGameSixFusionCandidateModel *model = [MLTowerGameSixFusionCandidateModel mj_objectWithKeyValues:data];
+        if (success) success(model);
+    } failure:failure];
 }
 
 - (void)previewTowerGameSixFusionWithItems:(NSArray<NSDictionary *> *)items
@@ -204,16 +259,10 @@
                                            failure:(MLGameSixFailureBlock)failure {
     NSString *url = [NSString stringWithFormat:@"%@api/emo/tower_game_six/temp_inventory", VERSION_HTTPS_SERVER];
     
-    [MLNetWorkHelper GET:url parameters:[self buildParams:@{}] success:^(id responseObject) {
-        if ([responseObject[@"code"] integerValue] == 1) {
-            NSArray *list = [MLCandidateItemModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
-            if (success) success(list);
-        } else {
-            if (failure) failure(nil, responseObject[@"msg"] ?: @"获取暂存包失败");
-        }
-    } failure:^(NSError *error) {
-        if (failure) failure(error, error.localizedDescription);
-    }];
+    [self getJSONWithURL:url parameters:[self buildParams:@{}] success:^(id data) {
+        NSArray *list = [MLCandidateItemModel mj_objectArrayWithKeyValuesArray:data];
+        if (success) success(list);
+    } failure:failure];
 }
 
 - (void)withdrawTowerGameSixTempGiftsWithItems:(NSArray<NSDictionary *> *)items
@@ -229,6 +278,28 @@
     [self postJSONWithURL:url parameters:params success:success failure:failure];
 }
 
+- (void)claimTowerGameSixCurrentRewardWithTicketId:(NSInteger)ticketId
+                                            drawId:(long long)drawId
+                                      stateVersion:(NSInteger)stateVersion
+                                           success:(MLGameSixSuccessBlock)success
+                                           failure:(MLGameSixFailureBlock)failure {
+    NSString *url = [NSString stringWithFormat:@"%@api/emo/tower_game_six/withdraw", VERSION_HTTPS_SERVER];
+    NSString *requestId = [[NSUUID UUID] UUIDString];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"request_id"] = requestId;
+    params[@"ticket_id"] = @(ticketId);
+    params[@"draw_id"] = @(drawId);
+    params[@"state_version"] = @(stateVersion);
+    // 严格隔离：绝对不传 items 字段
+    
+    [self postJSONWithURL:url parameters:params success:^(id _Nullable responseObj) {
+        MLTowerGameSixWithdrawResultModel *resultModel = [MLTowerGameSixWithdrawResultModel mj_objectWithKeyValues:responseObj];
+        if (success) {
+            success(resultModel ?: responseObj);
+        }
+    } failure:failure];
+}
+
 - (void)fetchTowerGameSixRecordsWithPage:(NSInteger)page
                                    limit:(NSInteger)limit
                                     type:(NSString * _Nullable)type
@@ -240,15 +311,9 @@
     params[@"limit"] = @(limit > 0 ? limit : 100);
     params[@"type"] = type.length > 0 ? type : @"draw";
     
-    [MLNetWorkHelper GET:url parameters:[self buildParams:params] success:^(id responseObject) {
-        if ([responseObject[@"code"] integerValue] == 1) {
-            if (success) success(responseObject[@"data"]);
-        } else {
-            if (failure) failure(nil, responseObject[@"msg"] ?: @"获取游戏记录失败");
-        }
-    } failure:^(NSError *error) {
-        if (failure) failure(error, error.localizedDescription);
-    }];
+    [self getJSONWithURL:url parameters:[self buildParams:params] success:^(id data) {
+        if (success) success(data);
+    } failure:failure];
 }
 
 @end

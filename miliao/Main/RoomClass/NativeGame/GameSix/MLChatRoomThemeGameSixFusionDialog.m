@@ -205,7 +205,7 @@
         _defaultPrices = [@[@100, @500, @1000, @2000, @5000] mutableCopy];
         _defaultNames = [@[@"一层令", @"二层令", @"三层令", @"四层令", @"五层令"] mutableCopy];
         _cachedRatioCoin = @"0";
-        _stateVersion = 1;
+        _stateVersion = 0;
         _hasActiveTicket = NO;
         
         [self setupUI];
@@ -510,22 +510,21 @@
         if ([data isKindOfClass:[MLTowerGameSixBootstrapModel class]]) {
             MLTowerGameSixBootstrapModel *bootstrap = (MLTowerGameSixBootstrapModel *)data;
             if (bootstrap.player) {
-                wself.stateVersion = bootstrap.player.state_version ?: 1;
+                wself.stateVersion = bootstrap.player.state_version;
             }
             if (bootstrap.ticket_types && bootstrap.ticket_types.count > 0) {
                 [wself setTicketTypes:bootstrap.ticket_types];
             }
             
-            // 四重因子严格判定与双向复位（有票置 YES，无票或次数归零立即置 NO，死锁防御关键）
+            // 新规排他校验：门票处于活跃状态（含待领取阶段）即视为已有挑战，禁止重复购票
             BOOL active = (bootstrap.ticket != nil) &&
                           ([@"active" caseInsensitiveCompare:bootstrap.ticket.status ?: @""] == NSOrderedSame) &&
-                          (bootstrap.token_count > 0) &&
-                          (bootstrap.ticket.remaining_recasts > 0);
+                          (bootstrap.token_count > 0);
             wself.hasActiveTicket = active;
         } else if ([data isKindOfClass:[NSDictionary class]]) {
             NSDictionary *player = data[@"player"];
             if ([player isKindOfClass:[NSDictionary class]]) {
-                wself.stateVersion = [player[@"state_version"] integerValue] ?: 1;
+                wself.stateVersion = [player[@"state_version"] integerValue];
             }
             NSArray *ticketTypes = data[@"ticket_types"];
             if (ticketTypes && [ticketTypes isKindOfClass:[NSArray class]] && ticketTypes.count > 0) {
@@ -534,16 +533,13 @@
             }
             NSDictionary *ticket = data[@"ticket"];
             NSInteger tokenCount = [data[@"token_count"] integerValue];
-            NSInteger remaining = 0;
             NSString *status = @"";
             if ([ticket isKindOfClass:[NSDictionary class]]) {
                 status = ticket[@"status"] ?: @"";
-                remaining = [ticket[@"remaining_recasts"] integerValue];
             }
             BOOL active = [ticket isKindOfClass:[NSDictionary class]] &&
                           ([@"active" caseInsensitiveCompare:status] == NSOrderedSame) &&
-                          (tokenCount > 0) &&
-                          (remaining > 0);
+                          (tokenCount > 0);
             wself.hasActiveTicket = active;
         }
     } failure:^(NSError *error, NSString * _Nullable msg) {}];
@@ -562,7 +558,7 @@
     if (_isExchanging || (now - _lastClickTime < 0.8)) return;
     _lastClickTime = now;
     
-    // 1. 排他校验
+    // 1. 初步排他校验
     if (_hasActiveTicket) {
         [SVProgressHUD showImage:nil status:@"⚠️ 当前已有进行中的令牌挑战，完成后方可购买"];
         return;
@@ -576,29 +572,72 @@
         return;
     }
     
-    // 3. 提交纯净化直购
     _isExchanging = YES;
     [SVProgressHUD showWithStatus:@"兑换中..."];
     WeakSelf;
-    [_gameModel exchangeTowerGameSixTicketWithTicketTypeId:_selectedTicketTypeId
-                                              stateVersion:_stateVersion
-                                                   success:^(id data) {
-        wself.isExchanging = NO;
-        NSString *tierName = (wself.selectedTier <= wself.defaultNames.count) ? wself.defaultNames[wself.selectedTier - 1] : @"门票";
-        [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"✨ %@ 兑换成功！", tierName]];
-        if (wself.onFusionSuccessBlock) {
-            wself.onFusionSuccessBlock();
+    
+    // 3. Pre-flight Bootstrap 静默拉取最新版本号与挑战状态（规避并发与乐观锁状态变更）
+    [_gameModel fetchTowerGameSixBootstrapWithRoomId:nil success:^(id _Nullable data) {
+        if (!wself) return;
+        NSInteger currentVersion = wself.stateVersion;
+        if ([data isKindOfClass:[MLTowerGameSixBootstrapModel class]]) {
+            MLTowerGameSixBootstrapModel *bootstrap = (MLTowerGameSixBootstrapModel *)data;
+            if (bootstrap.player) {
+                currentVersion = bootstrap.player.state_version;
+                wself.stateVersion = currentVersion;
+            }
+            BOOL active = (bootstrap.ticket != nil) &&
+                          ([@"active" caseInsensitiveCompare:bootstrap.ticket.status ?: @""] == NSOrderedSame) &&
+                          (bootstrap.token_count > 0);
+            wself.hasActiveTicket = active;
+        } else if ([data isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *player = data[@"player"];
+            if ([player isKindOfClass:[NSDictionary class]]) {
+                currentVersion = [player[@"state_version"] integerValue];
+                wself.stateVersion = currentVersion;
+            }
+            NSDictionary *ticket = data[@"ticket"];
+            NSInteger tokenCount = [data[@"token_count"] integerValue];
+            NSString *status = @"";
+            if ([ticket isKindOfClass:[NSDictionary class]]) {
+                status = ticket[@"status"] ?: @"";
+            }
+            BOOL active = [ticket isKindOfClass:[NSDictionary class]] &&
+                          ([@"active" caseInsensitiveCompare:status] == NSOrderedSame) &&
+                          (tokenCount > 0);
+            wself.hasActiveTicket = active;
         }
-        [wself animateDismissWithCompletion:nil];
-    } failure:^(NSError *error, NSString * _Nullable errMsg) {
-        wself.isExchanging = NO;
-        [SVProgressHUD showImage:nil status:errMsg ?: @"兑换失败，请稍后再试"];
-        if ([errMsg containsString:@"已有"] || [errMsg containsString:@"门票"] || [errMsg containsString:@"挑战"] || [errMsg containsString:@"已变更"]) {
+        
+        if (wself.hasActiveTicket) {
+            wself.isExchanging = NO;
+            [SVProgressHUD showImage:nil status:@"⚠️ 当前已有进行中的令牌挑战，完成后方可购买"];
+            return;
+        }
+        
+        // 4. 提交纯净化直购
+        [wself.gameModel exchangeTowerGameSixTicketWithTicketTypeId:wself.selectedTicketTypeId
+                                                      stateVersion:currentVersion
+                                                           success:^(id respData) {
+            wself.isExchanging = NO;
+            NSString *tierName = (wself.selectedTier <= wself.defaultNames.count) ? wself.defaultNames[wself.selectedTier - 1] : @"门票";
+            [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"✨ %@ 兑换成功！", tierName]];
             if (wself.onFusionSuccessBlock) {
                 wself.onFusionSuccessBlock();
             }
             [wself animateDismissWithCompletion:nil];
-        }
+        } failure:^(NSError *error, NSString * _Nullable errMsg) {
+            wself.isExchanging = NO;
+            [SVProgressHUD showImage:nil status:errMsg ?: @"兑换失败，请稍后再试"];
+            if ([errMsg containsString:@"已有"] || [errMsg containsString:@"门票"] || [errMsg containsString:@"挑战"] || [errMsg containsString:@"已变更"]) {
+                if (wself.onFusionSuccessBlock) {
+                    wself.onFusionSuccessBlock();
+                }
+                [wself animateDismissWithCompletion:nil];
+            }
+        }];
+    } failure:^(NSError *error, NSString * _Nullable msg) {
+        wself.isExchanging = NO;
+        [SVProgressHUD showImage:nil status:msg ?: @"网络连接异常，请稍后再试"];
     }];
 }
 

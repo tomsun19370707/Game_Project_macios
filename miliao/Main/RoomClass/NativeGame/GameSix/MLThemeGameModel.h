@@ -66,10 +66,18 @@ typedef void(^MLGameSixFailureBlock)(NSError *error, NSString * _Nullable msg);
 - (void)fetchTowerGameSixTempInventoryWithSuccess:(MLGameSixSuccessBlock)success
                                            failure:(MLGameSixFailureBlock)failure;
 
-/// 7. 提交暂存包礼物取回大背包 (/api/emo/tower_game_six/withdraw)
+/// 7. 提交暂存包礼物取回大背包 (/api/emo/tower_game_six/withdraw) - 历史兼容仅传 items
 - (void)withdrawTowerGameSixTempGiftsWithItems:(NSArray<NSDictionary *> *)items
                                        success:(MLGameSixSuccessBlock)success
                                        failure:(MLGameSixFailureBlock)failure;
+
+/// 7.1 新规单票当前礼物领取 (/api/emo/tower_game_six/withdraw)
+/// 严格隔离：仅传递 request_id, ticket_id, draw_id, state_version，绝对不传 items
+- (void)claimTowerGameSixCurrentRewardWithTicketId:(NSInteger)ticketId
+                                            drawId:(long long)drawId
+                                      stateVersion:(NSInteger)stateVersion
+                                           success:(MLGameSixSuccessBlock)success
+                                           failure:(MLGameSixFailureBlock)failure;
 
 /// 8. 查询玩法6抽奖游戏历史记录 (/api/emo/tower_game_six/records)
 - (void)fetchTowerGameSixRecordsWithPage:(NSInteger)page

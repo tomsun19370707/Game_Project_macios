@@ -66,5 +66,11 @@
 
 @end
 
+@implementation MLTowerGameSixCurrentRewardModel
+@end
+
 @implementation MLTowerGameSixRecastResultModel
+@end
+
+@implementation MLTowerGameSixWithdrawResultModel
 @end
