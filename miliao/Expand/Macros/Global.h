@@ -207,8 +207,8 @@
 //#define RONYUNAPPKey @"z3v5yqkbzg4y0"//融云 正式
 //#define RONYUNAPPKey @"k51hidwqkxh9b"//融云 测试
 // APP Secret:2cLX35SQ4JA
-//#define RONYUNAPPKey @"mgb7ka1nmogig"//融云  云启汇申请1
-#define RONYUNAPPKey @"lmxuhwaglncbd"//融云  云启汇申请2
+//#define RONYUNAPPKey @"lmxuhwaglncbd"//融云  云启汇申请2 (旧key)
+#define RONYUNAPPKey @"z3v5yqkbzeut0"//融云 2026-09-08 最新key
 
 
 #define UMENGAPPKey @"6960c9209a7f37648828fb89"//友盟
