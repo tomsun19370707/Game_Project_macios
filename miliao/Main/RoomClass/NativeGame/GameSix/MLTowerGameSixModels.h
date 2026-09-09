@@ -72,6 +72,8 @@ typedef MLCandidateItemModel MLTowerGameSixTempInventoryModel;
 @property (nonatomic, copy, nullable) NSString *value_currency;
 @property (nonatomic, copy, nullable) NSString *value_currency_name;
 @property (nonatomic, assign) NSInteger advance_step; // 0, 1, 2
+@property (nonatomic, copy, nullable) NSString *probability_percent; // 下落概率百分比 (如 "50.0000", "2.0000")
+@property (nonatomic, assign) long long probability_weight;
 @end
 
 @interface MLTowerLayerInfoModel : NSObject

@@ -1178,6 +1178,8 @@
 		FA6000182970000000000008 /* MLChatRoomThemeGameSixPackDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */; };
 		FA60001B2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */; };
 		FA6000222970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000212970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m */; };
+		FA6000272970000000000006 /* MLThemeGameSixGiftCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000262970000000000006 /* MLThemeGameSixGiftCell.m */; };
+		FA60002A2970000000000006 /* MLChatRoomThemeGameSixGiftDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6000292970000000000006 /* MLChatRoomThemeGameSixGiftDialog.m */; };
 		FA85CE392A7A21A000CDC75E /* CSVisitorSDKStub.m in Sources */ = {isa = PBXBuildFile; fileRef = FA85CE3C2A7A219F00CDC75E /* CSVisitorSDKStub.m */; };
 		FA9E089E2429259E000A52CF /* UITextView+Placeholder.m in Sources */ = {isa = PBXBuildFile; fileRef = FA9E088F2429259E000A52CF /* UITextView+Placeholder.m */; };
 		FA9E089F2429259E000A52CF /* UIView+Frame.m in Sources */ = {isa = PBXBuildFile; fileRef = FA9E08902429259E000A52CF /* UIView+Frame.m */; };
@@ -3429,6 +3431,10 @@
 		FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixResultDialog.m; sourceTree = "<group>"; };
 		FA6000202970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixGlobalBackpackView.h; sourceTree = "<group>"; };
 		FA6000212970000000000006 /* MLChatRoomThemeGameSixGlobalBackpackView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixGlobalBackpackView.m; sourceTree = "<group>"; };
+		FA6000252970000000000006 /* MLThemeGameSixGiftCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLThemeGameSixGiftCell.h; sourceTree = "<group>"; };
+		FA6000262970000000000006 /* MLThemeGameSixGiftCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLThemeGameSixGiftCell.m; sourceTree = "<group>"; };
+		FA6000282970000000000006 /* MLChatRoomThemeGameSixGiftDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLChatRoomThemeGameSixGiftDialog.h; sourceTree = "<group>"; };
+		FA6000292970000000000006 /* MLChatRoomThemeGameSixGiftDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLChatRoomThemeGameSixGiftDialog.m; sourceTree = "<group>"; };
 		FA85CE3C2A7A219F00CDC75E /* CSVisitorSDKStub.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSVisitorSDKStub.m; sourceTree = "<group>"; };
 		FA9E088D2429259E000A52CF /* NSString+category.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+category.h"; sourceTree = "<group>"; };
 		FA9E088F2429259E000A52CF /* UITextView+Placeholder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextView+Placeholder.m"; sourceTree = "<group>"; };
@@ -9040,6 +9046,10 @@
 				FA6000172970000000000008 /* MLChatRoomThemeGameSixPackDialog.m */,
 				FA6000192970000000000009 /* MLChatRoomThemeGameSixResultDialog.h */,
 				FA60001A2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m */,
+				FA6000252970000000000006 /* MLThemeGameSixGiftCell.h */,
+				FA6000262970000000000006 /* MLThemeGameSixGiftCell.m */,
+				FA6000282970000000000006 /* MLChatRoomThemeGameSixGiftDialog.h */,
+				FA6000292970000000000006 /* MLChatRoomThemeGameSixGiftDialog.m */,
 				D830C5B8D17F5458AD74DA09 /* MLChatRoomThemeGameSixRecordDialog.h */,
 				5813CEC352BD5616900D36C0 /* MLChatRoomThemeGameSixRecordDialog.m */,
 				81BDBBC740245A649F4CADB8 /* MLThemeGameSixRecordCell.h */,
@@ -9464,6 +9474,8 @@
 				FA6000152970000000000007 /* MLThemeGameSixPackGiftCell.m in Sources */,
 				FA6000182970000000000008 /* MLChatRoomThemeGameSixPackDialog.m in Sources */,
 				FA60001B2970000000000009 /* MLChatRoomThemeGameSixResultDialog.m in Sources */,
+				FA6000272970000000000006 /* MLThemeGameSixGiftCell.m in Sources */,
+				FA60002A2970000000000006 /* MLChatRoomThemeGameSixGiftDialog.m in Sources */,
 				73CB338BEBEB545096AF3C97 /* MLChatRoomThemeGameSixRecordDialog.m in Sources */,
 				E36EA150F9AE5DA4A6ACCD59 /* MLThemeGameSixRecordCell.m in Sources */,
 				2E669F5CDF425F78B83EC324 /* MLThemeGameSixRecordDateHeader.m in Sources */,

@@ -1,7 +1,7 @@
 #import "MLChatRoomThemeGameSixView.h"
 #import "MLChatRoomThemeGameSixRuleDialog.h"
 #import "MLChatRoomThemeGameSixFusionDialog.h"
-#import "MLChatRoomThemeGameSixPackDialog.h"
+#import "MLChatRoomThemeGameSixGiftDialog.h"
 #import "MLChatRoomThemeGameSixResultDialog.h"
 #import "MLChatRoomThemeGameSixRecordDialog.h"
 #import "MLChatRoomThemeGameSixFortuneView.h"
@@ -589,11 +589,14 @@
 }
 
 - (void)giftPackClick {
-    MLChatRoomThemeGameSixPackDialog *dialog = [MLChatRoomThemeGameSixPackDialog showInView:self];
-    __weak typeof(self) weakSelf = self;
-    dialog.onWithdrawSuccessBlock = ^{
-        [weakSelf loadBootstrapData];
-    };
+    if (!self.bootstrapModel || !self.bootstrapModel.layers || self.bootstrapModel.layers.count == 0) {
+        [SVProgressHUD showInfoWithStatus:@"奖品池加载中，请稍候"];
+        return;
+    }
+    NSInteger initialLayer = self.currentLayer > 0 ? self.currentLayer : 1;
+    [MLChatRoomThemeGameSixGiftDialog showInView:self
+                                          layers:self.bootstrapModel.layers
+                                    initialLayer:initialLayer];
 }
 
 - (void)fusionClick {
