@@ -114,8 +114,12 @@
     _nameLabel.text = [NSString stringWithFormat:@"%@*%ld", item.name ?: @"", (long)item.ownedNum];
     
     if (item.isBackpackGift) {
-        double total = item.unitRatio * item.ownedNum;
-        _descLabel.text = [NSString stringWithFormat:@"可换 %@ 黑曜石", [MLUnifiedExchangeItem formatLargeNumber:total]];
+        if (item.isExchangeable && item.unitRatio > 0) {
+            double total = item.unitRatio * item.ownedNum;
+            _descLabel.text = [NSString stringWithFormat:@"可换 %@ 黑曜石", [MLUnifiedExchangeItem formatLargeNumber:total]];
+        } else {
+            _descLabel.text = @"不可兑换";
+        }
     } else {
         if (item.prizeCoin > 0) {
             _descLabel.text = [NSString stringWithFormat:@"%@ 元宝", [MLUnifiedExchangeItem formatLargeNumber:item.prizeCoin]];

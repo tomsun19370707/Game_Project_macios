@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger ratioCoin;    // 黑曜石消耗
 @property (nonatomic, assign) BOOL isBackpackGift;    // 是否来自背包
 @property (nonatomic, assign) BOOL isSelected;        // 是否选中
+@property (nonatomic, assign) BOOL isExchangeable;    // 是否支持当前兑换业务 (核心防吞校验标志)
 
 @property (nonatomic, strong, nullable) NSDictionary *rawDict;
 

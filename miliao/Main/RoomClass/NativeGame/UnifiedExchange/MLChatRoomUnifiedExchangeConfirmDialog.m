@@ -284,18 +284,33 @@
     _nameLabel.text = _item.name ?: @"";
     
     if (_item.isBackpackGift) {
-        _ratioLabel.text = [NSString stringWithFormat:@"兑换比例为 1:%@", [MLUnifiedExchangeItem formatLargeNumber:_item.unitRatio]];
-        _totalCoinIcon.image = [UIImage imageNamed:@"unified_exchange_ic_obsidian"];
+        if (_item.isExchangeable && _item.unitRatio > 0) {
+            _ratioLabel.text = [NSString stringWithFormat:@"兑换比例为 1:%@", [MLUnifiedExchangeItem formatLargeNumber:_item.unitRatio]];
+            _totalCoinIcon.image = [UIImage imageNamed:@"unified_exchange_ic_obsidian"];
+            _submitBtn.userInteractionEnabled = YES;
+            _submitBtn.alpha = 1.0;
+        } else {
+            _ratioLabel.text = @"该礼物暂不支持兑换黑曜石";
+            _totalCoinIcon.image = [UIImage imageNamed:@"unified_exchange_ic_obsidian"];
+            _submitBtn.userInteractionEnabled = NO;
+            _submitBtn.alpha = 0.5;
+        }
     } else {
         if (_item.prizeCoin > 0) {
             _ratioLabel.text = [NSString stringWithFormat:@"单价: %ld 元宝", (long)_item.prizeCoin];
             _totalCoinIcon.image = [UIImage imageNamed:@"unified_exchange_ic_ingot"];
+            _submitBtn.userInteractionEnabled = YES;
+            _submitBtn.alpha = 1.0;
         } else if (_item.ratioCoin > 0) {
             _ratioLabel.text = [NSString stringWithFormat:@"单价: %ld 黑曜石", (long)_item.ratioCoin];
             _totalCoinIcon.image = [UIImage imageNamed:@"unified_exchange_ic_obsidian"];
+            _submitBtn.userInteractionEnabled = YES;
+            _submitBtn.alpha = 1.0;
         } else {
-            _ratioLabel.text = @"免费兑换";
+            _ratioLabel.text = @"该商品暂不可兑换";
             _totalCoinIcon.image = [UIImage imageNamed:@"unified_exchange_ic_ingot"];
+            _submitBtn.userInteractionEnabled = NO;
+            _submitBtn.alpha = 0.5;
         }
     }
     
@@ -307,9 +322,17 @@
 - (void)updateTotalCost {
     int64_t safeCount = (int64_t)_count;
     if (_item.isBackpackGift) {
+        if (!_item.isExchangeable || _item.unitRatio <= 0) {
+            _totalCostLabel.text = @"0";
+            return;
+        }
         double total = (double)safeCount * _item.unitRatio;
         _totalCostLabel.text = [MLUnifiedExchangeItem formatLargeNumber:total];
     } else {
+        if (!_item.isExchangeable || (_item.prizeCoin <= 0 && _item.ratioCoin <= 0)) {
+            _totalCostLabel.text = @"0";
+            return;
+        }
         int64_t unit = _item.prizeCoin > 0 ? (int64_t)_item.prizeCoin : (int64_t)_item.ratioCoin;
         int64_t total = safeCount * unit;
         _totalCostLabel.text = [MLUnifiedExchangeItem formatLargeNumber:(double)total];
@@ -374,9 +397,21 @@
         return;
     }
     
-    if (_item.isBackpackGift && _count > _item.ownedNum) {
-        [SVProgressHUD showImage:nil status:@"拥有数量不足"];
-        return;
+    if (_item.isBackpackGift) {
+        // 核心安全硬拦截：不可兑换项物理拦截并退出，杜绝扣礼物加0元
+        if (!_item.isExchangeable || _item.unitRatio <= 0) {
+            [SVProgressHUD showImage:nil status:@"该礼物暂不支持兑换黑曜石"];
+            return;
+        }
+        if (_count > _item.ownedNum) {
+            [SVProgressHUD showImage:nil status:@"拥有数量不足"];
+            return;
+        }
+    } else {
+        if (!_item.isExchangeable || (_item.prizeCoin <= 0 && _item.ratioCoin <= 0)) {
+            [SVProgressHUD showImage:nil status:@"该商品暂不可兑换"];
+            return;
+        }
     }
     
     _isExchanging = YES;

@@ -416,6 +416,10 @@
         [SVProgressHUD showImage:nil status:@"请先选择要兑换的礼物"];
         return;
     }
+    if (_currentMode == MLUnifiedExchangeModeBackpack && (!_selectedItem.isExchangeable || _selectedItem.unitRatio <= 0)) {
+        [SVProgressHUD showImage:nil status:@"该礼物暂不支持兑换黑曜石"];
+        return;
+    }
     [self showConfirmDialog:_selectedItem];
 }
 
@@ -496,6 +500,7 @@
         }
         
         if (rawItems && rawItems.count > 0) {
+            NSInteger firstSelectIdx = -1;
             for (NSInteger i = 0; i < rawItems.count; i++) {
                 id raw = rawItems[i];
                 NSDictionary *dict = nil;
@@ -506,12 +511,19 @@
                 }
                 if (dict) {
                     MLUnifiedExchangeItem *item = [MLUnifiedExchangeItem itemFromGiftDictionary:dict];
-                    if (i == 0) {
-                        item.isSelected = YES;
-                        wself.selectedItem = item;
+                    if (firstSelectIdx == -1 && item.isExchangeable && item.unitRatio > 0) {
+                        firstSelectIdx = wself.giftList.count;
                     }
                     [wself.giftList addObject:item];
                 }
+            }
+            if (wself.giftList.count > 0) {
+                if (firstSelectIdx == -1) {
+                    firstSelectIdx = 0;
+                }
+                MLUnifiedExchangeItem *firstItem = wself.giftList[firstSelectIdx];
+                firstItem.isSelected = YES;
+                wself.selectedItem = firstItem;
             }
             wself.emptyLabel.hidden = YES;
             wself.collectionView.hidden = NO;
@@ -710,6 +722,10 @@
     
     if (clicked.isSelected) {
         // 二次点击已选中的礼物，直接弹出确认窗口
+        if (_currentMode == MLUnifiedExchangeModeBackpack && (!clicked.isExchangeable || clicked.unitRatio <= 0)) {
+            [SVProgressHUD showImage:nil status:@"该礼物暂不支持兑换黑曜石"];
+            return;
+        }
         [self showConfirmDialog:clicked];
         return;
     }

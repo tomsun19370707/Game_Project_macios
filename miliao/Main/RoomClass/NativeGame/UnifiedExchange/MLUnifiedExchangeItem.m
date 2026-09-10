@@ -36,30 +36,20 @@
         item.ownedNum = 0;
     }
     
-    // 优先解析礼物单价 price 作为兑换黑曜石比例 (单件背包礼物兑换黑曜石 = 礼物单价 price)
-    double priceVal = 0;
-    id priceObj = dict[@"price"];
-    if (priceObj) {
-        priceVal = [priceObj doubleValue];
+    // 严格且仅解析后端确认的 ratio_coin 作为兑换黑曜石比例 (彻底废除 price 与 exchange_num 假兜底，杜绝扣礼物加0元)
+    double ratioCoinVal = 0;
+    id ratioCoinObj = dict[@"ratio_coin"];
+    if (ratioCoinObj != nil && ![ratioCoinObj isKindOfClass:[NSNull class]]) {
+        ratioCoinVal = [ratioCoinObj doubleValue];
     }
-    if (priceVal > 0) {
-        item.unitRatio = priceVal;
-    } else {
-        // 兜底：若 price 为空或 0，尝试 exchange_num 与 num
-        double totalExchange = 0;
-        id exchangeNumObj = dict[@"exchange_num"];
-        if (exchangeNumObj) {
-            totalExchange = [exchangeNumObj doubleValue];
-        }
-        if (item.ownedNum > 0 && totalExchange > 0) {
-            item.unitRatio = totalExchange / item.ownedNum;
-        } else {
-            item.unitRatio = 1.0;
-        }
+    item.unitRatio = ratioCoinVal;
+    
+    // 必须配置了有效的 ratio_coin (>0) 且 is_send == 1 才视为支持兑换 (四重防吞安全红线)
+    NSInteger isSend = 0;
+    if (dict[@"is_send"] != nil && ![dict[@"is_send"] isKindOfClass:[NSNull class]]) {
+        isSend = [dict[@"is_send"] integerValue];
     }
-    if (item.unitRatio <= 0) {
-        item.unitRatio = 1.0;
-    }
+    item.isExchangeable = (ratioCoinVal > 0 && isSend == 1);
     
     return item;
 }
@@ -93,7 +83,8 @@
     }
     item.ratioCoin = ratioCoin;
     
-    item.unitRatio = item.ratioCoin > 0 ? (double)item.ratioCoin : 1.0;
+    item.unitRatio = item.prizeCoin > 0 ? (double)item.prizeCoin : (item.ratioCoin > 0 ? (double)item.ratioCoin : 1.0);
+    item.isExchangeable = (item.prizeCoin > 0 || item.ratioCoin > 0);
     
     return item;
 }
