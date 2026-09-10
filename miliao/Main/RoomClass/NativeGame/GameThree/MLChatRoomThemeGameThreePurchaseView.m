@@ -327,9 +327,14 @@
     _selectedCountLabel.textColor = mHexRGB(0xFFDB83);
     _selectedCountLabel.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(12)];
     _selectedCountLabel.text = @"已选择: 1 个";
+    _selectedCountLabel.textAlignment = NSTextAlignmentCenter;
+    _selectedCountLabel.adjustsFontSizeToFitWidth = YES;
+    _selectedCountLabel.minimumScaleFactor = 0.6;
     [numBoxView addSubview:_selectedCountLabel];
     [_selectedCountLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(numBoxView);
+        make.left.mas_greaterThanOrEqualTo(numBoxView.mas_left).offset(KDialogAdaptedWidth(4));
+        make.right.mas_lessThanOrEqualTo(numBoxView.mas_right).offset(-KDialogAdaptedWidth(4));
     }];
     
     // Confirm Purchase Button
@@ -412,13 +417,14 @@
             [wself optClick:wself.optOneButton];
             return;
         }
-        if (count > 9999) {
-            [SVProgressHUD showErrorWithStatus:@"单次购买不能超过 9999 个"];
+        if (count > 200000000) {
+            [SVProgressHUD showInfoWithStatus:@"单次购买上限为 2 亿"];
             [wself optClick:wself.optOneButton];
             return;
         }
         wself.selectedCount = count;
-        wself.selectedCountLabel.text = [NSString stringWithFormat:@"已选择: %ld 个", (long)count];
+        NSString *countStr = count >= 10000 ? MLFormatLargeNumber((double)count) : [NSString stringWithFormat:@"%ld", (long)count];
+        wself.selectedCountLabel.text = [NSString stringWithFormat:@"已选择: %@ 个", countStr];
     }]];
     
     UIViewController *curVC = [UIViewController currentViewController];
@@ -432,6 +438,10 @@
     NSInteger buyCount = self.selectedCount;
     if (buyCount <= 0) {
         [SVProgressHUD showErrorWithStatus:@"请选择购买数量"];
+        return;
+    }
+    if (buyCount > 200000000) {
+        [SVProgressHUD showInfoWithStatus:@"单次购买上限为 2 亿"];
         return;
     }
     
@@ -451,7 +461,8 @@
         wself.localKeys += buyCount;
         [wself updateBalanceUI];
         
-        [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"成功兑换 %ld 把钥匙", (long)buyCount]];
+        NSString *buyStr = buyCount >= 10000 ? MLFormatLargeNumber((double)buyCount) : [NSString stringWithFormat:@"%ld", (long)buyCount];
+        [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"成功兑换 %@ 把钥匙", buyStr]];
         
         if (wself.purchaseSuccessBlock) {
             wself.purchaseSuccessBlock(wself.localKeys);

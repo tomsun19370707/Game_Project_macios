@@ -298,10 +298,14 @@ static const NSInteger KEY_PRICE_DIAMOND = 10; // 1 key = 10 diamonds
     _tvSelectedCount.textColor = mHexRGB(0xFFDB83);
     _tvSelectedCount.font = [UIFont boldSystemFontOfSize:KDialogAdaptedWidth(11)];
     _tvSelectedCount.textAlignment = NSTextAlignmentCenter;
+    _tvSelectedCount.adjustsFontSizeToFitWidth = YES;
+    _tvSelectedCount.minimumScaleFactor = 0.6;
     [_contentClippingContainer addSubview:_tvSelectedCount];
     [_tvSelectedCount mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(_btnCountTen.mas_bottom).offset(KDialogAdaptedWidth(4));
         make.centerX.mas_equalTo(_contentClippingContainer);
+        make.left.mas_greaterThanOrEqualTo(_contentClippingContainer.mas_left).offset(KDialogAdaptedWidth(8));
+        make.right.mas_lessThanOrEqualTo(_contentClippingContainer.mas_right).offset(-KDialogAdaptedWidth(8));
     }];
 
     // 8. Confirm Purchase Button (Enlarged by another 10%: 194x71 pt, bottom = -6 pt)
@@ -359,8 +363,8 @@ static const NSInteger KEY_PRICE_DIAMOND = 10; // 1 key = 10 diamonds
                 [SVProgressHUD showInfoWithStatus:@"购买数量必须大于0"];
                 return;
             }
-            if (count > 9999) {
-                [SVProgressHUD showInfoWithStatus:@"单次购买上限为 9999"];
+            if (count > 200000000) {
+                [SVProgressHUD showInfoWithStatus:@"单次购买上限为 2 亿"];
                 return;
             }
             strongSelf.customCount = count;
@@ -385,7 +389,11 @@ static const NSInteger KEY_PRICE_DIAMOND = 10; // 1 key = 10 diamonds
 
     NSInteger actualCount = (self.selectedCount == -1) ? (self.customCount > 0 ? self.customCount : 0) : self.selectedCount;
     NSInteger totalCost = actualCount * KEY_PRICE_DIAMOND;
-    _tvSelectedCount.text = [NSString stringWithFormat:@"已选择: %ld 个 (%ld钻石)", (long)actualCount, (long)totalCost];
+    if (actualCount >= 10000) {
+        _tvSelectedCount.text = [NSString stringWithFormat:@"已选择: %@ 个 (%@钻石)", MLFormatLargeNumber((double)actualCount), MLFormatLargeNumber((double)totalCost)];
+    } else {
+        _tvSelectedCount.text = [NSString stringWithFormat:@"已选择: %ld 个 (%ld钻石)", (long)actualCount, (long)totalCost];
+    }
 }
 
 - (void)rechargeClick {
@@ -423,6 +431,10 @@ static const NSInteger KEY_PRICE_DIAMOND = 10; // 1 key = 10 diamonds
     NSInteger actualCount = (self.selectedCount == -1) ? self.customCount : self.selectedCount;
     if (actualCount <= 0) {
         [SVProgressHUD showInfoWithStatus:@"请先选择或输入购买数量"];
+        return;
+    }
+    if (actualCount > 200000000) {
+        [SVProgressHUD showInfoWithStatus:@"单次购买上限为 2 亿"];
         return;
     }
     

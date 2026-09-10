@@ -342,7 +342,9 @@
 
 - (void)updateCostUI {
     NSInteger costCount = self.selectedCount;
-    _costLabel.text = [NSString stringWithFormat:@"消耗 %ld 钻石", (long)(costCount * 10)];
+    NSInteger totalCost = costCount * 10;
+    NSString *costStr = (totalCost >= 10000) ? MLFormatLargeNumber((double)totalCost) : [NSString stringWithFormat:@"%ld", (long)totalCost];
+    _costLabel.text = [NSString stringWithFormat:@"消耗 %@ 钻石", costStr];
 }
 
 #pragma mark - 档位点击
@@ -378,8 +380,8 @@
                 [SVProgressHUD showErrorWithStatus:@"购买数量必须大于0"];
                 return;
             }
-            if (count > 9999) {
-                [SVProgressHUD showErrorWithStatus:@"单次购买不能超过 9999 个"];
+            if (count > 200000000) {
+                [SVProgressHUD showInfoWithStatus:@"单次购买上限为 2 亿"];
                 return;
             }
             strongSelf.selectedCount = count;
@@ -400,8 +402,8 @@
         [SVProgressHUD showErrorWithStatus:@"请选择购买数量"];
         return;
     }
-    if (buyCount > 9999) {
-        [SVProgressHUD showErrorWithStatus:@"单次购买不能超过 9999 个"];
+    if (buyCount > 200000000) {
+        [SVProgressHUD showInfoWithStatus:@"单次购买上限为 2 亿"];
         return;
     }
     
@@ -421,7 +423,8 @@
         wself.localKeys += buyCount;
         [wself updateBalanceUI];
         
-        [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"成功兑换 %ld 把钥匙", (long)buyCount]];
+        NSString *buyStr = buyCount >= 10000 ? MLFormatLargeNumber((double)buyCount) : [NSString stringWithFormat:@"%ld", (long)buyCount];
+        [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"成功兑换 %@ 把钥匙", buyStr]];
         
         if (wself.purchaseSuccessBlock) {
             wself.purchaseSuccessBlock(wself.localKeys);

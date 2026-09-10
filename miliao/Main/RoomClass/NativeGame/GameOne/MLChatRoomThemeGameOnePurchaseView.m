@@ -366,7 +366,9 @@
 
 - (void)updateCostUI {
     NSInteger costCount = self.selectedCount;
-    _costLabel.text = [NSString stringWithFormat:@"消耗 %ld 钻石", (long)(costCount * [self getSingleKeyCost])];
+    NSInteger totalCost = costCount * [self getSingleKeyCost];
+    NSString *costStr = (totalCost >= 10000) ? MLFormatLargeNumber((double)totalCost) : [NSString stringWithFormat:@"%ld", (long)totalCost];
+    _costLabel.text = [NSString stringWithFormat:@"消耗 %@ 钻石", costStr];
 }
 
 #pragma mark - 档位点击
@@ -418,14 +420,15 @@
             [wself optClick:wself.optOneButton];
             return;
         }
-        if (count > 9999) {
-            [SVProgressHUD showErrorWithStatus:@"单次购买不能超过 9999 个"];
+        if (count > 200000000) {
+            [SVProgressHUD showInfoWithStatus:@"单次购买上限为 2 亿"];
             [wself optClick:wself.optOneButton];
             return;
         }
         wself.selectedCount = count;
         [wself updateCostUI];
-        [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"已选择购买 %ld 把钥匙", (long)count]];
+        NSString *countStr = count >= 10000 ? MLFormatLargeNumber((double)count) : [NSString stringWithFormat:@"%ld", (long)count];
+        [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"已选择购买 %@ 把钥匙", countStr]];
     }]];
     
     UIViewController *topVC = [UIViewController currentViewController];
@@ -443,6 +446,10 @@
     NSInteger buyCount = self.selectedCount;
     if (buyCount <= 0) {
         [SVProgressHUD showErrorWithStatus:@"请选择购买数量"];
+        return;
+    }
+    if (buyCount > 200000000) {
+        [SVProgressHUD showInfoWithStatus:@"单次购买上限为 2 亿"];
         return;
     }
     
