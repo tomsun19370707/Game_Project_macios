@@ -11,8 +11,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, MLUnifiedExchangeMode) {
-    MLUnifiedExchangeModeBackpack = 0, // 背包礼物兑换黑曜石
-    MLUnifiedExchangeModeMall = 1       // 元宝商城兑换礼物
+    MLUnifiedExchangeModeBackpack = 0, // 礼物兑换（背包）
+    MLUnifiedExchangeModeMall = 1       // 元宝商城（兑换礼物）
 };
 
 typedef void(^MLUnifiedExchangeSuccessBlock)(void);

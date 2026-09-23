@@ -152,7 +152,7 @@
                 return;
             }
             if (indexPath.section==3) {
-                /** 统一兑换中心（默认 Mode 1 元宝商城兑换礼物）*/
+                /** 统一兑换中心（默认 Mode 1 元宝商城）*/
                 UIView *topView = self.view.window ?: [UIApplication sharedApplication].keyWindow;
                 [MLChatRoomUnifiedExchangeDialog showInView:topView defaultMode:MLUnifiedExchangeModeMall success:^{
                     [self fetchBalance];

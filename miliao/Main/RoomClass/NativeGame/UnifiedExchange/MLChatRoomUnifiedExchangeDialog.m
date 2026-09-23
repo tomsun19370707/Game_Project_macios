@@ -299,7 +299,7 @@
     
     // 标题
     _titleLabel = [[UILabel alloc] init];
-    _titleLabel.text = @"背包礼物兑换黑曜石";
+    _titleLabel.text = @"礼物兑换";
     _titleLabel.textColor = [UIColor colorWithRed:0x22/255.0 green:0x22/255.0 blue:0x22/255.0 alpha:1.0];
     _titleLabel.font = [UIFont fontWithName:@"PingFangSC-Semibold" size:18.0] ?: [UIFont boldSystemFontOfSize:18.0];
     [_contentContainer addSubview:_titleLabel];
@@ -371,14 +371,14 @@
 
 - (void)updateTabStyle {
     if (_currentMode == MLUnifiedExchangeModeBackpack) {
-        _titleLabel.text = @"背包礼物兑换黑曜石";
+        _titleLabel.text = @"礼物兑换";
         _tabBgImageView.image = [UIImage imageNamed:@"unified_exchange_tab_bg"];
         _obsidianNameLabel.textColor = [UIColor colorWithRed:0x3D/255.0 green:0x29/255.0 blue:0x10/255.0 alpha:1.0];
         _ingotNameLabel.textColor = [UIColor colorWithRed:0x19/255.0 green:0x28/255.0 blue:0x3D/255.0 alpha:1.0];
         _obsidianAssetView.alpha = 1.0;
         _ingotAssetView.alpha = 0.7;
     } else {
-        _titleLabel.text = @"元宝商城兑换礼物";
+        _titleLabel.text = @"元宝商城";
         _tabBgImageView.image = [UIImage imageNamed:@"unified_exchange_tab_bg_ingot"];
         _obsidianNameLabel.textColor = [UIColor colorWithRed:0x19/255.0 green:0x28/255.0 blue:0x3D/255.0 alpha:1.0];
         _ingotNameLabel.textColor = [UIColor colorWithRed:0x3D/255.0 green:0x29/255.0 blue:0x10/255.0 alpha:1.0];
