@@ -158,7 +158,7 @@ Strong UIButton *MaskAnimationBtn;
 - (UILabel *)closeRoomLabel{
     if (!_closeRoomLabel) {
         _closeRoomLabel = [[UILabel alloc] init];
-        _closeRoomLabel.text = getLanguage(@"关闭房间");
+        _closeRoomLabel.text = getLanguage(@"退出房间");
         _closeRoomLabel.textColor = RGBA(51, 51, 51, 1);
         _closeRoomLabel.font=KFont(13);
         _closeRoomLabel.textAlignment=NSTextAlignmentCenter;
@@ -328,12 +328,30 @@ Strong UIButton *MaskAnimationBtn;
 
 - (void)setIsMe:(BOOL)isMe
 {
-    self.closeRoomBtn.hidden = isMe;
-    self.closeRoomLabel.hidden = isMe;
-    self.closeRoomImgView.hidden = isMe;
+    // 房主与普通用户均展示退出房间入口
+    self.closeRoomBtn.hidden = NO;
+    self.closeRoomLabel.hidden = NO;
+    self.closeRoomImgView.hidden = NO;
+    // 房主不展示举报自己房间
     self.reportRoomBtn.hidden = isMe;
     self.reportRoomLabel.hidden = isMe;
     self.reportRoomImgView.hidden = isMe;
+    
+    if (isMe) {
+        [self.MaskAnimationImgView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.width.mas_equalTo(self.shareImgView.mas_width);
+            make.height.mas_equalTo(self.shareImgView.mas_height);
+            make.centerY.mas_equalTo(self.shareImgView.mas_centerY);
+            make.leading.mas_equalTo(self.closeRoomImgView.mas_trailing).offset(KAdaptedWidth(60));
+        }];
+    } else {
+        [self.MaskAnimationImgView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.width.mas_equalTo(self.shareImgView.mas_width);
+            make.height.mas_equalTo(self.shareImgView.mas_height);
+            make.centerY.mas_equalTo(self.shareImgView.mas_centerY);
+            make.leading.mas_equalTo(self.reportRoomImgView.mas_trailing).offset(KAdaptedWidth(60));
+        }];
+    }
 }
 
 @end

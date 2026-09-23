@@ -1751,9 +1751,9 @@ static SVGAParser *parser;
         /** 记录房间信息*/
         wself.currentRoomInfo = [NSMutableDictionary dictionaryWithDictionary:basemolde.data] ;
         
-        /** 判断，只有房主才显示添加音乐按钮*/
+        /** 音乐播放功能已停用，保持强制隐藏（与 Android 对齐）*/
         NSString *is_me = basemolde.data[@"room_info"][@"is_me"];
-        wself.musicBtn.hidden = !is_me.boolValue;
+        wself.musicBtn.hidden = YES;
         
         if(is_me.intValue==1){
             wself.roomMoreView.isMe = YES ;
@@ -3392,7 +3392,10 @@ static SVGAParser *parser;
             }else if (senderTag==200){
                 //退出房间
                 if([[MLRoomInformationModel currentAccount].uuid integerValue]==[[UserManager userInfo].user_id integerValue]){
-                    [wself getQuit_roomWithParameters:1];
+                    // 房主退出房间：上报服务器离开挂起，退回大厅出悬浮窗，不销毁/解散房间
+                    [wself anchorLeaveOrJoinRoom:2 success:^{
+                        [wself backClick];
+                    }];
                 }else{
                     [wself getQuit_roomWithParameters:2];
                 }
@@ -3927,6 +3930,7 @@ static SVGAParser *parser;
         _musicBtn.bottom = SCREEN_HEIGHT_dy - 90;
         /** 0 表示没有正在播放的音乐  1正在播放音乐*/
         _musicBtn.tag = 0 ;
+        _musicBtn.hidden = YES;
     }
     return _musicBtn;
 }

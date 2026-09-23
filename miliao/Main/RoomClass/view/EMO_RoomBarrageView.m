@@ -126,11 +126,12 @@ static SVGAParser *parser;
         [_closeButton setImage:[UIImage imageNamed:@"closeImg"] forState:UIControlStateNormal];
         [_closeButton addTarget:self action:@selector(buttonAtTheBottomOfTheClick:) forControlEvents:UIControlEventTouchUpInside];
         _closeButton.tag=3;
+        _closeButton.hidden = YES;
         [self addSubview:_closeButton];
         [_closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(KAdaptedWidth(40));
+            make.width.mas_equalTo(KAdaptedWidth(0));
             make.height.mas_equalTo(KAdaptedHeight(35));
-            make.trailing.mas_equalTo(KAdaptedWidth(-10));
+            make.trailing.mas_equalTo(KAdaptedWidth(0));
             make.bottom.mas_equalTo(self.keyBoardBgView.mas_bottom);
             
         }];
@@ -322,13 +323,9 @@ static SVGAParser *parser;
     self.soundButton.hidden=YES;
     //1房主  2管理员 0一般用户
     if ([[MLRoomInformationModel currentAccount].user_type isEqualToString:@"1"]) {
-        self.closeButton.hidden=NO;
+        // 房主视角永久隐藏关闭按钮，最右侧对齐为礼物按钮（与 Android 对齐）
+        self.closeButton.hidden=YES;
         self.maiButton.hidden=NO;
-        [self.closeButton mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(KAdaptedWidth(40));
-            make.trailing.mas_equalTo(KAdaptedWidth(-10));
-        }];
-        [self.closeButton layoutIfNeeded];
     }else if ([[MLRoomInformationModel currentAccount].user_type isEqualToString:@"2"]){
         self.maiButton.hidden=YES;
         
