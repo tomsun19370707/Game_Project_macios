@@ -128,10 +128,10 @@
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSData *errorData = [error.userInfo objectForKey:AFNetworkingOperationFailingURLResponseDataErrorKey];
+        NSDictionary *dic = nil;
         if(errorData != nil){
-            NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+            dic = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
             DLog(@"[Finished] Post, %@ %@ %@ %@", urlStr, parMutableDic,dic, net.manager.requestSerializer.HTTPRequestHeaders);
-            [SVProgressHUD showImage:KGetImage(@"") status:[Common isNull:dic[@"msg"]]];
             if([dic[@"code"] integerValue]==401){
                 UserDefaultsSave(@"", kToken);
                 [UserManager clearUserInfo];
@@ -144,6 +144,13 @@
                 navVC.navigationBarHidden = YES;
                 delegate.window.rootViewController = navVC;
             }
+        }
+        NSString *errMsg = dic[@"msg"];
+        if ([Common isEmptyString:errMsg]) {
+            errMsg = error.localizedDescription.length > 0 ? error.localizedDescription : getLanguage(@"网络连接失败");
+        }
+        [SVProgressHUD showImage:KGetImage(@"") status:errMsg];
+        if (failture) {
             failture(error);
         }
     }];
@@ -198,9 +205,9 @@
             }
         } else {
             NSData *errorData = [error.userInfo objectForKey:AFNetworkingOperationFailingURLResponseDataErrorKey];
+            NSDictionary *dic = nil;
             if(errorData != nil){
-                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-                [SVProgressHUD showImage:KGetImage(@"") status:[Common isNull:dic[@"msg"]]];
+                dic = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
                 if([dic[@"code"] integerValue]==401){
                     UserDefaultsSave(@"", kToken);
                     [UserManager clearUserInfo];
@@ -213,6 +220,13 @@
                     navVC.navigationBarHidden = YES;
                     delegate.window.rootViewController = navVC;
                 }
+            }
+            NSString *errMsg = dic[@"msg"];
+            if ([Common isEmptyString:errMsg]) {
+                errMsg = error.localizedDescription.length > 0 ? error.localizedDescription : getLanguage(@"网络连接失败");
+            }
+            [SVProgressHUD showImage:KGetImage(@"") status:errMsg];
+            if (failture) {
                 failture(error);
             }
         }

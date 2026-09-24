@@ -104,7 +104,7 @@ NSString *const Request_GetBlockList = VERSION_HTTPS_SERVER@"api/user/getMyblock
 NSString *const Request_userNameAuthentication = VERSION_HTTPS_SERVER@"api/user/userRealName";//提交,编辑实名认证
 
 NSString *const Request_CollectRoom = VERSION_HTTPS_SERVER@"api/room/collectRoom";//收藏/取消收藏房间
-NSString *const Request_InitFace = VERSION_HTTPS_SERVER@"user/initFaceVerify";//发起认证请求
+NSString *const Request_InitFace = VERSION_HTTPS_SERVER@"api/user/initFaceVerify";//发起认证请求
 
 
 

@@ -14,6 +14,10 @@
 #import "EMO_GradeCenterViewController.h"
 #import "EMO_FeedbackViewController.h"
 #import "CFMMyGiftVc.h"
+#import "EMO_AddRoomVC.h"
+#import "EMO_RenZhengViewController.h"
+#import "DYAlertView.h"
+#import "UserManager.h"
 #define  itemheight  67
 
 @interface YMMineFunctionVie ()<UICollectionViewDelegate,UICollectionViewDataSource>
@@ -149,7 +153,12 @@
     }else if ([title isEqualToString:@"我的收藏"]) {
         [Dn_NAVPUSH pushViewController:[EMO_CollectVC new] animated:YES];
     }else if ([title isEqualToString:@"我的房间"]) {
-        [Dn_NAVPUSH pushViewController:[EMO_MyRoomViewController new] animated:YES];
+        // 【回滚恢复点】原业务逻辑（展示“我创建的”和“我管理的”双Tab房间列表页）：
+        // 如需恢复原业务，取消下面一行的注释，并注释掉 [self handleCreateRoomEntry] 即可：
+        // [Dn_NAVPUSH pushViewController:[EMO_MyRoomViewController new] animated:YES];
+
+        // [需求变更] 点击“我的房间”承接原首页“+”创建房间业务流程
+        [self handleCreateRoomEntry];
     }else if ([title isEqualToString:@"我的等级"]) {
         [Dn_NAVPUSH pushViewController:[EMO_GradeCenterViewController new] animated:YES];
     }else if ([title isEqualToString:@"帮助反馈"]) {
@@ -203,6 +212,44 @@
 //        NSString *waitPayNum = self.normalOrderStatic[@"afterCount"];
 //        cell.numStr = waitPayNum ;
 //    }
+}
+
+#pragma mark - 创建房间流转与实名认证校验
+- (void)handleCreateRoomEntry {
+    UserInfo *userInfo = [UserManager userInfo];
+    if (!userInfo) {
+        return;
+    }
+    
+    NSString *realNameStatus = [NSString stringWithFormat:@"%@", userInfo.real_name_status];
+    
+    // 实名认证状态判定：0=未认证, 1=申请中, 2=审核通过, 3=申请驳回
+    if ([realNameStatus isEqualToString:@"2"]) {
+        // 1. 已实名认证：直接打开创建房间页
+        EMO_AddRoomVC *createVC = [[EMO_AddRoomVC alloc] init];
+        [Dn_NAVPUSH pushViewController:createVC animated:YES];
+    } else if ([realNameStatus isEqualToString:@"1"]) {
+        // 2. 实名认证审核中：轻提示
+        [SVProgressHUD showInfoWithStatus:@"实名认证中，请耐心等待审核"];
+    } else {
+        // 3. 未实名认证 / 被驳回：弹出引导弹窗
+        [self showRealNameAuthDialog];
+    }
+}
+
+#pragma mark - 实名引导弹窗
+- (void)showRealNameAuthDialog {
+    DYAlertView *alert = [[DYAlertView alloc] initWithTitle:@"提示"
+                                                   content:@"暂未实名认证，无法创建房间，是否去实名认证？"
+                                                 construct:@"确认"
+                                                completion:^{
+        EMO_RenZhengViewController *authVC = [[EMO_RenZhengViewController alloc] init];
+        [Dn_NAVPUSH pushViewController:authVC animated:YES];
+    }];
+    [alert addButtonTitle:@"取消" completion:^{
+        
+    }];
+    [alert show];
 }
 
 @end

@@ -207,6 +207,7 @@
     [self.view addSubview:self.listTableview];
     /** add*/
     [self.view addSubview:self.addBtn];
+    self.addBtn.hidden = YES;
 }
 
 #pragma mark -
@@ -408,6 +409,7 @@
         _addBtn = [UIButton racButtonWithTitle:nil BGImage:IMAGE(@"chat_room_create") frame:CGRectMake(0, 0, 50, 50) fontSize:1 titleColor:nil];
         _addBtn.right = SCREENWIDTH - 16 ;
         _addBtn.bottom = SCREEN_HEIGHT_dy - TabBarHeight - 26 ;
+        _addBtn.hidden = YES; // [需求变更] 首页创建房间悬浮按钮常态隐藏
     }
     return _addBtn;
 }
@@ -636,15 +638,19 @@
 
         NSArray *array =baseModel.data;
         
-        /** 我如果开过直播间的话，就不能再开了*/
+        // [需求变更] 首页右下角创建房间悬浮按钮常态隐藏，功能迁移至“我的-我的房间”
+        // 【回滚恢复点】如需恢复首页悬浮按钮，取消下面注释并注释掉 wself.addBtn.hidden = YES 即可：
+        /*
         if (array.count > 0) {
             wself.addBtn.hidden = YES;
         } else {
             wself.addBtn.hidden = NO;
             [wself.view bringSubviewToFront:wself.addBtn];
         }
+        */
+        wself.addBtn.hidden = YES;
     } failture:^(NSError *error) {
-      
+        wself.addBtn.hidden = YES;
     }];
 }
 @end

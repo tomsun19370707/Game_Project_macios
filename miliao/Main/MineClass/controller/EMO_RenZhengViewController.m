@@ -122,82 +122,86 @@
 //        return [SVProgressHUD showImage:KGetImage(@"") status:getLanguage(@"请上传身份证反面")];
 //    }
     
-    WeakSelf
-    /** 调用接口，后台审核*/
-    /** para*/
-    NSMutableDictionary *parameter =[NSMutableDictionary dictionary];
-    parameter[@"name"] = self.myPhoneText.text;
-    parameter[@"idcard"] = self.myVcodeText.text;
-    parameter[@"face_image"] = @"";
-    parameter[@"back_image"] = @"";
-//    parameter[@"face_image"] = self.carViewZMStr;
-//    parameter[@"back_image"] = self.carViewFMStr;
-    [NetworkRequest POST:user_userRealName parmeters:parameter success:^(id responObject) {
-        [SVProgressHUD showTextHUDWithMessage:@"提交成功"];
-        [ObjectTool performSelectorAfterDelay:ALERT_MESSAGE_DISPLAY_INTERVAL completion:^{
-            [wself backClick];
-        }];
-    } failture:^(NSError *error) {
-        
-    }];
-    
-    
-    /** 继续活体*/
+    WeakSelf;
+    /** 严格串行流程：先向后端初始化活体检测凭证 certifyId */
     [SVProgressHUD show];
-    NSString *str = [NSString dictionaryToJson:[AliyunFaceAuthFacade getMetaInfo]];
-    [NetworkRequest POST:Request_InitFace parmeters:@{@"name":self.myPhoneText.text,@"idcard":self.myVcodeText.text,@"metaInfo":str} success:^(id responObject) {
+    NSDictionary *metaInfoDic = [AliyunFaceAuthFacade getMetaInfo] ?: @{};
+    NSString *str = [NSString dictionaryToJson:metaInfoDic] ?: @"";
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"name"] = self.myPhoneText.text ?: @"";
+    params[@"idcard"] = self.myVcodeText.text ?: @"";
+    params[@"metaInfo"] = str;
+    [NetworkRequest POST:Request_InitFace parmeters:params success:^(id responObject) {
         [SVProgressHUD dismiss];
-        BaseModel *mode=(BaseModel *)responObject;
-        [wself CertifyID:mode.data[@"certifyId"]];
+        BaseModel *mode = (BaseModel *)responObject;
+        NSString *certifyId = nil;
+        if ([mode.data isKindOfClass:[NSDictionary class]]) {
+            certifyId = mode.data[@"certifyId"];
+        } else if ([mode.data isKindOfClass:[NSString class]]) {
+            certifyId = (NSString *)mode.data;
+        }
+        if (certifyId && certifyId.length > 0) {
+            [wself CertifyID:certifyId];
+        } else {
+            NSString *errMsg = mode.msg.length > 0 ? mode.msg : @"获取失败";
+            [SVProgressHUD showImage:KGetImage(@"") status:errMsg];
+        }
     } failture:^(NSError *error) {
-        [SVProgressHUD dismiss];
-   
+        // NetworkRequest.m already handles HUD error display on failure
     }];
 }
--(void)CertifyID:(NSString *)certifyId{
+
+- (void)CertifyID:(NSString *)certifyId {
     WeakSelf;
     [AliyunFaceAuthFacade verifyWith:certifyId extParams:@{@"currentCtr":self} onCompletion:^(ZIMResponse * _Nonnull response) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSString *title = @"认证已完成";
-                    switch (response.code) {
-                        case ZIMResponseSuccess:{
-                            //1000。
-                            [wself requestShiMing];
-                        }break;
-                        case ZIMInterrupt://1003。
-                            title = @"用户退出";
-                            break;
-                        case ZIMNetworkfail://2002。
-                            title = @"网络错误";
-                            break;
-                        case ZIMTIMEError: //2003。
-                            title = @"设备时间设置不对";
-                            break;
-                        case ZIMResponseFail: //2006。
-                            title = @"认证失败";
-                            break;
-                        case ZIMInternalError://1001。
-                            title = @"初始化失败";
-                            break;
-                        default:
-                            break;
-                    }
-            [SVProgressHUD showImage:KGetImage(@"") status:title];
-            });
+            switch (response.code) {
+                case ZIMResponseSuccess:{
+                    // 1000: 活体刷脸检测成功后，才调用接口真正落库
+                    [wself requestShiMing];
+                }break;
+                case ZIMInterrupt://1003。
+                    [SVProgressHUD showImage:KGetImage(@"") status:@"用户退出"];
+                    break;
+                case ZIMNetworkfail://2002。
+                    [SVProgressHUD showImage:KGetImage(@"") status:@"网络错误"];
+                    break;
+                case ZIMTIMEError: //2003。
+                    [SVProgressHUD showImage:KGetImage(@"") status:@"设备时间设置不对"];
+                    break;
+                case ZIMResponseFail: //2006。
+                    [SVProgressHUD showImage:KGetImage(@"") status:@"认证失败"];
+                    break;
+                case ZIMInternalError://1001。
+                    [SVProgressHUD showImage:KGetImage(@"") status:@"初始化失败"];
+                    break;
+                default:
+                    [SVProgressHUD showImage:KGetImage(@"") status:@"认证未完成"];
+                    break;
+            }
+        });
     }];
 }
 
-//实名认证
--(void)requestShiMing{
-    [NetworkRequest POST:Request_userNameAuthentication parmeters:@{@"name":self.myPhoneText.text,@"idcard":self.myVcodeText.text,@"face_image":self.carViewZMStr,@"back_image":self.carViewFMStr} success:^(id responObject) {
+// 活体成功后真正提交落库
+- (void)requestShiMing {
+    WeakSelf;
+    [SVProgressHUD show];
+    NSMutableDictionary *parameter = [NSMutableDictionary dictionary];
+    parameter[@"name"] = self.myPhoneText.text ?: @"";
+    parameter[@"idcard"] = self.myVcodeText.text ?: @"";
+    parameter[@"face_image"] = @"";
+    parameter[@"back_image"] = @"";
+    [NetworkRequest POST:user_userRealName parmeters:parameter success:^(id responObject) {
         [SVProgressHUD dismiss];
-        BaseModel *baseModel = (BaseModel *)responObject;
-        [SVProgressHUD showImage:KGetImage(@"") status:[Common isNull:baseModel.msg]];
-        [self.navigationController popViewControllerAnimated:YES];
-
+        [SVProgressHUD showTextHUDWithMessage:@"提交成功"];
+        [ObjectTool performSelectorAfterDelay:ALERT_MESSAGE_DISPLAY_INTERVAL completion:^{
+            [wself.navigationController popViewControllerAnimated:YES];
+        }];
     } failture:^(NSError *error) {
         [SVProgressHUD dismiss];
-   
+        NSString *errMsg = error.localizedDescription.length > 0 ? error.localizedDescription : @"提交失败";
+        [SVProgressHUD showImage:KGetImage(@"") status:errMsg];
     }];
 }
 

@@ -213,6 +213,9 @@ static SVGAParser *parserCache;
         make.height.width.mas_offset(50);
         make.bottom.mas_offset(-20);
     }];
+    // [需求变更] 首页右下角创建房间悬浮按钮常态隐藏，功能平移至“我的-我的房间”
+    // 【回滚恢复点】如需恢复首页悬浮按钮，注释掉下面一行即可：
+    addBtn.hidden = YES;
 }
 
 -(void)addClick{
