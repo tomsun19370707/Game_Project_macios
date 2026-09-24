@@ -174,12 +174,16 @@
             make.leading.trailing.mas_equalTo(itemBg);
         }];
         
-        // 售价: "200钻石"
+        // 售价 / 材料提示: "200钻石" 或 "已计入宝图兑换"
         UILabel *priceLabel = [[UILabel alloc] init];
         priceLabel.textColor = mHexRGB(0xFFEB3B);
         priceLabel.font = KFontBoldA(8);
         priceLabel.textAlignment = NSTextAlignmentCenter;
-        priceLabel.text = [NSString stringWithFormat:@"%ld钻石", (long)gift.price];
+        if ([gift isTreasureMaterial]) {
+            priceLabel.text = @"已计入宝图兑换";
+        } else {
+            priceLabel.text = [NSString stringWithFormat:@"%ld钻石", (long)gift.price];
+        }
         [itemBg addSubview:priceLabel];
         [priceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(nameLabel.mas_bottom).offset(KDialogAdaptedWidth(1.0f));
@@ -232,6 +236,9 @@
         for (UIView *sub in self.superview.subviews) {
             if ([sub respondsToSelector:NSSelectorFromString(@"loadData")]) {
                 [sub performSelector:NSSelectorFromString(@"loadData")];
+            }
+            if ([sub respondsToSelector:NSSelectorFromString(@"loadExchangeData")]) {
+                [sub performSelector:NSSelectorFromString(@"loadExchangeData")];
             }
         }
         [self removeFromSuperview];

@@ -43,10 +43,19 @@
 
 @implementation GoodListInfoModel
 + (NSDictionary *)modelCustomPropertyMapper {
-    return @{@"ID" : @"id"};
+    return @{
+        @"ID" : @"id",
+        @"reward_type" : @"reward_type"
+    };
 }
 + (NSDictionary *)mj_replacedKeyFromPropertyName {
-    return @{@"ID" : @"id"};
+    return @{
+        @"ID" : @"id",
+        @"reward_type" : @[@"reward_type", @"rewardType"]
+    };
+}
+- (BOOL)isTreasureMaterial {
+    return [self.reward_type.lowercaseString isEqualToString:@"treasure_material"];
 }
 + (NSDictionary *)modelContainerPropertyGenericClass {
     return @{@"shop" : [ShopInfoModel class],

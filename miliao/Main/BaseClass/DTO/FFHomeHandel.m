@@ -175,8 +175,15 @@
                 for (id item in (NSArray *)dataObj) {
                     if ([item isKindOfClass:[NSDictionary class]]) {
                         GoodListInfoModel *model = [GoodListInfoModel mj_objectWithKeyValues:item];
+                        // 防御性过滤：独立兑换材料（藏宝图、宝石碎片等）不属于普通礼物背包
+                        if ([model isTreasureMaterial]) {
+                            continue;
+                        }
                         [resultArray addObject:model ?: item];
                     } else if (item) {
+                        if ([item respondsToSelector:@selector(isTreasureMaterial)] && [item performSelector:@selector(isTreasureMaterial)]) {
+                            continue;
+                        }
                         [resultArray addObject:item];
                     }
                 }
@@ -185,7 +192,12 @@
         if (resultArray.count == 0) {
             GoodCateInfo *cateModel = [GoodCateInfo mj_objectWithKeyValues:responObject];
             if (cateModel && [cateModel.data isKindOfClass:[NSArray class]]) {
-                [resultArray addObjectsFromArray:cateModel.data];
+                for (id item in cateModel.data) {
+                    if ([item respondsToSelector:@selector(isTreasureMaterial)] && [item performSelector:@selector(isTreasureMaterial)]) {
+                        continue;
+                    }
+                    [resultArray addObject:item];
+                }
             }
         }
         

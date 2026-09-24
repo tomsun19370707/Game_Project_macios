@@ -6,8 +6,14 @@
 + (NSDictionary *)mj_replacedKeyFromPropertyName {
     return @{
         @"giftId": @"id",
-        @"probability_text": @[@"probability_text", @"probabilityText"]
+        @"probability_text": @[@"probability_text", @"probabilityText"],
+        @"reward_type": @[@"reward_type", @"rewardType"],
+        @"display_color": @[@"display_color", @"displayColor"]
     };
+}
+
+- (BOOL)isTreasureMaterial {
+    return [self.reward_type.lowercaseString isEqualToString:@"treasure_material"];
 }
 
 - (NSString *)imageUrl {
@@ -39,6 +45,8 @@
         copy.num = self.num;
         copy.probability_text = [self.probability_text copyWithZone:zone];
         copy.probability = self.probability;
+        copy.reward_type = [self.reward_type copyWithZone:zone];
+        copy.display_color = [self.display_color copyWithZone:zone];
     }
     return copy;
 }

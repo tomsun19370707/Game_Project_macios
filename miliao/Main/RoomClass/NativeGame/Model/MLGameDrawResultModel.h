@@ -11,6 +11,13 @@
 @property (nonatomic, assign) BOOL is_guaranteed;
 @property (nonatomic, copy) NSString *probability_text;
 @property (nonatomic, assign) double probability;
+@property (nonatomic, copy) NSString *reward_type;
+@property (nonatomic, copy) NSString *display_color;
+
+/**
+ 是否为独立兑换材料（藏宝图、宝石碎片等，绝对不进入普通背包）
+ */
+- (BOOL)isTreasureMaterial;
 
 /**
  兼容性的图片加载地址 (内部自动处理 pic 与 image 兜底)

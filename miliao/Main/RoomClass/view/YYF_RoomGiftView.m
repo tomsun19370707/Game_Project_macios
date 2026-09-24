@@ -84,7 +84,14 @@ UIGestureRecognizerDelegate,XHInputViewDelagete>
 static SVGAParser *parser;
 
 - (void)setMyArray:(NSMutableArray *)myArray {
-    _myArray = myArray;
+    NSMutableArray *filteredArray = [NSMutableArray array];
+    for (id item in myArray) {
+        if ([item isKindOfClass:[RoomGiftModel class]] && [(RoomGiftModel *)item isTreasureMaterial]) {
+            continue; // 防御性拦截：独立兑换材料禁止进入普通背包
+        }
+        [filteredArray addObject:item];
+    }
+    _myArray = filteredArray;
     NSString *currentUid = [UserManager userInfo].user_id;
     for (RoomGiftModel *gift in _myArray) {
         if ([gift isKindOfClass:[RoomGiftModel class]]) {
@@ -1516,6 +1523,9 @@ static SVGAParser *parser;
         NSMutableArray<RoomGiftModel *> *unlockedList = [NSMutableArray array];
         NSMutableArray<RoomGiftModel *> *lockedList = [NSMutableArray array];
         for (RoomGiftModel *gift in self.myArray) {
+            if ([gift isKindOfClass:[RoomGiftModel class]] && [gift isTreasureMaterial]) {
+                continue;
+            }
             if (gift.isLocked) {
                 [lockedList addObject:gift];
             } else {

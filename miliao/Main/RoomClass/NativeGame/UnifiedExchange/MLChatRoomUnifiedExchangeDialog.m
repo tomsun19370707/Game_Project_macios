@@ -505,11 +505,18 @@
                 id raw = rawItems[i];
                 NSDictionary *dict = nil;
                 if ([raw isKindOfClass:[GoodListInfoModel class]]) {
+                    if ([(GoodListInfoModel *)raw isTreasureMaterial]) {
+                        continue;
+                    }
                     dict = [(GoodListInfoModel *)raw mj_keyValues];
                 } else if ([raw isKindOfClass:[NSDictionary class]]) {
                     dict = (NSDictionary *)raw;
                 }
                 if (dict) {
+                    NSString *rewardType = [NSString stringWithFormat:@"%@", dict[@"reward_type"] ?: @""];
+                    if ([rewardType.lowercaseString isEqualToString:@"treasure_material"]) {
+                        continue;
+                    }
                     MLUnifiedExchangeItem *item = [MLUnifiedExchangeItem itemFromGiftDictionary:dict];
                     if (firstSelectIdx == -1 && item.isExchangeable && item.unitRatio > 0) {
                         firstSelectIdx = wself.giftList.count;
@@ -614,11 +621,19 @@
             for (id item in knapsackRawList) {
                 NSDictionary *dict = nil;
                 if ([item isKindOfClass:[GoodListInfoModel class]]) {
+                    if ([(GoodListInfoModel *)item isTreasureMaterial]) {
+                        continue;
+                    }
                     dict = [(GoodListInfoModel *)item mj_keyValues];
                 } else if ([item isKindOfClass:[NSDictionary class]]) {
                     dict = (NSDictionary *)item;
                 }
                 if (!dict) continue;
+                
+                NSString *rewardType = [NSString stringWithFormat:@"%@", dict[@"reward_type"] ?: @""];
+                if ([rewardType.lowercaseString isEqualToString:@"treasure_material"]) {
+                    continue;
+                }
                 
                 NSInteger num = [dict[@"num"] integerValue] ?: [dict[@"nums"] integerValue];
                 NSInteger giftId = [dict[@"gift_id"] integerValue];

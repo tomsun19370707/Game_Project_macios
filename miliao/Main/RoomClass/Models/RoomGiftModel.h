@@ -32,6 +32,12 @@
 @property (nonatomic, strong) NSString *gift_id;
 @property (nonatomic, assign) BOOL is_locked;
 @property (nonatomic, assign) BOOL isLocked;
+@property (nonatomic, copy) NSString *reward_type;
+
+/**
+ 是否为独立兑换材料（藏宝图、宝石碎片等，绝对不进入普通背包）
+ */
+- (BOOL)isTreasureMaterial;
 
 - (NSString *)realGiftId;
 

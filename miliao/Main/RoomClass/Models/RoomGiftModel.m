@@ -13,8 +13,13 @@
 
 + (NSDictionary *)mj_replacedKeyFromPropertyName{
     return @{
-        @"giftID" : @"id"
+        @"giftID" : @"id",
+        @"reward_type" : @[@"reward_type", @"rewardType"]
     };
+}
+
+- (BOOL)isTreasureMaterial {
+    return [self.reward_type.lowercaseString isEqualToString:@"treasure_material"];
 }
 
 - (NSString *)realGiftId {
@@ -50,6 +55,11 @@
     
     for (RoomGiftModel *item in rawList) {
         if (![item isKindOfClass:[RoomGiftModel class]]) continue;
+        
+        // ⭐️ 防御性过滤：独立兑换材料（藏宝图、宝石碎片等）不属于普通礼物背包，严禁在背包展示及流通
+        if ([item isTreasureMaterial]) {
+            continue;
+        }
         
         // ⭐️ 三级主键优先级策略 (3-Tier Priority Strategy)
         NSString *mergeKey = nil;

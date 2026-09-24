@@ -1023,7 +1023,7 @@
         
         // 5. 计费回滚防御
         if (error.code == NSURLErrorTimedOut) {
-            [SVProgressHUD showInfoWithStatus:@"服务器繁忙，结果可能稍后到账，请去记录或背包查看"];
+            [SVProgressHUD showInfoWithStatus:@"服务器繁忙，结果可能稍后到账，请前往抽奖记录查看"];
         } else {
             wself.localKeyBalance += cost;
             [wself updateBalanceUI];

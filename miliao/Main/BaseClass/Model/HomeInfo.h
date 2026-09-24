@@ -137,6 +137,12 @@
 @property (nonatomic,strong) NSString *image;
 /** 二三级分类*/
 @property (nonatomic,strong) NSArray *ecCategories;
+@property (nonatomic,copy) NSString *reward_type;
+
+/**
+ 是否为独立兑换材料（藏宝图、宝石碎片等，绝对不进入普通背包）
+ */
+- (BOOL)isTreasureMaterial;
 @end
 
 /** 商品详情*/
