@@ -146,7 +146,8 @@
 @property (nonatomic, strong) UIImageView *bgImageView;
 
 // HUD Buttons
-@property (nonatomic, strong) UIButton *giftButton;
+@property (nonatomic, strong) UIButton *giftPoolButton;
+@property (nonatomic, strong) UIButton *fortuneButton;
 @property (nonatomic, strong) UIButton *ruleButton;
 @property (nonatomic, strong) UIButton *recordButton;
 
@@ -262,85 +263,63 @@
         make.edges.mas_equalTo(_backgroundContainer);
     }];
 
-    // 今日运势入口 (右上角上方 70pt x 30pt 胶囊)
-    CGFloat fortuneW = KDialogAdaptedWidth(70.0f);
-    CGFloat fortuneH = KDialogAdaptedWidth(30.0f);
-    UIView *fortuneBar = [[UIView alloc] init];
-    fortuneBar.userInteractionEnabled = YES;
-    [self addSubview:fortuneBar];
-    [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_backgroundContainer.mas_top).offset(-KDialogAdaptedWidth(6));
-        make.trailing.mas_equalTo(_backgroundContainer.mas_trailing).offset(-KDialogAdaptedWidth(12));
-        make.size.mas_equalTo(CGSizeMake(fortuneW, fortuneH));
-    }];
-    
-    CAGradientLayer *fortuneGrad = [CAGradientLayer layer];
-    fortuneGrad.frame = CGRectMake(0, 0, fortuneW, fortuneH);
-    fortuneGrad.colors = @[(__bridge id)mHexRGB(0xFFA800).CGColor, (__bridge id)mHexRGB(0xE67E00).CGColor, (__bridge id)mHexRGB(0xC85A00).CGColor];
-    fortuneGrad.startPoint = CGPointMake(0.5, 0);
-    fortuneGrad.endPoint = CGPointMake(0.5, 1);
-    fortuneGrad.cornerRadius = KDialogAdaptedWidth(15.0f);
-    [fortuneBar.layer addSublayer:fortuneGrad];
-    
-    fortuneBar.layer.borderColor = mHexRGB(0xFFE57F).CGColor;
-    fortuneBar.layer.borderWidth = 1.5;
-    fortuneBar.layer.cornerRadius = KDialogAdaptedWidth(15.0f);
-    fortuneBar.clipsToBounds = YES;
-    
-    UITapGestureRecognizer *fortuneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(fortuneClick)];
-    [fortuneBar addGestureRecognizer:fortuneTap];
-    
-    UILabel *fortuneLabel = [[UILabel alloc] init];
-    fortuneLabel.text = @"今日运势";
-    fortuneLabel.textColor = kWhiteColor;
-    fortuneLabel.font = [UIFont boldSystemFontOfSize:11];
-    fortuneLabel.textAlignment = NSTextAlignmentCenter;
-    [fortuneBar addSubview:fortuneLabel];
-    [fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(fortuneBar);
+    CGFloat buttonSize = KDialogAdaptedWidth(52.0f);
+    CGFloat topOffset = KDialogAdaptedWidth(136.0f); // 23% baseline of 591 pt (591.0f * 0.23f)
+    CGFloat sideMargin = KDialogAdaptedWidth(3.0f);
+    CGFloat verticalGap = KDialogAdaptedWidth(8.0f);
+
+    // 左上：【奖池】按钮 (替换原礼物按钮)
+    _giftPoolButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_giftPoolButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_gift_pool_btn"] forState:UIControlStateNormal];
+    [_giftPoolButton addTarget:self action:@selector(giftPoolClick) forControlEvents:UIControlEventTouchUpInside];
+    [_backgroundContainer addSubview:_giftPoolButton];
+    [_giftPoolButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_backgroundContainer.mas_top).offset(topOffset);
+        make.leading.mas_equalTo(_backgroundContainer).offset(sideMargin);
+        make.size.mas_equalTo(CGSizeMake(buttonSize, buttonSize));
     }];
 
-    // Left Gift Button
-    _giftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_giftButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_btn_gift"] forState:UIControlStateNormal];
-    [_giftButton addTarget:self action:@selector(giftClick) forControlEvents:UIControlEventTouchUpInside];
-    [_backgroundContainer addSubview:_giftButton];
-    [_giftButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(125));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(5));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(53.5), KDialogAdaptedWidth(44.5)));
+    // 左下：【今日运势】按钮 (奖池正下方)
+    _fortuneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_fortuneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_fortune_btn"] forState:UIControlStateNormal];
+    [_fortuneButton addTarget:self action:@selector(fortuneClick) forControlEvents:UIControlEventTouchUpInside];
+    [_backgroundContainer addSubview:_fortuneButton];
+    [_fortuneButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_giftPoolButton.mas_bottom).offset(verticalGap);
+        make.leading.trailing.mas_equalTo(_giftPoolButton);
+        make.height.mas_equalTo(buttonSize);
     }];
 
-    // Right Rule Button
+    // 右上：【规则说明】按钮 (对齐 750:1182 面板规范)
     _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_ruleButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_btn_rule"] forState:UIControlStateNormal];
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [_backgroundContainer addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(125));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(5));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(53.5), KDialogAdaptedWidth(44.5)));
+        make.top.mas_equalTo(_giftPoolButton);
+        make.trailing.mas_equalTo(_backgroundContainer).offset(-sideMargin);
+        make.size.mas_equalTo(CGSizeMake(buttonSize, buttonSize));
     }];
 
-    // Right Record Button (Below Rule)
+    // 右下：【中奖记录】按钮 (规则说明正下方)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_recordButton setBackgroundImage:[UIImage imageNamed:@"theme_game_five_btn_record"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_backgroundContainer addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(_ruleButton.mas_bottom).offset(KDialogAdaptedWidth(5));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(5));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(53), KDialogAdaptedWidth(44.5)));
+        make.top.mas_equalTo(_ruleButton.mas_bottom).offset(verticalGap);
+        make.leading.trailing.mas_equalTo(_ruleButton);
+        make.height.mas_equalTo(buttonSize);
     }];
 
-    // Marquee View Container (百分比 32.5% 高度锚定，左右受控于 _giftButton 与 _ruleButton)
+    // Marquee View Container (原位 540 * 0.325 居中锚定，左右受控于 _giftPoolButton 与 _ruleButton)
     _marqueeContainer = [[UIView alloc] init];
     _marqueeContainer.clipsToBounds = YES;
     _marqueeContainer.hidden = YES;
     [_backgroundContainer addSubview:_marqueeContainer];
     [_marqueeContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(_backgroundContainer.mas_top).offset(KDialogAdaptedWidth(540 * 0.325));
-        make.leading.mas_equalTo(_giftButton.mas_trailing).offset(KDialogAdaptedWidth(10));
+        make.leading.mas_equalTo(_giftPoolButton.mas_trailing).offset(KDialogAdaptedWidth(10));
         make.trailing.mas_equalTo(_ruleButton.mas_leading).offset(-KDialogAdaptedWidth(10));
         make.height.mas_equalTo(KDialogAdaptedWidth(28));
     }];
@@ -623,6 +602,7 @@
 }
 
 - (void)fortuneClick {
+    if (self.isDrawing) return;
     [MLChatRoomThemeGameFiveFortuneView showInView:self.superview consume:self.fortuneConsume produce:self.fortuneProduce];
 }
 
@@ -724,9 +704,17 @@
 
 #pragma mark - Click Action Handlers
 
-- (void)giftClick {
+- (void)giftPoolClick {
     if (self.isDrawing) return;
+    if (!self.prizesInPool || self.prizesInPool.count == 0) {
+        [SVProgressHUD showInfoWithStatus:@"奖池加载中，请稍候"];
+        return;
+    }
     [MLChatRoomThemeGameFiveGiftView showInView:self.superview typeId:self.typeId prizes:self.prizesInPool];
+}
+
+- (void)giftClick {
+    [self giftPoolClick];
 }
 
 - (void)ruleClick {
