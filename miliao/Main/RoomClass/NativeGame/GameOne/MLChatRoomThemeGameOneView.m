@@ -35,6 +35,8 @@
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIButton *ruleButton;
 @property (nonatomic, strong) UIButton *recordButton;
+@property (nonatomic, strong) UIButton *giftPoolButton;
+@property (nonatomic, strong) UIButton *fortuneButton;
 @property (nonatomic, strong) UIButton *refreshButton;
 @property (nonatomic, strong) UIButton *exchangeButton;
 @property (nonatomic, strong) NSTimer *rotationTimer;
@@ -212,108 +214,50 @@
         make.leading.trailing.mas_equalTo(_bgImageView);
     }];
     
-    // --- 顶部容器子控件布局 ---
+    // --- 顶部容器子控件布局 (HUDContainer) ---
     
-    // 记录按钮 (位于左上角, 宽 63, 高 26，改用背景图拉伸)
+    // 1. 顶部左侧：记录按钮 (与标题栏顶边齐平，宽 62, 高 26)
     _recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_recordButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_record_btn_brighter"] forState:UIControlStateNormal];
     [_recordButton addTarget:self action:@selector(recordClick) forControlEvents:UIControlEventTouchUpInside];
     [_topContainer addSubview:_recordButton];
     [_recordButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(16));
-        make.leading.mas_equalTo(KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(63), KDialogAdaptedWidth(26)));
+        make.top.mas_equalTo(KDialogAdaptedWidth(14));
+        make.leading.mas_equalTo(KDialogAdaptedWidth(14));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(26)));
     }];
     
-    // 规则按钮 (位于右上角, 宽 63, 高 26，改用背景图拉伸)
+    // 2. 顶部左侧：奖池按钮 (垂直排在记录按钮正下方，间距 6 pt)
+    _giftPoolButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_giftPoolButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_gift_pool_btn"] forState:UIControlStateNormal];
+    [_giftPoolButton addTarget:self action:@selector(giftPoolClick) forControlEvents:UIControlEventTouchUpInside];
+    [_topContainer addSubview:_giftPoolButton];
+    [_giftPoolButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(_recordButton.mas_bottom).offset(KDialogAdaptedWidth(6));
+        make.centerX.equalTo(_recordButton);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(26)));
+    }];
+    
+    // 3. 顶部右侧：规则按钮 (与标题栏顶边齐平，宽 62, 高 26)
     _ruleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_ruleButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_rule_btn_brighter"] forState:UIControlStateNormal];
     [_ruleButton addTarget:self action:@selector(ruleClick) forControlEvents:UIControlEventTouchUpInside];
     [_topContainer addSubview:_ruleButton];
     [_ruleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(KDialogAdaptedWidth(16));
-        make.trailing.mas_equalTo(-KDialogAdaptedWidth(16));
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(63), KDialogAdaptedWidth(26)));
+        make.top.mas_equalTo(KDialogAdaptedWidth(14));
+        make.trailing.mas_equalTo(-KDialogAdaptedWidth(14));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(26)));
     }];
     
-    // 1. 容器外正上方左侧【奖品池】悬浮条 (宽 70, 高 30. 悬浮在左上角外侧，与右侧今日运势 100% 对称)
-    UIView *giftPoolBar = [[UIView alloc] init];
-    giftPoolBar.userInteractionEnabled = YES;
-    [self addSubview:giftPoolBar];
-    
-    CGFloat poolW = KDialogAdaptedWidth(70.0f);
-    CGFloat poolH = KDialogAdaptedWidth(30.0f);
-    [giftPoolBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_bgImageView.mas_top).offset(-KDialogAdaptedWidth(6));
-        make.leading.mas_equalTo(_bgImageView.mas_leading).offset(KDialogAdaptedWidth(12));
-        make.size.mas_equalTo(CGSizeMake(poolW, poolH));
-    }];
-    
-    CAGradientLayer *poolGrad = [CAGradientLayer layer];
-    poolGrad.frame = CGRectMake(0, 0, poolW, poolH);
-    poolGrad.colors = @[(__bridge id)mHexRGB(0xFFA800).CGColor, (__bridge id)mHexRGB(0xE67E00).CGColor, (__bridge id)mHexRGB(0xC85A00).CGColor];
-    poolGrad.startPoint = CGPointMake(0.5, 0);
-    poolGrad.endPoint = CGPointMake(0.5, 1);
-    poolGrad.cornerRadius = KDialogAdaptedWidth(15.0f);
-    [giftPoolBar.layer addSublayer:poolGrad];
-    
-    giftPoolBar.layer.borderColor = mHexRGB(0xFFE57F).CGColor;
-    giftPoolBar.layer.borderWidth = 1.5;
-    giftPoolBar.layer.cornerRadius = KDialogAdaptedWidth(15.0f);
-    giftPoolBar.clipsToBounds = YES;
-    
-    UITapGestureRecognizer *poolTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(giftPoolClick)];
-    [giftPoolBar addGestureRecognizer:poolTap];
-    
-    UILabel *poolLabel = [[UILabel alloc] init];
-    poolLabel.text = @"奖品池";
-    poolLabel.textColor = kWhiteColor;
-    poolLabel.font = [UIFont boldSystemFontOfSize:11];
-    poolLabel.textAlignment = NSTextAlignmentCenter;
-    [giftPoolBar addSubview:poolLabel];
-    [poolLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(giftPoolBar);
-    }];
-
-    // 今日运势悬浮条 (宽 70, 高 30. 悬浮在右上角外侧)
-    UIView *fortuneBar = [[UIView alloc] init];
-    fortuneBar.userInteractionEnabled = YES;
-    [self addSubview:fortuneBar];
-    
-    CGFloat fortuneW = KDialogAdaptedWidth(70.0f);
-    CGFloat fortuneH = KDialogAdaptedWidth(30.0f);
-    [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_bgImageView.mas_top).offset(-KDialogAdaptedWidth(6));
-        make.trailing.mas_equalTo(_bgImageView.mas_trailing).offset(-KDialogAdaptedWidth(12));
-        make.size.mas_equalTo(CGSizeMake(fortuneW, fortuneH));
-    }];
-    
-    // 原生琥珀金渐变背景 (#FFA800 -> #E67E00 -> #C85A00)
-    CAGradientLayer *fortuneGrad = [CAGradientLayer layer];
-    fortuneGrad.frame = CGRectMake(0, 0, fortuneW, fortuneH);
-    fortuneGrad.colors = @[(__bridge id)mHexRGB(0xFFA800).CGColor, (__bridge id)mHexRGB(0xE67E00).CGColor, (__bridge id)mHexRGB(0xC85A00).CGColor];
-    fortuneGrad.startPoint = CGPointMake(0.5, 0);
-    fortuneGrad.endPoint = CGPointMake(0.5, 1);
-    fortuneGrad.cornerRadius = KDialogAdaptedWidth(15.0f);
-    [fortuneBar.layer addSublayer:fortuneGrad];
-    
-    // 金色边框和圆角
-    fortuneBar.layer.borderColor = mHexRGB(0xFFE57F).CGColor;
-    fortuneBar.layer.borderWidth = 1.5;
-    fortuneBar.layer.cornerRadius = KDialogAdaptedWidth(15.0f);
-    fortuneBar.clipsToBounds = YES;
-    
-    UITapGestureRecognizer *fortuneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(fortuneClick)];
-    [fortuneBar addGestureRecognizer:fortuneTap];
-    
-    UILabel *fortuneLabel = [[UILabel alloc] init];
-    fortuneLabel.text = @"今日运势";
-    fortuneLabel.textColor = kWhiteColor;
-    fortuneLabel.font = [UIFont boldSystemFontOfSize:11];
-    fortuneLabel.textAlignment = NSTextAlignmentCenter;
-    [fortuneBar addSubview:fortuneLabel];
-    [fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(fortuneBar);
+    // 4. 顶部右侧：运势按钮 (垂直排在规则按钮正下方，间距 6 pt)
+    _fortuneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_fortuneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_one_fortune_btn"] forState:UIControlStateNormal];
+    [_fortuneButton addTarget:self action:@selector(fortuneClick) forControlEvents:UIControlEventTouchUpInside];
+    [_topContainer addSubview:_fortuneButton];
+    [_fortuneButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(_ruleButton.mas_bottom).offset(KDialogAdaptedWidth(6));
+        make.centerX.equalTo(_ruleButton);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(62), KDialogAdaptedWidth(26)));
     }];
     
     // 全服中奖轮播跑马灯 (水平居中, 距顶部 62 pt. 高度默认为 0 隐蔽)
@@ -1277,6 +1221,7 @@
 }
 
 - (void)fortuneClick {
+    if (self.isDrawing) return;
     [MLChatRoomThemeGameFortuneView showInView:self.superview consume:self.consumeValue produce:self.produceValue];
 }
 
