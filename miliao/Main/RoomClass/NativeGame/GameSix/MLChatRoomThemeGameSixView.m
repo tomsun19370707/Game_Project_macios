@@ -58,7 +58,8 @@
 
 // 3. Action 容器 (底栏抽奖与决策)
 @property (nonatomic, strong) UIView *actionContainer;
-@property (nonatomic, strong) UIButton *giftPackButton;
+@property (nonatomic, strong) UIButton *giftPoolButton;
+@property (nonatomic, strong) UIButton *fortuneButton;
 @property (nonatomic, strong) UIButton *fusionButton;
 
 @property (nonatomic, strong) UIImageView *drawPanelBg;
@@ -150,44 +151,6 @@
     [_backgroundContainer addSubview:bgImageView];
     [bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(_backgroundContainer);
-    }];
-    
-    // 今日运势入口 (右上角上方 70pt x 30pt 胶囊)
-    CGFloat fortuneW = KDialogAdaptedWidth(70.0f);
-    CGFloat fortuneH = KDialogAdaptedWidth(30.0f);
-    UIView *fortuneBar = [[UIView alloc] init];
-    fortuneBar.userInteractionEnabled = YES;
-    [self addSubview:fortuneBar];
-    [fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_backgroundContainer.mas_top).offset(-KDialogAdaptedWidth(6));
-        make.trailing.mas_equalTo(_backgroundContainer.mas_trailing).offset(-KDialogAdaptedWidth(12));
-        make.size.mas_equalTo(CGSizeMake(fortuneW, fortuneH));
-    }];
-    
-    CAGradientLayer *fortuneGrad = [CAGradientLayer layer];
-    fortuneGrad.frame = CGRectMake(0, 0, fortuneW, fortuneH);
-    fortuneGrad.colors = @[(__bridge id)mHexRGB(0xFFA800).CGColor, (__bridge id)mHexRGB(0xE67E00).CGColor, (__bridge id)mHexRGB(0xC85A00).CGColor];
-    fortuneGrad.startPoint = CGPointMake(0.5, 0);
-    fortuneGrad.endPoint = CGPointMake(0.5, 1);
-    fortuneGrad.cornerRadius = KDialogAdaptedWidth(15.0f);
-    [fortuneBar.layer addSublayer:fortuneGrad];
-    
-    fortuneBar.layer.borderColor = mHexRGB(0xFFE57F).CGColor;
-    fortuneBar.layer.borderWidth = 1.5;
-    fortuneBar.layer.cornerRadius = KDialogAdaptedWidth(15.0f);
-    fortuneBar.clipsToBounds = YES;
-    
-    UITapGestureRecognizer *fortuneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(fortuneClick)];
-    [fortuneBar addGestureRecognizer:fortuneTap];
-    
-    UILabel *fortuneLabel = [[UILabel alloc] init];
-    fortuneLabel.text = @"今日运势";
-    fortuneLabel.textColor = kWhiteColor;
-    fortuneLabel.font = [UIFont boldSystemFontOfSize:11];
-    fortuneLabel.textAlignment = NSTextAlignmentCenter;
-    [fortuneBar addSubview:fortuneLabel];
-    [fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(fortuneBar);
     }];
     
     // 搭建四大语义子容器
@@ -448,15 +411,26 @@
         make.height.mas_equalTo(KDialogAdaptedWidth(290));
     }];
     
-    // 礼物包 (左侧 - 100% 精确恢复最初绝对高度位置)
-    _giftPackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_giftPackButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_btn_gift_pack"] forState:UIControlStateNormal];
-    [_giftPackButton addTarget:self action:@selector(giftPackClick) forControlEvents:UIControlEventTouchUpInside];
-    [_actionContainer addSubview:_giftPackButton];
-    [_giftPackButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(KDialogAdaptedWidth(6));
+    // 奖品池 (左侧上排 - 48x48 pt 国风金橙宝塔模具)
+    _giftPoolButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_giftPoolButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_btn_gift_pool"] forState:UIControlStateNormal];
+    [_giftPoolButton addTarget:self action:@selector(giftPoolClick) forControlEvents:UIControlEventTouchUpInside];
+    [_actionContainer addSubview:_giftPoolButton];
+    [_giftPoolButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(KDialogAdaptedWidth(4));
         make.top.mas_equalTo(_actionContainer);
-        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(79), KDialogAdaptedWidth(79)));
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(48), KDialogAdaptedWidth(48)));
+    }];
+
+    // 今日运势 (左侧下排 - 位于奖品池正下方，垂直间距 8pt)
+    _fortuneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_fortuneButton setBackgroundImage:[UIImage imageNamed:@"theme_game_six_btn_fortune"] forState:UIControlStateNormal];
+    [_fortuneButton addTarget:self action:@selector(fortuneClick) forControlEvents:UIControlEventTouchUpInside];
+    [_actionContainer addSubview:_fortuneButton];
+    [_fortuneButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_giftPoolButton.mas_bottom).offset(KDialogAdaptedWidth(8));
+        make.leading.mas_equalTo(_giftPoolButton);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(48), KDialogAdaptedWidth(48)));
     }];
     
     // 主页融合 (右侧 - 100% 精确恢复最初绝对高度位置)
@@ -580,15 +554,18 @@
 #pragma mark - User Actions
 
 - (void)recordClick {
+    if (self.isRecasting || self.isMarqueeRunning) return;
     [MLChatRoomThemeGameSixRecordDialog showInView:self];
 }
 
 - (void)ruleClick {
+    if (self.isRecasting || self.isMarqueeRunning) return;
     NSString *ruleContent = (self.bootstrapModel && self.bootstrapModel.game) ? self.bootstrapModel.game.rule_content : nil;
     [MLChatRoomThemeGameSixRuleDialog showInView:self ruleContent:ruleContent];
 }
 
-- (void)giftPackClick {
+- (void)giftPoolClick {
+    if (self.isRecasting || self.isMarqueeRunning) return;
     if (!self.bootstrapModel || !self.bootstrapModel.layers || self.bootstrapModel.layers.count == 0) {
         [SVProgressHUD showInfoWithStatus:@"奖品池加载中，请稍候"];
         return;
@@ -599,7 +576,12 @@
                                     initialLayer:initialLayer];
 }
 
+- (void)giftPackClick {
+    [self giftPoolClick];
+}
+
 - (void)fusionClick {
+    if (self.isRecasting || self.isMarqueeRunning) return;
     MLChatRoomThemeGameSixFusionDialog *dialog = [MLChatRoomThemeGameSixFusionDialog showInView:self];
     if (self.bootstrapModel && self.bootstrapModel.player) {
         dialog.stateVersion = self.bootstrapModel.player.state_version;
@@ -867,6 +849,7 @@
 }
 
 - (void)fortuneClick {
+    if (self.isRecasting || self.isMarqueeRunning) return;
     // 弹窗前主动刷新最新运势数据
     WeakSelf
     [MLGameLotteryService getFortuneLotteryListWithSuccess:^(NSArray<MLGameLotteryInfoModel *> *list) {
