@@ -45,12 +45,10 @@
 // Main Central Bag Image
 @property (nonatomic, strong) UIImageView *ivMainBg;
 
-// Floating Fortune Button
-@property (nonatomic, strong) UIView *fortuneBar;
-@property (nonatomic, strong) UILabel *fortuneLabel;
-
-// HUD Elements
+// HUD Buttons
 @property (nonatomic, strong) UIButton *rankButton;
+@property (nonatomic, strong) UIButton *giftPoolButton;
+@property (nonatomic, strong) UIButton *fortuneButton;
 @property (nonatomic, strong) UIButton *ruleButton;
 @property (nonatomic, strong) UIButton *recordButton;
 
@@ -195,89 +193,22 @@
         make.height.mas_equalTo(_backgroundContainer.mas_width);
     }];
     
-    // 1. 容器外正上方左侧【奖品池】悬浮条 (宽 70, 高 30. 悬浮在左上角外侧，与右侧今日运势 100% 对称)
-    CGFloat poolW = KDialogAdaptedWidth(70.0f);
-    CGFloat poolH = KDialogAdaptedWidth(30.0f);
-    UIView *giftPoolBar = [[UIView alloc] init];
-    giftPoolBar.userInteractionEnabled = YES;
-    [self addSubview:giftPoolBar];
-    [giftPoolBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_backgroundContainer.mas_top).offset(-KDialogAdaptedWidth(6));
-        make.leading.mas_equalTo(_backgroundContainer.mas_leading).offset(KDialogAdaptedWidth(12));
-        make.size.mas_equalTo(CGSizeMake(poolW, poolH));
+    // 5. Action Container (Bottom asset & control area)
+    _actionContainer = [[UIView alloc] init];
+    _actionContainer.backgroundColor = [UIColor clearColor];
+    [_backgroundContainer addSubview:_actionContainer];
+    [_actionContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.leading.trailing.mas_equalTo(_backgroundContainer);
+        make.top.mas_equalTo(_backgroundContainer.mas_top).offset(KDialogAdaptedWidth(365));
     }];
     
-    CAGradientLayer *poolGrad = [CAGradientLayer layer];
-    poolGrad.frame = CGRectMake(0, 0, poolW, poolH);
-    poolGrad.colors = @[(__bridge id)mHexRGB(0xFFA800).CGColor, (__bridge id)mHexRGB(0xE67E00).CGColor, (__bridge id)mHexRGB(0xC85A00).CGColor];
-    poolGrad.startPoint = CGPointMake(0.5, 0);
-    poolGrad.endPoint = CGPointMake(0.5, 1);
-    poolGrad.cornerRadius = KDialogAdaptedWidth(15.0f);
-    [giftPoolBar.layer addSublayer:poolGrad];
-    
-    giftPoolBar.layer.borderColor = mHexRGB(0xFFE57F).CGColor;
-    giftPoolBar.layer.borderWidth = 1.5;
-    giftPoolBar.layer.cornerRadius = KDialogAdaptedWidth(15.0f);
-    giftPoolBar.clipsToBounds = YES;
-    
-    UITapGestureRecognizer *poolTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(giftPoolClick)];
-    [giftPoolBar addGestureRecognizer:poolTap];
-    
-    UILabel *poolLabel = [[UILabel alloc] init];
-    poolLabel.text = @"奖品池";
-    poolLabel.textColor = kWhiteColor;
-    poolLabel.font = [UIFont boldSystemFontOfSize:11];
-    poolLabel.textAlignment = NSTextAlignmentCenter;
-    [giftPoolBar addSubview:poolLabel];
-    [poolLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(giftPoolBar);
-    }];
-
-    // 5. Today's Fortune entrance (floating outside top right)
-    CGFloat fortuneW = KDialogAdaptedWidth(70.0f);
-    CGFloat fortuneH = KDialogAdaptedWidth(30.0f);
-    _fortuneBar = [[UIView alloc] init];
-    _fortuneBar.userInteractionEnabled = YES;
-    [self addSubview:_fortuneBar];
-    [_fortuneBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(_backgroundContainer.mas_top).offset(-KDialogAdaptedWidth(6));
-        make.trailing.mas_equalTo(_backgroundContainer.mas_trailing).offset(-KDialogAdaptedWidth(12));
-        make.size.mas_equalTo(CGSizeMake(fortuneW, fortuneH));
-    }];
-    
-    CAGradientLayer *fortuneGrad = [CAGradientLayer layer];
-    fortuneGrad.frame = CGRectMake(0, 0, fortuneW, fortuneH);
-    fortuneGrad.colors = @[(__bridge id)mHexRGB(0xFFA800).CGColor, (__bridge id)mHexRGB(0xE67E00).CGColor, (__bridge id)mHexRGB(0xC85A00).CGColor];
-    fortuneGrad.startPoint = CGPointMake(0.5, 0);
-    fortuneGrad.endPoint = CGPointMake(0.5, 1);
-    fortuneGrad.cornerRadius = KDialogAdaptedWidth(15.0f);
-    [_fortuneBar.layer addSublayer:fortuneGrad];
-    
-    _fortuneBar.layer.borderColor = mHexRGB(0xFFE57F).CGColor;
-    _fortuneBar.layer.borderWidth = 1.5;
-    _fortuneBar.layer.cornerRadius = KDialogAdaptedWidth(15.0f);
-    _fortuneBar.clipsToBounds = YES;
-    
-    UITapGestureRecognizer *fortuneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(fortuneClick)];
-    [_fortuneBar addGestureRecognizer:fortuneTap];
-    
-    _fortuneLabel = [[UILabel alloc] init];
-    _fortuneLabel.text = @"今日运势";
-    _fortuneLabel.textColor = kWhiteColor;
-    _fortuneLabel.font = [UIFont boldSystemFontOfSize:11];
-    _fortuneLabel.textAlignment = NSTextAlignmentCenter;
-    [_fortuneBar addSubview:_fortuneLabel];
-    [_fortuneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(_fortuneBar);
-    }];
-    
-    // 6. HUD Container (Top bar area)
+    // 6. HUD Container (Top bar area, covering [0, 365 pt] for complete HitTest coverage)
     _hudContainer = [[UIView alloc] init];
     _hudContainer.backgroundColor = [UIColor clearColor];
     [_backgroundContainer addSubview:_hudContainer];
     [_hudContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.mas_equalTo(_backgroundContainer);
-        make.height.mas_equalTo(KDialogAdaptedWidth(150));
+        make.bottom.mas_equalTo(_actionContainer.mas_top);
     }];
     
     // Leaderboard button (Top Left)
@@ -289,6 +220,30 @@
         make.top.mas_equalTo(KDialogAdaptedWidth(30));
         make.leading.mas_equalTo(KDialogAdaptedWidth(20));
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(76), KDialogAdaptedWidth(74)));
+    }];
+    
+    // Prize Pool button (Below Leaderboard)
+    _giftPoolButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    NSString *giftPoolImgName = [NSString stringWithFormat:@"theme_game_four_gift_pool_%@", self.themeColorName];
+    [_giftPoolButton setBackgroundImage:[UIImage imageNamed:giftPoolImgName] forState:UIControlStateNormal];
+    [_giftPoolButton addTarget:self action:@selector(giftPoolClick) forControlEvents:UIControlEventTouchUpInside];
+    [_hudContainer addSubview:_giftPoolButton];
+    [_giftPoolButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_rankButton.mas_bottom).offset(KDialogAdaptedWidth(10));
+        make.centerX.mas_equalTo(_rankButton);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(76), KDialogAdaptedWidth(66)));
+    }];
+    
+    // Today's Fortune button (Below Prize Pool)
+    _fortuneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    NSString *fortuneImgName = [NSString stringWithFormat:@"theme_game_four_fortune_%@", self.themeColorName];
+    [_fortuneButton setBackgroundImage:[UIImage imageNamed:fortuneImgName] forState:UIControlStateNormal];
+    [_fortuneButton addTarget:self action:@selector(fortuneClick) forControlEvents:UIControlEventTouchUpInside];
+    [_hudContainer addSubview:_fortuneButton];
+    [_fortuneButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(_giftPoolButton.mas_bottom).offset(KDialogAdaptedWidth(10));
+        make.centerX.mas_equalTo(_giftPoolButton);
+        make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(76), KDialogAdaptedWidth(66)));
     }];
     
     // Rules button (Top Right)
@@ -311,15 +266,6 @@
         make.top.mas_equalTo(_ruleButton.mas_bottom).offset(KDialogAdaptedWidth(10));
         make.centerX.mas_equalTo(_ruleButton);
         make.size.mas_equalTo(CGSizeMake(KDialogAdaptedWidth(76), KDialogAdaptedWidth(72)));
-    }];
-    
-    // 7. Action Container (Bottom asset & control area)
-    _actionContainer = [[UIView alloc] init];
-    _actionContainer.backgroundColor = [UIColor clearColor];
-    [_backgroundContainer addSubview:_actionContainer];
-    [_actionContainer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.leading.trailing.mas_equalTo(_backgroundContainer);
-        make.top.mas_equalTo(_backgroundContainer.mas_top).offset(KDialogAdaptedWidth(365));
     }];
     
     // Diamond Bar View (Left side of asset bar)
@@ -561,6 +507,7 @@
 }
 
 - (void)fortuneClick {
+    if (self.isDrawing) return;
     [MLChatRoomThemeGameFourFortuneView showInView:self.superview consume:self.consumeValue produce:self.produceValue];
 }
 
@@ -739,6 +686,8 @@
     self.drawTenButton.enabled = !lock;
     self.drawHundredButton.enabled = !lock;
     self.rankButton.enabled = !lock;
+    self.giftPoolButton.enabled = !lock;
+    self.fortuneButton.enabled = !lock;
     self.ruleButton.enabled = !lock;
     self.recordButton.enabled = !lock;
     self.diamondPlusButton.enabled = !lock;
